@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNet.Models
+namespace FamilyNet.Models.EntityFramework
 {
     public class ApplicationDbContext : DbContext
     {

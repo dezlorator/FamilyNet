@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FamilyNet.Models;
+using FamilyNet.Models.EntityFramework;
+using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -36,7 +38,8 @@ namespace FamilyNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
+            services.AddSingleton<IUnitOfWork, EFUnitOfWork>();
+            services.AddSingleton<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

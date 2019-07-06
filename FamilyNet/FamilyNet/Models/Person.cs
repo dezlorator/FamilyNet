@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FamilyNet.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class Person
+    public class Person : IEntity
     {
         public int ID { get; set; }
         [Required]
