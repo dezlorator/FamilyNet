@@ -7,6 +7,6 @@ namespace FamilyNet.Models
 {
     public class CharityMaker : Person
     {
-        public ICollection<Donation> Donations { get; set; }
+        public virtual ICollection<Donation> Donations { get; set; }
     }
 }

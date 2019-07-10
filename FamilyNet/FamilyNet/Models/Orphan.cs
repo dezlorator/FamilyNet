@@ -6,7 +6,7 @@ namespace FamilyNet.Models
     public class Orphan : Person
     {
         [Required]
-        public Orphanage Orphanage { get; set; }
-        public ICollection<AuctionLot> AuctionLots { get; set; }
+        public virtual Orphanage Orphanage { get; set; }
+        public virtual ICollection<AuctionLot> AuctionLots { get; set; }
     }
 }

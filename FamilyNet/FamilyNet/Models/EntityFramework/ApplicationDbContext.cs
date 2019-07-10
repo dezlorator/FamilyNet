@@ -21,6 +21,12 @@ namespace FamilyNet.Models.EntityFramework
         public DbSet<Orphanage> Orphanages { get; set; }
         public DbSet<Donation> Donations { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder
+                .UseLazyLoadingProxies()
+                .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=relationsdb2;Trusted_Connection=True;");
+        }
 
     }
 

@@ -34,7 +34,18 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Index()
         {
-            CharityMaker charityMaker = new CharityMaker()
+            //CharityMaker charityMaker = new CharityMaker()
+            //{
+            //    FullName = new FullName() { Name = "33", Surname = "33", Patronymic = "3" },
+            //    Address = new Adress() { City = "test2", Country = "test2", House = "test2", Region = "test2", Street = "test2" },
+            //    Birthday = DateTime.Now,
+            //    Contacts = new Contacts() { Email = "test2" },
+            //    Donations = null,
+            //    Rating = 2
+            //};
+            //await _unitOfWorkAsync.CharityMakers.Create(charityMaker);
+            //_unitOfWorkAsync.SaveChangesAsync();
+            await _unitOfWorkAsync.CharityMakers.Create(new CharityMaker()
             {
                 FullName = new FullName() { Name = "33", Surname = "33", Patronymic = "3" },
                 Address = new Adress() { City = "test2", Country = "test2", House = "test2", Region = "test2", Street = "test2" },
@@ -42,9 +53,16 @@ namespace FamilyNet.Controllers
                 Contacts = new Contacts() { Email = "test2" },
                 Donations = null,
                 Rating = 2
-            };
-            await _unitOfWorkAsync.CharityMakers.Create(charityMaker);
+            });
             _unitOfWorkAsync.SaveChangesAsync();
+            var test = _unitOfWorkAsync.CharityMakers.GetAll().ToList();
+            test[0].Address.City = "ooaoaooaotooa";
+            await _unitOfWorkAsync.CharityMakers.Update(test[0]);
+            _unitOfWorkAsync.SaveChangesAsync();
+            var test2 = _unitOfWorkAsync.CharityMakers.GetAll().ToList();
+
+
+
             return View();
         }
         public IActionResult Privacy()

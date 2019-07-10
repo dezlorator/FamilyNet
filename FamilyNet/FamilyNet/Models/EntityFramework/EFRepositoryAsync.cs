@@ -22,7 +22,7 @@ namespace FamilyNet.Models.EntityFramework
         /// <returns>IQueryable<TEntity></returns>
         public IQueryable<TEntity> GetAll()
         {
-            return _dbContext.Set<TEntity>().AsNoTracking();
+            return _dbContext.Set<TEntity>();
         }
         public async Task Create(TEntity entity)
         {

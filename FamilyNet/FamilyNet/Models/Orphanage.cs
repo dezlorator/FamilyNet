@@ -10,11 +10,11 @@ namespace FamilyNet.Models
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public Adress Adress { get; set; }
+        public virtual Adress Adress { get; set; }
         public float Rating { get; set; }
         public string Avatar { get; set; }
 
-        public ICollection<Representative> Representatives { get; set; }
-        public ICollection<Orphan> OrphansIds { get; set; }
+        public virtual ICollection<Representative> Representatives { get; set; }
+        public virtual ICollection<Orphan> OrphansIds { get; set; }
     }
 }

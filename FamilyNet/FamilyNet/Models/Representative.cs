@@ -5,6 +5,6 @@ namespace FamilyNet.Models
     public class Representative : Person
     {
         [Required]
-        public Orphanage Orphanage { get; set; }
+        public virtual Orphanage Orphanage { get; set; }
     }
 }

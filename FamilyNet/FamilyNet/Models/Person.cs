@@ -12,10 +12,10 @@ namespace FamilyNet.Models
     {
         public int ID { get; set; }
         [Required]
-        public FullName FullName { get; set; }
-        public DateTime Birthday { get; set; }
-        public Adress Address { get; set; }
-        public Contacts Contacts { get; set; }
+        public virtual FullName FullName { get; set; }
+        public virtual DateTime Birthday { get; set; }
+        public virtual  Adress Address { get; set; }
+        public virtual Contacts Contacts { get; set; }
         public float Rating { get; set; }
         //public byte[] Avatar { get; set; }
     }
