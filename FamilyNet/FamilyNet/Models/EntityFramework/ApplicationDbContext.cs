@@ -24,8 +24,8 @@ namespace FamilyNet.Models.EntityFramework
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
-                .UseLazyLoadingProxies()
-                .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=relationsdb2;Trusted_Connection=True;");
+                .UseLazyLoadingProxies();
+                //.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=FamilyNetEFCore;Trusted_Connection=True;");
         }
 
     }

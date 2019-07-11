@@ -38,7 +38,6 @@ namespace FamilyNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddSingleton<IUnitOfWork, EFUnitOfWork>();
             services.AddSingleton<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
