@@ -4,14 +4,16 @@ using FamilyNet.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyNet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190714004652_AddAddressID")]
+    partial class AddAddressID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,7 +131,7 @@ namespace FamilyNet.Migrations
 
                     b.Property<DateTime>("Birthday");
 
-                    b.Property<int>("ContactsID");
+                    b.Property<int?>("ContactsID");
 
                     b.Property<int>("FullNameID");
 
@@ -229,7 +231,7 @@ namespace FamilyNet.Migrations
 
                     b.Property<DateTime>("Birthday");
 
-                    b.Property<int>("ContactsID");
+                    b.Property<int?>("ContactsID");
 
                     b.Property<int>("FullNameID");
 
@@ -260,8 +262,7 @@ namespace FamilyNet.Migrations
 
                     b.Property<string>("Avatar");
 
-                    b.Property<string>("Name")
-                        .IsRequired();
+                    b.Property<string>("Name");
 
                     b.Property<float>("Rating");
 
@@ -282,7 +283,7 @@ namespace FamilyNet.Migrations
 
                     b.Property<DateTime>("Birthday");
 
-                    b.Property<int>("ContactsID");
+                    b.Property<int?>("ContactsID");
 
                     b.Property<int>("FullNameID");
 
@@ -313,7 +314,7 @@ namespace FamilyNet.Migrations
 
                     b.Property<DateTime>("Birthday");
 
-                    b.Property<int>("ContactsID");
+                    b.Property<int?>("ContactsID");
 
                     b.Property<int>("FullNameID");
 
@@ -390,8 +391,7 @@ namespace FamilyNet.Migrations
 
                     b.HasOne("FamilyNet.Models.Contacts", "Contacts")
                         .WithMany()
-                        .HasForeignKey("ContactsID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ContactsID");
 
                     b.HasOne("FamilyNet.Models.FullName", "FullName")
                         .WithMany()
@@ -418,8 +418,7 @@ namespace FamilyNet.Migrations
 
                     b.HasOne("FamilyNet.Models.Contacts", "Contacts")
                         .WithMany()
-                        .HasForeignKey("ContactsID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ContactsID");
 
                     b.HasOne("FamilyNet.Models.FullName", "FullName")
                         .WithMany()
@@ -448,8 +447,7 @@ namespace FamilyNet.Migrations
 
                     b.HasOne("FamilyNet.Models.Contacts", "Contacts")
                         .WithMany()
-                        .HasForeignKey("ContactsID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ContactsID");
 
                     b.HasOne("FamilyNet.Models.FullName", "FullName")
                         .WithMany()
@@ -470,8 +468,7 @@ namespace FamilyNet.Migrations
 
                     b.HasOne("FamilyNet.Models.Contacts", "Contacts")
                         .WithMany()
-                        .HasForeignKey("ContactsID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ContactsID");
 
                     b.HasOne("FamilyNet.Models.FullName", "FullName")
                         .WithMany()

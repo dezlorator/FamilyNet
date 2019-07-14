@@ -15,7 +15,7 @@ namespace FamilyNet.Models.Interfaces
 
         Task Create(TEntity entity);
 
-        Task Update(TEntity entity);
+        void Update(TEntity entity);
 
         Task Delete(int id);
 
