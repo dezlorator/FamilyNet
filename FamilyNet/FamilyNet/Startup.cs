@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
+using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
 
 namespace FamilyNet
 {
@@ -27,9 +29,13 @@ namespace FamilyNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration["Data:FamilyNet:ConnectionString"]));
+            services.AddDbContext<ApplicationIdentityDbContext>(options =>
+                options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
+            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationIdentityDbContext>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -56,6 +62,7 @@ namespace FamilyNet
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
