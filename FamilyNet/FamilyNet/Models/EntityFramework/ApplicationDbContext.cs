@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,23 @@ namespace FamilyNet.Models.EntityFramework
         {
             optionsBuilder
                 .UseLazyLoadingProxies();
-                //.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=FamilyNetEFCore;Trusted_Connection=True;");
+            //.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=FamilyNetEFCore;Trusted_Connection=True;");
         }
+
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<Orphanage>()
+        //        .Property(b => b.Adress)
+        //        .ValueGeneratedOnAddOrUpdate();
+
+        //    modelBuilder.Entity<Orphanage>()
+        //        .Property(b => b.Adress)
+        //        .Metadata.AfterSaveBehavior = PropertySaveBehavior.Ignore;
+
+        //    base.OnModelCreating(modelBuilder);
+        //}
+
+
 
     }
 

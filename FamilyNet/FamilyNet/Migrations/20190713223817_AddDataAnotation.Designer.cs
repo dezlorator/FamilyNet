@@ -4,14 +4,16 @@ using FamilyNet.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyNet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190713223817_AddDataAnotation")]
+    partial class AddDataAnotation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,7 +258,7 @@ namespace FamilyNet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AdressID");
+                    b.Property<int?>("AdressID");
 
                     b.Property<string>("Avatar");
 
@@ -433,8 +435,7 @@ namespace FamilyNet.Migrations
                 {
                     b.HasOne("FamilyNet.Models.Adress", "Adress")
                         .WithMany()
-                        .HasForeignKey("AdressID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("AdressID");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Representative", b =>

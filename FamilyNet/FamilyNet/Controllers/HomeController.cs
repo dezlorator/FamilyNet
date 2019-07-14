@@ -20,7 +20,7 @@ namespace FamilyNet.Controllers
        
         public async Task<IActionResult> Index()
         {
-            
+
             //await _unitOfWorkAsync.CharityMakers.Create(new CharityMaker()
             //{
             //    FullName = new FullName() { Name = "33", Surname = "33", Patronymic = "3" },
@@ -36,8 +36,6 @@ namespace FamilyNet.Controllers
             //await _unitOfWorkAsync.CharityMakers.Update(test[0]);
             //_unitOfWorkAsync.SaveChangesAsync();
             //var test2 = _unitOfWorkAsync.CharityMakers.GetAll().ToList();
-
-
 
             return View();
         }
