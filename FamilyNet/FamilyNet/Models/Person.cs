@@ -11,10 +11,11 @@ namespace FamilyNet.Models
     public class Person : IEntity
     {
         public int ID { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Please enter Full Name")]
         public virtual FullName FullName { get; set; }
         public virtual DateTime Birthday { get; set; }
         public virtual  Adress Address { get; set; }
+        [Required]
         public virtual Contacts Contacts { get; set; }
         public float Rating { get; set; }
         //public byte[] Avatar { get; set; }

@@ -17,7 +17,7 @@ namespace FamilyNet.Models.EntityFramework
         }
 
         /// <summary>
-        /// Get all instances TEntity from the database without tracking their changes.(it will work faster)
+        /// Get all instances TEntity from the database 
         /// </summary>
         /// <returns>IQueryable<TEntity></returns>
         public IQueryable<TEntity> GetAll()
@@ -30,7 +30,7 @@ namespace FamilyNet.Models.EntityFramework
             
         }
 
-        public async Task Update(TEntity entity)
+        public void Update(TEntity entity)
         {
             _dbContext.Set<TEntity>().Update(entity);            
         }

@@ -11,13 +11,7 @@ namespace FamilyNet.Models.EntityFramework
         #region Private fields
 
         private ApplicationDbContext _context;
-        private EFRepositoryAsync<Orphanage> _orphanagesRepository;
-        private EFRepositoryAsync<CharityMaker> _charityMakersRepository;
-        private EFRepositoryAsync<Representative> _representativeRepository;
-        private EFRepositoryAsync<Orphan> _orphansRepository;
-        private EFRepositoryAsync<Donation> _donationsRepository;
-        private EFRepositoryAsync<Volunteer> _volunteersRepository;
-
+       
         #endregion
 
         #region Constructors
@@ -25,12 +19,12 @@ namespace FamilyNet.Models.EntityFramework
         public EFUnitOfWorkAsync(ApplicationDbContext cont)
         {
             _context = cont;
-            _charityMakersRepository = new EFRepositoryAsync<CharityMaker>(cont);
-            _donationsRepository = new EFRepositoryAsync<Donation>(cont);
-            _orphanagesRepository = new EFRepositoryAsync<Orphanage>(cont);
-            _orphansRepository = new EFRepositoryAsync<Orphan>(cont);
-            _representativeRepository = new EFRepositoryAsync<Representative>(cont);
-            _volunteersRepository = new EFRepositoryAsync<Volunteer>(cont);
+            CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
+            Donations = new EFRepositoryAsync<Donation>(cont);
+            Orphanages = new EFRepositoryAsync<Orphanage>(cont);
+            Orphans = new EFRepositoryAsync<Orphan>(cont);
+            Representatives = new EFRepositoryAsync<Representative>(cont);
+            Volunteers = new EFRepositoryAsync<Volunteer>(cont);
         }
 
 
@@ -39,28 +33,20 @@ namespace FamilyNet.Models.EntityFramework
 
         #region Property
 
-        public IAsyncRepository<Orphanage> Orphanages => _orphanagesRepository;
+        public IAsyncRepository<Orphanage> Orphanages { get; set; }
+        public IAsyncRepository<CharityMaker> CharityMakers { get; set; }
 
-        public IAsyncRepository<CharityMaker> CharityMakers => _charityMakersRepository;
+        public IAsyncRepository<Representative> Representatives { get; set; }
 
-        public IAsyncRepository<Representative> Representatives => _representativeRepository;
+        public IAsyncRepository<Volunteer> Volunteers { get; set; }
 
-        public IAsyncRepository<Volunteer> Volunteers => _volunteersRepository;
+        public IAsyncRepository<Donation> Donations { get; set; }
 
-        public IAsyncRepository<Donation> Donations => _donationsRepository;
-
-        public IAsyncRepository<Orphan> Orphans => _orphansRepository;
+        public IAsyncRepository<Orphan> Orphans { get; set; }
 
         public void SaveChangesAsync()
         {
             _context.SaveChanges();
-            //OR 
-            //_orphanagesRepository.SaveChanges();
-            //_charityMakersRepository.SaveChanges();
-            //_representativeRepository.SaveChanges();
-            //_volunteersRepository.SaveChanges();
-            //_donationsRepository.SaveChanges();
-            //_orphansRepository.SaveChanges();
         }
 
         #endregion

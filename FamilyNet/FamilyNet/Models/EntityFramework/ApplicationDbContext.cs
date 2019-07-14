@@ -31,14 +31,6 @@ namespace FamilyNet.Models.EntityFramework
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{
-        //    modelBuilder.Entity<Orphanage>()
-        //        .Property(b => b.Adress)
-        //        .ValueGeneratedOnAddOrUpdate();
-
-        //    modelBuilder.Entity<Orphanage>()
-        //        .Property(b => b.Adress)
-        //        .Metadata.AfterSaveBehavior = PropertySaveBehavior.Ignore;
-
         //    base.OnModelCreating(modelBuilder);
         //}
 
