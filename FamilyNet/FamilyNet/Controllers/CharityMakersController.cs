@@ -13,8 +13,6 @@ namespace FamilyNet.Controllers
 {
     public class CharityMakersController : BaseController
     {
-        
-
         public CharityMakersController(IUnitOfWorkAsync unitOfWork) : base (unitOfWork)
         { }
 
@@ -57,7 +55,7 @@ namespace FamilyNet.Controllers
         {
             if (ModelState.IsValid)
             {
-                charityMaker.Address = new Adress() { City = "contr", House = "contr", Country = "contr", Region = "contr", Street = "contr" };
+                charityMaker.Address = new Address() { City = "contr", House = "contr", Country = "contr", Region = "contr", Street = "contr" };
                 await _unitOfWorkAsync.CharityMakers.Create(charityMaker);
                 await _unitOfWorkAsync.CharityMakers.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

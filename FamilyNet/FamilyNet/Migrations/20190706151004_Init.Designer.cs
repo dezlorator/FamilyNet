@@ -22,7 +22,7 @@ namespace FamilyNet.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("FamilyNet.Models.Adress", b =>
+            modelBuilder.Entity("FamilyNet.Models.Address", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -45,7 +45,7 @@ namespace FamilyNet.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Adress");
+                    b.ToTable("Address");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.AuctionLot", b =>
@@ -259,7 +259,7 @@ namespace FamilyNet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AdressID");
+                    b.Property<int?>("AddressID");
 
                     b.Property<string>("Avatar");
 
@@ -269,7 +269,7 @@ namespace FamilyNet.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AdressID");
+                    b.HasIndex("AddressID");
 
                     b.ToTable("Orphanages");
                 });
@@ -386,7 +386,7 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.CharityMaker", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Adress", "Address")
+                    b.HasOne("FamilyNet.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressID");
 
@@ -413,7 +413,7 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.Orphan", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Adress", "Address")
+                    b.HasOne("FamilyNet.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressID");
 
@@ -434,14 +434,14 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.Orphanage", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Adress", "Adress")
+                    b.HasOne("FamilyNet.Models.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("AdressID");
+                        .HasForeignKey("AddressID");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Representative", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Adress", "Address")
+                    b.HasOne("FamilyNet.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressID");
 
@@ -462,7 +462,7 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.Volunteer", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Adress", "Address")
+                    b.HasOne("FamilyNet.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressID");
 

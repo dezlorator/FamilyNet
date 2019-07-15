@@ -14,7 +14,7 @@ namespace FamilyNet.Models
         [Required(ErrorMessage = "Please enter Full Name")]
         public virtual FullName FullName { get; set; }
         public virtual DateTime Birthday { get; set; }
-        public virtual  Adress Address { get; set; }
+        public virtual  Address Address { get; set; }
         [Required]
         public virtual Contacts Contacts { get; set; }
         public float Rating { get; set; }
