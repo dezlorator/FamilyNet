@@ -14,8 +14,8 @@ namespace FamilyNet.Models
         public int ID { get; set; }
         [Required(ErrorMessage = "Please enter a name")]
         public string Name { get; set; }
-        public int AddressID { get; set; }
-        public virtual Address Address { get; set; }
+        public int AdressID { get; set; }
+        public virtual Adress Adress { get; set; }
         public float Rating { get; set; }
         public string Avatar { get; set; }
 
@@ -27,11 +27,11 @@ namespace FamilyNet.Models
             receiver.Name = sender.Name;
             receiver.Rating = sender.Rating;
             receiver.Avatar = receiver.Avatar;
-            receiver.Address.City = sender.Address.City;
-            receiver.Address.Country = sender.Address.Country;
-            receiver.Address.House = sender.Address.House;
-            receiver.Address.Region = sender.Address.Region;
-            receiver.Address.Street = sender.Address.Street;
+            receiver.Adress.City = sender.Adress.City;
+            receiver.Adress.Country = sender.Adress.Country;
+            receiver.Adress.House = sender.Adress.House;
+            receiver.Adress.Region = sender.Adress.Region;
+            receiver.Adress.Street = sender.Adress.Street;
         }
     }
 }

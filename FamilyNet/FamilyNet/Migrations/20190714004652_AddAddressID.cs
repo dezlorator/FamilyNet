@@ -7,21 +7,21 @@ namespace FamilyNet.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Orphanages_Address_AddressID",
+                name: "FK_Orphanages_Adress_AdressID",
                 table: "Orphanages");
 
             migrationBuilder.AlterColumn<int>(
-                name: "AddressID",
+                name: "AdressID",
                 table: "Orphanages",
                 nullable: false,
                 oldClrType: typeof(int),
                 oldNullable: true);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Orphanages_Address_AddressID",
+                name: "FK_Orphanages_Adress_AdressID",
                 table: "Orphanages",
-                column: "AddressID",
-                principalTable: "Address",
+                column: "AdressID",
+                principalTable: "Adress",
                 principalColumn: "ID",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -29,20 +29,20 @@ namespace FamilyNet.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Orphanages_Address_AddressID",
+                name: "FK_Orphanages_Adress_AdressID",
                 table: "Orphanages");
 
             migrationBuilder.AlterColumn<int>(
-                name: "AddressID",
+                name: "AdressID",
                 table: "Orphanages",
                 nullable: true,
                 oldClrType: typeof(int));
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Orphanages_Address_AddressID",
+                name: "FK_Orphanages_Adress_AdressID",
                 table: "Orphanages",
-                column: "AddressID",
-                principalTable: "Address",
+                column: "AdressID",
+                principalTable: "Adress",
                 principalColumn: "ID",
                 onDelete: ReferentialAction.Restrict);
         }

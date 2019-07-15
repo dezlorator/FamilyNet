@@ -9,7 +9,7 @@ namespace FamilyNet.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Address",
+                name: "Adress",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
@@ -22,7 +22,7 @@ namespace FamilyNet.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Address", x => x.ID);
+                    table.PrimaryKey("PK_Adress", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,7 +91,7 @@ namespace FamilyNet.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
-                    AddressID = table.Column<int>(nullable: true),
+                    AdressID = table.Column<int>(nullable: true),
                     Rating = table.Column<float>(nullable: false),
                     Avatar = table.Column<string>(nullable: true)
                 },
@@ -99,9 +99,9 @@ namespace FamilyNet.Migrations
                 {
                     table.PrimaryKey("PK_Orphanages", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Orphanages_Address_AddressID",
-                        column: x => x.AddressID,
-                        principalTable: "Address",
+                        name: "FK_Orphanages_Adress_AdressID",
+                        column: x => x.AdressID,
+                        principalTable: "Adress",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -178,9 +178,9 @@ namespace FamilyNet.Migrations
                 {
                     table.PrimaryKey("PK_CharityMakers", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_CharityMakers_Address_AddressID",
+                        name: "FK_CharityMakers_Adress_AddressID",
                         column: x => x.AddressID,
-                        principalTable: "Address",
+                        principalTable: "Adress",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -213,9 +213,9 @@ namespace FamilyNet.Migrations
                 {
                     table.PrimaryKey("PK_Volunteers", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Volunteers_Address_AddressID",
+                        name: "FK_Volunteers_Adress_AddressID",
                         column: x => x.AddressID,
-                        principalTable: "Address",
+                        principalTable: "Adress",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -249,9 +249,9 @@ namespace FamilyNet.Migrations
                 {
                     table.PrimaryKey("PK_Orphans", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Orphans_Address_AddressID",
+                        name: "FK_Orphans_Adress_AddressID",
                         column: x => x.AddressID,
-                        principalTable: "Address",
+                        principalTable: "Adress",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -291,9 +291,9 @@ namespace FamilyNet.Migrations
                 {
                     table.PrimaryKey("PK_Representatives", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Representatives_Address_AddressID",
+                        name: "FK_Representatives_Adress_AddressID",
                         column: x => x.AddressID,
-                        principalTable: "Address",
+                        principalTable: "Adress",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -436,9 +436,9 @@ namespace FamilyNet.Migrations
                 column: "DonationItemID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orphanages_AddressID",
+                name: "IX_Orphanages_AdressID",
                 table: "Orphanages",
-                column: "AddressID");
+                column: "AdressID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orphans_AddressID",
@@ -535,7 +535,7 @@ namespace FamilyNet.Migrations
                 name: "FullName");
 
             migrationBuilder.DropTable(
-                name: "Address");
+                name: "Adress");
         }
     }
 }
