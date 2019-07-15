@@ -42,6 +42,10 @@ namespace FamilyNet.Controllers
         // GET: Orphans/Create
         public IActionResult Create()
         {
+            List<Orphanage> orphanagesList = new List<Orphanage>();
+            orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            ViewBag.ListOfOrphanages = orphanagesList;
+
             return View();
         }
 
@@ -51,9 +55,12 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("FullName,Birthday,Contacts")] Orphan orphan)
-        {
+        {          
             if (ModelState.IsValid)
             {
+                //int SelectValue = ViewBag.SelectedValue;
+                //ViewBag.SelectedValue = orphan.Orphanage.ID;
+                //var orphanage = _unitOfWorkAsync.Orphanages.GetById(SelectValue).Result;
                 var orphanage = _unitOfWorkAsync.Orphanages.GetById(1).Result;
                 orphan.Orphanage = orphanage;
                 //orphanage.OrphansIds.ToList().Add(orphan);
