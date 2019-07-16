@@ -13,17 +13,19 @@ namespace FamilyNet.Controllers
 {
     public class VolunteersController : BaseController
     {
-        public VolunteersController(IUnitOfWorkAsync unitOfWork)
-            : base(unitOfWork) { }
 
-        // GET: Volunteer
+        public VolunteersController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        { }
+
+        // GET: Volunteers
         public async Task<IActionResult> Index()
         {
-            var list = await _unitOfWorkAsync.Volunteers.GetAll().ToListAsync();
+
+            var list = _unitOfWorkAsync.Volunteers.GetAll().ToList();
             return View(list);
         }
 
-        // GET: Volunteer/Details/5
+        // GET: Volunteers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -31,8 +33,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var volunteer = await _unitOfWorkAsync.CharityMakers.GetById((int)id);
-
+            var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
             if (volunteer == null)
             {
                 return NotFound();
@@ -42,12 +43,21 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Create
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            List<Orphanage> orphanagesList = new List<Orphanage>();
+            orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            ViewBag.ListOfOrphanages = orphanagesList;
+
+            return View();
+        }
 
         // POST: Volunteers/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Birthday,Rating")] Volunteer volunteer)
+        public async Task<IActionResult> Create([Bind("FullName, Address, Birthday, Contacts")] Volunteer volunteer)
         {
             if (ModelState.IsValid)
             {
@@ -62,71 +72,87 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
+            }
 
             var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
-
             if (volunteer == null)
+            {
                 return NotFound();
-
+            }
             return View(volunteer);
         }
 
         // POST: Volunteers/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Birthday,Rating")] Volunteer volunteer)
+        public async Task<IActionResult> Edit(int id, [Bind("FullName,Birthday, Contacts")] Volunteer volunteer)
         {
             if (id != volunteer.ID)
+            {
                 return NotFound();
+            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //var volunteerToEdit = await _unitOfWorkAsync.Volunteers.GetById(volunteer.ID);
-                    //Volunteer.CopyState(volunteerToEdit, volunteer);
-                    //_unitOfWorkAsync.Volunteers.Update(volunteerToEdit);
-                    //_unitOfWorkAsync.SaveChangesAsync();
+                    var volunteerToEdit = await _unitOfWorkAsync.Volunteers.GetById(volunteer.ID);
+                    Volunteer.CopyState(volunteerToEdit, volunteer);
+                    _unitOfWorkAsync.Volunteers.Update(volunteerToEdit);
+                    _unitOfWorkAsync.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!VolunteerExists(volunteer.ID))
+                    {
                         return NotFound();
+                    }
                     else
+                    {
                         throw;
+                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(volunteer);
         }
 
-        // GET: Volunteer/Delete/5
+        // GET: Volunteers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
+            }
 
-            var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
+            var volunteer = await _unitOfWorkAsync.Volunteers
+                .GetById((int)id);
             if (volunteer == null)
+            {
                 return NotFound();
+            }
 
             return View(volunteer);
         }
-        // POST: Orphans/Delete/5
+
+        // POST: Volunteers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
-            await _unitOfWorkAsync.Volunteers.Delete((int)id);
+            var volunteer = await _unitOfWorkAsync.Volunteers.GetById(id);
+            await _unitOfWorkAsync.Volunteers.Delete(volunteer.ID);
             _unitOfWorkAsync.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
 
-
         private bool VolunteerExists(int id)
-         => _unitOfWorkAsync.Volunteers.GetById(id) != null;
+        {
+            return _unitOfWorkAsync.Volunteers.GetById(id) !=null;
+        }
     }
 }
