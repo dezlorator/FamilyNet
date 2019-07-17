@@ -19,5 +19,21 @@ namespace FamilyNet.Models
         public virtual Contacts Contacts { get; set; }
         public float Rating { get; set; }
         //public byte[] Avatar { get; set; }
+
+        public virtual void CopyState(Person sender)
+        {
+            FullName.Name = sender.FullName.Name;
+            FullName.Surname = sender.FullName.Surname;
+            FullName.Patronymic = sender.FullName.Patronymic;
+            Address.City = sender.Address.City;
+            Address.Country = sender.Address.Country;
+            Address.House = sender.Address.House;
+            Address.Region = sender.Address.Region;
+            Address.Street = sender.Address.Street;
+            Contacts.Email = sender.Contacts.Email;
+            Contacts.Phone = sender.Contacts.Phone;
+            Birthday = sender.Birthday;
+
+        }
     }
 }
