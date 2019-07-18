@@ -13,6 +13,8 @@ namespace FamilyNet.Models
         public int ID { get; set; }
         [Required(ErrorMessage = "Please enter Full Name")]
         public virtual FullName FullName { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]      
         public virtual DateTime Birthday { get; set; }
         public virtual  Adress Address { get; set; }
         [Required]

@@ -2,14 +2,17 @@
 
 @{
     ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<h1>Orphans List</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+    <div class="row">
+        <div class="col-sm-6">
+            <h2>Orphans List</h2>
+        </div>
+        <div class="col-sm-6">
+            <a asp-action="Create" class="btnCreateNew">Create New</a>
+        </div>
+    </div>
+<table class="table table-hover">
     <thead>
         <tr>
             <th>
@@ -31,9 +34,11 @@
                 @Html.DisplayNameFor(model => model.Contacts.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Orphanage.Name)
+                @Html.DisplayNameFor(model => model.Orphanage)
             </th>
-            <th></th>
+            <th>
+                Action
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -61,9 +66,11 @@
                 @Html.DisplayFor(modelItem => item.Orphanage.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                @*<a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                <a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>*@
+                <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a> 
+                <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a> 
+                <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
             </td>
         </tr>
 }

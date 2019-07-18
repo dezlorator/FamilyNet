@@ -84,7 +84,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Birthday" class="control-label"></label>
-                                    <input asp-for="Birthday" class="form-control" />
+                                    <input asp-for="Birthday" asp-format="{0:dd-MM-yyyy}" class="form-control" />
                                     <span asp-validation-for="Birthday" class="text-danger"></span>
                                 </div>
                             </div>
@@ -101,21 +101,20 @@
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Orphanage.Name" class="control-label"></label>
-                                    <select asp-for="ID"
+                                    <select asp-for="Orphanage.ID"
                                             class="form-control"
-                                            asp-items="@(new SelectList(@ViewBag.ListOfOrphanages,"ID", "Name"))">
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-                                            @if (ViewBag.SelectedValue != null)
-                                            {
-                                                <text>Selected Country ID: </text> @ViewBag.SelectedValue;
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
+                                            asp-items="@(new SelectList(@ViewBag.ListOfOrphanages,"ID", "Name"))"></select>
+                                </div>                               
+                                @*<div class="form-group">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                    @if (ViewBag.SelectedValue != null)
+                    {
+                        <text>Selected Country ID: </text> @ViewBag.SelectedValue;
+                    }
+                </div>
+            </div>
+        </div>*@
                                 <input type="submit" class="btnRegister" value="Create" />
                             </div>
                             <a asp-action="Index" class="btnBackToList">Back to List</a>

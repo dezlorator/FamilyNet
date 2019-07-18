@@ -94,6 +94,20 @@
     font-weight: 600;
     cursor: pointer;
 }
+
+.btnCreateNew {
+    background: #0062cc;
+    text-align: center;
+    float: right;
+    margin-bottom: 2%;
+    border-radius: 1.5rem;
+    padding: 2%;
+    color: #fff;
+    font-weight: 600;
+    width: 25%;
+    cursor: pointer;
+}
+
 .register .nav-tabs {
     margin-top: 3%;
     border: none;
