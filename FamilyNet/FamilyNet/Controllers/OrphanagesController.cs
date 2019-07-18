@@ -81,8 +81,10 @@ namespace FamilyNet.Controllers
             {
                 try
                 {
-                    var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);//in ef to change the object you need to track it out of context
-                    Orphanage.CopyState(orphanageToEdit, orphanage);//copying the state with NOT CHANGING REFERENCES
+                    //in ef to change the object you need to track it out of context
+                    var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);
+                    //copying the state with NOT CHANGING REFERENCES
+                    Orphanage.CopyState(orphanageToEdit, orphanage);
                     _unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }
@@ -117,6 +119,12 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            ////in ef to change the object you need to track it out of context
+            //var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);
+            ////copying the state with NOT CHANGING REFERENCES
+            //Orphanage.CopyState(orphanageToEdit, orphanage);
+            //_unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
+            //_unitOfWorkAsync.SaveChangesAsync();
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
             await _unitOfWorkAsync.Orphanages.Delete(orphanage.ID);
             _unitOfWorkAsync.SaveChangesAsync();

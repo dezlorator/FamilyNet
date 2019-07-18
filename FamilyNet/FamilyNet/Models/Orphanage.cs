@@ -15,6 +15,7 @@ namespace FamilyNet.Models
         [Required(ErrorMessage = "Please enter a name")]
         public string Name { get; set; }
         public int AdressID { get; set; }
+        [Display(Name = "Address")]
         public virtual Adress Adress { get; set; }
         public float Rating { get; set; }
         public string Avatar { get; set; }
@@ -26,7 +27,7 @@ namespace FamilyNet.Models
         {
             receiver.Name = sender.Name;
             receiver.Rating = sender.Rating;
-            receiver.Avatar = receiver.Avatar;
+            receiver.Avatar = sender.Avatar;
             receiver.Adress.City = sender.Adress.City;
             receiver.Adress.Country = sender.Adress.Country;
             receiver.Adress.House = sender.Adress.House;
