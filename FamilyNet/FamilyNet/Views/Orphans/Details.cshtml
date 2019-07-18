@@ -2,29 +2,53 @@
 
 @{
     ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Orphan</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Birthday)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Birthday)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rating)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rating)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="container">
+    <div class="row my-2">
+        <div class="col-lg-8 order-lg-2">        
+            <div class="tab-content py-4">
+                <div class="tab-pane active" id="profile">
+                    <h5 class="mb-3">Orphan Profile</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>@Html.DisplayNameFor(model => model.FullName)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.FullName.Surname)
+                                @Html.DisplayFor(model => model.FullName.Name)
+                                @Html.DisplayFor(model => model.FullName.Patronymic)
+                            </p>
+                            <h6>@Html.DisplayNameFor(model => model.Birthday)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.Birthday)
+                            </p>
+                            <h6>@Html.DisplayNameFor(model => model.Contacts)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.Contacts.Email) <br>
+                                @Html.DisplayFor(model => model.Contacts.Phone)
+                            </p>
+                            <h6>@Html.DisplayNameFor(model => model.Orphanage)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.Orphanage.Name)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.Country)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.Region)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.City)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.Street)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.House)
+                            </p>
+                        </div>
+                    </div>
+                </div>              
+            </div>
+        </div>
+        <div class="col-lg-4 order-lg-1 text-center">
+            <img src="//placehold.it/150" class="mx-auto img-fluid img-circle d-block" alt="avatar">
+            <h6 class="mt-2">Upload a different photo</h6>
+            <label class="custom-file">
+                <input type="file" id="file" class="custom-file-input">
+                <span class="btn btn-primary">Choose file</span>
+            </label>
+        </div>
+    </div>
 </div>
