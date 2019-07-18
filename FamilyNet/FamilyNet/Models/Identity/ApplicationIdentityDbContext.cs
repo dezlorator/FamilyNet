@@ -14,6 +14,6 @@ namespace FamilyNet.Models.Identity
             //Database.EnsureCreated();
             //Можно юзать это вместо миграции как я понял
         }
-
+        
     }
 }

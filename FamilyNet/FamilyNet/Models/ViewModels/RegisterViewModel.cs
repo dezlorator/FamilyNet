@@ -13,6 +13,10 @@ namespace FamilyNet.Models.ViewModels
         public string Email { get; set; }
 
         [Required]
+        [Display(Name = "Никнейм")]
+        public string UserName { get; set; }
+
+        [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }
