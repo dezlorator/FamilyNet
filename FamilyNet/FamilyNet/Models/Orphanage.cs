@@ -15,23 +15,34 @@ namespace FamilyNet.Models
         //[Required(ErrorMessage = "Please enter a name")]
         public string Name { get; set; }
         public int AdressID { get; set; }
+        [Display(Name = "Address")]
         public virtual Adress Adress { get; set; }
         public float Rating { get; set; }
         public string Avatar { get; set; }
 
         public virtual ICollection<Representative> Representatives { get; set; }
+        [Display(Name = "Orphans")]
         public virtual ICollection<Orphan> OrphansIds { get; set; }
 
         public static void CopyState(Orphanage receiver, Orphanage sender)
         {
             receiver.Name = sender.Name;
             receiver.Rating = sender.Rating;
-            receiver.Avatar = receiver.Avatar;
+            receiver.Avatar = sender.Avatar;
             receiver.Adress.City = sender.Adress.City;
             receiver.Adress.Country = sender.Adress.Country;
             receiver.Adress.House = sender.Adress.House;
             receiver.Adress.Region = sender.Adress.Region;
             receiver.Adress.Street = sender.Adress.Street;
         }
+    }
+    public enum SortStateOrphanages
+    {
+        NameAsc,
+        NameDesc,
+        AddressAsc,
+        AddressDesc,
+        RatingAsc,
+        RatingDesc
     }
 }
