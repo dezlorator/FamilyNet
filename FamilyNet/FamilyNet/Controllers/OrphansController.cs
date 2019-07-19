@@ -61,7 +61,8 @@ namespace FamilyNet.Controllers
             {
                 //ViewBag.SelectedValue = orphan.Orphanage.ID;
                 //var orphanage = _unitOfWorkAsync.Orphanages.GetById(SelectValue).Result;
-                var orphanage = _unitOfWorkAsync.Orphanages.GetById(orphan.Orphanage.ID).Result;
+                //var orphanage = _unitOfWorkAsync.Orphanages.GetById(orphan.Orphanage.ID).Result;
+                var orphanage = _unitOfWorkAsync.Orphanages.GetById(1).Result;
                 orphan.Orphanage = orphanage;
                 //orphanage.OrphansIds.ToList().Add(orphan);
                 //_unitOfWorkAsync.Orphanages.Update(orphanage);
