@@ -63,30 +63,6 @@ namespace FamilyNet.Controllers
             return View(await orphanages.ToListAsync());
         }
 
-        //public ActionResult Index(/*int? company,*/ string name)
-        //{
-        //    IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
-        //    //if (company != null && company != 0)
-        //    //{
-        //    //    users = users.Where(p => p.CompanyId == company);
-        //    //}
-        //    if (!String.IsNullOrEmpty(name))
-        //    {
-        //        orphanages = orphanages.Where(p => p.Name.Contains(name));
-        //    }
-
-        //    //List<Company> companies = db.Companies.ToList();
-        //    //companies.Insert(0, new Company { Name = "Все", Id = 0 });
-
-        //    FamilyNet.Models.Filters.OrphanagesViewModel viewModel = new FamilyNet.Models.Filters.OrphanagesViewModel
-        //    {
-        //        Orphanages = orphanages.ToList(),
-        //        //Companies = new SelectList(companies, "Id", "Name"),
-        //        Name = name
-        //    };
-        //    return View(viewModel);
-        //}
-
         // GET: Orphanages/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -183,12 +159,6 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            ////in ef to change the object you need to track it out of context
-            //var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);
-            ////copying the state with NOT CHANGING REFERENCES
-            //Orphanage.CopyState(orphanageToEdit, orphanage);
-            //_unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
-            //_unitOfWorkAsync.SaveChangesAsync();
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
             await _unitOfWorkAsync.Orphanages.Delete(orphanage.ID);
             _unitOfWorkAsync.SaveChangesAsync();

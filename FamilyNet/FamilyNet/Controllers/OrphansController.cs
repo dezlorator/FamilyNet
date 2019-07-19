@@ -59,13 +59,8 @@ namespace FamilyNet.Controllers
             //orphan.Orphanage.Name = _unitOfWorkAsync.Orphanages.GetById(orphan.Orphanage.ID).Result.Name;
             if (ModelState.IsValid)
             {
-                //ViewBag.SelectedValue = orphan.Orphanage.ID;
-                //var orphanage = _unitOfWorkAsync.Orphanages.GetById(SelectValue).Result;
-                //var orphanage = _unitOfWorkAsync.Orphanages.GetById(orphan.Orphanage.ID).Result;
                 var orphanageList = _unitOfWorkAsync.Orphanages.Get(orph => orph.ID == orph.ID).ToList();
                 orphan.Orphanage = orphanageList[0];
-                //orphanage.OrphansIds.ToList().Add(orphan);
-                //_unitOfWorkAsync.Orphanages.Update(orphanage);
                 await _unitOfWorkAsync.Orphans.Create(orphan);
                 await _unitOfWorkAsync.Orphans.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -151,6 +146,10 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
+            if(orphan == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             await _unitOfWorkAsync.Orphans.Delete((int)id);
             _unitOfWorkAsync.SaveChangesAsync();
 
