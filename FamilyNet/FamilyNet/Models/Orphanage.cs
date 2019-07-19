@@ -12,7 +12,7 @@ namespace FamilyNet.Models
     public class Orphanage : IEntity
     {
         public int ID { get; set; }
-        [Required(ErrorMessage = "Please enter a name")]
+        //[Required(ErrorMessage = "Please enter a name")]
         public string Name { get; set; }
         public int AdressID { get; set; }
         public virtual Adress Adress { get; set; }
