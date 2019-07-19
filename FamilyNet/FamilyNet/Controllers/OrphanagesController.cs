@@ -17,11 +17,75 @@ namespace FamilyNet.Controllers
         { }
 
         // GET: Orphanages
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string name, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
-            var list =  _unitOfWorkAsync.Orphanages.GetAll().ToList();
-            return View(list);
+            IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
+
+            if (!String.IsNullOrEmpty(name))
+            {
+                orphanages = orphanages.Where(p => p.Name.Contains(name));
+            }
+
+            ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
+            ViewData["AddressSort"] = sortOrder == SortStateOrphanages.AddressAsc ? SortStateOrphanages.AddressDesc : SortStateOrphanages.AddressAsc;
+            ViewData["RatingSort"] = sortOrder == SortStateOrphanages.RatingAsc ? SortStateOrphanages.RatingDesc : SortStateOrphanages.RatingAsc;
+
+            switch (sortOrder)
+            {
+                case SortStateOrphanages.NameDesc:
+                    orphanages = orphanages.OrderByDescending(s => s.Name);
+                    break;
+                case SortStateOrphanages.AddressAsc:
+                    orphanages = orphanages.OrderBy(s => s.Adress);
+                    break;
+                case SortStateOrphanages.AddressDesc:
+                    orphanages = orphanages.OrderByDescending(s => s.Adress);
+                    break;
+                case SortStateOrphanages.RatingAsc:
+                    orphanages = orphanages.OrderBy(s => s.Rating);
+                    break;
+                case SortStateOrphanages.RatingDesc:
+                    orphanages = orphanages.OrderByDescending(s => s.Rating);
+                    break;
+                default:
+                    orphanages = orphanages.OrderBy(s => s.Name);
+                    break;
+            }
+            //var list =  _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            //return View(list);
+            FamilyNet.Models.Filters.OrphanagesViewModel viewModel = new FamilyNet.Models.Filters.OrphanagesViewModel
+            {
+                Orphanages = orphanages.ToList(),
+                //Companies = new SelectList(companies, "Id", "Name"),
+                Name = name
+            };
+            //return View(viewModel);
+            return View(await orphanages.ToListAsync());
         }
+
+        //public ActionResult Index(/*int? company,*/ string name)
+        //{
+        //    IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
+        //    //if (company != null && company != 0)
+        //    //{
+        //    //    users = users.Where(p => p.CompanyId == company);
+        //    //}
+        //    if (!String.IsNullOrEmpty(name))
+        //    {
+        //        orphanages = orphanages.Where(p => p.Name.Contains(name));
+        //    }
+
+        //    //List<Company> companies = db.Companies.ToList();
+        //    //companies.Insert(0, new Company { Name = "Все", Id = 0 });
+
+        //    FamilyNet.Models.Filters.OrphanagesViewModel viewModel = new FamilyNet.Models.Filters.OrphanagesViewModel
+        //    {
+        //        Orphanages = orphanages.ToList(),
+        //        //Companies = new SelectList(companies, "Id", "Name"),
+        //        Name = name
+        //    };
+        //    return View(viewModel);
+        //}
 
         // GET: Orphanages/Details/5
         public async Task<IActionResult> Details(int? id)

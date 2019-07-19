@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<FamilyNet.Models.Orphanage>
-
+@*@model FamilyNet.Models.Filters.OrphanagesViewModel;*@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,25 +8,75 @@
 <h1>Orphanages list</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary" ><i class="fas fa-plus"></i></a>
+    <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus"></i></a>
 </p>
+
+@*<form method="get">
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Adresses" class="control-label"></label>
+            <input asp-for="Adresses" class="form-control" />
+            <span asp-validation-for="Adresses" class="text-danger"></span>
+        </div>
+    </form>*@
+<form asp-action="Filter">
+    <table class="table">
+        <th>
+            @*@Html.Label("Name: ")*@    @Html.TextBox("myTextBox", "Name", new { @class = "form-control" })
+        </th>
+        <th>
+            @*@Html.Label("Address: ")*@    @Html.TextBox("myTextBox", "Address", new { @class = "form-control" })
+        </th>
+        <th>
+            @*@Html.Label("Rating: ")*@    @Html.TextBox("myTextBox", "Rating", new { @class = "form-control", type = "number" })
+        </th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>
+            <input type="submit" value="Filter" class="btn btn-primary" />
+            @*<a asp-action="Filter" class="btn btn-primary">*@<i class="fas fa-filter"></i>@*</a>*@
+            @*@Html.ActionLink("", "Filter", "Orphanages", null, new { @class = "fas fa-filter" })*@
+        </th>
+
+    </table>
+</form>
+
+@*<p>
+        @Html.Label("Name: ")    @Html.TextBox("myTextBox", "", new { @class = "form-control" })
+    </p>*@
 <table class="table center">
-    <thead>
+    <thead class="thead-light">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+                    @Html.DisplayNameFor(model => model.Name)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Adress)
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+                    @Html.DisplayNameFor(model => model.Adress)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Rating)
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+                    @Html.DisplayNameFor(model => model.Rating)
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Avatar)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Representatives)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrphansIds)
             </th>
             <th>
                 Actions
@@ -74,15 +124,22 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Avatar)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Representatives.Count)
-                    @*@foreach (var i in item.Representatives)
-                        {
+                <td align="center">
+                    @*@Html.DisplayFor(modelItem => item.Representatives.Count)*@
 
-                        }*@
-                    <a asp-action="Create" asp-route-id="@item.ID" class="btn btn-sm btn-success"><i class="fas fa-user-plus"></i></a> 
-                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-warning"><i class="fas fa-user-times"></i></a> 
-                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info"><i class="fas fa-list-ul"></i></a>
+                    @*<a asp-action="Create" asp-route-id="@item.ID" class="btn btn-sm btn-success"><i class="fas fa-user-plus"></i></a>*@
+                    @*@Html.ActionLink("", "Create", "Orphans", null, new { @class = "fas fa-user-plus" })*@
+                    @Html.ActionLink("", "Create", "Orphanages", null, new { @class = "fas fa-user-plus" }) @*Change To Representatives*@
+                    @Html.ActionLink("", "Index", "Orphanages", null, new { @class = "fas fa-users" }) @*Change To Representatives*@
+                    @*<a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-warning"><i class="fas fa-user-times"></i></a>*@
+                    @*<a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info"><i class="fas fa-users"></i></a>*@
+                </td>
+                <td>
+                    @*@Html.DisplayFor(modelItem => item.OrphansIds.Count)*@
+
+                    <a asp-action="Create" asp-route-id="@item.ID" class="btn btn-sm btn-outline-success"><i class="fas fa-user-plus"></i></a>
+                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-outline-danger"><i class="fas fa-user-times"></i></a>
+                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-outline-info"><i class="fas fa-list-ul"></i></a>
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a> |

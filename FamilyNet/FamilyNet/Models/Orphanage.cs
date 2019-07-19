@@ -21,6 +21,7 @@ namespace FamilyNet.Models
         public string Avatar { get; set; }
 
         public virtual ICollection<Representative> Representatives { get; set; }
+        [Display(Name = "Orphans")]
         public virtual ICollection<Orphan> OrphansIds { get; set; }
 
         public static void CopyState(Orphanage receiver, Orphanage sender)
@@ -34,5 +35,14 @@ namespace FamilyNet.Models
             receiver.Adress.Region = sender.Adress.Region;
             receiver.Adress.Street = sender.Adress.Street;
         }
+    }
+    public enum SortStateOrphanages
+    {
+        NameAsc,
+        NameDesc,
+        AddressAsc,
+        AddressDesc,
+        RatingAsc,
+        RatingDesc
     }
 }
