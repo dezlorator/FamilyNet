@@ -54,7 +54,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FullName,Birthday,Contacts,Orphanage")] Orphan orphan)
+        public async Task<IActionResult> Create([Bind("FullName,Address,Birthday,Contacts,Orphanage")] Orphan orphan)
         {
             //orphan.Orphanage.Name = _unitOfWorkAsync.Orphanages.GetById(orphan.Orphanage.ID).Result.Name;
             if (ModelState.IsValid)
@@ -62,8 +62,8 @@ namespace FamilyNet.Controllers
                 //ViewBag.SelectedValue = orphan.Orphanage.ID;
                 //var orphanage = _unitOfWorkAsync.Orphanages.GetById(SelectValue).Result;
                 //var orphanage = _unitOfWorkAsync.Orphanages.GetById(orphan.Orphanage.ID).Result;
-                var orphanage = _unitOfWorkAsync.Orphanages.GetById(1).Result;
-                orphan.Orphanage = orphanage;
+                var orphanageList = _unitOfWorkAsync.Orphanages.Get(orph => orph.ID == orph.ID).ToList();
+                orphan.Orphanage = orphanageList[0];
                 //orphanage.OrphansIds.ToList().Add(orphan);
                 //_unitOfWorkAsync.Orphanages.Update(orphanage);
                 await _unitOfWorkAsync.Orphans.Create(orphan);
