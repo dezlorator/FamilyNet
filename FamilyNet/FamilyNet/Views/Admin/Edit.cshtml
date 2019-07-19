@@ -14,8 +14,12 @@
         <input asp-for="Email" class="form-control" />
     </div>
     <div class="form-group">
+        <label asp-for="UserName"></label>
+        <input asp-for="UserName" class="form-control" />
+    </div>
+    <div class="form-group">
         <label for="password">Password</label>
-        <input name="password" class="form-control" />
+        <input type="password" class="form-control" />
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>

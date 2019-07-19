@@ -4,9 +4,11 @@ using FamilyNet.Models.ViewModels;
 using FamilyNet.Models;
 using Microsoft.AspNetCore.Identity;
 using FamilyNet.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNet.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         //Сервис по управлению пользователями.
@@ -20,16 +22,18 @@ namespace FamilyNet.Controllers
             _signInManager = signInManager;
         }
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
         }
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.Email };
+                ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.UserName };
                 // добавляем пользователя.
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -55,12 +59,14 @@ namespace FamilyNet.Controllers
         //    Этот метод принимает логин и пароль пользователя.Третий параметр метода указывает, надо ли сохранять устанавливаемые куки на долгое время.
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
