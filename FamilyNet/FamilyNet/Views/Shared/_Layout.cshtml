@@ -60,7 +60,32 @@
 						<li class="nav-item">
 							<a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="CharityMakers" asp-action="Index">CharityMakers</a>
 						</li>
-					</ul>
+					
+                    @if (User.Identity.IsAuthenticated)
+                         {
+                            <li class="nav-item">
+                                
+                                   <p class="nav-link text-danger font-weight-bold">@User.Identity.Name</p>
+
+                                
+
+                            </li>
+                            <li class="nav-item">
+                                <form  method="post" asp-controller="Account" asp-action="Logout">
+                                    <input style="background-color:lightblue" class="nav-link text-danger alert-dark font-weight-bold" type="submit" value="Logout" />
+                                </form>
+                            </li>
+                         }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Account" asp-action="Login">Sign In</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Account" asp-action="Register">Sign Up</a>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
