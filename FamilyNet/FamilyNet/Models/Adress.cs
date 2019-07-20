@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class Adress : IEntity
+    public class Adress
     {
         public int ID { get; set; }
+
         [Required]
         public string Country { get; set; }
         [Required]
