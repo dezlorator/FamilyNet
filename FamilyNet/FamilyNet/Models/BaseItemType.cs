@@ -11,5 +11,6 @@ namespace FamilyNet.Models
         public string Name { get; set; }
         public virtual ICollection<BaseItemType> Childs { get; set; }
         public virtual ICollection<BaseItemType> Parent { get; set; }
-    }
+
+            }
 }

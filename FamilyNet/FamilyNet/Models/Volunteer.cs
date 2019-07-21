@@ -1,12 +1,17 @@
-﻿using System;
+﻿using FamilyNet.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class Volunteer : Person
+    public class Volunteer : Person, IAddress
     {
+
+        public int? AddressID { get; set; }
+        public virtual Adress Address { get; set; }
+
         public static void CopyState(Volunteer receiver, Volunteer sender)
         {
             receiver.FullName.Name = sender.FullName.Name;
