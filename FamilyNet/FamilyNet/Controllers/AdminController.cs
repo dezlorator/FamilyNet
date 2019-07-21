@@ -5,15 +5,20 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Infrastructure;
 
 namespace FamilyNet.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private UserManager<ApplicationUser> _userManager;
         private IUserValidator<ApplicationUser> _userValidator;
         private IPasswordValidator<ApplicationUser> _passwordValidator;
         private IPasswordHasher<ApplicationUser> _passwordHasher;
+        private FamilyNetPhoneValidator _phoneValidator;
+        
         public AdminController(UserManager<ApplicationUser> usrMgr, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid, IPasswordHasher<ApplicationUser> passwordHash)
         {
             _userManager = usrMgr;
@@ -31,8 +36,10 @@ namespace FamilyNet.Controllers
             {
                 ApplicationUser user = new ApplicationUser
                 {
-                    UserName = model.UserName,
-                    Email = model.Email
+                    Email = model.Email,
+                    UserName = model.Email,
+                    PhoneNumber = model.Phone
+                    
                 };
                 IdentityResult result
                     = await _userManager.CreateAsync(user, model.Password);
@@ -87,9 +94,9 @@ namespace FamilyNet.Controllers
                 return RedirectToAction("Index");
             }
         }
-
+        
         [HttpPost]
-        public async Task<IActionResult> Edit(string id, string email,
+        public async Task<IActionResult> Edit(string id, string email,string phone,
                 string password)
         {
             ApplicationUser user = await _userManager.FindByIdAsync(id);
@@ -102,6 +109,15 @@ namespace FamilyNet.Controllers
                 {
                     AddErrorsFromResult(validEmail);
                 }
+                user.PhoneNumber = phone;
+                IdentityResult validPhone
+                    = await _phoneValidator.ValidateAsync(_userManager, user);
+                if (!validPhone.Succeeded)
+                {
+                    AddErrorsFromResult(validPhone);
+                }
+
+
                 IdentityResult validPass = null;
                 if (!string.IsNullOrEmpty(password))
                 {
@@ -119,7 +135,8 @@ namespace FamilyNet.Controllers
                 }
                 if ((validEmail.Succeeded && validPass == null)
                         || (validEmail.Succeeded
-                        && password != string.Empty && validPass.Succeeded))
+                        && password != string.Empty && validPass.Succeeded)|| (validEmail.Succeeded && validPhone.Succeeded && password!= string.Empty && validPhone.Succeeded)
+                        ||(validEmail.Succeeded && validPass == null && validPhone.Succeeded))
                 {
                     IdentityResult result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)

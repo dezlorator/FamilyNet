@@ -8,8 +8,8 @@ namespace FamilyNet.Models.ViewModels
 {
     public class CreateUserViewModel
     {
-        [Required]
-        public string UserName { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        public string Phone { get; set; }
         [Required]
         public string Email { get; set; }
         [Required]

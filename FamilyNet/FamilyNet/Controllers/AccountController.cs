@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class AccountController : Controller
     {
         //Сервис по управлению пользователями.
@@ -21,19 +21,21 @@ namespace FamilyNet.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
         }
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.UserName };
+                ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.Email, PhoneNumber = model.Phone };
                 // добавляем пользователя.
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -70,20 +72,47 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+            //if (ModelState.IsValid)
+            //{
+            //    var result =
+            //        await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+            //    if (result.Succeeded)
+            //    {
+            //        // проверяем, принадлежит ли URL приложению
+            //        if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+            //        {
+            //            return Redirect(model.ReturnUrl);
+            //        }
+            //        else
+            //        {
+            //            return RedirectToAction("Index", "Home");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+            //    }
+            //}
+            //return View(model);
             if (ModelState.IsValid)
             {
-                var result =
-                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-                if (result.Succeeded)
+                ApplicationUser user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
                 {
-                    // проверяем, принадлежит ли URL приложению
-                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                    await _signInManager.SignOutAsync();
+                    Microsoft.AspNetCore.Identity.SignInResult result =
+                            await _signInManager.PasswordSignInAsync(
+                                user, model.Password, model.RememberMe, false);
+                    if (result.Succeeded)
                     {
-                        return Redirect(model.ReturnUrl);
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Home");
+                        if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                 }
                 else
@@ -95,6 +124,7 @@ namespace FamilyNet.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
@@ -102,6 +132,13 @@ namespace FamilyNet.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
 
     }
 }

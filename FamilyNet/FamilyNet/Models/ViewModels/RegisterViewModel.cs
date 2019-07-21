@@ -12,9 +12,9 @@ namespace FamilyNet.Models.ViewModels
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
-        [Display(Name = "Никнейм")]
-        public string UserName { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        [Display(Name = "Телефон")]
+        public string Phone { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

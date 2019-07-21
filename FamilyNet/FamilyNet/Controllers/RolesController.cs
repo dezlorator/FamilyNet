@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNet.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class RolesController : Controller
     {
         RoleManager<IdentityRole> _roleManager;

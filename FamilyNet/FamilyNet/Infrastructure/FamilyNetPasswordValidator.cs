@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using FamilyNet.Models;
 using FamilyNet.Models.Identity;
+using System.Text.RegularExpressions;
 
 namespace FamilyNet.Infrastructure
 {
@@ -15,14 +16,14 @@ namespace FamilyNet.Infrastructure
             IdentityResult result = await base.ValidateAsync(manager, applicationUser, password);
 
             List<IdentityError> errors = result.Succeeded ? new List<IdentityError>() : result.Errors.ToList();
-            if (password.ToLower().Contains(applicationUser.UserName.ToLower()))
-            {
-                errors.Add(new IdentityError
-                {
-                    Code = "PasswordContainsUserName",
-                    Description = "Password cannot contain username"
-                });
-            }
+            //if (password.ToLower().Contains(applicationUser.UserName.ToLower()))
+            //{
+            //    errors.Add(new IdentityError
+            //    {
+            //        Code = "PasswordContainsUserName",
+            //        Description = "Password cannot contain username"
+            //    });
+            //}
             if (password.Contains("12345"))
             {
                 errors.Add(new IdentityError
@@ -33,5 +34,6 @@ namespace FamilyNet.Infrastructure
             }
             return errors.Count == 0 ? IdentityResult.Success : IdentityResult.Failed(errors.ToArray());
         }
+        
     }
 }
