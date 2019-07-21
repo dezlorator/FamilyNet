@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<FamilyNet.Models.Orphanage>
-@*@model FamilyNet.Models.Filters.OrphanagesViewModel;*@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -11,6 +10,18 @@
     <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus"></i></a>
 </p>
 
+@*<form asp-page="/Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            @*<div><label>Название</label><br /><input asp-for="model.Name" /></div>*@
+@*Find by name: <input type="text" name="SearchString" value="" />*@
+@*Find by address: <input type="text" name="AddressString" value="" />
+    Find by raiting: <input type="number" name="RatingNumber" value="" />*@
+@*<input type="submit" value="Search" class="btn btn-default" /> |
+    <a asp-page="/Index">Back to full List</a>*@
+@*</p>
+        </div>
+    </form>*@
 @*<form method="get">
         <div class="form-group">
             <label asp-for="Name" class="control-label"></label>
@@ -23,16 +34,27 @@
             <span asp-validation-for="Adresses" class="text-danger"></span>
         </div>
     </form>*@
+@*<form asp-page="/Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Find by name: <input type="text" name="NameString" />
+                Find by address: <input type="text" name="AddressString" />
+                Find by raiting: <input type="number" name="RatingNumber" value="" />
+                <input type="submit" value="Search" class="btn btn-default" /> |
+                <a asp-page="/Index ">Back to full List</a>
+            </p>
+        </div>
+    </form>*@
 <form asp-action="Filter">
     <table class="table">
         <th>
-            @*@Html.Label("Name: ")*@    @Html.TextBox("myTextBox", "Name", new { @class = "form-control" })
+            @Html.Label("Name: ")  @Html.TextBox("NameString", "", new { @class = "form-control" })
         </th>
         <th>
-            @*@Html.Label("Address: ")*@    @Html.TextBox("myTextBox", "Address", new { @class = "form-control" })
+            @Html.Label("Street: ") @Html.TextBox("AddressString", "", new { @class = "form-control" })
         </th>
-        <th>
-            @*@Html.Label("Rating: ")*@    @Html.TextBox("myTextBox", "Rating", new { @class = "form-control", type = "number" })
+        <th width="9%">
+            @Html.Label("Rating: ")  @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
         </th>
         <th></th>
         <th></th>
@@ -40,8 +62,15 @@
         <th></th>
         <th></th>
         <th>
-            <input type="submit" value="Filter" class="btn btn-primary" />
-            @*<a asp-action="Filter" class="btn btn-primary">*@<i class="fas fa-filter"></i>@*</a>*@
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+            </button>
+            @*<button type="reset" asp-page="/Index" class="btn btn-primary">
+                    <i class=""></i>
+                </button>*@
+            @Html.ActionLink("", "Index", "Orphanages", null, new { @class = "fas fa-ban" })
+            @*<input type="submit" value="Filter" class="btn btn-primary" />*@
+            @*<a asp-action="Filter" class="btn btn-primary">*@@*<i class="fas fa-filter"></i>*@@*</a>*@
             @*@Html.ActionLink("", "Filter", "Orphanages", null, new { @class = "fas fa-filter" })*@
         </th>
 
@@ -137,9 +166,9 @@
                 <td>
                     @*@Html.DisplayFor(modelItem => item.OrphansIds.Count)*@
 
-                    <a asp-action="Create" asp-route-id="@item.ID" class="btn btn-sm btn-outline-success"><i class="fas fa-user-plus"></i></a>
-                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-outline-danger"><i class="fas fa-user-times"></i></a>
-                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-outline-info"><i class="fas fa-list-ul"></i></a>
+                    @*<a asp-action="Create" asp-route-id="@item.ID" class="btn btn-sm btn-outline-success"><i class="fas fa-user-plus"></i></a>
+                        <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-outline-danger"><i class="fas fa-user-times"></i></a>*@
+                    <a asp-action="Index" asp-controller="Orphans" asp-route-id="@item.ID" class="btn btn-sm btn-outline-primary">@Html.DisplayFor(modelItem => item.OrphansIds.Count)</a>
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a> |
@@ -148,5 +177,16 @@
                 </td>
             </tr>
         }
+
     </tbody>
 </table>
+@*<script type="text/javascript">
+        $("#NameString").click(function () {
+            $("input[type=text]").val("");
+
+        });
+        $("#AddressString").click(function () {
+            $("input[type=text]").val("");
+
+        });
+    </script>*@

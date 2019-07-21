@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
+using FamilyNet.Models.Filters;
 
 namespace FamilyNet.Controllers
 {
@@ -17,13 +18,18 @@ namespace FamilyNet.Controllers
         { }
 
         // GET: Orphanages
-        public async Task<IActionResult> Index(string name, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
+        public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
-
-            if (!String.IsNullOrEmpty(name))
+           
+            if (searchModel != null)
             {
-                orphanages = orphanages.Where(p => p.Name.Contains(name));
+                if (!string.IsNullOrEmpty(searchModel.NameString))
+                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
+                if (!string.IsNullOrEmpty(searchModel.AddressString))
+                    orphanages = orphanages.Where(x => x.Adress.Street.Contains(searchModel.AddressString));
+                if (searchModel.RatingNumber > 0)
+                    orphanages = orphanages.Where(x => x.Rating == searchModel.RatingNumber);
             }
 
             ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
@@ -51,15 +57,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
-            //var list =  _unitOfWorkAsync.Orphanages.GetAll().ToList();
-            //return View(list);
-            FamilyNet.Models.Filters.OrphanagesViewModel viewModel = new FamilyNet.Models.Filters.OrphanagesViewModel
-            {
-                Orphanages = orphanages.ToList(),
-                //Companies = new SelectList(companies, "Id", "Name"),
-                Name = name
-            };
-            //return View(viewModel);
+            
             return View(await orphanages.ToListAsync());
         }
 
@@ -168,5 +166,19 @@ namespace FamilyNet.Controllers
 
         private bool OrphanageExists(int id) =>
             _unitOfWorkAsync.Orphanages.GetById(id) != null;
+
+        //public IQueryable<Orphanage> GetSearchProducts(OrphanageSearchModel searchModel, IQueryable<Orphanage> result)
+        //{
+        //    if (searchModel != null)
+        //    {
+        //        if (!string.IsNullOrEmpty(searchModel.Name))
+        //            result = result.Where(x => x.Name.Contains(searchModel.Name));
+        //        if (!string.IsNullOrEmpty(searchModel.Adresses))
+        //            result = result.Where(x => x.Name.Contains(searchModel.Adresses));
+        //        //if (searchModel.Rating >= 0)
+        //        //    result = result.Where(x => x.Rating == searchModel.Rating);
+        //    }
+        //    return result;
+        //}
     }
 }
