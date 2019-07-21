@@ -29,13 +29,7 @@ namespace FamilyNet.Models
             FullName.Name = sender.FullName.Name;
             FullName.Surname = sender.FullName.Surname;
             FullName.Patronymic = sender.FullName.Patronymic;
-            Address.City = sender.Address.City;
-            Address.Country = sender.Address.Country;
-            Address.House = sender.Address.House;
-            Address.Region = sender.Address.Region;
-            Address.Street = sender.Address.Street;
-            Contacts.Email = sender.Contacts.Email;
-            Contacts.Phone = sender.Contacts.Phone;
+
             Birthday = sender.Birthday;
 
         }

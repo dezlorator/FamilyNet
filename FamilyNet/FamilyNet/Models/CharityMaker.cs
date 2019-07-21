@@ -11,6 +11,6 @@ namespace FamilyNet.Models
         public virtual ICollection<Donation> Donations { get; set; }
 
         public int? AddressID { get; set; }
-        public virtual Adress Address { get; set; }
+        public virtual Address Address { get; set; }
     }
 }

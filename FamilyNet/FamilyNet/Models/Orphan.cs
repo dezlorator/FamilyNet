@@ -26,8 +26,6 @@ namespace FamilyNet.Models
             receiver.Rating = sender.Rating;
             receiver.Birthday = receiver.Birthday;
 
-            receiver.Contacts.Phone = sender.Contacts.Phone;
-            receiver.Contacts.Email = sender.Contacts.Email;
 
         }
 

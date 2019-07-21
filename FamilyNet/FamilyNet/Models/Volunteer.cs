@@ -10,7 +10,7 @@ namespace FamilyNet.Models
     {
 
         public int? AddressID { get; set; }
-        public virtual Adress Address { get; set; }
+        public virtual Address Address { get; set; }
 
         public static void CopyState(Volunteer receiver, Volunteer sender)
         {
@@ -21,8 +21,6 @@ namespace FamilyNet.Models
             receiver.Rating = sender.Rating;
             receiver.Birthday = receiver.Birthday;
 
-            receiver.Contacts.Phone = sender.Contacts.Phone;
-            receiver.Contacts.Email = sender.Contacts.Email;
 
         }
     }

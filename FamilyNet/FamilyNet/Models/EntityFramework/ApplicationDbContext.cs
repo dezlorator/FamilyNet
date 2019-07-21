@@ -33,7 +33,7 @@ namespace FamilyNet.Models.EntityFramework
             base.OnModelCreating(modelBuilder);
 
             //Indexes
-            modelBuilder.Entity<Adress>().HasIndex(o => o.City);
+            modelBuilder.Entity<Address>().HasIndex(o => o.City);
 
             //Complex types
             ForFluenAPI<CharityMaker>.SetFullNameRequired(modelBuilder);
@@ -95,19 +95,19 @@ namespace FamilyNet.Models.EntityFramework
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
             //second part
-            modelBuilder.Entity<Adress>()
+            modelBuilder.Entity<Address>()
                 .HasOne<CharityMaker>()
                 .WithOne(cm => cm.Address)
                 .HasForeignKey<CharityMaker>(f => f.AddressID)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<Adress>()
+            modelBuilder.Entity<Address>()
                 .HasOne<Orphanage>()
                 .WithOne(cm => cm.Adress)
                 .HasForeignKey<Orphanage>(f => f.AdressID)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<Adress>()
+            modelBuilder.Entity<Address>()
                 .HasOne<Volunteer>()
                 .WithOne(cm => cm.Address)
                 .HasForeignKey<Volunteer>(f => f.AddressID)

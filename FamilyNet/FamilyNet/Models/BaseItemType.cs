@@ -9,8 +9,8 @@ namespace FamilyNet.Models
         public int ID { get; set; }
         [Required]
         public string Name { get; set; }
-        public virtual ICollection<BaseItemType> Childs { get; set; }
-        public virtual ICollection<BaseItemType> Parent { get; set; }
+        public virtual BaseItemType Child { get; set; }
+        public virtual BaseItemType Parent { get; set; }
 
             }
 }

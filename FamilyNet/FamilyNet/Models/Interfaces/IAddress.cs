@@ -7,6 +7,6 @@ namespace FamilyNet.Models.Interfaces
 {
     public interface IAddress
     {
-        Adress Address { get; set; }
+        Address Address { get; set; }
     }
 }

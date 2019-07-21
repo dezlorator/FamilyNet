@@ -19,7 +19,7 @@ namespace FamilyNet.Models
 
         [Display(Name = "Address")]
 
-        public virtual Adress Adress { get; set; }
+        public virtual Address Adress { get; set; }
         public float Rating { get; set; }
         public string Avatar { get; set; }
 

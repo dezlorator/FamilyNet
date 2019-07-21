@@ -4,14 +4,16 @@ using FamilyNet.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyNet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190721164859_edit base 1.1")]
+    partial class editbase11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,7 +21,7 @@ namespace FamilyNet.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("FamilyNet.Models.Address", b =>
+            modelBuilder.Entity("FamilyNet.Models.Adress", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -44,7 +46,7 @@ namespace FamilyNet.Migrations
 
                     b.HasIndex("City");
 
-                    b.ToTable("Address");
+                    b.ToTable("Adress");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.AuctionLot", b =>
@@ -317,7 +319,7 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.CharityMaker", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Address", "Address")
+                    b.HasOne("FamilyNet.Models.Adress", "Address")
                         .WithOne()
                         .HasForeignKey("FamilyNet.Models.CharityMaker", "AddressID")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -394,7 +396,7 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.Orphanage", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Address", "Adress")
+                    b.HasOne("FamilyNet.Models.Adress", "Adress")
                         .WithOne()
                         .HasForeignKey("FamilyNet.Models.Orphanage", "AdressID")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -435,7 +437,7 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.Volunteer", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Address", "Address")
+                    b.HasOne("FamilyNet.Models.Adress", "Address")
                         .WithOne()
                         .HasForeignKey("FamilyNet.Models.Volunteer", "AddressID")
                         .OnDelete(DeleteBehavior.SetNull);
