@@ -4,7 +4,6 @@ namespace FamilyNet.Models
 {
     public class AuctionLotItem : BaseItem
     {
-        public virtual ICollection<AuctionLotItemType> AuctionLotItemType { get; set; } 
-        
+        public virtual ICollection<AuctionLotItemType> AuctionLotItemTypes { get; set; }
     }
 }

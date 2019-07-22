@@ -28,6 +28,7 @@
     <link href="~/lib/font-awesome/css/all.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/orphanForm.css" />
+    <link rel="stylesheet" asp-href-include="/lib/fontawesome/css/*.css" />
 </head>
 <body>
     <header>
@@ -39,23 +40,56 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphanages" asp-action="Index">Orphanages</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphans" asp-action="Index">Orphans</a>
-                        </li>
+					<ul class="navbar-nav flex-grow-1">
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphanages" asp-action="Index">Orphanages</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphans" asp-action="Index">Orphans</a>
+
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Volunteers" asp-action="Index">Volunteers</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="CharityMakers" asp-action="Index">CharityMakers</a>
+						</li>
+					
+                    @if (User.Identity.IsAuthenticated)
+                         {
+                            <li class="nav-item">
+                                
+                                   <p class="nav-link text-danger font-weight-bold">@User.Identity.Name</p>
+
+                                
+
+                            </li>
+                            <li class="nav-item">
+                                <form  method="post" asp-controller="Account" asp-action="Logout">
+                                    <input style="background-color:lightblue" class="nav-link text-danger alert-dark font-weight-bold" type="submit" value="Logout" />
+                                </form>
+                            </li>
+                         }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Account" asp-action="Login">Sign In</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Account" asp-action="Register">Sign Up</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     </header>
     <div class="container">
         <partial name="_CookieConsentPartial" />
