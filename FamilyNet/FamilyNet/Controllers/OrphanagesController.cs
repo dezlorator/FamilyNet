@@ -87,16 +87,17 @@ namespace FamilyNet.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool rand = DateTime.Now.Ticks % 2 == 0;
                 List<DonationItemType> test = new List<DonationItemType>();
                 test.Add(new DonationItemType()
                 {
-                    Name = "одежда"
+                    Name = rand ? "одежда" : "игрушки"
                 });
                 orphanage.Needs = new List<DonationItem>();
                 orphanage.Needs.Add(new DonationItem()
                 {
-                    Description = "test",
-                    Name = "Sssss",
+                    Description = "тест",
+                    Name = "Имя",
                     Price = 2,
                     DonationItemTypes = test,
                 });
