@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form enctype="multipart/form-data"  asp-action="Create">
+        <form enctype="multipart/form-data" asp-action="Create">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -24,14 +24,14 @@
                 <span asp-validation-for="Adress.Country" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Adress.City" class="control-label"></label>
-                <input asp-for="Adress.City" class="form-control" />
-                <span asp-validation-for="Adress.City" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Adress.Region" class="control-label"></label>
                 <input asp-for="Adress.Region" class="form-control" />
                 <span asp-validation-for="Adress.Region" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Adress.City" class="control-label"></label>
+                <input asp-for="Adress.City" class="form-control" />
+                <span asp-validation-for="Adress.City" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Adress.Street" class="control-label"></label>
@@ -53,18 +53,6 @@
                 <input asp-for="Avatar" type="file" name="file" class="form-control" />
                 <span asp-validation-for="Avatar" class="text-danger"></span>
             </div>
-            @*<div class="form-group">
-                    <div class="col-md-10">
-                        <p>Upload one or more files using this form:</p>
-                        <input type="file" name="files" multiple />
-                    </div>
-                </div>*@
-
-            @*<div class="form-group">
-                <div class="col-md-10">
-                    <input type="submit" value="Create" />
-                </div>
-            </div>*@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -72,26 +60,6 @@
     </div>
 </div>
 
-@*<form method="post" enctype="multipart/form-data" asp-controller="Orphanages" asp-action="Create">
-        <div class="form-group">
-            <div class="col-md-10">
-                <p>Upload one or more files using this form:</p>
-                <input type="file" name="files" multiple />
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Avatar" class="control-label"></label>
-            <input asp-for="Avatar" type="file" class="form-control" />
-            <span asp-validation-for="Avatar" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <div class="col-md-10">
-                <input type="submit" value="Create" />
-            </div>
-
-        </div>
-    </form>*@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>

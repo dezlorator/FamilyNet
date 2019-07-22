@@ -33,7 +33,9 @@ namespace FamilyNet.Controllers
                 if (!string.IsNullOrEmpty(searchModel.NameString))
                     orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
                 if (!string.IsNullOrEmpty(searchModel.AddressString))
-                    orphanages = orphanages.Where(x => x.Adress.Street.Contains(searchModel.AddressString));
+                    orphanages = orphanages.Where(x => x.Adress.Street.Contains(searchModel.AddressString) ||
+                    x.Adress.City.Contains(searchModel.AddressString) || x.Adress.Region.Contains(searchModel.AddressString) 
+                    || x.Adress.Country.Contains(searchModel.AddressString));
                 if (searchModel.RatingNumber > 0)
                     orphanages = orphanages.Where(x => x.Rating == searchModel.RatingNumber);
             }
@@ -48,10 +50,10 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderByDescending(s => s.Name);
                     break;
                 case SortStateOrphanages.AddressAsc:
-                    orphanages = orphanages.OrderBy(s => s.Adress);
+                    orphanages = orphanages.OrderBy(s => s.Adress.Country).ThenBy(s => s.Adress.Region).ThenBy(s => s.Adress.City).ThenBy(s => s.Adress.Street);
                     break;
                 case SortStateOrphanages.AddressDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Adress);
+                    orphanages = orphanages.OrderByDescending(s => s.Adress.Country).ThenByDescending(s => s.Adress.Region).ThenByDescending(s => s.Adress.City).ThenByDescending(s => s.Adress.Street);
                     break;
                 case SortStateOrphanages.RatingAsc:
                     orphanages = orphanages.OrderBy(s => s.Rating);
