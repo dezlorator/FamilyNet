@@ -187,10 +187,9 @@ namespace FamilyNet.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> SearchByTypeHelp(string typeHelp)
+        public async Task<IActionResult> SearchResult(string typeHelp)
         {
-            //var type = orph.Select(orph => orph.Needs.)
-            
+            ViewData["TypeHelp"] = typeHelp;
             var list = _unitOfWorkAsync.Orphanages.Get(
                 orp => orp.Needs.Where(
                     donat => donat.DonationItemTypes.Where(

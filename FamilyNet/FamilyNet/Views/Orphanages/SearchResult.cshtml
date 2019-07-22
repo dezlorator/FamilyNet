@@ -1,16 +1,17 @@
 ﻿@model IEnumerable<FamilyNet.Models.Orphanage>
 @{
-	ViewData["Title"] = "Search";
+	ViewData["Title"] = "Результаты поиска";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @if (Model.Count() == 0)
 {
-	<p class="text-danger">По указаной категории ничего найдено не было</p>
+	<p class="text-danger">По указаной категории  @ViewData["TypeHelp"] ничего найдено не было</p>
 
 }
 else
 {
+<p class="text-center">В указаной категории помощи(@ViewData["TypeHelp"]) нуждаются следующие детские дома</p>
 	<table class="table center">
 		<thead class="thead-light">
 			<tr>
@@ -31,12 +32,6 @@ else
 				</th>
 				<th>
 					@Html.DisplayNameFor(model => model.Avatar)
-				</th>
-				<th>
-					@Html.DisplayNameFor(model => model.Representatives)
-				</th>
-				<th>
-					@Html.DisplayNameFor(model => model.Orphans)
 				</th>
 				<th>
 					Actions
@@ -62,9 +57,6 @@ else
 					</td>
 					<td>
 						@Html.DisplayFor(modelItem => item.Avatar)
-					</td>
-					<td>
-						<a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-outline-info"><i class="fas fa-list-ul"></i></a>
 					</td>
 					<td>
 						<a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info"><i class="fas fa-info-circle"></i></a> |
