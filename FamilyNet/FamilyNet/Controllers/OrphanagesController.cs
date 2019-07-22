@@ -87,6 +87,19 @@ namespace FamilyNet.Controllers
         {
             if (ModelState.IsValid)
             {
+                List<DonationItemType> test = new List<DonationItemType>();
+                test.Add(new DonationItemType()
+                {
+                    Name = "одежда"
+                });
+                orphanage.Needs = new List<DonationItem>();
+                orphanage.Needs.Add(new DonationItem()
+                {
+                    Description = "test",
+                    Name = "Sssss",
+                    Price = 2,
+                    DonationItemTypes = test,
+                });
                 await _unitOfWorkAsync.Orphanages.Create(orphanage);
                 await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -168,5 +181,21 @@ namespace FamilyNet.Controllers
 
         private bool OrphanageExists(int id) =>
             _unitOfWorkAsync.Orphanages.GetById(id) != null;
+
+        public async Task<IActionResult> SearchByTypeHelp()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> SearchByTypeHelp(string typeHelp)
+        {
+            //var type = orph.Select(orph => orph.Needs.)
+            
+            var list = _unitOfWorkAsync.Orphanages.Get(
+                orp => orp.Needs.Where(
+                    donat => donat.DonationItemTypes.Where(
+                        donatitem => donatitem.Name == typeHelp).ToList().Count > 0).ToList().Count > 0);
+            return View("SearchResult", list);
+        }
     }
 }

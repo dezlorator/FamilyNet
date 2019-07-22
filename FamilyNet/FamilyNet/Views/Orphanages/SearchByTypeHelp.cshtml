@@ -1,0 +1,10 @@
+﻿@{
+	ViewData["Title"] = "Search by type of help";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<form asp-action="SearchByTypeHelp" >
+	<input type="text" class="input-group-text" name="typeHelp" />
+	<div class="form-group">
+		<input type="submit" value="Find" class="btn btn-primary" />
+	</div>
+</form>

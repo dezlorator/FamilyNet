@@ -1,0 +1,67 @@
+﻿@model IEnumerable<FamilyNet.Models.Orphanage>
+@{
+	ViewData["Title"] = "Search";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<table class="table center">
+	<thead class="thead-light">
+		<tr>
+			<th>
+				<a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+					@Html.DisplayNameFor(model => model.Name)
+				</a>
+			</th>
+			<th>
+				<a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+					@Html.DisplayNameFor(model => model.Adress)
+				</a>
+			</th>
+			<th>
+				<a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+					@Html.DisplayNameFor(model => model.Rating)
+				</a>
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Avatar)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Representatives)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Orphans)
+			</th>
+			<th>
+				Actions
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Name)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Adress.Country),
+					@Html.DisplayFor(modelItem => item.Adress.Region),
+					@Html.DisplayFor(modelItem => item.Adress.City),
+					@Html.DisplayFor(modelItem => item.Adress.Street),
+					@Html.DisplayFor(modelItem => item.Adress.House)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Rating)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Avatar)
+				</td>
+				<td>
+					<a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-outline-info"><i class="fas fa-list-ul"></i></a>
+				</td>
+				<td>
+					<a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info"><i class="fas fa-info-circle"></i></a> |
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
