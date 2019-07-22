@@ -2,9 +2,18 @@
 	ViewData["Title"] = "Search by type of help";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<form asp-action="SearchByTypeHelp" >
-	<input type="text" class="input-group-text" name="typeHelp" />
-	<div class="form-group">
-		<input type="submit" value="Find" class="btn btn-primary" />
+	<div class="container h-100">
+		<div class="row h-100 justify-content-center align-items-center">
+			<form asp-action="SearchByTypeHelp" class="col-md-12">
+
+				<input type="text" class="input-group-text col-md-12" name="typeHelp" />
+				<div class="form-group center-block">
+					<div class="col-md-12 center-block">
+						<input type="submit" value="Find" class="btn btn-primary center-block" />
+					</div>
+				</div>
+
+			</form>
+		</div>
 	</div>
-</form>
+
