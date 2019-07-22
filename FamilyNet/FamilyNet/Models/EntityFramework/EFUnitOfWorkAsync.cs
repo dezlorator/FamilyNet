@@ -1,4 +1,7 @@
-﻿using FamilyNet.Models.Interfaces;
+﻿using FamilyNet.Infrastructure;
+using FamilyNet.Models.Identity;
+using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +19,7 @@ namespace FamilyNet.Models.EntityFramework
 
         #region Constructors
 
-        public EFUnitOfWorkAsync(ApplicationDbContext cont)
+        public EFUnitOfWorkAsync(ApplicationDbContext cont, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid, IPasswordHasher<ApplicationUser> passwordHash, UserManager<ApplicationUser> usrMgr)
         {
             _context = cont;
             CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
@@ -25,6 +28,11 @@ namespace FamilyNet.Models.EntityFramework
             Orphans = new EFRepositoryAsync<Orphan>(cont);
             Representatives = new EFRepositoryAsync<Representative>(cont);
             Volunteers = new EFRepositoryAsync<Volunteer>(cont);
+            PasswordHasher = passwordHash;
+            UserValidator = userValid;
+            PasswordValidator = passValid;
+            PhoneValidator = new FamilyNetPhoneValidator();
+            UserManager = usrMgr;
         }
 
 
@@ -43,6 +51,16 @@ namespace FamilyNet.Models.EntityFramework
         public IAsyncRepository<Donation> Donations { get; set; }
 
         public IAsyncRepository<Orphan> Orphans { get; set; }
+
+        public IUserValidator<ApplicationUser> UserValidator { get; set; }
+
+        public IPasswordValidator<ApplicationUser> PasswordValidator { get; set; }
+
+        public IPasswordHasher<ApplicationUser> PasswordHasher { get; set; }
+
+        public FamilyNetPhoneValidator PhoneValidator { get; set; }
+
+        public UserManager<ApplicationUser> UserManager { get; set; }
 
         public void SaveChangesAsync()
         {
