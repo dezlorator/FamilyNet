@@ -19,8 +19,10 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Index(int id)
         {
             var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
+            if (id == 0)
+                return View(list);
 
-            if (id >=0)
+            if (id >0)
                 list = list.Where(x => x.Orphanage.ID.Equals(id)).ToList();
 
             return View(list);

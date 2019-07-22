@@ -48,13 +48,16 @@
 <form asp-action="Filter">
     <table class="table">
         <th>
-            @Html.Label("Name: ")  @Html.TextBox("NameString", "", new { @class = "form-control" })
+            @Html.Label("Name: ") 
+            @Html.TextBox("NameString", "", new { @class = "form-control" })
         </th>
         <th>
-            @Html.Label("Street: ") @Html.TextBox("AddressString", "", new { @class = "form-control" })
+            @Html.Label("Street: ") 
+            @Html.TextBox("AddressString", "", new { @class = "form-control" })
         </th>
         <th width="9%">
-            @Html.Label("Rating: ")  @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
+            @Html.Label("Rating: ")  
+            @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
         </th>
         <th></th>
         <th></th>
@@ -89,12 +92,12 @@
                 </a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.AddressSort">
                     @Html.DisplayNameFor(model => model.Adress)
                 </a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.RatingSort">
                     @Html.DisplayNameFor(model => model.Rating)
                 </a>
             </th>
@@ -151,7 +154,8 @@
                     @Html.DisplayFor(modelItem => item.Rating)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Avatar)
+                    <img class="img-responsive" src="@Url.Content("~/avatars/" + @item.Avatar)" alt="" width="50" height="50">
+                    @*@Html.DisplayFor(modelItem => item.Avatar)*@
                 </td>
                 <td align="center">
                     @*@Html.DisplayFor(modelItem => item.Representatives.Count)*@
@@ -168,12 +172,18 @@
 
                     @*<a asp-action="Create" asp-route-id="@item.ID" class="btn btn-sm btn-outline-success"><i class="fas fa-user-plus"></i></a>
                         <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-outline-danger"><i class="fas fa-user-times"></i></a>*@
-                    <a asp-action="Index" asp-controller="Orphans" asp-route-id="@item.ID" class="btn btn-sm btn-outline-primary">@Html.DisplayFor(modelItem => item.OrphansIds.Count)</a>
+                    <a asp-action="Index" asp-controller="Orphans" asp-route-id="@item.ID"
+                       class="btn btn-sm btn-outline-primary">
+                        @Html.DisplayFor(modelItem => item.Orphans.Count) <i class="fas fa-child"></i>
+                    </a>
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a> |
-                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info"><i class="fas fa-info-circle"></i></a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger"><i class="fas fa-minus-circle"></i></a>
+                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning">
+                    <i class="fas fa-edit"></i></a> |
+                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">
+                    <i class="fas fa-info-circle"></i></a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger">
+                    <i class="fas fa-minus-circle"></i></a>
                 </td>
             </tr>
         }

@@ -9,13 +9,19 @@ using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using FamilyNet.Models.Filters;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FamilyNet.Controllers
 {
     public class OrphanagesController : BaseController
     {
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
-        { }
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment) : base(unitOfWork)
+        {
+            _hostingEnvironment = environment;
+        }
 
         // GET: Orphanages
         public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
@@ -81,8 +87,19 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage)
+        public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
         {
+            if (file != null && file.Length > 0)
+            {
+                var fileName = Path.GetRandomFileName();
+                fileName = Path.ChangeExtension(fileName, ".jpg");
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\avatars", fileName);
+                using (var fileSteam = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileSteam);
+                }
+                orphanage.Avatar = fileName;
+            }
             if (ModelState.IsValid)
             {
                 await _unitOfWorkAsync.Orphanages.Create(orphanage);
@@ -92,7 +109,7 @@ namespace FamilyNet.Controllers
 
             return View(orphanage);
         }
-
+        
         // GET: Orphanages/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -110,10 +127,22 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Adress,Rating,Avatar")] Orphanage orphanage)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
         {
             if (id != orphanage.ID)
                 return NotFound();
+
+            if (file != null && file.Length > 0)
+            {
+                var fileName = Path.GetRandomFileName();
+                fileName = Path.ChangeExtension(fileName, ".jpg");
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\avatars", fileName);
+                using (var fileSteam = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileSteam);
+                }
+                orphanage.Avatar = fileName;
+            }
 
             if (ModelState.IsValid)
             {
