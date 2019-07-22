@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190713223817_AddDataAnotation")]
-    partial class AddDataAnotation
+    [Migration("20190720190025_FamilyNetEFCore")]
+    partial class FamilyNetEFCore
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,6 +43,8 @@ namespace FamilyNet.Migrations
                         .IsRequired();
 
                     b.HasKey("ID");
+
+                    b.HasIndex("City");
 
                     b.ToTable("Adress");
                 });
@@ -129,39 +131,21 @@ namespace FamilyNet.Migrations
 
                     b.Property<int?>("AddressID");
 
+                    b.Property<string>("Avatar");
+
                     b.Property<DateTime>("Birthday");
 
-                    b.Property<int?>("ContactsID");
-
-                    b.Property<int>("FullNameID");
+                    b.Property<int>("EmailID");
 
                     b.Property<float>("Rating");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AddressID");
-
-                    b.HasIndex("ContactsID");
-
-                    b.HasIndex("FullNameID");
+                    b.HasIndex("AddressID")
+                        .IsUnique()
+                        .HasFilter("[AddressID] IS NOT NULL");
 
                     b.ToTable("CharityMakers");
-                });
-
-            modelBuilder.Entity("FamilyNet.Models.Contacts", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Email")
-                        .IsRequired();
-
-                    b.Property<string>("Phone");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Donation", b =>
@@ -203,49 +187,28 @@ namespace FamilyNet.Migrations
                     b.ToTable("DonationItem");
                 });
 
-            modelBuilder.Entity("FamilyNet.Models.FullName", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("Patronymic");
-
-                    b.Property<string>("Surname");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("FullName");
-                });
-
             modelBuilder.Entity("FamilyNet.Models.Orphan", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AddressID");
+                    b.Property<string>("Avatar");
 
                     b.Property<DateTime>("Birthday");
 
-                    b.Property<int?>("ContactsID");
+                    b.Property<bool>("ChildInOrphanage");
 
-                    b.Property<int>("FullNameID");
+                    b.Property<bool>("Confirmation");
 
-                    b.Property<int>("OrphanageID");
+                    b.Property<int>("EmailID");
+
+                    b.Property<int?>("OrphanageID")
+                        .IsRequired();
 
                     b.Property<float>("Rating");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("AddressID");
-
-                    b.HasIndex("ContactsID");
-
-                    b.HasIndex("FullNameID");
 
                     b.HasIndex("OrphanageID");
 
@@ -262,13 +225,16 @@ namespace FamilyNet.Migrations
 
                     b.Property<string>("Avatar");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<float>("Rating");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AdressID");
+                    b.HasIndex("AdressID")
+                        .IsUnique()
+                        .HasFilter("[AdressID] IS NOT NULL");
 
                     b.ToTable("Orphanages");
                 });
@@ -279,25 +245,17 @@ namespace FamilyNet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AddressID");
+                    b.Property<string>("Avatar");
 
                     b.Property<DateTime>("Birthday");
 
-                    b.Property<int?>("ContactsID");
-
-                    b.Property<int>("FullNameID");
+                    b.Property<int>("EmailID");
 
                     b.Property<int>("OrphanageID");
 
                     b.Property<float>("Rating");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("AddressID");
-
-                    b.HasIndex("ContactsID");
-
-                    b.HasIndex("FullNameID");
 
                     b.HasIndex("OrphanageID");
 
@@ -312,21 +270,19 @@ namespace FamilyNet.Migrations
 
                     b.Property<int?>("AddressID");
 
+                    b.Property<string>("Avatar");
+
                     b.Property<DateTime>("Birthday");
 
-                    b.Property<int?>("ContactsID");
-
-                    b.Property<int>("FullNameID");
+                    b.Property<int>("EmailID");
 
                     b.Property<float>("Rating");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AddressID");
-
-                    b.HasIndex("ContactsID");
-
-                    b.HasIndex("FullNameID");
+                    b.HasIndex("AddressID")
+                        .IsUnique()
+                        .HasFilter("[AddressID] IS NOT NULL");
 
                     b.ToTable("Volunteers");
                 });
@@ -335,9 +291,9 @@ namespace FamilyNet.Migrations
                 {
                     b.HasBaseType("FamilyNet.Models.BaseItemType");
 
-                    b.Property<int?>("AuctionLotItemID");
+                    b.Property<int?>("ItemID");
 
-                    b.HasIndex("AuctionLotItemID");
+                    b.HasIndex("ItemID");
 
                     b.HasDiscriminator().HasValue("AuctionLotItemType");
                 });
@@ -346,9 +302,10 @@ namespace FamilyNet.Migrations
                 {
                     b.HasBaseType("FamilyNet.Models.BaseItemType");
 
-                    b.Property<int?>("DonationItemID");
+                    b.Property<int?>("ItemID")
+                        .HasColumnName("DonationItemType_ItemID");
 
-                    b.HasIndex("DonationItemID");
+                    b.HasIndex("ItemID");
 
                     b.HasDiscriminator().HasValue("DonationItemType");
                 });
@@ -359,7 +316,7 @@ namespace FamilyNet.Migrations
                         .WithMany()
                         .HasForeignKey("AuctionLotItemID");
 
-                    b.HasOne("FamilyNet.Models.Orphan")
+                    b.HasOne("FamilyNet.Models.Orphan", "Orphan")
                         .WithMany("AuctionLots")
                         .HasForeignKey("OrphanID");
                 });
@@ -386,17 +343,34 @@ namespace FamilyNet.Migrations
             modelBuilder.Entity("FamilyNet.Models.CharityMaker", b =>
                 {
                     b.HasOne("FamilyNet.Models.Adress", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressID");
+                        .WithOne()
+                        .HasForeignKey("FamilyNet.Models.CharityMaker", "AddressID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("FamilyNet.Models.Contacts", "Contacts")
-                        .WithMany()
-                        .HasForeignKey("ContactsID");
+                    b.OwnsOne("FamilyNet.Models.FullName", "FullName", b1 =>
+                        {
+                            b1.Property<int>("CharityMakerID")
+                                .ValueGeneratedOnAdd()
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.HasOne("FamilyNet.Models.FullName", "FullName")
-                        .WithMany()
-                        .HasForeignKey("FullNameID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                            b1.Property<string>("Name")
+                                .IsRequired();
+
+                            b1.Property<string>("Patronymic")
+                                .IsRequired();
+
+                            b1.Property<string>("Surname")
+                                .IsRequired();
+
+                            b1.HasKey("CharityMakerID");
+
+                            b1.ToTable("CharityMakers");
+
+                            b1.HasOne("FamilyNet.Models.CharityMaker")
+                                .WithOne("FullName")
+                                .HasForeignKey("FamilyNet.Models.FullName", "CharityMakerID")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Donation", b =>
@@ -412,81 +386,123 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.Orphan", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Adress", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressID");
-
-                    b.HasOne("FamilyNet.Models.Contacts", "Contacts")
-                        .WithMany()
-                        .HasForeignKey("ContactsID");
-
-                    b.HasOne("FamilyNet.Models.FullName", "FullName")
-                        .WithMany()
-                        .HasForeignKey("FullNameID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("FamilyNet.Models.Orphanage", "Orphanage")
-                        .WithMany("OrphansIds")
+                        .WithMany("Orphans")
                         .HasForeignKey("OrphanageID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.OwnsOne("FamilyNet.Models.FullName", "FullName", b1 =>
+                        {
+                            b1.Property<int>("OrphanID")
+                                .ValueGeneratedOnAdd()
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("Name")
+                                .IsRequired();
+
+                            b1.Property<string>("Patronymic")
+                                .IsRequired();
+
+                            b1.Property<string>("Surname")
+                                .IsRequired();
+
+                            b1.HasKey("OrphanID");
+
+                            b1.ToTable("Orphans");
+
+                            b1.HasOne("FamilyNet.Models.Orphan")
+                                .WithOne("FullName")
+                                .HasForeignKey("FamilyNet.Models.FullName", "OrphanID")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Orphanage", b =>
                 {
                     b.HasOne("FamilyNet.Models.Adress", "Adress")
-                        .WithMany()
-                        .HasForeignKey("AdressID");
+                        .WithOne()
+                        .HasForeignKey("FamilyNet.Models.Orphanage", "AdressID")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Representative", b =>
                 {
-                    b.HasOne("FamilyNet.Models.Adress", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressID");
-
-                    b.HasOne("FamilyNet.Models.Contacts", "Contacts")
-                        .WithMany()
-                        .HasForeignKey("ContactsID");
-
-                    b.HasOne("FamilyNet.Models.FullName", "FullName")
-                        .WithMany()
-                        .HasForeignKey("FullNameID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("FamilyNet.Models.Orphanage", "Orphanage")
                         .WithMany("Representatives")
                         .HasForeignKey("OrphanageID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.OwnsOne("FamilyNet.Models.FullName", "FullName", b1 =>
+                        {
+                            b1.Property<int>("RepresentativeID")
+                                .ValueGeneratedOnAdd()
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("Name")
+                                .IsRequired();
+
+                            b1.Property<string>("Patronymic")
+                                .IsRequired();
+
+                            b1.Property<string>("Surname")
+                                .IsRequired();
+
+                            b1.HasKey("RepresentativeID");
+
+                            b1.ToTable("Representatives");
+
+                            b1.HasOne("FamilyNet.Models.Representative")
+                                .WithOne("FullName")
+                                .HasForeignKey("FamilyNet.Models.FullName", "RepresentativeID")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Volunteer", b =>
                 {
                     b.HasOne("FamilyNet.Models.Adress", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressID");
+                        .WithOne()
+                        .HasForeignKey("FamilyNet.Models.Volunteer", "AddressID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("FamilyNet.Models.Contacts", "Contacts")
-                        .WithMany()
-                        .HasForeignKey("ContactsID");
+                    b.OwnsOne("FamilyNet.Models.FullName", "FullName", b1 =>
+                        {
+                            b1.Property<int>("VolunteerID")
+                                .ValueGeneratedOnAdd()
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.HasOne("FamilyNet.Models.FullName", "FullName")
-                        .WithMany()
-                        .HasForeignKey("FullNameID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                            b1.Property<string>("Name")
+                                .IsRequired();
+
+                            b1.Property<string>("Patronymic")
+                                .IsRequired();
+
+                            b1.Property<string>("Surname")
+                                .IsRequired();
+
+                            b1.HasKey("VolunteerID");
+
+                            b1.ToTable("Volunteers");
+
+                            b1.HasOne("FamilyNet.Models.Volunteer")
+                                .WithOne("FullName")
+                                .HasForeignKey("FamilyNet.Models.FullName", "VolunteerID")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
                 });
 
             modelBuilder.Entity("FamilyNet.Models.AuctionLotItemType", b =>
                 {
-                    b.HasOne("FamilyNet.Models.AuctionLotItem")
-                        .WithMany("AuctionLotItemType")
-                        .HasForeignKey("AuctionLotItemID");
+                    b.HasOne("FamilyNet.Models.AuctionLotItem", "Item")
+                        .WithMany("AuctionLotItemTypes")
+                        .HasForeignKey("ItemID");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.DonationItemType", b =>
                 {
-                    b.HasOne("FamilyNet.Models.DonationItem")
-                        .WithMany("DonationItemType")
-                        .HasForeignKey("DonationItemID");
+                    b.HasOne("FamilyNet.Models.DonationItem", "Item")
+                        .WithMany("DonationItemTypes")
+                        .HasForeignKey("ItemID");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,7 +6,7 @@ namespace FamilyNet.Models.Filters
     public class OrphanagesViewModel
     {
         public IEnumerable<Orphanage> Orphanages { get; set; }
-        public IEnumerable<Adress> Adresses { get; set; }
+        public IEnumerable<Address> Adresses { get; set; }
         public string Name { get; set; }
     }
 }

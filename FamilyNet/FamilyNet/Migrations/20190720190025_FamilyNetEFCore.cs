@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FamilyNet.Migrations
 {
-    public partial class Init : Migration
+    public partial class FamilyNetEFCore : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,20 +41,6 @@ namespace FamilyNet.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Contacts",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Email = table.Column<string>(nullable: false),
-                    Phone = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Contacts", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DonationItem",
                 columns: table => new
                 {
@@ -70,18 +56,29 @@ namespace FamilyNet.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FullName",
+                name: "CharityMakers",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Surname = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: false),
-                    Patronymic = table.Column<string>(nullable: true)
+                    FullName_Name = table.Column<string>(nullable: false),
+                    FullName_Surname = table.Column<string>(nullable: false),
+                    FullName_Patronymic = table.Column<string>(nullable: false),
+                    Birthday = table.Column<DateTime>(nullable: false),
+                    Rating = table.Column<float>(nullable: false),
+                    Avatar = table.Column<string>(nullable: true),
+                    EmailID = table.Column<int>(nullable: false),
+                    AddressID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FullName", x => x.ID);
+                    table.PrimaryKey("PK_CharityMakers", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_CharityMakers_Adress_AddressID",
+                        column: x => x.AddressID,
+                        principalTable: "Adress",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,7 +87,7 @@ namespace FamilyNet.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     AdressID = table.Column<int>(nullable: true),
                     Rating = table.Column<float>(nullable: false),
                     Avatar = table.Column<string>(nullable: true)
@@ -103,7 +100,33 @@ namespace FamilyNet.Migrations
                         column: x => x.AdressID,
                         principalTable: "Adress",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Volunteers",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    FullName_Name = table.Column<string>(nullable: false),
+                    FullName_Surname = table.Column<string>(nullable: false),
+                    FullName_Patronymic = table.Column<string>(nullable: false),
+                    Birthday = table.Column<DateTime>(nullable: false),
+                    Rating = table.Column<float>(nullable: false),
+                    Avatar = table.Column<string>(nullable: true),
+                    EmailID = table.Column<int>(nullable: false),
+                    AddressID = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Volunteers", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Volunteers_Adress_AddressID",
+                        column: x => x.AddressID,
+                        principalTable: "Adress",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -118,15 +141,15 @@ namespace FamilyNet.Migrations
                     Discriminator = table.Column<string>(nullable: false),
                     DonationItemTypeID = table.Column<int>(nullable: true),
                     DonationItemTypeID1 = table.Column<int>(nullable: true),
-                    AuctionLotItemID = table.Column<int>(nullable: true),
-                    DonationItemID = table.Column<int>(nullable: true)
+                    ItemID = table.Column<int>(nullable: true),
+                    DonationItemType_ItemID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BaseItemType", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_BaseItemType_AuctionLotItem_AuctionLotItemID",
-                        column: x => x.AuctionLotItemID,
+                        name: "FK_BaseItemType_AuctionLotItem_ItemID",
+                        column: x => x.ItemID,
                         principalTable: "AuctionLotItem",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
@@ -155,165 +178,11 @@ namespace FamilyNet.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_BaseItemType_DonationItem_DonationItemID",
-                        column: x => x.DonationItemID,
+                        name: "FK_BaseItemType_DonationItem_DonationItemType_ItemID",
+                        column: x => x.DonationItemType_ItemID,
                         principalTable: "DonationItem",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CharityMakers",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    FullNameID = table.Column<int>(nullable: false),
-                    Birthday = table.Column<DateTime>(nullable: false),
-                    AddressID = table.Column<int>(nullable: true),
-                    ContactsID = table.Column<int>(nullable: true),
-                    Rating = table.Column<float>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CharityMakers", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_CharityMakers_Adress_AddressID",
-                        column: x => x.AddressID,
-                        principalTable: "Adress",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CharityMakers_Contacts_ContactsID",
-                        column: x => x.ContactsID,
-                        principalTable: "Contacts",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CharityMakers_FullName_FullNameID",
-                        column: x => x.FullNameID,
-                        principalTable: "FullName",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Volunteers",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    FullNameID = table.Column<int>(nullable: false),
-                    Birthday = table.Column<DateTime>(nullable: false),
-                    AddressID = table.Column<int>(nullable: true),
-                    ContactsID = table.Column<int>(nullable: true),
-                    Rating = table.Column<float>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Volunteers", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Volunteers_Adress_AddressID",
-                        column: x => x.AddressID,
-                        principalTable: "Adress",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Volunteers_Contacts_ContactsID",
-                        column: x => x.ContactsID,
-                        principalTable: "Contacts",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Volunteers_FullName_FullNameID",
-                        column: x => x.FullNameID,
-                        principalTable: "FullName",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Orphans",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    FullNameID = table.Column<int>(nullable: false),
-                    Birthday = table.Column<DateTime>(nullable: false),
-                    AddressID = table.Column<int>(nullable: true),
-                    ContactsID = table.Column<int>(nullable: true),
-                    Rating = table.Column<float>(nullable: false),
-                    OrphanageID = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orphans", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Orphans_Adress_AddressID",
-                        column: x => x.AddressID,
-                        principalTable: "Adress",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Orphans_Contacts_ContactsID",
-                        column: x => x.ContactsID,
-                        principalTable: "Contacts",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Orphans_FullName_FullNameID",
-                        column: x => x.FullNameID,
-                        principalTable: "FullName",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orphans_Orphanages_OrphanageID",
-                        column: x => x.OrphanageID,
-                        principalTable: "Orphanages",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Representatives",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    FullNameID = table.Column<int>(nullable: false),
-                    Birthday = table.Column<DateTime>(nullable: false),
-                    AddressID = table.Column<int>(nullable: true),
-                    ContactsID = table.Column<int>(nullable: true),
-                    Rating = table.Column<float>(nullable: false),
-                    OrphanageID = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Representatives", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Representatives_Adress_AddressID",
-                        column: x => x.AddressID,
-                        principalTable: "Adress",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Representatives_Contacts_ContactsID",
-                        column: x => x.ContactsID,
-                        principalTable: "Contacts",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Representatives_FullName_FullNameID",
-                        column: x => x.FullNameID,
-                        principalTable: "FullName",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Representatives_Orphanages_OrphanageID",
-                        column: x => x.OrphanageID,
-                        principalTable: "Orphanages",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -344,13 +213,67 @@ namespace FamilyNet.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Orphans",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    FullName_Name = table.Column<string>(nullable: false),
+                    FullName_Surname = table.Column<string>(nullable: false),
+                    FullName_Patronymic = table.Column<string>(nullable: false),
+                    Birthday = table.Column<DateTime>(nullable: false),
+                    Rating = table.Column<float>(nullable: false),
+                    Avatar = table.Column<string>(nullable: true),
+                    EmailID = table.Column<int>(nullable: false),
+                    OrphanageID = table.Column<int>(nullable: false),
+                    Confirmation = table.Column<bool>(nullable: false),
+                    ChildInOrphanage = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orphans", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Orphans_Orphanages_OrphanageID",
+                        column: x => x.OrphanageID,
+                        principalTable: "Orphanages",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Representatives",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    FullName_Name = table.Column<string>(nullable: false),
+                    FullName_Surname = table.Column<string>(nullable: false),
+                    FullName_Patronymic = table.Column<string>(nullable: false),
+                    Birthday = table.Column<DateTime>(nullable: false),
+                    Rating = table.Column<float>(nullable: false),
+                    Avatar = table.Column<string>(nullable: true),
+                    EmailID = table.Column<int>(nullable: false),
+                    OrphanageID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Representatives", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Representatives_Orphanages_OrphanageID",
+                        column: x => x.OrphanageID,
+                        principalTable: "Orphanages",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AuctionLot",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    AuctionLotItemID = table.Column<int>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
+                    AuctionLotItemID = table.Column<int>(nullable: true),
                     OrphanID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -371,6 +294,11 @@ namespace FamilyNet.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Adress_City",
+                table: "Adress",
+                column: "City");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AuctionLot_AuctionLotItemID",
                 table: "AuctionLot",
                 column: "AuctionLotItemID");
@@ -381,9 +309,9 @@ namespace FamilyNet.Migrations
                 column: "OrphanID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseItemType_AuctionLotItemID",
+                name: "IX_BaseItemType_ItemID",
                 table: "BaseItemType",
-                column: "AuctionLotItemID");
+                column: "ItemID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BaseItemType_AuctionLotItemTypeID",
@@ -406,24 +334,16 @@ namespace FamilyNet.Migrations
                 column: "DonationItemTypeID1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseItemType_DonationItemID",
+                name: "IX_BaseItemType_DonationItemType_ItemID",
                 table: "BaseItemType",
-                column: "DonationItemID");
+                column: "DonationItemType_ItemID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CharityMakers_AddressID",
                 table: "CharityMakers",
-                column: "AddressID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CharityMakers_ContactsID",
-                table: "CharityMakers",
-                column: "ContactsID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CharityMakers_FullNameID",
-                table: "CharityMakers",
-                column: "FullNameID");
+                column: "AddressID",
+                unique: true,
+                filter: "[AddressID] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Donations_CharityMakerID",
@@ -438,42 +358,14 @@ namespace FamilyNet.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Orphanages_AdressID",
                 table: "Orphanages",
-                column: "AdressID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orphans_AddressID",
-                table: "Orphans",
-                column: "AddressID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orphans_ContactsID",
-                table: "Orphans",
-                column: "ContactsID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orphans_FullNameID",
-                table: "Orphans",
-                column: "FullNameID");
+                column: "AdressID",
+                unique: true,
+                filter: "[AdressID] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orphans_OrphanageID",
                 table: "Orphans",
                 column: "OrphanageID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Representatives_AddressID",
-                table: "Representatives",
-                column: "AddressID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Representatives_ContactsID",
-                table: "Representatives",
-                column: "ContactsID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Representatives_FullNameID",
-                table: "Representatives",
-                column: "FullNameID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Representatives_OrphanageID",
@@ -483,17 +375,9 @@ namespace FamilyNet.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Volunteers_AddressID",
                 table: "Volunteers",
-                column: "AddressID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Volunteers_ContactsID",
-                table: "Volunteers",
-                column: "ContactsID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Volunteers_FullNameID",
-                table: "Volunteers",
-                column: "FullNameID");
+                column: "AddressID",
+                unique: true,
+                filter: "[AddressID] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -527,12 +411,6 @@ namespace FamilyNet.Migrations
 
             migrationBuilder.DropTable(
                 name: "Orphanages");
-
-            migrationBuilder.DropTable(
-                name: "Contacts");
-
-            migrationBuilder.DropTable(
-                name: "FullName");
 
             migrationBuilder.DropTable(
                 name: "Adress");

@@ -14,15 +14,19 @@ namespace FamilyNet.Models
         public int ID { get; set; }
         //[Required(ErrorMessage = "Please enter a name")]
         public string Name { get; set; }
-        public int AdressID { get; set; }
+
+        public int? AdressID { get; set; }
+
         [Display(Name = "Address")]
-        public virtual Adress Adress { get; set; }
+
+        public virtual Address Adress { get; set; }
         public float Rating { get; set; }
         public string Avatar { get; set; }
 
         public virtual ICollection<Representative> Representatives { get; set; }
-        [Display(Name = "Orphans")]
-        public virtual ICollection<Orphan> OrphansIds { get; set; }
+
+        public virtual ICollection<Orphan> Orphans { get; set; }
+
 
         public static void CopyState(Orphanage receiver, Orphanage sender)
         {
