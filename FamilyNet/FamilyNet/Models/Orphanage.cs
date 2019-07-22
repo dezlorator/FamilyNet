@@ -27,6 +27,8 @@ namespace FamilyNet.Models
 
         public virtual ICollection<Orphan> Orphans { get; set; }
 
+        public virtual ICollection<DonationItem> Needs { get; set; }// TODO: normal name for property
+
 
         public static void CopyState(Orphanage receiver, Orphanage sender)
         {

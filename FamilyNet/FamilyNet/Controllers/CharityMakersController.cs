@@ -149,9 +149,6 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-
-
         private bool CharityMakerExists(int id)
         {
             return _unitOfWorkAsync.CharityMakers.GetById(id) != null;
