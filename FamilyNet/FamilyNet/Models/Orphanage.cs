@@ -12,21 +12,24 @@ namespace FamilyNet.Models
     public class Orphanage : IEntity
     {
         public int ID { get; set; }
-        //[Required(ErrorMessage = "Please enter a name")]
+        [Required(ErrorMessage = "Пожалуйста введите название")]
         [Display(Name = "Название")]
         public string Name { get; set; }
         public int? AdressID { get; set; }
-
+                
         [Display(Name = "Адрес")]
         public virtual Address Adress { get; set; }
+
+        [Required(ErrorMessage = "Пожалуйста введите Рейтинг")]
         [Display(Name = "Рейтинг")]
         public float Rating { get; set; }
+
         [Display(Name = "Фото")]
         public string Avatar { get; set; }
 
         [Display(Name = "Представители")]
         public virtual ICollection<Representative> Representatives { get; set; }
-
+                
         [Display(Name = "Дети")]
         public virtual ICollection<Orphan> Orphans { get; set; }
 

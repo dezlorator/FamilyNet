@@ -20,8 +20,7 @@ namespace FamilyNet.Controllers
        
         public async Task<IActionResult> Index()
         {
-            //return View();
-            return Redirect("/Orphanages/Index");
+            return View();
         }
         public IActionResult Privacy()
         {

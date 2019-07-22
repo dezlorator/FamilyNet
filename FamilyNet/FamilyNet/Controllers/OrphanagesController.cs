@@ -85,8 +85,6 @@ namespace FamilyNet.Controllers
         public IActionResult Create() => View();
 
         // POST: Orphanages/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
@@ -125,8 +123,6 @@ namespace FamilyNet.Controllers
         }
 
         // POST: Orphanages/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
@@ -197,19 +193,5 @@ namespace FamilyNet.Controllers
 
         private bool OrphanageExists(int id) =>
             _unitOfWorkAsync.Orphanages.GetById(id) != null;
-
-        //public IQueryable<Orphanage> GetSearchProducts(OrphanageSearchModel searchModel, IQueryable<Orphanage> result)
-        //{
-        //    if (searchModel != null)
-        //    {
-        //        if (!string.IsNullOrEmpty(searchModel.Name))
-        //            result = result.Where(x => x.Name.Contains(searchModel.Name));
-        //        if (!string.IsNullOrEmpty(searchModel.Adresses))
-        //            result = result.Where(x => x.Name.Contains(searchModel.Adresses));
-        //        //if (searchModel.Rating >= 0)
-        //        //    result = result.Where(x => x.Rating == searchModel.Rating);
-        //    }
-        //    return result;
-        //}
     }
 }
