@@ -219,7 +219,7 @@ namespace FamilyNet.Controllers
             var list = _unitOfWorkAsync.Orphanages.Get(
                 orp => orp.Needs.Where(
                     donat => donat.DonationItemTypes.Where(
-                        donatitem => donatitem.Name == typeHelp).ToList().Count > 0).ToList().Count > 0);
+                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).ToList().Count > 0).ToList().Count > 0);
             return View("SearchResult", list);
         }
     }
