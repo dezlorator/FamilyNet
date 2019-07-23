@@ -5,14 +5,14 @@ namespace FamilyNet.Models.ViewModels
     public class LoginViewModel
     {
         [Required]
-        //[Display(Name = "Email")]
-        [UIHint("email")]
+        [Display(Name = "Email")]
+        //[UIHint("email")]
         public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        //[Display(Name = "Пароль")]
-        [UIHint("password")]
+        [Display(Name = "Пароль")]
+        //[UIHint("password")]
         public string Password { get; set; }
 
         [Display(Name = "Запомнить?")]

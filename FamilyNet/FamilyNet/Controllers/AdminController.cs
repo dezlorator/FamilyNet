@@ -5,23 +5,21 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Infrastructure;
+using FamilyNet.Models.Interfaces;
 
 namespace FamilyNet.Controllers
 {
-    public class AdminController : Controller
+    [Authorize(Roles = "Admin")]
+    public class AdminController : BaseController
     {
-        private UserManager<ApplicationUser> _userManager;
-        private IUserValidator<ApplicationUser> _userValidator;
-        private IPasswordValidator<ApplicationUser> _passwordValidator;
-        private IPasswordHasher<ApplicationUser> _passwordHasher;
-        public AdminController(UserManager<ApplicationUser> usrMgr, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid, IPasswordHasher<ApplicationUser> passwordHash)
+                
+        public AdminController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
         {
-            _userManager = usrMgr;
-            _userValidator = userValid;
-            _passwordValidator = passValid;
-            _passwordHasher = passwordHash;
+
         }
-        public ViewResult Index() => View(_userManager.Users);
+        public ViewResult Index() => View(_unitOfWorkAsync.UserManager.Users);
         public ViewResult Create() => View();
 
         [HttpPost]
@@ -31,23 +29,28 @@ namespace FamilyNet.Controllers
             {
                 ApplicationUser user = new ApplicationUser
                 {
-                    UserName = model.UserName,
-                    Email = model.Email
+                    Email = model.Email,
+                    UserName = model.Email,
+                    PhoneNumber = model.Phone
+                    
                 };
-                IdentityResult result
-                    = await _userManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    foreach (IdentityError error in result.Errors)
+
+                IdentityResult result
+                        = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
+
+                    if (result.Succeeded)
                     {
-                        ModelState.AddModelError("", error.Description);
+                        return RedirectToAction("Index");
                     }
-                }
+                    else
+                    {
+                        foreach (IdentityError error in result.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                    }
+                
             }
             return View(model);
         }
@@ -55,10 +58,10 @@ namespace FamilyNet.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(id);
+            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(id);
             if (user != null)
             {
-                IdentityResult result = await _userManager.DeleteAsync(user);
+                IdentityResult result = await _unitOfWorkAsync.UserManager.DeleteAsync(user);
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index");
@@ -72,44 +75,55 @@ namespace FamilyNet.Controllers
             {
                 ModelState.AddModelError("", "User Not Found");
             }
-            return View("Index", _userManager.Users);
+            return View("Index", _unitOfWorkAsync.UserManager.Users);
         }
 
         public async Task<IActionResult> Edit(string id)
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(id);
+            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(id);
             if (user != null)
             {
-                return View(user);
+                EditViewModel editView = new EditViewModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber };
+                return View(editView);
             }
             else
             {
                 return RedirectToAction("Index");
             }
         }
-
+        
         [HttpPost]
-        public async Task<IActionResult> Edit(string id, string email,
-                string password)
+        public async Task<IActionResult> Edit(EditViewModel us, string password)
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(id);
+            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(us.Id);
             if (user != null)
             {
-                user.Email = email;
+                user.Email = us.Email;
+
                 IdentityResult validEmail
-                    = await _userValidator.ValidateAsync(_userManager, user);
+                    = await _unitOfWorkAsync.UserValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
                 if (!validEmail.Succeeded)
                 {
                     AddErrorsFromResult(validEmail);
                 }
+                user.PhoneNumber = us.PhoneNumber;
+                IdentityResult validPhone
+                    = await _unitOfWorkAsync.PhoneValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
+                if (!validPhone.Succeeded)
+                {
+                    AddErrorsFromResult(validPhone);
+                }
+
+
+
                 IdentityResult validPass = null;
                 if (!string.IsNullOrEmpty(password))
                 {
-                    validPass = await _passwordValidator.ValidateAsync(_userManager,
+                    validPass = await _unitOfWorkAsync.PasswordValidator.ValidateAsync(_unitOfWorkAsync.UserManager,
                         user, password);
                     if (validPass.Succeeded)
                     {
-                        user.PasswordHash = _passwordHasher.HashPassword(user,
+                        user.PasswordHash = _unitOfWorkAsync.PasswordHasher.HashPassword(user,
                             password);
                     }
                     else
@@ -117,18 +131,36 @@ namespace FamilyNet.Controllers
                         AddErrorsFromResult(validPass);
                     }
                 }
-                if ((validEmail.Succeeded && validPass == null)
-                        || (validEmail.Succeeded
-                        && password != string.Empty && validPass.Succeeded))
+
+
+
+                if ((validEmail.Succeeded  && validPhone.Succeeded))
+
                 {
-                    IdentityResult result = await _userManager.UpdateAsync(user);
-                    if (result.Succeeded)
+                    if ((validPass != null && validEmail.Succeeded && password != string.Empty && validPass.Succeeded && validPhone.Succeeded))
                     {
-                        return RedirectToAction("Index");
+                        IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                        if (result.Succeeded)
+                        {
+                            return RedirectToAction("Index");
+                        }
+                        else
+                        {
+                            AddErrorsFromResult(result);
+                        }
                     }
                     else
                     {
-                        AddErrorsFromResult(result);
+
+                        IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                        if (result.Succeeded && validPass.Succeeded)
+                        {
+                            return RedirectToAction("Index");
+                        }
+                        else
+                        {
+                            AddErrorsFromResult(result);
+                        }
                     }
                 }
             }
@@ -136,7 +168,7 @@ namespace FamilyNet.Controllers
             {
                 ModelState.AddModelError("", "User Not Found");
             }
-            return View(user);
+            return View(us);
         }
 
         private void AddErrorsFromResult(IdentityResult result)

@@ -12,9 +12,10 @@ namespace FamilyNet.Models.ViewModels
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
-        [Display(Name = "Никнейм")]
-        public string UserName { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$",ErrorMessage ="Некорректно введен номер, введите его в формате - ### ### ####")]
+        [Display(Name = "Телефон")]
+        public string Phone { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

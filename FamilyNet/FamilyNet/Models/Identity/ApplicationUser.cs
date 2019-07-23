@@ -8,6 +8,6 @@ namespace FamilyNet.Models.Identity
 {
     public class ApplicationUser : IdentityUser
     {
-
+        
     }
 }

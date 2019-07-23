@@ -8,19 +8,21 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Models.Interfaces;
 
 namespace FamilyNet.Controllers
 {
-    public class RolesController : Controller
+    [Authorize(Roles = "Admin")]
+    public class RolesController : BaseController
     {
-        RoleManager<IdentityRole> _roleManager;
-        UserManager<ApplicationUser> _userManager;
-        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        //RoleManager<IdentityRole> _roleManager;
+        //UserManager<ApplicationUser> _userManager;
+        public RolesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
         {
-            _roleManager = roleManager;
-            _userManager = userManager;
+
         }
-        public IActionResult Index() => View(_roleManager.Roles.ToList());
+        public IActionResult Index() => View(_unitOfWorkAsync.RoleManager.Roles.ToList());
 
         public IActionResult Create() => View();
         [HttpPost]
@@ -28,7 +30,7 @@ namespace FamilyNet.Controllers
         {
             if (!string.IsNullOrEmpty(name))
             {
-                IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(name));
+                IdentityResult result = await _unitOfWorkAsync.RoleManager.CreateAsync(new IdentityRole(name));
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index");
@@ -47,25 +49,25 @@ namespace FamilyNet.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            IdentityRole role = await _roleManager.FindByIdAsync(id);
+            IdentityRole role = await _unitOfWorkAsync.RoleManager.FindByIdAsync(id);
             if (role != null)
             {
-                IdentityResult result = await _roleManager.DeleteAsync(role);
+                IdentityResult result = await _unitOfWorkAsync.RoleManager.DeleteAsync(role);
             }
             return RedirectToAction("Index");
         }
 
-        public IActionResult UserList() => View(_userManager.Users.ToList());
+        public IActionResult UserList() => View(_unitOfWorkAsync.UserManager.Users.ToList());
 
         public async Task<IActionResult> Edit(string userId)
         {
             // получаем пользователя
-            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await _userManager.GetRolesAsync(user);
-                var allRoles = _roleManager.Roles.ToList();
+                var userRoles = await _unitOfWorkAsync.UserManager.GetRolesAsync(user);
+                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
                 ChangeRoleViewModel model = new ChangeRoleViewModel
                 {
                     UserId = user.Id,
@@ -82,21 +84,21 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {
             // получаем пользователя
-            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await _userManager.GetRolesAsync(user);
+                var userRoles = await _unitOfWorkAsync.UserManager.GetRolesAsync(user);
                 // получаем все роли
-                var allRoles = _roleManager.Roles.ToList();
+                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
                 // получаем список ролей, которые были добавлены
                 var addedRoles = roles.Except(userRoles);
                 // получаем роли, которые были удалены
                 var removedRoles = userRoles.Except(roles);
 
-                await _userManager.AddToRolesAsync(user, addedRoles);
+                await _unitOfWorkAsync.UserManager.AddToRolesAsync(user, addedRoles);
 
-                await _userManager.RemoveFromRolesAsync(user, removedRoles);
+                await _unitOfWorkAsync.UserManager.RemoveFromRolesAsync(user, removedRoles);
 
                 return RedirectToAction("UserList");
             }
