@@ -12,9 +12,11 @@ using FamilyNet.Models.Filters;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNet.Controllers
 {
+    [Authorize]
     public class OrphanagesController : BaseController
     {
         private OrphanageSearchModel _searchModel;
@@ -39,6 +41,7 @@ namespace FamilyNet.Controllers
             return false;
         }
         // GET: Orphanages
+        [AllowAnonymous]
         public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
             //List<Orphanage> orphanagS = new List<Orphanage>()
@@ -90,6 +93,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphanages/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -102,6 +106,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphanages/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create() => View();
 
         // POST: Orphanages/Create
@@ -145,6 +150,7 @@ namespace FamilyNet.Controllers
         }
         
         // GET: Orphanages/Edit/5
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -159,6 +165,7 @@ namespace FamilyNet.Controllers
         // POST: Orphanages/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Representative")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
         {
             if (id != orphanage.ID)
@@ -201,6 +208,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphanages/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -216,6 +224,7 @@ namespace FamilyNet.Controllers
         // POST: Orphanages/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
@@ -228,11 +237,13 @@ namespace FamilyNet.Controllers
         private bool OrphanageExists(int id) =>
             _unitOfWorkAsync.Orphanages.GetById(id) != null;
 
+        [AllowAnonymous]
         public async Task<IActionResult> SearchByTypeHelp()
         {
             return View();
         }
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> SearchResult(string typeHelp)
         {
             ViewData["TypeHelp"] = typeHelp;

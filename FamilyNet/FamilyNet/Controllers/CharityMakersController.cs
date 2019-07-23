@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNet.Controllers
 {
+    [Authorize]
     public class CharityMakersController : BaseController
     {
         
@@ -19,6 +21,7 @@ namespace FamilyNet.Controllers
         { }
 
         // GET: CharityMakers
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var list = await _unitOfWorkAsync.CharityMakers.GetAll().ToListAsync();
@@ -26,6 +29,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: CharityMakers/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,6 +47,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: CharityMakers/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -53,6 +58,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("ID,FullName,Address,Birthday,Contacts,Rating")] CharityMaker charityMaker)
         {
             if (ModelState.IsValid)
@@ -65,6 +71,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: CharityMakers/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -85,6 +92,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,FullName,Address,Birthday,Contacts,Rating")] CharityMaker charityMaker)
         {
             if (id != charityMaker.ID)
@@ -118,6 +126,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: CharityMakers/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -138,6 +147,7 @@ namespace FamilyNet.Controllers
        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (CharityMakerExists(id))

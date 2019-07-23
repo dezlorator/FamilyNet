@@ -10,15 +10,18 @@ using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNet.Controllers
 {
+    [Authorize]
     public class RepresentativesController : BaseController
     {
         public RepresentativesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
         { }
 
         // GET: Representatives
+        [AllowAnonymous]
         public async Task<IActionResult> Index(int id)
         {
             var list = _unitOfWorkAsync.Representatives.GetAll().ToList();
@@ -32,6 +35,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Representatives/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -47,7 +51,7 @@ namespace FamilyNet.Controllers
 
             return View(representative);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: Representatives/Create
         public async Task<IActionResult> Create()
         {
@@ -62,6 +66,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("FullName,Orphanage")] Representative representative, int id, IFormFile file)
         {
             if (file != null && file.Length > 0)
@@ -89,6 +94,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Representatives/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll().OrderBy(o => o.Name).ToList();
@@ -113,6 +119,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative, int orphanageId, IFormFile file)
         {
 
@@ -161,6 +168,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Representatives/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -180,6 +188,7 @@ namespace FamilyNet.Controllers
         // POST: Representatives/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);

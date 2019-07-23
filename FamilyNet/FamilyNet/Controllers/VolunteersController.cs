@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNet.Controllers
 {
+    [Authorize]
     public class VolunteersController : BaseController
     {
 
@@ -18,6 +20,7 @@ namespace FamilyNet.Controllers
         { }
 
         // GET: Volunteers
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
 
@@ -26,6 +29,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,6 +47,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             List<Orphanage> orphanagesList = new List<Orphanage>();
@@ -57,6 +62,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("FullName, Address, Birthday, Contacts")] Volunteer volunteer)
         {
             if (ModelState.IsValid)
@@ -69,6 +75,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -89,6 +96,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("ID, FullName, Address, Birthday, Contacts, Rating")] Volunteer volunteer)
         {
             if (id != volunteer.ID)
@@ -122,6 +130,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -142,6 +151,7 @@ namespace FamilyNet.Controllers
         // POST: Volunteers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var volunteer = await _unitOfWorkAsync.Volunteers.GetById(id);

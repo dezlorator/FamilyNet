@@ -11,9 +11,11 @@ using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNet.Controllers
 {
+    [Authorize]
     public class OrphansController : BaseController
     {
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -23,6 +25,7 @@ namespace FamilyNet.Controllers
         }       
 
         // GET: Orphans
+        [AllowAnonymous]
         public async Task<IActionResult> Index(int id)
         {
             var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
@@ -37,6 +40,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -54,6 +58,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Create
+        [Authorize(Roles ="Admin")]
         public IActionResult Create()
         {
             List<Orphanage> orphanagesList = new List<Orphanage>();
@@ -68,6 +73,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("FullName,Address,Birthday,Orphanage,Avatar")] Orphan orphan, int id, IFormFile file)
         {
             if (file != null && file.Length > 0)
@@ -96,6 +102,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -121,6 +128,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,FullName,Birthday,Orphanage,Avatar")] Orphan orphan, int idOrphanage, IFormFile file)
         {
             if (id != orphan.ID)
@@ -169,6 +177,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -188,6 +197,7 @@ namespace FamilyNet.Controllers
         // POST: Orphans/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
@@ -207,6 +217,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/OrphansTable
+        [AllowAnonymous]
         public IActionResult OrphansTable()
         {
             var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
