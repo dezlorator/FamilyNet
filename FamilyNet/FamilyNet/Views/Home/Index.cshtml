@@ -27,8 +27,10 @@
         <div class="carousel-item">
             <img class="d-block w-100" src="~/images/33.jpg" alt="Third slide">
             <div class="carousel-caption d-none d-md-block">
-                <h5>Поиск детдома</h5>
-                <p>Вы можете посмотреть какой детдом поблизости с вами</p>
+                <a asp-area="" asp-controller="" asp-action="">
+                    <h5>Поиск детдома</h5>
+                    <p>Вы можете посмотреть какой детдом поблизости с вами</p>
+                </a>
             </div>
         </div>
     </div>
@@ -41,45 +43,17 @@
         <span class="sr-only">Next</span>
     </a>
 </div>
-
-<div class="align-content-lg-center"> @*align center*@
-    <div class="albery-container text-center">
-        <div class="albery-wrapper">
-            <div class="albery-item rounded mx-auto d-block">
-                <img src="images/lg-1.jpg" alt="">
-                <button class="btn btn-success btn-sm pull-right m-1">Response</button>
-            </div>
-            <div class="albery-item rounded mx-auto d-block">
-                <img src="images/lg-2.jpg" alt="">
-                <button class="btn btn-success btn-sm pull-right m-1">Response</button>
-            </div>
-            <div class="albery-item">
-                <img src="images/lg-3.jpg" alt="">
-                <button class="btn-success btn-sm pull-right m-1">Response</button>
-            </div>
-        </div>
-        <div class="move-right">
-            <a href="#" id="rightArrow"></a>
-        </div>
-        <div class="move-left">
-            <a href="#" id="leftArrow"></a>
-        </div>
-    </div>
-
-    <div class="pagination-container">
-        <div class="pagination-wrapper">
-            <div class="pagination-item" data-item="1">
-                <img src="images/sm-1.jpg" alt="">
-            </div>
-            <div class="pagination-item" data-item="2">
-                <img src="images/sm-2.jpg" alt="">
-            </div>
-            <div class="pagination-item" data-item="3">
-                <img src="~/images/sm-3.jpg" alt="">
-            </div>
-        </div>
-    </div>
+<div>
+    <p>
+    </p>
 </div>
+
+
+
+@*<partial name="~/Views/Orphanages/BestOfThree.cshtml" />*@
+@await Html.PartialAsync("BestOfThree", ViewData["Best"]);
+
+
 
 <script>
     $(".albery-container").albery();
@@ -91,6 +65,7 @@
         paginationBorder: 5,
         paginationItemWidth: 120
     });
+    $('#myModal').on('shown.bs.modal', function () {
+        $('#myInput').trigger('focus')
+    });
 </script>
-
-
