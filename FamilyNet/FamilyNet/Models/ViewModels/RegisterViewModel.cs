@@ -13,6 +13,7 @@ namespace FamilyNet.Models.ViewModels
         public string Email { get; set; }
 
         [DataType(DataType.PhoneNumber)]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$",ErrorMessage ="Некорректно введен номер, введите его в формате - ### ### ####")]
         [Display(Name = "Телефон")]
         public string Phone { get; set; }
 

@@ -83,7 +83,8 @@ namespace FamilyNet.Controllers
             ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(id);
             if (user != null)
             {
-                return View(user);
+                EditViewModel editView = new EditViewModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber };
+                return View(editView);
             }
             else
             {
@@ -92,26 +93,26 @@ namespace FamilyNet.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Edit(ApplicationUser us, string password)
+        public async Task<IActionResult> Edit(EditViewModel us, string password)
         {
             ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(us.Id);
             if (user != null)
             {
                 user.Email = us.Email;
-                
+
                 IdentityResult validEmail
                     = await _unitOfWorkAsync.UserValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
                 if (!validEmail.Succeeded)
                 {
                     AddErrorsFromResult(validEmail);
                 }
-                //user.PhoneNumber = us.PhoneNumber;
-                //IdentityResult validPhone
-                //    = await _unitOfWorkAsync.PhoneValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
-                //if (!validPhone.Succeeded)
-                //{
-                //    AddErrorsFromResult(validPhone);
-                //}
+                user.PhoneNumber = us.PhoneNumber;
+                IdentityResult validPhone
+                    = await _unitOfWorkAsync.PhoneValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
+                if (!validPhone.Succeeded)
+                {
+                    AddErrorsFromResult(validPhone);
+                }
 
 
 
@@ -130,21 +131,36 @@ namespace FamilyNet.Controllers
                         AddErrorsFromResult(validPass);
                     }
                 }
-               
 
-             
-                if ((validEmail.Succeeded && validPass == null )
-                        || (validEmail.Succeeded && password != string.Empty && validPass.Succeeded))
-                        
+
+
+                if ((validEmail.Succeeded  && validPhone.Succeeded))
+
                 {
-                    IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
-                    if (result.Succeeded)
+                    if ((validPass != null && validEmail.Succeeded && password != string.Empty && validPass.Succeeded && validPhone.Succeeded))
                     {
-                        return RedirectToAction("Index");
+                        IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                        if (result.Succeeded)
+                        {
+                            return RedirectToAction("Index");
+                        }
+                        else
+                        {
+                            AddErrorsFromResult(result);
+                        }
                     }
                     else
                     {
-                        AddErrorsFromResult(result);
+
+                        IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                        if (result.Succeeded && validPass.Succeeded)
+                        {
+                            return RedirectToAction("Index");
+                        }
+                        else
+                        {
+                            AddErrorsFromResult(result);
+                        }
                     }
                 }
             }
@@ -152,7 +168,7 @@ namespace FamilyNet.Controllers
             {
                 ModelState.AddModelError("", "User Not Found");
             }
-            return View(user);
+            return View(us);
         }
 
         private void AddErrorsFromResult(IdentityResult result)
