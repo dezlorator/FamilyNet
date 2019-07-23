@@ -6,7 +6,7 @@
         {
             <div class="card">
                 <button type="button" data-toggle="modal" data-target="#@bestofthree.ID">
-                    <img src="~/images/lg-2.jpg" class="img-responsive" alt="">
+                    <img src="@Url.Content("~/avatars/"+@bestofthree.Avatar)" width="1200" height="800" class="img-responsive" alt="">
                 </button>
                 <div class="card-body">
                     <h5 class="card-title">@bestofthree.Name</h5>
@@ -25,7 +25,7 @@
             <div class="modal-content">
                 <div class="img-thumbnail">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="~/images/lg-2.jpg" class="img-responsive" alt="">
+                    <img src="@Url.Content("~/avatars/"+@bestofthree.Avatar)" width="1200" height="800" class="img-responsive" alt="">
                 </div>
                 <div class="modal-content">
                     <div class="row">

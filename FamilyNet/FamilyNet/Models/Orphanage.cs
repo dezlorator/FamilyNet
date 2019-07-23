@@ -35,6 +35,8 @@ namespace FamilyNet.Models
 
         public virtual ICollection<DonationItem> Needs { get; set; }// TODO: normal name for property
 
+        public float? MapCoordX { get; set; }
+        public float? MapCoordY { get; set; }
 
         public static void CopyState(Orphanage receiver, Orphanage sender)
         {

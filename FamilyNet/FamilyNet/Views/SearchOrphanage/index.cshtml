@@ -1,0 +1,67 @@
+﻿@model IEnumerable<FamilyNet.Models.Orphanage>
+@using System.Text
+@using System.Web
+
+@{
+    ViewData["Title"] = "searchorphanage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+}
+<div id="map">
+
+</div>
+
+@section scripts{
+    <script>
+
+        var dataFromModel = @Json.Serialize(Model); // !!!! export data !!!!
+        var x;
+        const data=[];
+
+        for(var prop in dataFromModel){
+            x = {
+                "loc": [dataFromModel[prop].mapCoordX, dataFromModel[prop].mapCoordY],
+                "title": dataFromModel[prop].name,
+                "adr": dataFromModel[prop].adress.city + " " + dataFromModel[prop].adress.street + " " + dataFromModel[prop].adress.house
+            }
+            console.log(x);
+            data.push(x);
+        }
+
+         var map = new L.Map('map', { zoom: 10, center: [48.46776, 35.04090]/*new L.latLng(data[0].loc)*/,  });	//set center from first location
+
+        map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
+
+        var markersLayer = new L.LayerGroup();  //layer contain searched elements
+
+            map.addLayer(markersLayer);
+
+        var controlSearch = new L.Control.Search({
+            position: 'topright',
+            layer: markersLayer,
+            initial: false,
+            zoom: 12,
+            marker: false
+        });
+
+        map.addControl(controlSearch);
+
+
+        ////////////populate map with markers from sample data
+        for (i in data) {
+            var title = data[i].title,	//value searched
+                adr = data[i].adr,
+                loc = data[i].loc,		//position found
+                marker = new L.Marker(new L.latLng(loc), { title: adr });//se property searched
+            marker.bindPopup('<b>' + title + '</b>' + '<br>' + adr).openPopup();
+            markersLayer.addLayer(marker);
+        }
+    </script>
+}
+
+<script src="~/res/External/leaflet/leaflet-search.js"></script>
+<script src="~/res/scripts/main.js"></script>
+<script src="~/lib/jquery/jquery.min.js"></script>
+
+

@@ -23,6 +23,20 @@ namespace FamilyNet.Migrations
                 principalTable: "Orphanages",
                 principalColumn: "ID",
                 onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddColumn<float?>(
+                name: "MapCoordX",
+                table: "Orphanages",
+                nullable: true,
+                defaultValue: null
+                );
+
+            migrationBuilder.AddColumn<float?>(
+                name: "MapCoordY",
+                table: "Orphanages",
+                nullable: true,
+                defaultValue: null
+                );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -20,4 +20,11 @@
     <Folder Include="wwwroot\avatars\" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Content Update="Views\SearchOrphanage\index.cshtml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

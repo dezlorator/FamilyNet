@@ -1,0 +1,8 @@
+html, body {
+    text-align: center;
+}
+#map {
+    min-height: 500px;;
+    max-width: 80%;
+    margin: auto;
+}
