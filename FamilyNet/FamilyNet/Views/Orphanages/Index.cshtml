@@ -1,0 +1,117 @@
+﻿@model IEnumerable<FamilyNet.Models.Orphanage>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Список детских домов <a asp-action="Create" class="btn btn-primary float-right"><i class="fas fa-plus"></i></a></h1>
+
+<form asp-action="Filter">
+    <table class="table">
+        <th>
+            @Html.Label(@Html.DisplayNameFor(model => model.Name) + ":")
+            @Html.TextBox("NameString", "", new { @class = "form-control" })
+        </th>
+        <th>
+            @Html.Label(@Html.DisplayNameFor(model => model.Adress) + ":")
+            @Html.TextBox("AddressString", "", new { @class = "form-control" })
+        </th>
+        <th width="9%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + ":")
+            @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+            </button>
+            @Html.ActionLink("", "Index", "Orphanages", null, new { @class = "fas fa-ban" })
+        </th>
+
+    </table>
+</form>
+
+<table class="table center">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+                    @Html.DisplayNameFor(model => model.Name)
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.AddressSort">
+                    @Html.DisplayNameFor(model => model.Adress)
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.RatingSort">
+                    @Html.DisplayNameFor(model => model.Rating)
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Avatar)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Representatives)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orphans)
+            </th>
+            <th>
+                Действия
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td class="col-md-auto">
+                    @Html.DisplayFor(modelItem => item.Adress.Country),
+                    @Html.DisplayFor(modelItem => item.Adress.Region),
+                    @Html.DisplayFor(modelItem => item.Adress.City),
+                    @Html.DisplayFor(modelItem => item.Adress.Street),
+                    @Html.DisplayFor(modelItem => item.Adress.House)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rating)
+                </td>
+                <td>
+                    <img class="img-responsive" src="@Url.Content("~/avatars/" + @item.Avatar)" alt="" width="50" height="50">
+                </td>
+                <td align="center">
+                    <a asp-action="Index" asp-controller="Representatives" asp-route-id="@item.ID"
+                       class="btn btn-sm btn-outline-primary">
+                        @Html.DisplayFor(modelItem => item.Representatives.Count) <i class="fas fa-user-tie"></i>
+                    </a>
+                </td>
+                <td>
+                    <a asp-action="Index" asp-controller="Orphans" asp-route-id="@item.ID"
+                       class="btn btn-sm btn-outline-primary">
+                        @Html.DisplayFor(modelItem => item.Orphans.Count) <i class="fas fa-child"></i>
+                    </a>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit"></i>
+                    </a> |
+                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">
+                        <i class="fas fa-info-circle"></i>
+                    </a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger">
+                        <i class="fas fa-minus-circle"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
