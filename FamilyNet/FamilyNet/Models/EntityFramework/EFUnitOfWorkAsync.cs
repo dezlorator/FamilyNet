@@ -19,7 +19,8 @@ namespace FamilyNet.Models.EntityFramework
 
         #region Constructors
 
-        public EFUnitOfWorkAsync(ApplicationDbContext cont, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid, IPasswordHasher<ApplicationUser> passwordHash, UserManager<ApplicationUser> usrMgr)
+        public EFUnitOfWorkAsync(ApplicationDbContext cont, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid, 
+            IPasswordHasher<ApplicationUser> passwordHash, UserManager<ApplicationUser> usrMgr, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _context = cont;
             CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
@@ -33,6 +34,8 @@ namespace FamilyNet.Models.EntityFramework
             PasswordValidator = passValid;
             PhoneValidator = new FamilyNetPhoneValidator();
             UserManager = usrMgr;
+            SignInManager = signInManager;
+            RoleManager = roleManager;
         }
 
 
@@ -61,6 +64,8 @@ namespace FamilyNet.Models.EntityFramework
         public FamilyNetPhoneValidator PhoneValidator { get; set; }
 
         public UserManager<ApplicationUser> UserManager { get; set; }
+        public SignInManager<ApplicationUser> SignInManager { get; set; }
+        public RoleManager<IdentityRole> RoleManager { get; set; }
 
         public void SaveChangesAsync()
         {

@@ -19,6 +19,8 @@ namespace FamilyNet.Models.Interfaces
         IPasswordHasher<ApplicationUser> PasswordHasher { get; }
         FamilyNetPhoneValidator PhoneValidator { get; }
         UserManager<ApplicationUser> UserManager { get; }
+        SignInManager<ApplicationUser> SignInManager { get; }
+        RoleManager<IdentityRole> RoleManager { get; }
         void SaveChangesAsync();
     }
 }

@@ -32,7 +32,6 @@ namespace FamilyNet
         {
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
-            //services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetPhoneValidator>();
             //services.AddTransient<FamilyNetPhoneValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(

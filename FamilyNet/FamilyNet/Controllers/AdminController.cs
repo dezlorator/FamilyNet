@@ -34,20 +34,23 @@ namespace FamilyNet.Controllers
                     PhoneNumber = model.Phone
                     
                 };
-                IdentityResult result
-                    = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    foreach (IdentityError error in result.Errors)
+
+                IdentityResult result
+                        = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
+
+                    if (result.Succeeded)
                     {
-                        ModelState.AddModelError("", error.Description);
+                        return RedirectToAction("Index");
                     }
-                }
+                    else
+                    {
+                        foreach (IdentityError error in result.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                    }
+                
             }
             return View(model);
         }
@@ -102,13 +105,14 @@ namespace FamilyNet.Controllers
                 {
                     AddErrorsFromResult(validEmail);
                 }
-                user.PhoneNumber = us.PhoneNumber;
-                IdentityResult validPhone
-                    = await _unitOfWorkAsync.PhoneValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
-                if (!validPhone.Succeeded)
-                {
-                    AddErrorsFromResult(validPhone);
-                }
+                //user.PhoneNumber = us.PhoneNumber;
+                //IdentityResult validPhone
+                //    = await _unitOfWorkAsync.PhoneValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
+                //if (!validPhone.Succeeded)
+                //{
+                //    AddErrorsFromResult(validPhone);
+                //}
+
 
 
                 IdentityResult validPass = null;
@@ -126,10 +130,12 @@ namespace FamilyNet.Controllers
                         AddErrorsFromResult(validPass);
                     }
                 }
-                if ((validEmail.Succeeded && validPass == null)
-                        || (validEmail.Succeeded
-                        && password != string.Empty && validPass.Succeeded)|| (validEmail.Succeeded && validPhone.Succeeded && password!= string.Empty && validPhone.Succeeded)
-                        ||(validEmail.Succeeded && validPass == null && validPhone.Succeeded))
+               
+
+             
+                if ((validEmail.Succeeded && validPass == null )
+                        || (validEmail.Succeeded && password != string.Empty && validPass.Succeeded))
+                        
                 {
                     IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
                     if (result.Succeeded)

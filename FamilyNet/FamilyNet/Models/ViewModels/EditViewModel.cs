@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-
 namespace FamilyNet.Models.ViewModels
 {
-    public class CreateUserViewModel
+    public class EditViewModel
     {
+        public string Id { get; set; }
         [DataType(DataType.PhoneNumber)]
         [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Некорректно введен номер")]
-        public string Phone { get; set; }
-        [Required]
+        public string PhoneNumber { get; set; }
         public string Email { get; set; }
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
-        
+        // string Password { get; set; }
     }
 }

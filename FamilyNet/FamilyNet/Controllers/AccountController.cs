@@ -5,21 +5,16 @@ using FamilyNet.Models;
 using Microsoft.AspNetCore.Identity;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Models.Interfaces;
 
 namespace FamilyNet.Controllers
 {
-    //[Authorize]
-    public class AccountController : Controller
+    
+    public class AccountController : BaseController
     {
-        //Сервис по управлению пользователями.
-        private readonly UserManager<ApplicationUser> _userManager;
-        //Сервис, который позволяет аутентифицировать пользователя и устанавливать/удалять его куки.
-        private readonly SignInManager<ApplicationUser> _signInManager;
-
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+          
         }
 
         [HttpGet]
@@ -37,11 +32,11 @@ namespace FamilyNet.Controllers
             {
                 ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.Email, PhoneNumber = model.Phone };
                 // добавляем пользователя.
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     // установка куки.
-                    await _signInManager.SignInAsync(user, false);
+                    await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -72,36 +67,14 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            //if (ModelState.IsValid)
-            //{
-            //    var result =
-            //        await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-            //    if (result.Succeeded)
-            //    {
-            //        // проверяем, принадлежит ли URL приложению
-            //        if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-            //        {
-            //            return Redirect(model.ReturnUrl);
-            //        }
-            //        else
-            //        {
-            //            return RedirectToAction("Index", "Home");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        ModelState.AddModelError("", "Неправильный логин и (или) пароль");
-            //    }
-            //}
-            //return View(model);
             if (ModelState.IsValid)
             {
-                ApplicationUser user = await _userManager.FindByEmailAsync(model.Email);
+                ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
-                    await _signInManager.SignOutAsync();
+                    await _unitOfWorkAsync.SignInManager.SignOutAsync();
                     Microsoft.AspNetCore.Identity.SignInResult result =
-                            await _signInManager.PasswordSignInAsync(
+                            await _unitOfWorkAsync.SignInManager.PasswordSignInAsync(
                                 user, model.Password, model.RememberMe, false);
                     if (result.Succeeded)
                     {
@@ -114,10 +87,14 @@ namespace FamilyNet.Controllers
                             return RedirectToAction("Index", "Home");
                         }
                     }
+                    else
+                    {
+                        ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                    }
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                    ModelState.AddModelError("", "Такого пользователя не существует, зарегистрируйтесь, пожалуйста!");
                 }
             }
             return View(model);
@@ -129,7 +106,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Logout()
         {
             // удаляем аутентификационные куки
-            await _signInManager.SignOutAsync();
+            await _unitOfWorkAsync.SignInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
 
