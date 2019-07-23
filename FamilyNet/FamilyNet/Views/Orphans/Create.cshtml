@@ -8,7 +8,7 @@
 <div class="container register">
     <div class="row">
         <div class="col-md-9 register-right">
-            <form asp-action="Create">
+            <form asp-action="Create" enctype="multipart/form-data">
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -37,30 +37,21 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-
                                 <div class="form-group">
-                                    <label asp-for="Contacts.Phone" class="control-label"></label>
-                                    <input asp-for="Contacts.Phone" class="form-control" />
-                                    <span asp-validation-for="Contacts.Phone" class="text-danger"></span>
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Contacts.Email" class="control-label"></label>
-                                    <input type="email" asp-for="Contacts.Email" class="form-control" />
-                                    <span asp-validation-for="Contacts.Email" class="text-danger"></span>
-                                </div>
-                                <div class="form-group">
-
-                            <div class="form-group">
-
                                     <label asp-for="Orphanage.Name" class="control-label"></label>
-                                    <select asp-for="Orphanage.ID"
+                                    <select asp-for="Orphanage.ID" name="id"
                                             class="form-control"
                                             asp-items="@(new SelectList(@ViewBag.ListOfOrphanages,"ID", "Name"))"></select>
                                 </div>
-                            </div>
-                            <div class="col-md-12 text-center">
-                                <input type="submit" class="btn btn-primary" value="Create" />
-                                <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                                <div class="form-group">
+                                    <label asp-for="Avatar" class="control-label"></label>
+                                    <input asp-for="Avatar" type="file" name="file" class="form-control" />
+                                    <span asp-validation-for="Avatar" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-12 text-center">
+                                    <input type="submit" class="btn btn-primary" value="Create" />
+                                    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                                </div>
                             </div>
                         </div>
                     </div>
