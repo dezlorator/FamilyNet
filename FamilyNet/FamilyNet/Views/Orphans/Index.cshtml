@@ -4,51 +4,61 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row">
-    <div class="col-sm-6">
-        <h2>Orphans List</h2>
-    </div>
-</div>
-
-<div class="box">
-    <div class="container">
-        <div class="row">
-
-            @foreach (var item in Model)
-            {
-                <div class="col-md-4">
-
-                    <div class="card mb-4 box-shadow text-center">
-                        <a asp-action="Details" asp-route-id="@item.ID" style="text-decoration:none;">                 
-                            <img class="img-responsive" src="@Url.Content("~/children/" + @item.Avatar)" alt="Card image cap" width="100%" height="300px">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    @Html.DisplayFor(modelItem => item.FullName.Name)
-                                    @Html.DisplayFor(modelItem => item.FullName.Surname)
-                                </h5>
-                                <p class="card-text">
-                                    @Html.DisplayFor(modelItem => item.Birthday)
-                                </p>
-                                <p class="card-text">
-                                    @Html.DisplayFor(modelItem => item.Orphanage.Name)
-                                    @Html.DisplayFor(modelItem => item.Orphanage.Adress.City)
-                                </p>
-                            </div>
-                        </a>
-
-                        <div class="card-body">
-                            <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
-                            <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
-                            <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
-                        </div>
-
-                    </div>
-                </div>
-            }
-
+    <div class="row">
+        <div class="col-sm-6">
+            <h2>Orphans List</h2>
+        </div>
+        <div class="col-sm-6 text-right">
+            <a asp-action="Create" class="btn btn-primary">Create New</a>
         </div>
     </div>
-</div>
-
-
-
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Surname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Patronymic)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Birthday)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orphanage)
+            </th>
+            <th>
+                Action
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName.Patronymic)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Birthday)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Orphanage.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a> 
+                <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a> 
+                <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

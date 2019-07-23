@@ -15,7 +15,7 @@
 }
 .albery-item {
 	position: relative;
-	/*float: left;*/
+	float: left;
 	width: 400px;
 	/*cursor: zoom-in;*/
 }
@@ -67,7 +67,7 @@
 }
 .pagination-item {
 	position: relative;
-	/*float: left;*/
+	float: left;
 	width: 144px;
 	margin-right: 13px;
 	cursor: pointer;
