@@ -12,6 +12,7 @@ namespace FamilyNet.Models
     {
         public int ID { get; set; }
         //[Required(ErrorMessage = "Please enter Full Name")]
+        [Display(Name = "Полное имя")]
         public virtual FullName FullName { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

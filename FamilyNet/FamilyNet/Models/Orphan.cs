@@ -9,6 +9,7 @@ namespace FamilyNet.Models
 
 
         //[Required]
+        [Display(Name = "Детский дом")]
         public virtual Orphanage Orphanage { get; set; }
 
         public virtual ICollection<AuctionLot> AuctionLots { get; set; }
