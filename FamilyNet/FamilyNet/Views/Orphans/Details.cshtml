@@ -10,7 +10,6 @@
         <div class="col-lg-8 order-lg-2">
             <div class="tab-content py-4">
                 <div class="tab-pane active" id="profile">
-                    <h5 class="mb-3">Orphan Profile</h5>
                     <div class="row">
                         <div class="col-md-6">
                             <h6>@Html.DisplayNameFor(model => model.FullName)</h6>
@@ -38,9 +37,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 order-lg-1 text-center">
-            @*<img class="mx-auto img-fluid img-circle d-block" src="@Url.Content("~/children/" + Model.Avatar)" alt="">*@
-            <img src="@Url.Content("~/children/" + Model.Avatar)")" style="height: 300px; width: 100%; display: block;" alt="avatar">
+        <div class="col-lg-4 order-lg-1 text-center">            
+            <img src="@Url.Content("~/children/" + Model.Avatar)" style="height: 300px; width: 100%; display: block;" alt="avatar">
             <label class="custom-file">
                 <input type="file" id="file" class="custom-file-input">
             </label>
