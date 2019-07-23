@@ -4,9 +4,9 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+    <h1>Изменить</h1>
 
-<h4>Volunteer</h4>
+<h4>Волонтер</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -28,13 +28,43 @@
                 <span asp-validation-for="FullName.Patronymic" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Address.Country" class="control-label"></label>
+                <input asp-for="Address.Country" class="form-control" />
+                <span asp-validation-for="Address.Country" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address.City" class="control-label"></label>
+                <input asp-for="Address.City" class="form-control" />
+                <span asp-validation-for="Address.City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address.Region" class="control-label"></label>
+                <input asp-for="Address.Region" class="form-control" />
+                <span asp-validation-for="Address.Region" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address.Street" class="control-label"></label>
+                <input asp-for="Address.Street" class="form-control" />
+                <span asp-validation-for="Address.Street" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address.House" class="control-label"></label>
+                <input asp-for="Address.House" class="form-control" />
+                <span asp-validation-for="Address.House" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Birthday" class="control-label"></label>
                 <input asp-for="Birthday" class="form-control" />
                 <span asp-validation-for="Birthday" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Create" />
-                <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                <label asp-for="Rating" class="control-label"></label>
+                <input asp-for="Rating" class="form-control" />
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <a asp-action="Index"><i class="fas fa-chevron-circle-left"></i></a>
+                <input type="submit" class="btn btn-primary" value="Создать" />
             </div>
         </form>
     </div>
