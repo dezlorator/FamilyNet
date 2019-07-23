@@ -1,0 +1,57 @@
+﻿@model IEnumerable<FamilyNet.Models.Representative>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-6">
+        <h2>Представители детодомов</h2>
+    </div>
+    <div class="col-sm-6 text-right">
+        <a asp-action="Create" class="btn btn-primary">Создать представителя</a>
+    </div>
+</div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Patronymic)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Surname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orphanage)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+       @foreach (var item in Model)
+        {
+        <tr>
+            <th>
+                @Html.DisplayFor(modelItem => item.FullName.Name)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.FullName.Patronymic)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.FullName.Surname)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.Orphanage.Name)
+            </th>
+            <td>
+                <a asp-action="Edit" class="btn btn-primary" asp-route-id="@item.ID">Редактировать</a>
+                <a asp-action="Details" class="btn btn-primary" asp-route-id="@item.ID">Подробнее</a>
+                <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.ID">Удалить</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
