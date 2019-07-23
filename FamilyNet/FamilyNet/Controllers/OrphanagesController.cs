@@ -17,25 +17,45 @@ namespace FamilyNet.Controllers
 {
     public class OrphanagesController : BaseController
     {
+        private OrphanageSearchModel _searchModel;
         private readonly IHostingEnvironment _hostingEnvironment;
         public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment) : base(unitOfWork)
         {
             _hostingEnvironment = environment;
         }
 
+        private bool IsContain(Address addr)
+        {
+            foreach (var word in _searchModel.AddressString.Split())
+            {
+                if (addr.Street.ToUpper().Contains(word.ToUpper())
+                || addr.City.ToUpper().Contains(word.ToUpper())
+                || addr.Region.ToUpper().Contains(word.ToUpper())
+                || addr.Country.ToUpper().Contains(word.ToUpper()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         // GET: Orphanages
         public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
+            //List<Orphanage> orphanagS = new List<Orphanage>()
+            //{
+            //    new Orphanage() {Name="", Adress = { new Address() { } } }
+            //};
+
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
            
             if (searchModel != null)
             {
+                _searchModel = searchModel;
                 if (!string.IsNullOrEmpty(searchModel.NameString))
                     orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
                 if (!string.IsNullOrEmpty(searchModel.AddressString))
-                    orphanages = orphanages.Where(x => x.Adress.Street.Contains(searchModel.AddressString) ||
-                    x.Adress.City.Contains(searchModel.AddressString) || x.Adress.Region.Contains(searchModel.AddressString) 
-                    || x.Adress.Country.Contains(searchModel.AddressString));
+                    orphanages = orphanages.Where( x => IsContain(x.Adress));
+                    
                 if (searchModel.RatingNumber > 0)
                     orphanages = orphanages.Where(x => x.Rating == searchModel.RatingNumber);
             }
@@ -219,7 +239,7 @@ namespace FamilyNet.Controllers
             var list = _unitOfWorkAsync.Orphanages.Get(
                 orp => orp.Needs.Where(
                     donat => donat.DonationItemTypes.Where(
-                        donatitem => donatitem.Name == typeHelp).ToList().Count > 0).ToList().Count > 0);
+                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).ToList().Count > 0).ToList().Count > 0);
             return View("SearchResult", list);
         }
     }
