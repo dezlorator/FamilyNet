@@ -9,10 +9,11 @@ namespace FamilyNet.Models
 {
     public class FullName
     {
+        [Display(Name = "Имя")]
         public string Name { get; set; }
-
+        [Display(Name = "Фамилия")]
         public string Surname { get; set; }
-
+        [Display(Name = "Отчество")]
         public string Patronymic { get; set; }
     }
 }
