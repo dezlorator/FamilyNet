@@ -24,8 +24,11 @@ namespace FamilyNet.Models
             receiver.FullName.Patronymic = sender.FullName.Patronymic;
 
             receiver.Rating = sender.Rating;
-            receiver.Birthday = receiver.Birthday;
+            receiver.Birthday = sender.Birthday;
 
+            receiver.Orphanage = sender.Orphanage;
+
+            receiver.Avatar = sender.Avatar;
 
         }
 
