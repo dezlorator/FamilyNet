@@ -7,28 +7,29 @@ using FamilyNet.Models;
 using FamilyNet.Models.Identity;
 using System.Text.RegularExpressions;
 
+
 namespace FamilyNet.Infrastructure
 {
-    public class FamilyNetUserValidator : UserValidator<ApplicationUser>
+    public class FamilyNetPhoneValidator : UserValidator<ApplicationUser>
     {
         public override async Task<IdentityResult> ValidateAsync(UserManager<ApplicationUser> manager, ApplicationUser applicationUser)
         {
             IdentityResult result = await base.ValidateAsync(manager, applicationUser);
             List<IdentityError> errors = result.Succeeded ?
                 new List<IdentityError>() : result.Errors.ToList();
-            if (!applicationUser.Email.ToLower().EndsWith("@gmail.com"))
+
+            Regex regex = new Regex(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$");
+
+            if (!regex.IsMatch(applicationUser.PhoneNumber))
             {
                 errors.Add(new IdentityError
                 {
-                    Code = "EmailDomainError",
-                    Description = "Only gmail.com email addresses are allowed"
+                    Code = "PhoneError",
+                    Description = "Некорректно введен номер телефона"
                 });
             }
-
             return errors.Count == 0 ? IdentityResult.Success : IdentityResult.Failed(errors.ToArray());
-            
+
         }
-
-
     }
 }

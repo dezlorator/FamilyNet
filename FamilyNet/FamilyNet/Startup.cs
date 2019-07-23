@@ -32,6 +32,7 @@ namespace FamilyNet
         {
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
+            //services.AddTransient<FamilyNetPhoneValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration["Data:FamilyNet:ConnectionString"]));
@@ -61,6 +62,7 @@ namespace FamilyNet
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+           
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -73,13 +75,20 @@ namespace FamilyNet
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
-
+           
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
+                    Configuration).Wait();
+            ApplicationIdentityDbContext.InitializeRolesAsync(app.ApplicationServices).Wait();
+
+
+
         }
     }
 }
