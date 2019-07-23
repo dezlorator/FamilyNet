@@ -8,22 +8,36 @@ using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
+using FamilyNet.Models.Filters;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FamilyNet.Controllers
 {
     public class OrphanagesController : BaseController
     {
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
-        { }
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment) : base(unitOfWork)
+        {
+            _hostingEnvironment = environment;
+        }
 
         // GET: Orphanages
-        public async Task<IActionResult> Index(string name, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
+        public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
-
-            if (!String.IsNullOrEmpty(name))
+           
+            if (searchModel != null)
             {
-                orphanages = orphanages.Where(p => p.Name.Contains(name));
+                if (!string.IsNullOrEmpty(searchModel.NameString))
+                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
+                if (!string.IsNullOrEmpty(searchModel.AddressString))
+                    orphanages = orphanages.Where(x => x.Adress.Street.Contains(searchModel.AddressString) ||
+                    x.Adress.City.Contains(searchModel.AddressString) || x.Adress.Region.Contains(searchModel.AddressString) 
+                    || x.Adress.Country.Contains(searchModel.AddressString));
+                if (searchModel.RatingNumber > 0)
+                    orphanages = orphanages.Where(x => x.Rating == searchModel.RatingNumber);
             }
 
             ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
@@ -36,10 +50,10 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderByDescending(s => s.Name);
                     break;
                 case SortStateOrphanages.AddressAsc:
-                    orphanages = orphanages.OrderBy(s => s.Adress);
+                    orphanages = orphanages.OrderBy(s => s.Adress.Country).ThenBy(s => s.Adress.Region).ThenBy(s => s.Adress.City).ThenBy(s => s.Adress.Street);
                     break;
                 case SortStateOrphanages.AddressDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Adress);
+                    orphanages = orphanages.OrderByDescending(s => s.Adress.Country).ThenByDescending(s => s.Adress.Region).ThenByDescending(s => s.Adress.City).ThenByDescending(s => s.Adress.Street);
                     break;
                 case SortStateOrphanages.RatingAsc:
                     orphanages = orphanages.OrderBy(s => s.Rating);
@@ -51,15 +65,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
-            //var list =  _unitOfWorkAsync.Orphanages.GetAll().ToList();
-            //return View(list);
-            FamilyNet.Models.Filters.OrphanagesViewModel viewModel = new FamilyNet.Models.Filters.OrphanagesViewModel
-            {
-                Orphanages = orphanages.ToList(),
-                //Companies = new SelectList(companies, "Id", "Name"),
-                Name = name
-            };
-            //return View(viewModel);
+            
             return View(await orphanages.ToListAsync());
         }
 
@@ -79,12 +85,21 @@ namespace FamilyNet.Controllers
         public IActionResult Create() => View();
 
         // POST: Orphanages/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage)
+        public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
         {
+            if (file != null && file.Length > 0)
+            {
+                var fileName = Path.GetRandomFileName();
+                fileName = Path.ChangeExtension(fileName, ".jpg");
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\avatars", fileName);
+                using (var fileSteam = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileSteam);
+                }
+                orphanage.Avatar = fileName;
+            }
             if (ModelState.IsValid)
             {
                 bool rand = DateTime.Now.Ticks % 2 == 0;
@@ -108,7 +123,7 @@ namespace FamilyNet.Controllers
 
             return View(orphanage);
         }
-
+        
         // GET: Orphanages/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -122,14 +137,24 @@ namespace FamilyNet.Controllers
         }
 
         // POST: Orphanages/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Adress,Rating,Avatar")] Orphanage orphanage)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
         {
             if (id != orphanage.ID)
                 return NotFound();
+
+            if (file != null && file.Length > 0)
+            {
+                var fileName = Path.GetRandomFileName();
+                fileName = Path.ChangeExtension(fileName, ".jpg");
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\avatars", fileName);
+                using (var fileSteam = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileSteam);
+                }
+                orphanage.Avatar = fileName;
+            }
 
             if (ModelState.IsValid)
             {

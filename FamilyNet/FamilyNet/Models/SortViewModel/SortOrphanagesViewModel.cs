@@ -7,7 +7,7 @@ using FamilyNet.Models;
 
 namespace FamilyNet.Models.SortViewModel
 {
-    public class SortOrphanagesViewModel
+    public class SortOrphanagesViewModel : Orphanage
     {
         public SortStateOrphanages NameSort { get; set; }
         public SortStateOrphanages AdressSort { get; set; }
