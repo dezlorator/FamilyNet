@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FamilyNet</title>
 
+    @* For OpenStreetMap *@
+    <link href="~/res/External/leaflet/leaflet.css" rel="stylesheet" />
+    <link href="~/res/External/leaflet/leaflet-search.css" rel="stylesheet" />
+    <link href="~/res/css/main.css" rel="stylesheet" />
+
+    <script src="~/res/External/leaflet/leaflet.js"></script>
+    @* --------------------------- *@
+
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -30,13 +38,7 @@
     <link rel="stylesheet" href="~/css/orphanForm.css" />
     <link rel="stylesheet" asp-href-include="/lib/fontawesome/css/*.css" />
 
-    @* For OpenStreetMap *@
-    <link href="~/res/External/leaflet/leaflet.css" rel="stylesheet" />
-    <link href="~/res/External/leaflet/leaflet-search.css" rel="stylesheet" />
-    <link href="~/res/css/main.css" rel="stylesheet" />
 
-    <script src="~/res/External/leaflet/leaflet.js"></script>
-    @* --------------------------- *@
 </head>
 <body>
     <header>
