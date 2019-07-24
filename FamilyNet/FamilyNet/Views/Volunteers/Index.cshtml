@@ -30,15 +30,15 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.FullName.Name)
                     @Html.DisplayFor(modelItem => item.FullName.Surname)
+                    @Html.DisplayFor(modelItem => item.FullName.Name)
                     @Html.DisplayFor(modelItem => item.FullName.Patronymic)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Address.Country)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Address.Region)
+                    @Html.DisplayFor(modelItem => item.Address.City)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Rating)
