@@ -67,7 +67,7 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("FullName,Orphanage")] Representative representative, int id, IFormFile file)
+        public async Task<IActionResult> Create([Bind("FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative, int id, IFormFile file)
         {
             if (file != null && file.Length > 0)
             {
@@ -148,6 +148,7 @@ namespace FamilyNet.Controllers
                     representative.Orphanage = orphanage;
 
                     var representativeToEdit = await _unitOfWorkAsync.Representatives.GetById(representative.ID);
+                    Representative.CopyState(representativeToEdit, representative);
                     _unitOfWorkAsync.Representatives.Update(representativeToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }
