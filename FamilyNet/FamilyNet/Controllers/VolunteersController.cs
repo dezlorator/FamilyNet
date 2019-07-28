@@ -9,6 +9,8 @@ using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace FamilyNet.Controllers
 {
@@ -63,8 +65,20 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("FullName, Address, Birthday, Contacts")] Volunteer volunteer)
+        public async Task<IActionResult> Create([Bind("FullName, Address, Birthday, Rating, Avatar")] Volunteer volunteer, IFormFile file)
         {
+            if (file != null && file.Length > 0)
+            {
+                var fileName = Path.GetRandomFileName();
+                fileName = Path.ChangeExtension(fileName, ".jpg");
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\avatars", fileName);
+                using (var fileSteam = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileSteam);
+                }
+                volunteer.Avatar = fileName;
+            }
+
             if (ModelState.IsValid)
             {
                 await _unitOfWorkAsync.Volunteers.Create(volunteer);
@@ -97,11 +111,23 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("ID, FullName, Address, Birthday, Contacts, Rating")] Volunteer volunteer)
+        public async Task<IActionResult> Edit(int id, [Bind("ID, FullName, Address, Birthday, Rating, Avatar")] Volunteer volunteer, IFormFile file)
         {
             if (id != volunteer.ID)
             {
                 return NotFound();
+            }
+
+            if (file != null && file.Length > 0)
+            {
+                var fileName = Path.GetRandomFileName();
+                fileName = Path.ChangeExtension(fileName, ".jpg");
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\avatars", fileName);
+                using (var fileSteam = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileSteam);
+                }
+                volunteer.Avatar = fileName;
             }
 
             if (ModelState.IsValid)

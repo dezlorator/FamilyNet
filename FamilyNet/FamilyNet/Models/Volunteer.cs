@@ -20,10 +20,16 @@ namespace FamilyNet.Models
             receiver.FullName.Surname = sender.FullName.Surname;
             receiver.FullName.Patronymic = sender.FullName.Patronymic;
 
+            receiver.Address.Country = sender.Address.Country;
+            receiver.Address.Region = sender.Address.Region;
+            receiver.Address.City = sender.Address.City;
+            receiver.Address.Street = sender.Address.Street;
+            receiver.Address.House = receiver.Address.House;
+
             receiver.Rating = sender.Rating;
             receiver.Birthday = receiver.Birthday;
 
-
+            receiver.Avatar = sender.Avatar;
         }
     }
 }

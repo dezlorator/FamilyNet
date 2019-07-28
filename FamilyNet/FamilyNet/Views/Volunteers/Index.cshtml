@@ -10,15 +10,20 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.Avatar)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.FullName.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Address.Country)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Address.Region)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Address.City)
             </th>
-
             <th>
                 @Html.DisplayNameFor(model => model.Rating)
             </th>
@@ -28,27 +33,33 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FullName.Surname)
-                    @Html.DisplayFor(modelItem => item.FullName.Name)
-                    @Html.DisplayFor(modelItem => item.FullName.Patronymic)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address.Country)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address.City)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Rating)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID"><i class="fa fa-marker fa-lg"></i></a>
-                    <a asp-action="Details" asp-route-id="@item.ID"><i class="fa fa-list fa-lg"></i></a>
-                    <a asp-action="Delete" asp-route-id="@item.ID"><i class="fa fa-trash-alt fa-lg"></i></a>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                <img class="img-responsive" src="@Url.Content("~/avatars/" + @item.Avatar)" alt="" width="50" height="50">
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName.Surname)
+                @Html.DisplayFor(modelItem => item.FullName.Name)
+                @Html.DisplayFor(modelItem => item.FullName.Patronymic)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address.Country)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address.Region)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address.City)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rating)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID"><i class="fa fa-marker fa-lg"></i></a>
+                <a asp-action="Details" asp-route-id="@item.ID"><i class="fa fa-list fa-lg"></i></a>
+                <a asp-action="Delete" asp-route-id="@item.ID"><i class="fa fa-trash-alt fa-lg"></i></a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>

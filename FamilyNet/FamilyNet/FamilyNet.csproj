@@ -18,6 +18,7 @@
   <ItemGroup>
     <Folder Include="Content\Images\" />
     <Folder Include="wwwroot\avatars\" />
+    <Folder Include="wwwroot\volunteers\" />
     <Folder Include="wwwroot\representatives\" />
   </ItemGroup>
 
