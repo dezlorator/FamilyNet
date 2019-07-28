@@ -4,73 +4,55 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Детали</h1>
 
-<div>
-    <h4>Волонтер</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FullName.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName.Surname)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FullName.Surname)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName.Patronymic)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FullName.Patronymic)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address.Country)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address.Country)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address.City)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address.City)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address.Region)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address.Region)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address.Street)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address.Street)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address.House)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address.House)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Birthday)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Birthday)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Rating)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Rating)
-        </dd>
-    </dl>
+<h1>Подробно</h1>
+
+<div class="container">
+    <div class="row my-2">
+        <div class="col-lg-8 order-lg-2">
+            <div class="tab-content py-4">
+                <div class="tab-pane active" id="profile">
+                    <h5 class="mb-3">Профиль волонтера</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <b>@Html.DisplayNameFor(model => model.FullName.Name):</b>
+                            @Html.DisplayFor(model => model.FullName.Name)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.FullName.Surname):</b>
+                                @Html.DisplayFor(model => model.FullName.Surname)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.FullName.Patronymic):</b>
+                                @Html.DisplayFor(model => model.FullName.Patronymic)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Address.Country):</b>
+                                @Html.DisplayFor(model => model.Address.Country)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Address.Region)</b>
+                                @Html.DisplayFor(model => model.Address.Region)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Address.City)</b>
+                                @Html.DisplayFor(model => model.Address.City)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Address.Street)</b>
+                                @Html.DisplayFor(model => model.Address.Street)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Address.House)</b>
+                                @Html.DisplayFor(model => model.Address.House)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Birthday)</b>
+                                @Html.DisplayFor(model => model.Birthday) <br>
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Rating)</b>
+                                @Html.DisplayFor(model => model.Rating) <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 order-lg-1 text-center">
+            <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content("~/avatars/" + Model.Avatar)" alt="">
+        </div>
+    </div>
 </div>
 <div>
     <a asp-action="Index"><i class="fas fa-chevron-circle-left"></i></a>
