@@ -127,20 +127,7 @@ namespace FamilyNet.Controllers
             }
             if (ModelState.IsValid)
             {
-                bool rand = DateTime.Now.Ticks % 2 == 0;
-                List<DonationItemType> test = new List<DonationItemType>();
-                test.Add(new DonationItemType()
-                {
-                    Name = rand ? "одежда" : "игрушки"
-                });
-                orphanage.Needs = new List<DonationItem>();
-                orphanage.Needs.Add(new DonationItem()
-                {
-                    Description = "тест",
-                    Name = "Имя",
-                    Price = 2,
-                    DonationItemTypes = test,
-                });
+                
                 await _unitOfWorkAsync.Orphanages.Create(orphanage);
                 await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -238,19 +225,19 @@ namespace FamilyNet.Controllers
             _unitOfWorkAsync.Orphanages.GetById(id) != null;
 
         [AllowAnonymous]
-        public async Task<IActionResult> SearchByTypeHelp()
+        public IActionResult SearchByTypeHelp()
         {
             return View();
         }
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> SearchResult(string typeHelp)
+        public  IActionResult SearchResult(string typeHelp)
         {
             ViewData["TypeHelp"] = typeHelp;
             var list = _unitOfWorkAsync.Orphanages.Get(
-                orp => orp.Needs.Where(
-                    donat => donat.DonationItemTypes.Where(
-                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).ToList().Count > 0).ToList().Count > 0);
+                orp => orp.Donations.Where(
+                    donat => donat.DonationItem.DonationItemTypes.Where(
+                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).ToList().Count > 0 && donat.IsRequest).ToList().Count > 0);
             return View("SearchResult", list);
         }
     }

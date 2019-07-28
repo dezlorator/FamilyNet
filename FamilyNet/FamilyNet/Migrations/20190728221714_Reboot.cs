@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FamilyNet.Migrations
 {
-    public partial class FamilyNetEFCore : Migration
+    public partial class Reboot : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Adress",
+                name: "Address",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
@@ -22,7 +22,7 @@ namespace FamilyNet.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Adress", x => x.ID);
+                    table.PrimaryKey("PK_Address", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,9 +74,9 @@ namespace FamilyNet.Migrations
                 {
                     table.PrimaryKey("PK_CharityMakers", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_CharityMakers_Adress_AddressID",
+                        name: "FK_CharityMakers_Address_AddressID",
                         column: x => x.AddressID,
-                        principalTable: "Adress",
+                        principalTable: "Address",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -90,15 +90,17 @@ namespace FamilyNet.Migrations
                     Name = table.Column<string>(nullable: false),
                     AdressID = table.Column<int>(nullable: true),
                     Rating = table.Column<float>(nullable: false),
-                    Avatar = table.Column<string>(nullable: true)
+                    Avatar = table.Column<string>(nullable: true),
+                    MapCoordX = table.Column<float>(nullable: true),
+                    MapCoordY = table.Column<float>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orphanages", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Orphanages_Adress_AdressID",
+                        name: "FK_Orphanages_Address_AdressID",
                         column: x => x.AdressID,
-                        principalTable: "Adress",
+                        principalTable: "Address",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -122,9 +124,9 @@ namespace FamilyNet.Migrations
                 {
                     table.PrimaryKey("PK_Volunteers", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Volunteers_Adress_AddressID",
+                        name: "FK_Volunteers_Address_AddressID",
                         column: x => x.AddressID,
-                        principalTable: "Adress",
+                        principalTable: "Address",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -136,11 +138,8 @@ namespace FamilyNet.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: false),
-                    AuctionLotItemTypeID = table.Column<int>(nullable: true),
-                    AuctionLotItemTypeID1 = table.Column<int>(nullable: true),
+                    ChildID = table.Column<int>(nullable: true),
                     Discriminator = table.Column<string>(nullable: false),
-                    DonationItemTypeID = table.Column<int>(nullable: true),
-                    DonationItemTypeID1 = table.Column<int>(nullable: true),
                     ItemID = table.Column<int>(nullable: true),
                     DonationItemType_ItemID = table.Column<int>(nullable: true)
                 },
@@ -154,26 +153,8 @@ namespace FamilyNet.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_BaseItemType_BaseItemType_AuctionLotItemTypeID",
-                        column: x => x.AuctionLotItemTypeID,
-                        principalTable: "BaseItemType",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_BaseItemType_BaseItemType_AuctionLotItemTypeID1",
-                        column: x => x.AuctionLotItemTypeID1,
-                        principalTable: "BaseItemType",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_BaseItemType_BaseItemType_DonationItemTypeID",
-                        column: x => x.DonationItemTypeID,
-                        principalTable: "BaseItemType",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_BaseItemType_BaseItemType_DonationItemTypeID1",
-                        column: x => x.DonationItemTypeID1,
+                        name: "FK_BaseItemType_BaseItemType_ChildID",
+                        column: x => x.ChildID,
                         principalTable: "BaseItemType",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
@@ -192,8 +173,11 @@ namespace FamilyNet.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     DonationItemID = table.Column<int>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    CharityMakerID = table.Column<int>(nullable: true)
+                    IsRequest = table.Column<bool>(nullable: false),
+                    CharityMakerID = table.Column<int>(nullable: true),
+                    OrphanageID = table.Column<int>(nullable: true),
+                    Status = table.Column<int>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -208,6 +192,12 @@ namespace FamilyNet.Migrations
                         name: "FK_Donations_DonationItem_DonationItemID",
                         column: x => x.DonationItemID,
                         principalTable: "DonationItem",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Donations_Orphanages_OrphanageID",
+                        column: x => x.OrphanageID,
+                        principalTable: "Orphanages",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -294,8 +284,8 @@ namespace FamilyNet.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Adress_City",
-                table: "Adress",
+                name: "IX_Address_City",
+                table: "Address",
                 column: "City");
 
             migrationBuilder.CreateIndex(
@@ -314,24 +304,11 @@ namespace FamilyNet.Migrations
                 column: "ItemID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseItemType_AuctionLotItemTypeID",
+                name: "IX_BaseItemType_ChildID",
                 table: "BaseItemType",
-                column: "AuctionLotItemTypeID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BaseItemType_AuctionLotItemTypeID1",
-                table: "BaseItemType",
-                column: "AuctionLotItemTypeID1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BaseItemType_DonationItemTypeID",
-                table: "BaseItemType",
-                column: "DonationItemTypeID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BaseItemType_DonationItemTypeID1",
-                table: "BaseItemType",
-                column: "DonationItemTypeID1");
+                column: "ChildID",
+                unique: true,
+                filter: "[ChildID] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BaseItemType_DonationItemType_ItemID",
@@ -354,6 +331,11 @@ namespace FamilyNet.Migrations
                 name: "IX_Donations_DonationItemID",
                 table: "Donations",
                 column: "DonationItemID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Donations_OrphanageID",
+                table: "Donations",
+                column: "OrphanageID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orphanages_AdressID",
@@ -413,7 +395,7 @@ namespace FamilyNet.Migrations
                 name: "Orphanages");
 
             migrationBuilder.DropTable(
-                name: "Adress");
+                name: "Address");
         }
     }
 }

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190721165013_edit base 1.11")]
-    partial class editbase111
+    [Migration("20190728221714_Reboot")]
+    partial class Reboot
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -150,11 +150,19 @@ namespace FamilyNet.Migrations
 
                     b.Property<int?>("DonationItemID");
 
+                    b.Property<bool>("IsRequest");
+
+                    b.Property<int?>("OrphanageID");
+
+                    b.Property<int>("Status");
+
                     b.HasKey("ID");
 
                     b.HasIndex("CharityMakerID");
 
                     b.HasIndex("DonationItemID");
+
+                    b.HasIndex("OrphanageID");
 
                     b.ToTable("Donations");
                 });
@@ -215,7 +223,12 @@ namespace FamilyNet.Migrations
 
                     b.Property<string>("Avatar");
 
-                    b.Property<string>("Name");
+                    b.Property<float?>("MapCoordX");
+
+                    b.Property<float?>("MapCoordY");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<float>("Rating");
 
@@ -352,13 +365,17 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.Donation", b =>
                 {
-                    b.HasOne("FamilyNet.Models.CharityMaker")
+                    b.HasOne("FamilyNet.Models.CharityMaker", "CharityMaker")
                         .WithMany("Donations")
                         .HasForeignKey("CharityMakerID");
 
                     b.HasOne("FamilyNet.Models.DonationItem", "DonationItem")
                         .WithMany()
                         .HasForeignKey("DonationItemID");
+
+                    b.HasOne("FamilyNet.Models.Orphanage", "Orphanage")
+                        .WithMany("Donations")
+                        .HasForeignKey("OrphanageID");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Orphan", b =>

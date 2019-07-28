@@ -9,7 +9,19 @@ namespace FamilyNet.Models
 
         public int? DonationItemID { get; set; }
         public virtual DonationItem DonationItem { get; set; }
-
+        public bool IsRequest { get; set; }
+        public int? CharityMakerID { get; set; }
+        public virtual CharityMaker CharityMaker { get; set; }
+        public int? OrphanageID { get; set; }
+        public virtual Orphanage Orphanage { get; set; }
+        public Status Status { get; set; }
         public DateTime Date { get; set; }
+    }
+
+    public enum Status
+    {
+        Sended = 1,
+        Aproved,
+        Taken,
     }
 }

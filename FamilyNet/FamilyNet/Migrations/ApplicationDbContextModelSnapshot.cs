@@ -148,11 +148,19 @@ namespace FamilyNet.Migrations
 
                     b.Property<int?>("DonationItemID");
 
+                    b.Property<bool>("IsRequest");
+
+                    b.Property<int?>("OrphanageID");
+
+                    b.Property<int>("Status");
+
                     b.HasKey("ID");
 
                     b.HasIndex("CharityMakerID");
 
                     b.HasIndex("DonationItemID");
+
+                    b.HasIndex("OrphanageID");
 
                     b.ToTable("Donations");
                 });
@@ -168,13 +176,9 @@ namespace FamilyNet.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int?>("OrphanageID");
-
                     b.Property<float>("Price");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("OrphanageID");
 
                     b.ToTable("DonationItem");
                 });
@@ -217,7 +221,12 @@ namespace FamilyNet.Migrations
 
                     b.Property<string>("Avatar");
 
-                    b.Property<string>("Name");
+                    b.Property<float?>("MapCoordX");
+
+                    b.Property<float?>("MapCoordY");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<float>("Rating");
 
@@ -354,19 +363,16 @@ namespace FamilyNet.Migrations
 
             modelBuilder.Entity("FamilyNet.Models.Donation", b =>
                 {
-                    b.HasOne("FamilyNet.Models.CharityMaker")
+                    b.HasOne("FamilyNet.Models.CharityMaker", "CharityMaker")
                         .WithMany("Donations")
                         .HasForeignKey("CharityMakerID");
 
                     b.HasOne("FamilyNet.Models.DonationItem", "DonationItem")
                         .WithMany()
                         .HasForeignKey("DonationItemID");
-                });
 
-            modelBuilder.Entity("FamilyNet.Models.DonationItem", b =>
-                {
-                    b.HasOne("FamilyNet.Models.Orphanage")
-                        .WithMany("Needs")
+                    b.HasOne("FamilyNet.Models.Orphanage", "Orphanage")
+                        .WithMany("Donations")
                         .HasForeignKey("OrphanageID");
                 });
 

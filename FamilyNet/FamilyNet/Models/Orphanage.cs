@@ -33,7 +33,7 @@ namespace FamilyNet.Models
         [Display(Name = "Дети")]
         public virtual ICollection<Orphan> Orphans { get; set; }
 
-        public virtual ICollection<DonationItem> Needs { get; set; }// TODO: normal name for property
+        public virtual ICollection<Donation> Donations { get; set; }// TODO: normal name for property
 
         public float? MapCoordX { get; set; }
         public float? MapCoordY { get; set; }
