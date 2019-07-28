@@ -5,14 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNet.Models.EntityFramework
-{
-    public class EFRepositoryAsync<TEntity> : IAsyncRepository<TEntity> where TEntity : class, IEntity
-    {
+namespace FamilyNet.Models.EntityFramework {
+    public class EFRepositoryAsync<TEntity> : IAsyncRepository<TEntity> where TEntity : class, IEntity {
         private readonly ApplicationDbContext _dbContext;
 
-        public EFRepositoryAsync(ApplicationDbContext dbContext)
-        {
+        public EFRepositoryAsync(ApplicationDbContext dbContext) {
             _dbContext = dbContext;
         }
 
@@ -20,42 +17,49 @@ namespace FamilyNet.Models.EntityFramework
         /// Get all instances TEntity from the database 
         /// </summary>
         /// <returns>IQueryable<TEntity></returns>
-        public IQueryable<TEntity> GetAll()
-        {
+        public IQueryable<TEntity> GetAll() {
             return _dbContext.Set<TEntity>();
+
         }
-        public async Task Create(TEntity entity)
-        {
+
+        public IQueryable<Orphanage> GetForSearchOrphanageOnMap() {
+            var Orphanages = _dbContext.Orphanages.AsQueryable()
+                .Where(c=>c.MapCoordX!=null&&c.MapCoordY!=null)
+                .Select(c=>new Orphanage {
+                    Adress = c.Adress,
+                    MapCoordX = c.MapCoordX,
+                    MapCoordY = c.MapCoordY,
+                    Name = c.Name });
+                        
+            return Orphanages;
+        }
+
+        public async Task Create(TEntity entity) {
             await _dbContext.Set<TEntity>().AddAsync(entity);
-            
+
         }
 
-        public void Update(TEntity entity)
-        {
-            _dbContext.Set<TEntity>().Update(entity);            
+        public void Update(TEntity entity) {
+            _dbContext.Set<TEntity>().Update(entity);
         }
 
-        public async Task Delete(int id)
-        {
+        public async Task Delete(int id) {
             var entity = await _dbContext.Set<TEntity>().FindAsync(id);
             _dbContext.Set<TEntity>().Remove(entity);
-            
+
         }
 
-        public async Task<TEntity> GetById(int id)
-        {
+        public async Task<TEntity> GetById(int id) {
             return await _dbContext.Set<TEntity>()
                         .FirstOrDefaultAsync(e => e.ID == id);
         }
 
-        public IEnumerable<TEntity> Get(Func<TEntity, bool> predicate)
-        {
-            return  _dbContext.Set<TEntity>()
+        public IEnumerable<TEntity> Get(Func<TEntity, bool> predicate) {
+            return _dbContext.Set<TEntity>()
                         .Where(predicate);
         }
 
-        public async Task SaveChangesAsync()
-        {
+        public async Task SaveChangesAsync() {
             await _dbContext.SaveChangesAsync();
         }
     }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
 using Newtonsoft.Json;
+//using System.Web.Script.Serialization;
 
 namespace FamilyNet.Controllers {
     public class SearchOrphanageController : BaseController {
@@ -13,16 +14,11 @@ namespace FamilyNet.Controllers {
 
         public async Task<IActionResult> Index() {
 
-            var orphanages = _unitOfWorkAsync.Orphanages.GetAll();
-            List<Orphanage> forOut= new List<Orphanage>();
 
-            foreach (var item in orphanages) {
-                if (item.MapCoordX != null && item.MapCoordY != null) 
-                    {
-                    forOut.Add(item);
-                }
-            }
-            return View(forOut);
+            var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
+            
+            return View(orphanages);
         }
+
     }
 }
