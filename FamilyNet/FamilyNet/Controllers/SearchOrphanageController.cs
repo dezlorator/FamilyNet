@@ -16,14 +16,7 @@ namespace FamilyNet.Controllers {
 
 
             var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
-            //List<Orphanage> forOut = new List<Orphanage>();
-
-            //foreach (var item in orphanages) {
-            //    if (item.MapCoordX != null && item.MapCoordY != null) {
-            //        forOut.Add(item);
-            //    }
-            //}
-
+            
             return View(orphanages);
         }
 
