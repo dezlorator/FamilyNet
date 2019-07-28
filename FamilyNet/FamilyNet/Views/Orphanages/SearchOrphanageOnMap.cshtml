@@ -3,8 +3,8 @@
 @using System.Web
 
 @{
-    ViewData["Title"] = "searchorphanage";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "searchorphanage";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 
 
 }
@@ -13,11 +13,11 @@
 </div>
 
 @section scripts{
-    <script>
+	<script>
 
         var dataFromModel = @Json.Serialize(Model);
         var data = [];
-        
+
         for (var prop in dataFromModel) {
 
         x = {
@@ -57,7 +57,7 @@
             marker.bindPopup('<b>' + title + '</b>' + '<br>' + adr).openPopup();
             markersLayer.addLayer(marker);
         }
-    </script>
+	</script>
 }
 
 <script src="~/res/External/leaflet/leaflet-search.js"></script>

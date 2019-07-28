@@ -21,11 +21,4 @@
     <Folder Include="wwwroot\representatives\" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Content Update="Views\SearchOrphanage\index.cshtml">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>

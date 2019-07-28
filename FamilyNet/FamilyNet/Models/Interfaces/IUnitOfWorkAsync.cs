@@ -7,7 +7,7 @@ namespace FamilyNet.Models.Interfaces
 {
     public interface IUnitOfWorkAsync
     {
-        IAsyncRepository<Orphanage> Orphanages { get; }
+        IOrphanageAsyncRepository Orphanages { get; }
         IAsyncRepository<CharityMaker> CharityMakers { get; }
         IAsyncRepository<Representative> Representatives { get; }
         IAsyncRepository<Volunteer> Volunteers { get; }

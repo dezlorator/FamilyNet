@@ -25,7 +25,7 @@ namespace FamilyNet.Models.EntityFramework
             _context = cont;
             CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
             Donations = new EFRepositoryAsync<Donation>(cont);
-            Orphanages = new EFRepositoryAsync<Orphanage>(cont);
+            Orphanages = new OrphanageRepositoryAsync(cont);
             Orphans = new EFRepositoryAsync<Orphan>(cont);
             Representatives = new EFRepositoryAsync<Representative>(cont);
             Volunteers = new EFRepositoryAsync<Volunteer>(cont);
@@ -44,7 +44,7 @@ namespace FamilyNet.Models.EntityFramework
 
         #region Property
 
-        public IAsyncRepository<Orphanage> Orphanages { get; set; }
+        public IOrphanageAsyncRepository Orphanages { get; set; }
         public IAsyncRepository<CharityMaker> CharityMakers { get; set; }
 
         public IAsyncRepository<Representative> Representatives { get; set; }

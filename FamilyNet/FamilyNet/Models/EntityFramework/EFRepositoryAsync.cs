@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models.EntityFramework {
     public class EFRepositoryAsync<TEntity> : IAsyncRepository<TEntity> where TEntity : class, IEntity {
-        private readonly ApplicationDbContext _dbContext;
+        protected readonly ApplicationDbContext _dbContext;
 
         public EFRepositoryAsync(ApplicationDbContext dbContext) {
             _dbContext = dbContext;
@@ -22,17 +22,6 @@ namespace FamilyNet.Models.EntityFramework {
 
         }
 
-        public IQueryable<Orphanage> GetForSearchOrphanageOnMap() {
-            var Orphanages = _dbContext.Orphanages.AsQueryable()
-                .Where(c=>c.MapCoordX!=null&&c.MapCoordY!=null)
-                .Select(c=>new Orphanage {
-                    Adress = c.Adress,
-                    MapCoordX = c.MapCoordX,
-                    MapCoordY = c.MapCoordY,
-                    Name = c.Name });
-                        
-            return Orphanages;
-        }
 
         public async Task Create(TEntity entity) {
             await _dbContext.Set<TEntity>().AddAsync(entity);

@@ -240,5 +240,12 @@ namespace FamilyNet.Controllers
                         donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).ToList().Count > 0 && donat.IsRequest).ToList().Count > 0);
             return View("SearchResult", list);
         }
+        [AllowAnonymous]
+        public IActionResult SearchOrphanageOnMap()
+        {
+            var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
+
+            return View(orphanages);
+        }
     }
 }
