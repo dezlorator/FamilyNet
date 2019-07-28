@@ -15,12 +15,12 @@
 @section scripts{
     <script>
 
-        var dataFromModel = @Json.Serialize(Model); // !!!! export data !!!!
-        var x;
-        const data=[];
+        var dataFromModel = @Json.Serialize(Model);
+        var data = [];
+        
+        for (var prop in dataFromModel) {
 
-        for(var prop in dataFromModel){
-            x = {
+        x = {
                 "loc": [dataFromModel[prop].mapCoordX, dataFromModel[prop].mapCoordY],
                 "title": dataFromModel[prop].name,
                 "adr": dataFromModel[prop].adress.city + " " + dataFromModel[prop].adress.street + " " + dataFromModel[prop].adress.house
