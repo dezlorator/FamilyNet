@@ -1,4 +1,4 @@
-﻿using FamilyNet.Models.Classes;
+﻿using FamilyNet.Models.EntityFramework.Fluent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -26,7 +26,6 @@ namespace FamilyNet.Models.EntityFramework
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder
                 .UseLazyLoadingProxies();
-            //.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=FamilyNetEFCore;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
@@ -71,20 +70,6 @@ namespace FamilyNet.Models.EntityFramework
                .WithOne(b => b.Item)
                .HasForeignKey(k => k.ItemID)
                .OnDelete(DeleteBehavior.ClientSetNull);
-
-            //one to one
-            //modelBuilder.Entity<AuctionLotItem>()
-            //   .HasOne<AuctionLot>()
-            //   .WithOne(a => a.AuctionLotItem)
-            //   .HasForeignKey<AuctionLot>(f => f.AuctionLotItemID)
-            //   .OnDelete(DeleteBehavior.SetNull);
-
-            //modelBuilder.Entity<DonationItem>()
-            //   .HasOne<Donation>()
-            //   .WithOne(a => a.DonationItem)
-            //   .HasForeignKey<Donation>(f => f.DonationItem)
-            //   .OnDelete(DeleteBehavior.SetNull);
-
 
             #endregion
 

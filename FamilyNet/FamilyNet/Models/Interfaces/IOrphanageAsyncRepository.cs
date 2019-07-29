@@ -7,7 +7,6 @@ namespace FamilyNet.Models.Interfaces
 {
     public interface IOrphanageAsyncRepository: IAsyncRepository<Orphanage> 
     {
-
         IQueryable<Orphanage> GetForSearchOrphanageOnMap();
     }
 }

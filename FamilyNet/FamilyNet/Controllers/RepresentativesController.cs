@@ -148,7 +148,7 @@ namespace FamilyNet.Controllers
                     representative.Orphanage = orphanage;
 
                     var representativeToEdit = await _unitOfWorkAsync.Representatives.GetById(representative.ID);
-                    Representative.CopyState(representativeToEdit, representative);
+                    representativeToEdit.CopyState(representative);
                     _unitOfWorkAsync.Representatives.Update(representativeToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }

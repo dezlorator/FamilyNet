@@ -6,13 +6,13 @@ namespace FamilyNet.Models.ViewModels
     {
         [Required]
         [Display(Name = "Email")]
-        //[UIHint("email")]
+        //[UIHint("email")] // TODO : fix
         public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
-        //[UIHint("password")]
+        //[UIHint("password")] // TODO : fix
         public string Password { get; set; }
 
         [Display(Name = "Запомнить?")]

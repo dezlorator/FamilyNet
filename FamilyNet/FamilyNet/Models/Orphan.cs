@@ -7,31 +7,22 @@ namespace FamilyNet.Models
     {
         public int? OrphanageID { get; set; }
 
-
-        //[Required]
         [Display(Name = "Детский дом")]
         public virtual Orphanage Orphanage { get; set; }
 
         public virtual ICollection<AuctionLot> AuctionLots { get; set; }
 
-
         public bool Confirmation { get; set; }
+
         public bool ChildInOrphanage { get; set; }
 
-        public static void CopyState(Orphan receiver, Orphan sender)
+        public override void CopyState(Person sender)
         {
-            receiver.FullName.Name = sender.FullName.Name;
-            receiver.FullName.Surname = sender.FullName.Surname;
-            receiver.FullName.Patronymic = sender.FullName.Patronymic;
-
-            receiver.Rating = sender.Rating;
-            receiver.Birthday = sender.Birthday;
-
-            receiver.Orphanage = sender.Orphanage;
-
-            receiver.Avatar = sender.Avatar;
-
+            base.CopyState(sender);
+            Orphan orphanSended = sender as Orphan;
+            Orphanage = orphanSended.Orphanage;
+            Confirmation = orphanSended.Confirmation;
+            ChildInOrphanage = orphanSended.ChildInOrphanage;
         }
-
     }
 }

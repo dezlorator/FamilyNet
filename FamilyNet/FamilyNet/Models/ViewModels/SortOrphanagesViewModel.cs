@@ -5,27 +5,31 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using FamilyNet.Models;
 
-namespace FamilyNet.Models.SortViewModel
+namespace FamilyNet.Models.ViewModels
 {
     public class SortOrphanagesViewModel : Orphanage
     {
         public SortStateOrphanages NameSort { get; set; }
+
         public SortStateOrphanages AdressSort { get; set; }
+
         public SortStateOrphanages RatingSort { get; set; }
+
         public SortStateOrphanages Current { get; set; }
-        public bool Up { get; set; }
+
+        public bool IsDescending { get; set; }
 
         public SortOrphanagesViewModel(SortStateOrphanages sortItem)
         {
             NameSort = SortStateOrphanages.NameAsc;
             AdressSort = SortStateOrphanages.AddressAsc;
             RatingSort = SortStateOrphanages.RatingAsc;
-            Up = true;
+            IsDescending = true;
 
             if (sortItem == SortStateOrphanages.AddressDesc || sortItem == SortStateOrphanages.NameDesc
                 || sortItem == SortStateOrphanages.RatingDesc)
             {
-                Up = false;
+                IsDescending = false;
             }
 
             switch (sortItem)

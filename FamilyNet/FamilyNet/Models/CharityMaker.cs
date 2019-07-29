@@ -11,18 +11,14 @@ namespace FamilyNet.Models
         public virtual ICollection<Donation> Donations { get; set; }
 
         public int? AddressID { get; set; }
+
         public virtual Address Address { get; set; }
 
         public override void CopyState(Person sender)
         {
-            IAddress sender2 = sender as IAddress;
+            IAddress adressSender = sender as IAddress;
             base.CopyState(sender);
-            Address.City = sender2.Address.City;
-            Address.Country = sender2.Address.Country;
-            Address.House = sender2.Address.House;
-            Address.Region = sender2.Address.Region;
-            Address.Street = sender2.Address.Street;
-
+            this.Address.CopyState(adressSender.Address);
         }
     }
 }

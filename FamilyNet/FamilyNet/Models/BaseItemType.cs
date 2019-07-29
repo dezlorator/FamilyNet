@@ -7,10 +7,11 @@ namespace FamilyNet.Models
     public class BaseItemType : IEntity
     {
         public int ID { get; set; }
+
         [Required]
         public string Name { get; set; }
-        public virtual BaseItemType Child { get; set; }
+
         public virtual BaseItemType Parent { get; set; }
 
-            }
+    }
 }

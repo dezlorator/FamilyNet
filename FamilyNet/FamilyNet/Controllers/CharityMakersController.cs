@@ -15,8 +15,6 @@ namespace FamilyNet.Controllers
     [Authorize]
     public class CharityMakersController : BaseController
     {
-        
-
         public CharityMakersController(IUnitOfWorkAsync unitOfWork) : base (unitOfWork)
         { }
 
@@ -25,6 +23,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Index()
         {
             var list = await _unitOfWorkAsync.CharityMakers.GetAll().ToListAsync();
+
             return View(list);
         }
 
@@ -38,6 +37,7 @@ namespace FamilyNet.Controllers
             }
 
             var charityMaker = await _unitOfWorkAsync.CharityMakers.GetById((int)id);
+
             if (charityMaker == null)
             {
                 return NotFound();
@@ -80,10 +80,12 @@ namespace FamilyNet.Controllers
             }
 
             var charityMaker = await _unitOfWorkAsync.CharityMakers.GetById((int)id);
+
             if (charityMaker == null)
             {
                 return NotFound();
             }
+
             return View(charityMaker);
         }
 
@@ -105,6 +107,7 @@ namespace FamilyNet.Controllers
                 try
                 {
                     CharityMaker charityMakerToEdit = await _unitOfWorkAsync.CharityMakers.GetById(id);
+
                     charityMakerToEdit.CopyState(charityMaker);
                     _unitOfWorkAsync.CharityMakers.Update(charityMakerToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
@@ -117,7 +120,7 @@ namespace FamilyNet.Controllers
                     }
                     else
                     {
-                        throw;
+                        throw; // TODO : logging
                     }
                 }
                 return RedirectToAction(nameof(Index));
@@ -136,6 +139,7 @@ namespace FamilyNet.Controllers
 
             CharityMaker charityMaker = await _unitOfWorkAsync.CharityMakers
                 .GetById((int)id);
+
             if (charityMaker == null)
             {
                 return NotFound();
