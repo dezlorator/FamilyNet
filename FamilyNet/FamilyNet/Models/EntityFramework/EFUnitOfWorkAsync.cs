@@ -13,14 +13,15 @@ namespace FamilyNet.Models.EntityFramework
     {
         #region Private fields
 
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
        
         #endregion
 
         #region Constructors
 
         public EFUnitOfWorkAsync(ApplicationDbContext cont, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid, 
-            IPasswordHasher<ApplicationUser> passwordHash, UserManager<ApplicationUser> usrMgr, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
+            IPasswordHasher<ApplicationUser> passwordHash, UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _context = cont;
             CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
@@ -33,7 +34,7 @@ namespace FamilyNet.Models.EntityFramework
             UserValidator = userValid;
             PasswordValidator = passValid;
             PhoneValidator = new FamilyNetPhoneValidator();
-            UserManager = usrMgr;
+            UserManager = userManager;
             SignInManager = signInManager;
             RoleManager = roleManager;
         }
@@ -45,6 +46,7 @@ namespace FamilyNet.Models.EntityFramework
         #region Property
 
         public IOrphanageAsyncRepository Orphanages { get; set; }
+
         public IAsyncRepository<CharityMaker> CharityMakers { get; set; }
 
         public IAsyncRepository<Representative> Representatives { get; set; }
@@ -64,7 +66,9 @@ namespace FamilyNet.Models.EntityFramework
         public FamilyNetPhoneValidator PhoneValidator { get; set; }
 
         public UserManager<ApplicationUser> UserManager { get; set; }
+
         public SignInManager<ApplicationUser> SignInManager { get; set; }
+
         public RoleManager<IdentityRole> RoleManager { get; set; }
 
         public void SaveChangesAsync()

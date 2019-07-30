@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace FamilyNet.Models.Classes
+namespace FamilyNet.Models.EntityFramework.Fluent
 {
     internal static class ForFluenAPI<T>
         where T:Person

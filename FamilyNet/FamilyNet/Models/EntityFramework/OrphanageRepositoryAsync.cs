@@ -12,6 +12,7 @@ namespace FamilyNet.Models.EntityFramework
         {
             
         }
+
         public IQueryable<Orphanage> GetForSearchOrphanageOnMap()
         {
             var Orphanages = _dbContext.Orphanages.AsQueryable()

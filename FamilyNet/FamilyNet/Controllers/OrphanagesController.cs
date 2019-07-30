@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
-using FamilyNet.Models.Filters;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Models.ViewModels;
 
 namespace FamilyNet.Controllers
 {
@@ -44,11 +44,6 @@ namespace FamilyNet.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
-            //List<Orphanage> orphanagS = new List<Orphanage>()
-            //{
-            //    new Orphanage() {Name="", Adress = { new Address() { } } }
-            //};
-
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
            
             if (searchModel != null)
@@ -177,7 +172,7 @@ namespace FamilyNet.Controllers
                     //in ef to change the object you need to track it out of context
                     var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);
                     //copying the state with NOT CHANGING REFERENCES
-                    Orphanage.CopyState(orphanageToEdit, orphanage);
+                    orphanageToEdit.CopyState(orphanage);
                     _unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }
@@ -237,7 +232,10 @@ namespace FamilyNet.Controllers
             var list = _unitOfWorkAsync.Orphanages.Get(
                 orp => orp.Donations.Where(
                     donat => donat.DonationItem.DonationItemTypes.Where(
-                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).ToList().Count > 0 && donat.IsRequest).ToList().Count > 0);
+                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).ToList().Count > 0
+                        && donat.IsRequest).
+                ToList().Count > 0);
+
             return View("SearchResult", list);
         }
         [AllowAnonymous]

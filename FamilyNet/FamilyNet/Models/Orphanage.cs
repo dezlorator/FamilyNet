@@ -12,9 +12,11 @@ namespace FamilyNet.Models
     public class Orphanage : IEntity
     {
         public int ID { get; set; }
+
         [Required(ErrorMessage = "Пожалуйста введите название")]
         [Display(Name = "Название")]
         public string Name { get; set; }
+
         public int? AdressID { get; set; }
                 
         [Display(Name = "Адрес")]
@@ -33,24 +35,21 @@ namespace FamilyNet.Models
         [Display(Name = "Дети")]
         public virtual ICollection<Orphan> Orphans { get; set; }
 
-        public virtual ICollection<Donation> Donations { get; set; }// TODO: normal name for property
+        public virtual ICollection<Donation> Donations { get; set; }
 
         public float? MapCoordX { get; set; }
+
         public float? MapCoordY { get; set; }
 
-        public static void CopyState(Orphanage receiver, Orphanage sender)
+        public virtual void CopyState(Orphanage sender)
         {
-            receiver.Name = sender.Name;
-            receiver.Rating = sender.Rating;
-            receiver.Avatar = sender.Avatar;
-            receiver.Adress.City = sender.Adress.City;
-            receiver.Adress.Country = sender.Adress.Country;
-            receiver.Adress.House = sender.Adress.House;
-            receiver.Adress.Region = sender.Adress.Region;
-            receiver.Adress.Street = sender.Adress.Street;
+            Name = sender.Name;
+            Rating = sender.Rating;
+            Avatar = sender.Avatar;
+            Adress.CopyState(sender.Adress);
         }
     }
-    public enum SortStateOrphanages
+    public enum SortStateOrphanages // TODO : rewrite this
     {
         NameAsc,
         NameDesc,

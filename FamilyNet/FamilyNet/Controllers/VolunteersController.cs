@@ -108,8 +108,8 @@ namespace FamilyNet.Controllers
             {
                 try
                 {
-                    var volunteerToEdit = await _unitOfWorkAsync.Volunteers.GetById(volunteer.ID);
-                    Volunteer.CopyState(volunteerToEdit, volunteer);
+                    var volunteerToEdit = await _unitOfWorkAsync.Volunteers.GetById(id);
+                    volunteerToEdit.CopyState(volunteer);
                     _unitOfWorkAsync.Volunteers.Update(volunteerToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }

@@ -15,17 +15,16 @@ namespace FamilyNet.Models.Identity
     {
         public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options) : base(options)
         {
-            //Database.EnsureCreated();
-            //Можно юзать это вместо миграции как я понял
+
         }
         public static async Task CreateAdminAccount(IServiceProvider serviceProvider, IConfiguration configuration)
         {
             UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             RoleManager<IdentityRole> roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            //string username = configuration["Data:AdminUser:UserName"];
             string email = configuration["Data:AdminUser:Email"];
             string password = configuration["Data:AdminUser:Password"];
             string role = configuration["Data:AdminUser:Role"];
+
             if (await userManager.FindByEmailAsync(email) == null)
             {
                 if (await userManager.FindByNameAsync(role) == null)
@@ -38,8 +37,10 @@ namespace FamilyNet.Models.Identity
                     Email = email
 
                 };
+
                 user.EmailConfirmed = true;
                 IdentityResult result = await userManager.CreateAsync(user, password);
+
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, role);

@@ -11,8 +11,10 @@ namespace FamilyNet.Models.ViewModels
         [DataType(DataType.PhoneNumber)]
         [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Некорректно введен номер")]
         public string Phone { get; set; }
+
         [Required]
         public string Email { get; set; }
+
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }

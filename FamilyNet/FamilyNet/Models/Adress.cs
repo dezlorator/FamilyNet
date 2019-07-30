@@ -30,5 +30,14 @@ namespace FamilyNet.Models
         [Required(ErrorMessage = "Пожалуйста введите номер дома")]
         [Display(Name = "Дом")]
         public string House { get; set; }
+
+        public virtual void CopyState(Address sender)
+        {
+            City = sender.City;
+            Country = sender.Country;
+            House = sender.House;
+            Region = sender.Region;
+            Street = sender.Street;
+        }
     }
 }
