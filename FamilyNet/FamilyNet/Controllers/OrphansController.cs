@@ -217,7 +217,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/OrphansTable
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public IActionResult OrphansTable()
         {
             var list = _unitOfWorkAsync.Orphans.GetAll().ToList();

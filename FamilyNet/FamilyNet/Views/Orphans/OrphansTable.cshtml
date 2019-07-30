@@ -4,14 +4,9 @@
     ViewData["Title"] = "OrphansTable";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row">
-    <div class="col-sm-6">
-        <h2 class="text-center">Список детей-сирот</h2>
-    </div>
-    <div class="col-sm-6 text-right">
-        <a asp-action="Create" class="btn btn-primary">Создать</a>
-    </div>
-</div>
+
+<h1>Список детей-сирот <a asp-action="Create" class="btn btn-primary float-right">Создать</a></h1>
+
 <table class="table table-hover">
     <thead>
         <tr>
@@ -31,7 +26,7 @@
                 @Html.DisplayNameFor(model => model.Orphanage)
             </th>
             <th>
-                Action
+                Действия
             </th>
         </tr>
     </thead>
