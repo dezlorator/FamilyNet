@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 
 namespace FamilyNet.Models
@@ -24,6 +25,10 @@ namespace FamilyNet.Models
         public DonationStatus Status { get; set; }
 
         public DateTime LastDateWhenStatusChanged { get; set; }
+
+
+        [BindNever]
+        public bool IsDeleted { get; set; } = false;
 
         public enum DonationStatus
         {

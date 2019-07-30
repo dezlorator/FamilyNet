@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,6 +31,9 @@ namespace FamilyNet.Models
         [Required(ErrorMessage = "Пожалуйста введите номер дома")]
         [Display(Name = "Дом")]
         public string House { get; set; }
+
+        [BindNever]
+        public bool IsDeleted { get; set; } = false;
 
         public virtual void CopyState(Address sender)
         {

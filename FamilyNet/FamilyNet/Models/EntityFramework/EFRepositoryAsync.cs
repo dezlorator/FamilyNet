@@ -32,7 +32,7 @@ namespace FamilyNet.Models.EntityFramework {
             _dbContext.Set<TEntity>().Update(entity);
         }
 
-        public async Task Delete(int id) {
+        public async Task HardDelete(int id) {
             var entity = await _dbContext.Set<TEntity>().FindAsync(id);
             _dbContext.Set<TEntity>().Remove(entity);
 
@@ -50,6 +50,13 @@ namespace FamilyNet.Models.EntityFramework {
 
         public async Task SaveChangesAsync() {
             await _dbContext.SaveChangesAsync();
+        }
+
+        public virtual async Task Delete(int id)
+        {
+            var entity = await GetById(id);
+            entity.IsDeleted = true;
+            Update(entity);
         }
     }
 }

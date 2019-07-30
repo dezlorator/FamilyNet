@@ -41,6 +41,9 @@ namespace FamilyNet.Models
 
         public float? MapCoordY { get; set; }
 
+        [BindNever]
+        public bool IsDeleted { get; set; } = false;
+
         public virtual void CopyState(Orphanage sender)
         {
             Name = sender.Name;

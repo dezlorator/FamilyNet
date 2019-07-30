@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,6 +28,10 @@ namespace FamilyNet.Models
         public string Avatar { get; set; }
 
         public int EmailID { get; set; }
+
+
+        [BindNever]
+        public bool IsDeleted { get; set; } = false;
 
         public virtual void CopyState(Person sender)
         {

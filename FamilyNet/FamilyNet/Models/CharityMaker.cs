@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace FamilyNet.Models
         public int? AddressID { get; set; }
 
         public virtual Address Address { get; set; }
-
+      
         public override void CopyState(Person sender)
         {
             IAddress adressSender = sender as IAddress;

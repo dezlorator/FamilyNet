@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,5 +14,7 @@ namespace FamilyNet.Models
 
         public virtual BaseItemType Parent { get; set; }
 
+        [BindNever]
+        public bool IsDeleted { get; set; } = false;
     }
 }

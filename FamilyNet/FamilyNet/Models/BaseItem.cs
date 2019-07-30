@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -20,5 +21,8 @@ namespace FamilyNet.Models
         [Range(0.01, double.MaxValue,
             ErrorMessage = "Please enter a positive price")]
         public float Price { get; set; }
+
+        [BindNever]
+        public bool IsDeleted { get; set; } = false;
     }
 }
