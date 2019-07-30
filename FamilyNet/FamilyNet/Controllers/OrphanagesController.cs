@@ -120,6 +120,10 @@ namespace FamilyNet.Controllers
                 }
                 orphanage.Avatar = fileName;
             }
+
+            //part to add location when obj creating
+            (orphanage.MapCoordX, orphanage.MapCoordY) = GetCoordProp(orphanage.Adress);
+
             if (ModelState.IsValid)
             {
                 
@@ -244,6 +248,35 @@ namespace FamilyNet.Controllers
             var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
 
             return View(orphanages);
+        }
+
+        private Tuple<float?, float?> GetCoordProp(Address address)
+        {
+            float? X = null;
+            float? Y = null;
+
+            try
+            {
+                var nominatim = new Nominatim.API.Geocoders.ForwardGeocoder();
+                var d = nominatim.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest()
+                {
+                    Country = address.Country,
+                    State = address.Region,
+                    City = address.City,
+                    StreetAddress = String.Concat(address.Street, " ", address.House)
+                });
+
+                //TODO:some validation for search
+
+                X = (float)d.Result[0].Latitude;
+                Y = (float)d.Result[0].Longitude;
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return new Tuple<float?, float?>(X, Y);
         }
     }
 }
