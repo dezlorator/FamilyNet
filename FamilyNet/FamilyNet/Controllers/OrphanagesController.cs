@@ -232,9 +232,9 @@ namespace FamilyNet.Controllers
             var list = _unitOfWorkAsync.Orphanages.Get(
                 orp => orp.Donations.Where(
                     donat => donat.DonationItem.DonationItemTypes.Where(
-                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).ToList().Count > 0
+                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).Count() > 0
                         && donat.IsRequest).
-                ToList().Count > 0);
+                    Count() > 0);
 
             return View("SearchResult", list);
         }
