@@ -20,6 +20,7 @@ namespace FamilyNet.Models
         {
             base.CopyState(sender);
             Orphan orphanSended = sender as Orphan;
+            Avatar = orphanSended.Avatar;
             Orphanage = orphanSended.Orphanage;
             Confirmation = orphanSended.Confirmation;
             ChildInOrphanage = orphanSended.ChildInOrphanage;
