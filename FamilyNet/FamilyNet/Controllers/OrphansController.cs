@@ -26,17 +26,13 @@ namespace FamilyNet.Controllers
 
         // GET: Orphans
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id)
+        public async Task<IActionResult> Index(uint id)
         {
-            var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
-            if (id == 0)
-                return View(list);
+            var orphans = from o in _unitOfWorkAsync.Orphans.GetAll()
+                        where (id == 0 || o.ID == id)
+                        select o;
 
-
-            if (id >0)
-                list = list.Where(x => x.Orphanage.ID.Equals(id)).ToList();
-
-            return View(list);
+            return View(orphans);
         }
 
         // GET: Orphans/Details/5
@@ -61,9 +57,9 @@ namespace FamilyNet.Controllers
         [Authorize(Roles ="Admin")]
         public IActionResult Create()
         {
-            List<Orphanage> orphanagesList = new List<Orphanage>();
-            orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
-            ViewBag.ListOfOrphanages = orphanagesList;
+            //List<Orphanage> orphanagesList = new List<Orphanage>();
+            //orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
 
             return View();
         }
@@ -141,6 +137,7 @@ namespace FamilyNet.Controllers
                 var fileName = Path.GetRandomFileName();
                 fileName = Path.ChangeExtension(fileName, ".jpg");
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\children", fileName);
+
                 using (var fileSteam = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileSteam);

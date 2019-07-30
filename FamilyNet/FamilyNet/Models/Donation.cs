@@ -9,7 +9,7 @@ namespace FamilyNet.Models
 
         public int? DonationItemID { get; set; }
 
-        public virtual DonationItem DonationItem { get; set; }
+        public virtual DonationItem DonationItem { get; set; }  
 
         public bool IsRequest { get; set; }
 
