@@ -10,7 +10,7 @@
         <h2>Представители детодомов</h2>
     </div>
     <div class="col-sm-6 text-right">
-        <a asp-action="Create" class="btn btn-primary">Создать представителя</a>
+        <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus"></i></a>
     </div>
 </div>
 <table class="table table-hover">
@@ -26,7 +26,22 @@
                 @Html.DisplayNameFor(model => model.FullName.Surname)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Birthday)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rating)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Avatar)
+            </th>
+            @*<th> TODO: Add email from Identity
+            @Html.DisplayNameFor(model => model.Email)
+            </th>*@
+            <th>
                 @Html.DisplayNameFor(model => model.Orphanage)
+            </th>
+            <th>
+                Действия
             </th>
         </tr>
     </thead>
@@ -44,12 +59,25 @@
                 @Html.DisplayFor(modelItem => item.FullName.Surname)
             </th>
             <th>
-                @Html.DisplayFor(modelItem => item.Orphanage.Name)
+                @Html.DisplayFor(modelItem => item.Birthday)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.Rating)
             </th>
             <td>
-                <a asp-action="Edit" class="btn btn-primary" asp-route-id="@item.ID">Редактировать</a>
-                <a asp-action="Details" class="btn btn-primary" asp-route-id="@item.ID">Подробнее</a>
-                <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.ID">Удалить</a>
+                <img class="img-responsive" src="@Url.Content("~/representatives/" + @item.Avatar)" alt="" width="50" height="50">
+            </td>
+            <th>
+                <a asp-action="Index" asp-controller="Orphanages" asp-route-id="@item.ID"
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-home"></i> 
+                    @Html.DisplayFor(modelItem => item.Orphanage.Name)
+                </a>
+            </th>
+            <td>
+                <a asp-action="Edit" class="btn btn-primary" asp-route-id="@item.ID"><i class="fa fa-marker fa-lg"></i></a>
+                <a asp-action="Details" class="btn btn-primary" asp-route-id="@item.ID"><i class="fas fa-info-circle"></i></a>
+                <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.ID"><i class="fa fa-trash-alt fa-lg"></i></a>
             </td>
         </tr>
         }
