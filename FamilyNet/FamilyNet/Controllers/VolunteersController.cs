@@ -11,15 +11,20 @@ using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
     public class VolunteersController : BaseController
     {
-
-        public VolunteersController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
-        { }
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public VolunteersController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment) : base(unitOfWork)
+        {
+            _hostingEnvironment = environment;
+        }
+        //public VolunteersController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        //{ }
 
         // GET: Volunteers
         [AllowAnonymous]
@@ -52,8 +57,7 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            List<Orphanage> orphanagesList = new List<Orphanage>();
-            orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            List<Orphanage> orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
 
             return View();
@@ -111,7 +115,8 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("ID, FullName, Address, Birthday, Rating, Avatar")] Volunteer volunteer, IFormFile file)
+        public async Task<IActionResult> Edit(int id, 
+            [Bind("ID, FullName, Address, Birthday, Rating, Avatar")] Volunteer volunteer, IFormFile file)
         {
             if (id != volunteer.ID)
             {
@@ -188,7 +193,7 @@ namespace FamilyNet.Controllers
 
         private bool VolunteerExists(int id)
         {
-            return _unitOfWorkAsync.Volunteers.GetById(id) !=null;
+            return _unitOfWorkAsync.Volunteers.GetById(id) != null;
         }
     }
 }
