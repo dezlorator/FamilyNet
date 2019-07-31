@@ -37,9 +37,8 @@ namespace FamilyNet.Models
 
         public virtual ICollection<Donation> Donations { get; set; }
 
-        public float? MapCoordX { get; set; }
-
-        public float? MapCoordY { get; set; }
+        public int LocationID { get; set; }
+        public virtual Location Location { get; set; }
 
         public virtual void CopyState(Orphanage sender)
         {
@@ -58,4 +57,5 @@ namespace FamilyNet.Models
         RatingAsc,
         RatingDesc
     }
+    
 }
