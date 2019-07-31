@@ -23,7 +23,7 @@ namespace FamilyNet.Models
         [Display(Name = "Рейтинг")]
         public float Rating { get; set; }
 
-        [Display(Name = "Автар")]
+        [Display(Name = "Аватар")]
         public string Avatar { get; set; }
 
         public int EmailID { get; set; }

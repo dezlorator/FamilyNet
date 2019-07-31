@@ -15,28 +15,24 @@ namespace FamilyNet.Controllers
     [Authorize]
     public class OrphanagesController : BaseController
     {
+        #region Private fields
+
         private OrphanageSearchModel _searchModel;
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment) 
+        #endregion
+
+        #region Ctor
+
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment)
             : base(unitOfWork)
         {
             _hostingEnvironment = environment;
         }
 
-        private bool IsContain(Address addr)
-        {
-            foreach (var word in _searchModel.AddressString.Split())
-            {
-                if (addr.Street.ToUpper().Contains(word.ToUpper())
-                || addr.City.ToUpper().Contains(word.ToUpper())
-                || addr.Region.ToUpper().Contains(word.ToUpper())
-                || addr.Country.ToUpper().Contains(word.ToUpper()))
-                    return true;
-            }
+        #endregion
 
-            return false;
-        }
+        #region Methods
 
         // GET: Orphanages
         [AllowAnonymous]
@@ -45,11 +41,21 @@ namespace FamilyNet.Controllers
         {
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
 
+            //IQueryable<Orphanage> orphanages =
+            //    from o in _unitOfWorkAsync.Orphanages.GetAll()
+            //    let rate = searchModel.RatingNumber
+            //    let ns = searchModel.NameString
+            //    let addr = searchModel.AddressString
+            //    where ((o.Rating >= rate) )
+            //    && (string.IsNullOrEmpty(ns) || o.Name.Contains(ns))
+            //    && (string.IsNullOrEmpty(addr) || IsContain(o.Adress))
+            //    select o;
+
             orphanages = GetFiltered(searchModel, orphanages);
             orphanages = GetSorted(sortOrder, orphanages);
 
             if (id == 0)
-                return View(orphanages.ToList());
+                return View(await orphanages.ToListAsync());
 
             if (id > 0)
                 orphanages = orphanages.Where(x => x.ID.Equals(id));
@@ -57,11 +63,27 @@ namespace FamilyNet.Controllers
             return View(await orphanages.ToListAsync());
         }
 
+        private bool IsContain(Address addr)
+        {
+            foreach (var word in _searchModel.AddressString.Split())
+            {
+                string wordUpper = word.ToUpper();
+
+                if (addr.Street.ToUpper().Contains(wordUpper)
+                        || addr.City.ToUpper().Contains(wordUpper)
+                        || addr.Region.ToUpper().Contains(wordUpper)
+                        || addr.Country.ToUpper().Contains(wordUpper))
+                    return true;
+            }
+
+            return false;
+        }
+
         private IQueryable<Orphanage> GetSorted(SortStateOrphanages sortOrder,
             IQueryable<Orphanage> orphanages)
         {
             ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc
-                            ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
+                ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
             ViewData["AddressSort"] = sortOrder == SortStateOrphanages.AddressAsc
                 ? SortStateOrphanages.AddressDesc : SortStateOrphanages.AddressAsc;
             ViewData["RatingSort"] = sortOrder == SortStateOrphanages.RatingAsc
@@ -104,10 +126,13 @@ namespace FamilyNet.Controllers
             if (searchModel != null)
             {
                 _searchModel = searchModel;
+
                 if (!string.IsNullOrEmpty(searchModel.NameString))
                     orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
+
                 if (!string.IsNullOrEmpty(searchModel.AddressString))
                     orphanages = orphanages.Where(x => IsContain(x.Adress));
+
                 if (searchModel.RatingNumber > 0)
                     orphanages = orphanages.Where(x => x.Rating == searchModel.RatingNumber);
             }
@@ -121,7 +146,9 @@ namespace FamilyNet.Controllers
         {
             if (id == null)
                 return NotFound();
+
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+
             if (orphanage == null)
                 return NotFound();
 
@@ -135,6 +162,7 @@ namespace FamilyNet.Controllers
         // POST: Orphanages/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(
             [Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
         {
@@ -167,7 +195,9 @@ namespace FamilyNet.Controllers
         {
             if (id == null)
                 return NotFound();
+
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+
             if (orphanage == null)
                 return NotFound();
 
@@ -230,6 +260,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
 
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+
             if (orphanage == null)
                 return NotFound();
 
@@ -250,7 +281,7 @@ namespace FamilyNet.Controllers
         }
 
         private bool OrphanageExists(int id) =>
-            _unitOfWorkAsync.Orphanages.GetById(id) != null;
+            (_unitOfWorkAsync.Orphanages.GetById(id) != null);
 
         [AllowAnonymous]
         public IActionResult SearchByTypeHelp() => View();
@@ -276,5 +307,7 @@ namespace FamilyNet.Controllers
 
             return View(orphanages);
         }
+
+        #endregion
     }
 }

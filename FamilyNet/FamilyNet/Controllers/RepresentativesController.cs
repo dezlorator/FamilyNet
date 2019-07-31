@@ -15,22 +15,29 @@ namespace FamilyNet.Controllers
     [Authorize]
     public class RepresentativesController : BaseController
     {
+        #region Ctor
+
         public RepresentativesController(IUnitOfWorkAsync unitOfWork) 
             : base(unitOfWork)
-        { }
+        {
+        }
+        #endregion
+
+        #region Methods
 
         // GET: Representatives
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id)
         {
-            var list = _unitOfWorkAsync.Representatives.GetAll().ToList();
+            var orphans = _unitOfWorkAsync.Representatives.GetAll();
+
             if (id == 0)
-                return View(list);
+                return View(await orphans.ToListAsync());
 
             if (id > 0)
-                list = list.Where(x => x.ID.Equals(id)).ToList();
+                orphans = orphans.Where(x => x.Orphanage.ID.Equals(id));
 
-            return View(list);
+            return View(await orphans.ToListAsync());
         }
 
         // GET: Representatives/Details/5
@@ -196,5 +203,7 @@ namespace FamilyNet.Controllers
         {
             return _unitOfWorkAsync.Representatives.GetById(id) != null;
         }
+
+        #endregion
     }
 }
