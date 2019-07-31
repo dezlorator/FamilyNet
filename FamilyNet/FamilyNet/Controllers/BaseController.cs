@@ -10,6 +10,7 @@ namespace FamilyNet.Controllers
     public class BaseController : Controller
     {
         protected IUnitOfWorkAsync _unitOfWorkAsync;
+
         public BaseController(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWorkAsync = unitOfWork;

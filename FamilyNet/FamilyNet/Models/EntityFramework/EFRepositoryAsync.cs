@@ -9,7 +9,8 @@ namespace FamilyNet.Models.EntityFramework {
     public class EFRepositoryAsync<TEntity> : IAsyncRepository<TEntity> where TEntity : class, IEntity {
         protected readonly ApplicationDbContext _dbContext;
 
-        public EFRepositoryAsync(ApplicationDbContext dbContext) {
+        public EFRepositoryAsync(ApplicationDbContext dbContext)
+        {
             _dbContext = dbContext;
         }
 
@@ -23,32 +24,38 @@ namespace FamilyNet.Models.EntityFramework {
         }
 
 
-        public async Task Create(TEntity entity) {
+        public async Task Create(TEntity entity)
+        {
             await _dbContext.Set<TEntity>().AddAsync(entity);
 
         }
 
-        public void Update(TEntity entity) {
+        public void Update(TEntity entity)
+        {
             _dbContext.Set<TEntity>().Update(entity);
         }
 
-        public async Task HardDelete(int id) {
+        public async Task HardDelete(int id) 
+        {
             var entity = await _dbContext.Set<TEntity>().FindAsync(id);
             _dbContext.Set<TEntity>().Remove(entity);
 
         }
 
-        public async Task<TEntity> GetById(int id) {
+        public async Task<TEntity> GetById(int id)
+        {
             return await _dbContext.Set<TEntity>()
                         .FirstOrDefaultAsync(e => e.ID == id);
         }
 
-        public IEnumerable<TEntity> Get(Func<TEntity, bool> predicate) {
+        public IEnumerable<TEntity> Get(Func<TEntity, bool> predicate)
+        {
             return _dbContext.Set<TEntity>()
                         .Where(predicate);
         }
 
-        public async Task SaveChangesAsync() {
+        public async Task SaveChangesAsync()
+        {
             await _dbContext.SaveChangesAsync();
         }
 

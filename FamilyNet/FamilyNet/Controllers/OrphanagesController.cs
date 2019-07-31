@@ -45,15 +45,15 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
-           
+
             if (searchModel != null)
             {
                 _searchModel = searchModel;
                 if (!string.IsNullOrEmpty(searchModel.NameString))
                     orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
                 if (!string.IsNullOrEmpty(searchModel.AddressString))
-                    orphanages = orphanages.Where( x => IsContain(x.Adress));
-                    
+                    orphanages = orphanages.Where(x => IsContain(x.Adress));
+
                 if (searchModel.RatingNumber > 0)
                     orphanages = orphanages.Where(x => x.Rating == searchModel.RatingNumber);
             }
@@ -83,7 +83,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
-            
+
             return View(await orphanages.ToListAsync());
         }
 
@@ -120,9 +120,13 @@ namespace FamilyNet.Controllers
                 }
                 orphanage.Avatar = fileName;
             }
+
+            //part to add location when obj creating
+            (orphanage.MapCoordX, orphanage.MapCoordY) = GetCoordProp(orphanage.Adress);
+
             if (ModelState.IsValid)
             {
-                
+
                 await _unitOfWorkAsync.Orphanages.Create(orphanage);
                 await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -130,9 +134,9 @@ namespace FamilyNet.Controllers
 
             return View(orphanage);
         }
-        
+
         // GET: Orphanages/Edit/5
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -173,6 +177,10 @@ namespace FamilyNet.Controllers
                     var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);
                     //copying the state with NOT CHANGING REFERENCES
                     orphanageToEdit.CopyState(orphanage);
+
+                    //edit location
+                    (orphanageToEdit.MapCoordX, orphanageToEdit.MapCoordY) = GetCoordProp(orphanage.Adress);
+
                     _unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }
@@ -226,15 +234,15 @@ namespace FamilyNet.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        public  IActionResult SearchResult(string typeHelp)
+        public IActionResult SearchResult(string typeHelp)
         {
             ViewData["TypeHelp"] = typeHelp;
             var list = _unitOfWorkAsync.Orphanages.Get(
                 orp => orp.Donations.Where(
                     donat => donat.DonationItem.DonationItemTypes.Where(
-                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).ToList().Count > 0
+                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).Count() > 0
                         && donat.IsRequest).
-                ToList().Count > 0);
+                    Count() > 0);
 
             return View("SearchResult", list);
         }
@@ -244,6 +252,31 @@ namespace FamilyNet.Controllers
             var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
 
             return View(orphanages);
+        }
+
+        private Tuple<float?, float?> GetCoordProp(Address address)
+        {
+            float? X = null;
+            float? Y = null;
+
+            var nominatim = new Nominatim.API.Geocoders.ForwardGeocoder();
+            var d = nominatim.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest()
+            {
+                Country = address.Country,
+                State = address.Region,
+                City = address.City,
+                StreetAddress = String.Concat(address.Street, " ", address.House)
+            });
+
+            //TODO:some validation for search
+            if (d.Result.Count() != 0)
+            {
+                var c=d.Result.Count();
+                X = (float)d.Result[0].Latitude;
+                Y = (float)d.Result[0].Longitude;
+            }
+            
+            return new Tuple<float?, float?>(X, Y);
         }
     }
 }
