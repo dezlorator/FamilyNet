@@ -1,6 +1,6 @@
 ﻿namespace FamilyNet.Models.Interfaces
 {
-    public interface IEntity
+    public interface IEntity : ISoftDeleteable
     {
         int ID { get; set; }
     }

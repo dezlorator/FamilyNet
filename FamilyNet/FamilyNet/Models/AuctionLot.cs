@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 
 namespace FamilyNet.Models
@@ -16,5 +17,8 @@ namespace FamilyNet.Models
         public int? OrphanID { get; set; }
 
         public virtual Orphan Orphan { get; set; }
+
+        [BindNever]
+        public bool IsDeleted { get; set; } = false;
     }
 }
