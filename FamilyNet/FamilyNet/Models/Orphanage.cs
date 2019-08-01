@@ -52,6 +52,8 @@ namespace FamilyNet.Models
             {
                 Avatar = sender.Avatar;
             }
+            Adress.CopyState(sender.Adress);
+            Location.CopyState(sender.Location);
         }
       
     }
