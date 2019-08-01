@@ -56,8 +56,8 @@ namespace FamilyNet.Models
             if(sender.Location != null)
             {
                 Location.CopyState(sender.Location);
-            }
-            
+            }          
+
         }
       
     }
