@@ -18,7 +18,7 @@ namespace FamilyNet.Models
         public string Name { get; set; }
 
         public int? AdressID { get; set; }
-                
+
         [Display(Name = "Адрес")]
         public virtual Address Adress { get; set; }
 
@@ -31,15 +31,14 @@ namespace FamilyNet.Models
 
         [Display(Name = "Представители")]
         public virtual ICollection<Representative> Representatives { get; set; }
-                
+
         [Display(Name = "Дети")]
         public virtual ICollection<Orphan> Orphans { get; set; }
 
         public virtual ICollection<Donation> Donations { get; set; }
 
-        public float? MapCoordX { get; set; }
-
-        public float? MapCoordY { get; set; }
+        public int? LocationID { get; set; }
+        public virtual Location Location { get; set; }
 
         [BindNever]
         public bool IsDeleted { get; set; } = false;
@@ -61,4 +60,5 @@ namespace FamilyNet.Models
         RatingAsc,
         RatingDesc
     }
+
 }
