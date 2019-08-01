@@ -21,7 +21,7 @@
         for (var prop in dataFromModel) {
 
         x = {
-                "loc": [dataFromModel[prop].mapCoordX, dataFromModel[prop].mapCoordY],
+                "loc": [dataFromModel[prop].location.mapCoordX, dataFromModel[prop].location.mapCoordY],
                 "title": dataFromModel[prop].name,
                 "adr": dataFromModel[prop].adress.city + " " + dataFromModel[prop].adress.street + " " + dataFromModel[prop].adress.house
             }
