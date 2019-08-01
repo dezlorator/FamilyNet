@@ -54,7 +54,7 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
-        public async Task<IActionResult> CreateRequest([Bind("ID,DonationItem")] Donation request)
+        public async Task<IActionResult> CreateRequest([Bind("ID,DonationItem,Orphanage")] Donation request)
         {          
             if (ModelState.IsValid)
             {
@@ -72,7 +72,7 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "CharityMaker,Volunteer")]
-        public async Task<IActionResult> CreateDonation([Bind("ID,DonationItem")] Donation donation)
+        public async Task<IActionResult> CreateDonation([Bind("ID,DonationItem,Orphanage")] Donation donation)
         {
             if (ModelState.IsValid)
             {
