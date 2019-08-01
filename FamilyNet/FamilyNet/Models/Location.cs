@@ -6,11 +6,17 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class Location:IEntity
+    public class Location : IEntity
     {
         public float? MapCoordX { get; set; }
 
         public float? MapCoordY { get; set; }
         public int ID { get; set; }
+
+        public virtual void CopyState(Location sender)
+        {
+            MapCoordX = sender.MapCoordX;
+            MapCoordY = sender.MapCoordY;
+        }
     }
 }

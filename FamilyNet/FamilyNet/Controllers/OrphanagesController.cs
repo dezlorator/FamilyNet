@@ -122,8 +122,15 @@ namespace FamilyNet.Controllers
             }
 
             //part to add location when obj creating
-            //TODO:change
-            //(orphanage.Location.MapCoordX, orphanage.Location.MapCoordY) = GetCoordProp(orphanage.Adress);
+            bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
+            if (IsLocationNotNull)
+            {
+                orphanage.Location = new Location() { MapCoordX = Location.Item1, MapCoordY = Location.Item2 };
+            }
+            else
+            {
+                orphanage.LocationID = null;
+            }
 
             if (ModelState.IsValid)
             {
@@ -176,23 +183,21 @@ namespace FamilyNet.Controllers
                 {
                     //in ef to change the object you need to track it out of context
                     var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);
+
                     //copying the state with NOT CHANGING REFERENCES
                     orphanageToEdit.CopyState(orphanage);
 
                     //edit location
-
                     bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
                     if (IsLocationNotNull)
                     {
-                        orphanageToEdit.Location.MapCoordX = Location.Item1;
-                        orphanageToEdit.Location.MapCoordY = Location.Item2;
+                        orphanageToEdit.Location = new Location() { MapCoordX = Location.Item1, MapCoordY = Location.Item2 };
                     }
                     else
                     {
-                        //add link for first element
-                        //orphanageToEdit.LocationID = 
+                        orphanageToEdit.LocationID = null;
                     }
-                 
+
                     _unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }
