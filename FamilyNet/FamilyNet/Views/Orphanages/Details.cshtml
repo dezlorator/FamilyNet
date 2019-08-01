@@ -5,8 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Подробно</h1>
-
+<h1>Подробно
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-controller="Donations" asp-action="CreateRequest" class="btn btn-primary float-right">Создать Нужду</a>
+    }
+</h1>
 <div class="container">
     <div class="row my-2">
         <div class="col-lg-8 order-lg-2">
@@ -43,8 +47,8 @@
         </div>
         <div class="col-lg-4 order-lg-1 text-center">
             <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content("~/avatars/" + Model.Avatar)" alt="">
-           
-            
+
+
         </div>
     </div>
 </div>

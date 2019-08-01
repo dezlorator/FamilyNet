@@ -71,6 +71,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Representatives" asp-action="Index">Представители</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Donations" asp-action="Index">Нужды</a>
+                        </li>
 
                         @if (User.Identity.IsAuthenticated)
                         {
@@ -87,7 +90,7 @@
                                     </p>
 
                                     @*<a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Admin" asp-action="Index"> Админ-панель</a>
-                                    <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Roles" asp-action="Index">Роль-панель</a>*@
+                    <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Roles" asp-action="Index">Роль-панель</a>*@
                                 </div>
                             </li>
                             <li class="nav-item" style="margin-top:1%">
@@ -97,8 +100,8 @@
                             </li>
                             <li class="nav-link" style="margin-top:1%">
                                 @*<form method="post" asp-controller="Account" asp-action="Logout">
-                                    <input style="background-color:lightblue" class="nav-link text-danger alert-dark font-weight-bold" type="submit" value="Logout" />
-                                </form>*@
+                    <input style="background-color:lightblue" class="nav-link text-danger alert-dark font-weight-bold" type="submit" value="Logout" />
+                </form>*@
                             </li>
                         }
                         else

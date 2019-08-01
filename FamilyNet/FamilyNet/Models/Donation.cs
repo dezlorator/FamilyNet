@@ -1,5 +1,6 @@
 ﻿using FamilyNet.Models.Interfaces;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace FamilyNet.Models
 {
@@ -9,20 +10,25 @@ namespace FamilyNet.Models
 
         public int? DonationItemID { get; set; }
 
+        [Display(Name = "Нужда")]
         public virtual DonationItem DonationItem { get; set; }  
 
         public bool IsRequest { get; set; }
 
         public int? CharityMakerID { get; set; }
 
+        [Display(Name = "Филантроп")]
         public virtual CharityMaker CharityMaker { get; set; }
 
         public int? OrphanageID { get; set; }
 
+        [Display(Name = "Детский дом")]
         public virtual Orphanage Orphanage { get; set; }
 
+        [Display(Name = "Статус")]
         public DonationStatus Status { get; set; }
 
+        [Display(Name = "Последние изменения")]
         public DateTime LastDateWhenStatusChanged { get; set; }
 
         public enum DonationStatus

@@ -57,8 +57,6 @@ namespace FamilyNet.Controllers
         [Authorize(Roles ="Admin")]
         public IActionResult Create()
         {
-            //List<Orphanage> orphanagesList = new List<Orphanage>();
-            //orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
 
             return View();
@@ -214,7 +212,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/OrphansTable
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative, Orphan")]
         public IActionResult OrphansTable()
         {
             var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
