@@ -20,6 +20,9 @@ namespace FamilyNet.Controllers
        
         public async Task<IActionResult> Index()
         {
+            SeedData seedData = new SeedData(_unitOfWorkAsync);
+            seedData.EnsurePopulated();
+
             ViewData["Best"] = _unitOfWorkAsync.Orphanages.GetAll()
               .OrderByDescending(c => c.Rating)
               .Take(3);

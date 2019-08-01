@@ -19,6 +19,10 @@ namespace FamilyNet.Models.Interfaces
 
         Task Delete(int id);
 
+        void AddRange(IEnumerable<TEntity> entities);
+
+        //void AddRange(params TEntity[] entities);
+
         Task SaveChangesAsync();
         
     }
