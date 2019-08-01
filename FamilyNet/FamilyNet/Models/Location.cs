@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,8 @@ namespace FamilyNet.Models
             MapCoordX = sender.MapCoordX;
             MapCoordY = sender.MapCoordY;
         }
+
+        [BindNever]
+        public bool IsDeleted { get; set; } = false;
     }
 }

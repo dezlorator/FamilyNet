@@ -53,7 +53,15 @@ namespace FamilyNet.Models
                 Avatar = sender.Avatar;
             }
         }
+      
+    }
+
+    public enum SortStateOrphanages // TODO : rewrite this
+    {
         NameAsc,
+        NameDesc,
+        AddressAsc,
+        AddressDesc,
         RatingAsc,
         RatingDesc
     }

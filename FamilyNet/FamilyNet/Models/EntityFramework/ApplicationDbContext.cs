@@ -111,7 +111,22 @@ namespace FamilyNet.Models.EntityFramework
                 .HasForeignKey<Volunteer>(f => f.AddressID)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            #region SoftDeleteSetUp
 
+            modelBuilder.Entity<Address>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<CharityMaker>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Orphan>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Volunteer>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Representative>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Orphanage>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<AuctionLot>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<AuctionLotItem>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<BaseItemType>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Donation>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<DonationItem>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Location>().HasQueryFilter(entity => !entity.IsDeleted);
+
+            #endregion
         }
     }
 
