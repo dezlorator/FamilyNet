@@ -134,7 +134,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.Where(x => IsContain(x.Adress));
 
                 if (searchModel.RatingNumber > 0)
-                    orphanages = orphanages.Where(x => x.Rating == searchModel.RatingNumber);
+                    orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
             }
 
             return orphanages;

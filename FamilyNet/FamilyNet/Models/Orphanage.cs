@@ -26,7 +26,7 @@ namespace FamilyNet.Models
         [Display(Name = "Рейтинг")]
         public float Rating { get; set; }
 
-        [Display(Name = "Фото (.jpg)")]
+        [Display(Name = "Фото")]
         public string Avatar { get; set; }
 
         [Display(Name = "Представители")]

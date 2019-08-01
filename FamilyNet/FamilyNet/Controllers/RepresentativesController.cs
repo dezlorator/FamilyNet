@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -9,12 +10,21 @@ using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Models.ViewModels;
+using FamilyNet.Infrastructure;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
     public class RepresentativesController : BaseController
     {
+        #region Private fields
+
+        private PersonSearchModel _searchModel;
+        private PersonFilter _personFilter = new PersonFilter();
+
+        #endregion
+
         #region Ctor
 
         public RepresentativesController(IUnitOfWorkAsync unitOfWork) 
@@ -27,18 +37,52 @@ namespace FamilyNet.Controllers
 
         // GET: Representatives
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id)
+        public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
-            var orphans = _unitOfWorkAsync.Representatives.GetAll();
+            IQueryable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
+
+            //TODO: CAST:_personFilter.GetFiltered(searchModel, representatives);
 
             if (id == 0)
-                return View(await orphans.ToListAsync());
+                return View(await representatives.ToListAsync());
 
             if (id > 0)
-                orphans = orphans.Where(x => x.Orphanage.ID.Equals(id));
+                representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
 
-            return View(await orphans.ToListAsync());
+            return View(await representatives.ToListAsync());
         }
+
+        //private IQueryable<Representative> GetFiltered(PersonSearchModel searchModel,
+        //    IQueryable<Representative> orphans)
+        //{
+        //    if (searchModel != null)
+        //    {
+        //        _searchModel = searchModel;
+
+        //        if (!string.IsNullOrEmpty(searchModel.FullNameString))
+        //            orphans = orphans.Where(x => IsContain(x.FullName));
+
+        //        if (searchModel.RatingNumber > 0)
+        //            orphans = orphans.Where(x => x.Rating == searchModel.RatingNumber);
+        //    }
+
+        //    return orphans;
+        //}
+
+        //private bool IsContain(FullName fullname)
+        //{
+        //    foreach (var word in _searchModel.FullNameString.Split())
+        //    {
+        //        string wordUpper = word.ToUpper();
+
+        //        if (fullname.Name.ToUpper().Contains(wordUpper)
+        //                || fullname.Surname.ToUpper().Contains(wordUpper)
+        //                || fullname.Patronymic.ToUpper().Contains(wordUpper))
+        //            return true;
+        //    }
+
+        //    return false;
+        //}
 
         // GET: Representatives/Details/5
         [AllowAnonymous]

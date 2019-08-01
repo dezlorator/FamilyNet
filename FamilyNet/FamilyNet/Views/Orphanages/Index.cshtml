@@ -16,10 +16,13 @@
             @Html.Label(@Html.DisplayNameFor(model => model.Adress) + ":")
             @Html.TextBox("AddressString", "", new { @class = "form-control" })
         </th>
-        <th width="9%">
-            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + "от:")
+        <th width="11%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " от:")
             @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
         </th>
+        <th></th>
+        <th></th>
+        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -35,7 +38,7 @@
     </table>
 </form>
 
-<table class="table center">
+<table class="table table-hover center">
     <thead class="thead-light">
         <tr>
             <th>

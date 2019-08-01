@@ -1,0 +1,33 @@
+﻿@model IEnumerable<FamilyNet.Models.Person>
+@{
+    Layout = null;
+}
+
+<form asp-action="Filter">
+    <table class="table">
+        <th>
+            @Html.Label(@Html.DisplayNameFor(model => model.FullName) + ":")
+            @Html.TextBox("FullNameString", "", new { @class = "form-control" })
+        </th>
+        <th width="11%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " от:")
+            @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+            </button>
+            @*TODO: Work with Person (maybe null contr) <а asp-action="Index"></a> *@
+            @Html.ActionLink("", "Index", "Representatives", null, new { @class = "fas fa-ban" })
+        </th>
+
+    </table>
+</form>
