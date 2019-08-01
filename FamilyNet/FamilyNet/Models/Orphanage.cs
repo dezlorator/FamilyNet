@@ -48,12 +48,16 @@ namespace FamilyNet.Models
         {
             Name = sender.Name;
             Rating = sender.Rating;
-            Avatar = sender.Avatar;
+            if(sender.Avatar != string.Empty && sender.Avatar != null)
             {
                 Avatar = sender.Avatar;
             }
             Adress.CopyState(sender.Adress);
-            Location.CopyState(sender.Location);
+            if(sender.Location != null)
+            {
+                Location.CopyState(sender.Location);
+            }
+            
         }
       
     }
