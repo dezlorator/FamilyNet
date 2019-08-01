@@ -50,6 +50,10 @@ namespace FamilyNet.Models
             Rating = sender.Rating;
             Avatar = sender.Avatar;
             Adress.CopyState(sender.Adress);
+            if (sender.Avatar != string.Empty && sender.Avatar != null)
+            {
+                Avatar = sender.Avatar;
+            }
         }
     }
     public enum SortStateOrphanages // TODO : rewrite this

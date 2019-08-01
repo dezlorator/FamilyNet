@@ -38,6 +38,10 @@ namespace FamilyNet.Models
             FullName.CopyState(sender.FullName);
             Birthday = sender.Birthday;
             Rating = sender.Rating;
+            if(sender.Avatar != string.Empty && sender.Avatar != null)
+            {
+                Avatar = sender.Avatar;
+            }
         }
     }
 
