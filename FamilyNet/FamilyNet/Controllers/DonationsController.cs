@@ -45,6 +45,7 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
         public IActionResult CreateRequest()
         {
+            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
             return View();
         }
 
@@ -54,12 +55,15 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
-        public async Task<IActionResult> CreateRequest([Bind("ID,DonationItem,Orphanage")] Donation request)
+        public async Task<IActionResult> CreateRequest([Bind("ID,DonationItem,Orphanage")] Donation request, int idOrphanage)
         {          
             if (ModelState.IsValid)
             {
-                request.IsRequest = true;                
+                request.OrphanageID = idOrphanage;              
+                request.IsRequest = true;
+                //request.DonationItem.Name = request.DonationItem.DonationItemTypes.ToString();
                 await _unitOfWorkAsync.Donations.Create(request);
+               
                 await _unitOfWorkAsync.Donations.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

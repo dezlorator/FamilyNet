@@ -10,7 +10,7 @@ namespace FamilyNet.Models
 
         public int? DonationItemID { get; set; }
 
-        [Display(Name = "Нужда")]
+        [Display(Name = "Потребность")]
         public virtual DonationItem DonationItem { get; set; }  
 
         public bool IsRequest { get; set; }
