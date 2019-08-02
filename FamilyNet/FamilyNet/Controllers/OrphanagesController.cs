@@ -45,15 +45,15 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
-           
+
             if (searchModel != null)
             {
                 _searchModel = searchModel;
                 if (!string.IsNullOrEmpty(searchModel.NameString))
                     orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
                 if (!string.IsNullOrEmpty(searchModel.AddressString))
-                    orphanages = orphanages.Where( x => IsContain(x.Adress));
-                    
+                    orphanages = orphanages.Where(x => IsContain(x.Adress));
+
                 if (searchModel.RatingNumber > 0)
                     orphanages = orphanages.Where(x => x.Rating == searchModel.RatingNumber);
             }
@@ -83,7 +83,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
-            
+
             return View(await orphanages.ToListAsync());
         }
 
@@ -120,9 +120,21 @@ namespace FamilyNet.Controllers
                 }
                 orphanage.Avatar = fileName;
             }
+
+            //part to add location when obj creating
+            bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
+            if (IsLocationNotNull)
+            {
+                orphanage.Location = new Location() { MapCoordX = Location.Item1, MapCoordY = Location.Item2 };
+            }
+            else
+            {
+                orphanage.LocationID = null;
+            }
+
             if (ModelState.IsValid)
             {
-                
+
                 await _unitOfWorkAsync.Orphanages.Create(orphanage);
                 await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -130,9 +142,9 @@ namespace FamilyNet.Controllers
 
             return View(orphanage);
         }
-        
+
         // GET: Orphanages/Edit/5
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -171,8 +183,21 @@ namespace FamilyNet.Controllers
                 {
                     //in ef to change the object you need to track it out of context
                     var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);
+
                     //copying the state with NOT CHANGING REFERENCES
                     orphanageToEdit.CopyState(orphanage);
+
+                    //edit location
+                    bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
+                    if (IsLocationNotNull)
+                    {
+                        orphanageToEdit.Location = new Location() { MapCoordX = Location.Item1, MapCoordY = Location.Item2 };
+                    }
+                    else
+                    {
+                        orphanageToEdit.LocationID = null;
+                    }
+
                     _unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }
@@ -226,7 +251,7 @@ namespace FamilyNet.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        public  IActionResult SearchResult(string typeHelp)
+        public IActionResult SearchResult(string typeHelp)
         {
             ViewData["TypeHelp"] = typeHelp;
             var list = _unitOfWorkAsync.Orphanages.Get(
@@ -244,6 +269,33 @@ namespace FamilyNet.Controllers
             var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
 
             return View(orphanages);
+        }
+
+        private bool GetCoordProp(Address address, out Tuple<float?, float?> result)
+        {
+            result = null;
+            bool forOut = false;
+
+            var nominatim = new Nominatim.API.Geocoders.ForwardGeocoder();
+            var d = nominatim.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest()
+            {
+                Country = address.Country,
+                State = address.Region,
+                City = address.City,
+                StreetAddress = String.Concat(address.Street, " ", address.House)
+            });
+
+            //TODO:some validation for search
+            if (d.Result.Count() != 0)
+            {
+                float? X = (float)d.Result[0].Latitude;
+                float? Y = (float)d.Result[0].Longitude;
+
+                result = new Tuple<float?, float?>(X, Y);
+                forOut = true;
+            }
+
+            return forOut;
         }
     }
 }

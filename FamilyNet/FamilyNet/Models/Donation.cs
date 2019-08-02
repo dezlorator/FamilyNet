@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -30,6 +31,10 @@ namespace FamilyNet.Models
 
         [Display(Name = "Последние изменения")]
         public DateTime LastDateWhenStatusChanged { get; set; }
+
+
+        [BindNever]
+        public bool IsDeleted { get; set; } = false;
 
         public enum DonationStatus
         {

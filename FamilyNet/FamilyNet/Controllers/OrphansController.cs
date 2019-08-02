@@ -149,7 +149,6 @@ namespace FamilyNet.Controllers
                 {
                     var orphanage = await _unitOfWorkAsync.Orphanages.GetById(idOrphanage);
                     orphan.Orphanage = orphanage;
-
                     var orphanToEdit = await _unitOfWorkAsync.Orphans.GetById(orphan.ID);
                     orphanToEdit.CopyState(orphan);
                     _unitOfWorkAsync.Orphans.Update(orphanToEdit);
