@@ -21,7 +21,7 @@ namespace FamilyNet.Controllers
         #region Private fields
 
         private PersonSearchModel _searchModel;
-        private PersonFilter _personFilter = new PersonFilter();
+        //private PersonFilter _personFilter;
 
         #endregion
 
@@ -30,6 +30,7 @@ namespace FamilyNet.Controllers
         public RepresentativesController(IUnitOfWorkAsync unitOfWork) 
             : base(unitOfWork)
         {
+            //_personFilter = new PersonFilter();
         }
         #endregion
 
@@ -41,8 +42,13 @@ namespace FamilyNet.Controllers
         {
             IQueryable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
 
-            //TODO: CAST:_personFilter.GetFiltered(searchModel, representatives);
+            //TODO: CAST:
+            representatives = (IQueryable<Representative>)representatives.GetFiltered(searchModel); //фильтрация
+            //representatives = (IQueryable<Representative>)_personFilter.GetFiltered(representatives, searchModel);
+            //Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[FamilyNet.Models.Person]
 
+
+            //representatives = GetFiltered(searchModel, representatives);
             if (id == 0)
                 return View(await representatives.ToListAsync());
 

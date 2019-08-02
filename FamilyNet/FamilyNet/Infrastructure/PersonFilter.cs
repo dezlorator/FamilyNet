@@ -7,12 +7,11 @@ using FamilyNet.Models.ViewModels;
 
 namespace FamilyNet.Infrastructure
 {
-    public class PersonFilter
+    public static class PersonFilter
     {
-        private PersonSearchModel _searchModel;
+        private static PersonSearchModel _searchModel;
 
-        public IQueryable<Person> GetFiltered(PersonSearchModel searchModel,
-            IQueryable<Person> persons)
+        public static IQueryable<Person> GetFiltered(this IQueryable<Person> persons, PersonSearchModel searchModel)
         {
             if (searchModel != null)
             {
@@ -24,11 +23,11 @@ namespace FamilyNet.Infrastructure
                 if (searchModel.RatingNumber > 0)
                     persons = persons.Where(x => x.Rating == searchModel.RatingNumber);
             }
-
+            //TODO: REturn rersons.Where().Where;
             return persons;
         }
 
-        private bool IsContain(FullName fullname)
+        private static bool IsContain(FullName fullname)
         {
             foreach (var word in _searchModel.FullNameString.Split())
             {
