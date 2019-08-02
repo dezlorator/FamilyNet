@@ -11,6 +11,7 @@ namespace FamilyNet.Infrastructure
     {
         private static PersonSearchModel _searchModel;
 
+        //TODO: GENERIC Sorting+filtered in asp.net mvc
         public static IQueryable<Person> GetFiltered(this IQueryable<Person> persons, PersonSearchModel searchModel)
         {
             if (searchModel != null)

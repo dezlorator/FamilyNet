@@ -41,6 +41,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
             IQueryable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
+            //sort -> IEnumerable
 
             //TODO: CAST:
             representatives = (IQueryable<Representative>)representatives.GetFiltered(searchModel); //фильтрация

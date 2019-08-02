@@ -12,6 +12,7 @@ namespace FamilyNet.Models
     {
         public int ID { get; set; }
 
+        //TODO: customer Attr AllowSorting
         [Display(Name = "Полное имя")]
         public virtual FullName FullName { get; set; }
 
