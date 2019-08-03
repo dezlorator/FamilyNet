@@ -11,7 +11,7 @@ namespace FamilyNet.Controllers
 {
     public class HomeController : BaseController
     {
-        
+        const int bestOfThree = 3;
         
         public HomeController(IUnitOfWorkAsync unitOfWork) : base ( unitOfWork)
         {
@@ -20,12 +20,9 @@ namespace FamilyNet.Controllers
        
         public async Task<IActionResult> Index()
         {
-            SeedData seedData = new SeedData(_unitOfWorkAsync);
-            seedData.EnsurePopulated();
-
             ViewData["Best"] = _unitOfWorkAsync.Orphanages.GetAll()
               .OrderByDescending(c => c.Rating)
-              .Take(3);
+              .Take(bestOfThree);
             return View();
         }
         public IActionResult Privacy()

@@ -59,11 +59,6 @@ namespace FamilyNet.Models.EntityFramework {
              _dbContext.Set < TEntity >().AddRange(entities);
         }
 
-        //void AddRange(params TEntity[] entities)
-        //{
-        //    _dbContext.Set<TEntity>().AddRange(entities);
-        //}
-
         public async Task SaveChangesAsync()
         {
             await _dbContext.SaveChangesAsync();

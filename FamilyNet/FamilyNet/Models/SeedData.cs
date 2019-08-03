@@ -1,12 +1,7 @@
-﻿using FamilyNet.Models.EntityFramework;
-using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using FamilyNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace FamilyNet.Models
 {
@@ -23,7 +18,9 @@ namespace FamilyNet.Models
 
             if (_unitOfWorkAsync.Volunteers.Get(v => v.ID == v.ID) != null)
             {
-            List<Volunteer> volunteers = new List<Volunteer>();
+                List<Volunteer> volunteers = new List<Volunteer>();
+
+                #region Volunteer1
 
                 Volunteer volunteer = new Volunteer();
                 volunteer.FullName = new FullName() { Name = "Anna", Surname = "Бутенко", Patronymic = "Андреевна" };
@@ -39,7 +36,11 @@ namespace FamilyNet.Models
                     House = "4"
                 };
 
+                #endregion
+
                 volunteers.Add(volunteer);
+
+                #region Volunteer2
 
                 volunteer = new Volunteer();
                 volunteer.FullName = new FullName(){ Name = "Иван", Surname = "Новиков", Patronymic = "Русланович" };
@@ -55,7 +56,11 @@ namespace FamilyNet.Models
                     House = "14"
                 };
 
+                #endregion
+
                 volunteers.Add(volunteer);
+
+                #region Volunteer3
 
                 volunteer = new Volunteer();
                 
@@ -72,7 +77,11 @@ namespace FamilyNet.Models
                     House = "111"
                 };
 
+                #endregion
+
                 volunteers.Add(volunteer);
+
+                #region Volunteer4
 
                 volunteer = new Volunteer();
                     volunteer.FullName = new FullName() { Name = "Марина", Surname = "Романчук", Patronymic = "Сергеевна" };
@@ -88,13 +97,17 @@ namespace FamilyNet.Models
                     House = "63"
                 };
 
+                #endregion
+
                 volunteers.Add(volunteer);
 
+                #region Volunteer5
+
                 volunteer = new Volunteer();
-                    volunteer.FullName = new FullName() { Name = "Алина", Surname = "Лейко", Patronymic = "Олеговна" };
-                    volunteer.Birthday = new DateTime(1985, 4, 1);
-                    volunteer.Rating = 10;
-                    volunteer.Avatar = "";
+                volunteer.FullName = new FullName() { Name = "Алина", Surname = "Лейко", Patronymic = "Олеговна" };
+                volunteer.Birthday = new DateTime(1985, 4, 1);
+                volunteer.Rating = 10;
+                volunteer.Avatar = "";
                 volunteer.Address = new Address()
                 {
                     Country = "Украина",
@@ -103,6 +116,8 @@ namespace FamilyNet.Models
                     Street = "Восьмого Марта",
                     House = "17"
                 };
+
+                #endregion
 
                 volunteers.Add(volunteer);
 
@@ -113,6 +128,8 @@ namespace FamilyNet.Models
             if (_unitOfWorkAsync.Orphanages.Get(v => v.ID == v.ID) != null)
             {
                 List<Orphanage> orphanages = new List<Orphanage>();
+
+                #region Orphanage1
 
                 Orphanage orphanage = new Orphanage();
 
@@ -126,7 +143,7 @@ namespace FamilyNet.Models
                     House = "25"
                 };
                 orphanage.Rating = 11;
-                orphanage.Avatar = "";
+                orphanage.Avatar = "3nf3pby0.jpg";
 
                 List<Representative> representatives = new List<Representative>();
 
@@ -165,213 +182,274 @@ namespace FamilyNet.Models
                 orphans.Add(orphan);
                 orphanage.Orphans = orphans;
 
+                #endregion
+
                 orphanages.Add(orphanage);
+
+                #region Orphanage2
+
+                orphanage = new Orphanage();
+
+                orphanage.Name = "Эльф";
+                orphanage.Adress = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Сумская",
+                    City = "Сумы",
+                    Street = "Котляревського",
+                    House = "89"
+                };
+                orphanage.Rating = 7;
+                orphanage.Avatar = "jltx4rd2.jpg";
+
+                representatives = new List<Representative>();
+                representative = new Representative();
+
+                representative.FullName = new FullName() { Name = "Марина", Surname = "Кричич", Patronymic = "Михайловна" };
+                representative.Birthday = new DateTime(1954, 12, 30);
+                representative.Rating = 5;
+                representative.Avatar = "";
+
+                representatives.Add(representative);
+                orphanage.Representatives = representatives;
+
+                orphans = new List<Orphan>();
+                orphan = new Orphan();
+
+                orphan.FullName = new FullName(){Name = "Анастасия", Surname = "Горб", Patronymic = "Андреевна" };
+                orphan.Birthday = new DateTime(2004, 5, 14);
+                orphan.Rating = 8;
+                orphan.Avatar = "";
+                orphan.ChildInOrphanage = true;
+                orphan.Confirmation = true;
+
+                orphans.Add(orphan);
+
+
+                orphan = new Orphan();
+
+                orphan.FullName = new FullName() { Name = "Мария", Surname = "Павленко", Patronymic = "Александровна" };
+                orphan.Birthday = new DateTime(2010, 8, 11);
+                orphan.Rating = 7;
+                orphan.Avatar = "";
+                orphan.ChildInOrphanage = true;
+                orphan.Confirmation = true;
+
+                orphans.Add(orphan);
+                orphanage.Orphans = orphans;
+
+                #endregion
+
+                orphanages.Add(orphanage);
+
+                #region Orphanage3
+
+                orphanage = new Orphanage();
+
+                orphanage.Name = "Артек";
+                orphanage.Adress = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Днепропетровская",
+                    City = "Никополь",
+                    Street = "Херсонская",
+                    House = "177"
+                };
+                orphanage.Rating = 8;
+                orphanage.Avatar = "proeundk.jpg";
+
+                representative = new Representative();
+                representatives = new List<Representative>();
+
+                representative.FullName = new FullName() { Name = "Глеб", Surname = "Голосенин", Patronymic = "Иванович" };
+                representative.Birthday = new DateTime(1988, 3, 4);
+                representative.Rating = 5;
+                representative.Avatar = "";
+
+                representatives.Add(representative);
+                orphanage.Representatives = representatives;
+
+
+                orphans = new List<Orphan>();
+                orphan = new Orphan();
+
+                
+                orphan.FullName= new FullName(){Name = "Арен", Surname = "Зурабян", Patronymic = "Кирилович" };
+                orphan.Birthday = new DateTime(2004, 5, 14);
+                orphan.Rating = 8;
+                orphan.Avatar = "";
+                orphan.ChildInOrphanage = true;
+                orphan.Confirmation = true;
+
+                orphans.Add(orphan);
+                orphan = new Orphan();
+
+                orphan.FullName = new FullName() { Name = "Виталий", Surname = "Цаль", Patronymic = "Ильич" };
+                orphan.Birthday = new DateTime(2010, 8, 11);
+                orphan.Rating = 7;
+                orphan.Avatar = "";
+                orphan.ChildInOrphanage = true;
+                orphan.Confirmation = true;
+
+                orphans.Add(orphan);
+
+                orphanage.Orphans = orphans;
+
+                #endregion
+
+                orphanages.Add(orphanage);
+
+                #region Orphanage4
+
+                orphanage = new Orphanage();
+
+                orphanage.Name = "Нэвэрлэнд";
+                orphanage.Adress = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Киевская",
+                    City = "Белая Церковь",
+                    Street = "Гаек",
+                    House = "227"
+                };
+                orphanage.Rating = 3;
+                orphanage.Avatar = "rwlmqppn.jpg";
+
+                representative = new Representative();
+                representatives = new List<Representative>();
+
+
+                representative.FullName = new FullName() { Name = "Спартак", Surname = "Алексеев", Patronymic = "Андреевич" };
+                representative.Birthday = new DateTime(1988, 3, 4);
+                representative.Rating = 8;
+                representative.Avatar = "";
+
+                representatives.Add(representative);
+                orphanage.Representatives = representatives;
+
+                orphans = new List<Orphan>();
+                orphan = new Orphan();
+
+                orphan.FullName = new FullName() { Name = "Захар", Surname = "Мисра", Patronymic = "Владимирович" };
+                orphan.Birthday = new DateTime(2011, 11, 14);
+                orphan.Rating = 7;
+                orphan.Avatar = "";
+                orphan.ChildInOrphanage = true;
+                orphan.Confirmation = true;
+
+                orphans.Add(orphan);
+
+                orphan = new Orphan();
+
+
+                orphan.FullName = new FullName() { Name = "Анна", Surname = "Анисимова", Patronymic = "Сергеевна" };
+                orphan.Birthday = new DateTime(2014, 7, 25);
+                orphan.Rating = 9;
+                orphan.Avatar = "";
+                orphan.ChildInOrphanage = true;
+                orphan.Confirmation = true;
+
+                orphans.Add(orphan);
+
+                orphanage.Orphans = orphans;
+
+                #endregion
+
+                orphanages.Add(orphanage);
+
 
                 _unitOfWorkAsync.Orphanages.AddRange(orphanages);
                 _unitOfWorkAsync.SaveChangesAsync();
-
-
-                //    new Orphanage
-                //    {
-                //        Name = "Эльф",
-                //        Adress =
-                //        {
-                //           Country = "Украина",
-                //           Region = "Сумская",
-                //           City = "Сумы",
-                //           Street = "Котляревського",
-                //           House = "89"
-                //        },
-                //        Rating = 7,
-                //        Avatar = "",
-                //        Representatives = {
-                //            new Representative{
-                //                FullName = { Name = "Марина", Surname = "Кричич", Patronymic = "Михайловна" },
-                //                Birthday = new DateTime(1954, 12, 30),
-                //                Rating = 5,
-                //                Avatar = ""
-                //            }},
-                //        Orphans = {
-                //            new Orphan
-                //            {
-                //                FullName={Name = "Анастасия", Surname = "Горб", Patronymic = "Андреевна" },
-                //                Birthday = new DateTime(2004, 5, 14),
-                //                Rating = 8,
-                //                Avatar = "",
-                //                ChildInOrphanage=true,
-                //                Confirmation=true
-                //            },
-                //            new Orphan
-                //            {
-                //                FullName={Name = "Мария", Surname = "Павленко", Patronymic = "Александровна" },
-                //                Birthday = new DateTime(2010, 8, 11),
-                //                Rating = 7,
-                //                Avatar = "",
-                //                ChildInOrphanage=true,
-                //                Confirmation=true
-                //            }
-                //        },
-                //        MapCoordX = 134,
-                //        MapCoordY = 333
-                //    },
-
-                //    new Orphanage
-                //    {
-                //        Name = "Артек",
-                //        Adress =
-                //      {
-                //        Country = "Украина",
-                //        Region = "Днепропетровская",
-                //        City = "Никополь",
-                //        Street = "Херсонская",
-                //        House = "177"
-                //      },
-                //        Rating = 8,
-                //        Avatar = "",
-                //        Representatives = {
-                //          new Representative{
-                //              FullName = { Name = "Глеб", Surname = "Голосенин", Patronymic = "Иванович" },
-                //              Birthday = new DateTime(1988, 3, 4),
-                //              Rating = 5,
-                //              Avatar = ""
-                //          }},
-                //        Orphans = {
-                //          new Orphan
-                //          {
-                //              FullName={Name = "Арен", Surname = "Зурабян", Patronymic = "Кирилович" },
-                //              Birthday = new DateTime(2004, 5, 14),
-                //              Rating = 8,
-                //              Avatar = "",
-                //              ChildInOrphanage=true,
-                //              Confirmation=true
-                //          },
-                //          new Orphan
-                //          {
-                //              FullName={Name = "Виталий", Surname = "Цаль", Patronymic = "Ильич" },
-                //              Birthday = new DateTime(2010, 8, 11),
-                //              Rating = 7,
-                //              Avatar = "",
-                //              ChildInOrphanage=true,
-                //              Confirmation=true
-                //          }
-                //      },
-                //        MapCoordX = 53654,
-                //        MapCoordY = 32342
-                //    },
-
-                //    new Orphanage
-                //    {
-                //        Name = "Нэвэрлэнд",
-                //        Adress =
-                //      {
-                //        Country = "Украина",
-                //        Region = "Киевская",
-                //        City = "Белая Церковь",
-                //        Street = "Гаек",
-                //        House = "227"
-                //      },
-                //        Rating = 3,
-                //        Avatar = "",
-                //        Representatives = {
-                //          new Representative{
-                //              FullName = { Name = "Спартак", Surname = "Алексеев", Patronymic = "Андреевич" },
-                //              Birthday = new DateTime(1988, 3, 4),
-                //              Rating = 8,
-                //              Avatar = ""
-                //          }},
-                //        Orphans = {
-                //          new Orphan
-                //          {
-                //              FullName={Name = "Захар", Surname = "Мисра", Patronymic = "Владимирович" },
-                //              Birthday = new DateTime(2011, 11, 14),
-                //              Rating = 7,
-                //              Avatar = "",
-                //              ChildInOrphanage=true,
-                //              Confirmation=true
-                //          },
-                //          new Orphan
-                //          {
-                //              FullName={Name = "Анна", Surname = "Анисимова", Patronymic = "Сергеевна" },
-                //              Birthday = new DateTime(2014, 7, 25),
-                //              Rating = 9,
-                //              Avatar = "",
-                //              ChildInOrphanage=true,
-                //              Confirmation=true
-                //          }
-                //      },
-                //        MapCoordX = 32442,
-                //        MapCoordY = 12352
-                //    }
-                //    );
-                //context.SaveChanges();
             }
 
-            //if (!context.CharityMakers.Any())
-            //{
-            //    context.AddRange(
+            if (_unitOfWorkAsync.CharityMakers.Get(v => v.ID == v.ID) != null)
+            {
 
-            //        new CharityMaker
-            //        {
-            //            FullName = { Name = "Bладимир", Surname = "Халин", Patronymic = "Тарасович" },
-            //            Birthday = new DateTime(1991, 12, 3),
-            //            Rating = 5,
-            //            Avatar = "",
-            //            Address = {
-            //                 Country = "Украина",
-            //                 Region = "Харьковская",
-            //                 City = "Харьков",
-            //                 Street = "Титова",
-            //                 House = "22"
-            //            }
-            //        },
+                List<CharityMaker> charityMakers = new List<CharityMaker>();
 
-            //        new CharityMaker
-            //        {
-            //            FullName = { Name = "Сергей", Surname = "Калинич", Patronymic = "Евгеньевич" },
-            //            Birthday = new DateTime(1972, 6, 12),
-            //            Rating = 7,
-            //            Avatar = "",
-            //            Address = {
-            //                 Country = "Украина",
-            //                 Region = "Львовская",
-            //                 City = "Львов",
-            //                 Street = "Наукова",
-            //                 House = "15"
-            //           }
-            //        },
+                #region CharityMaker1
 
-            //        new CharityMaker
-            //        {
-            //            FullName = { Name = "Алена", Surname = "Чипко", Patronymic = "Максимовна" },
-            //            Birthday = new DateTime(1993, 4, 28),
-            //            Rating = 9,
-            //            Avatar = "",
-            //            Address = {
-            //                 Country = "Украина",
-            //                 Region = "Донецкая",
-            //                 City = "Донецк",
-            //                 Street = "Семашко",
-            //                 House = "86"
-            //           }
-            //        },
+                CharityMaker charityMaker = new CharityMaker();
 
-            //        new CharityMaker
-            //        {
-            //            FullName = { Name = "Кристина", Surname = "Юдина", Patronymic = "Сергеевна" },
-            //            Birthday = new DateTime(1984, 5, 18),
-            //            Rating = 10,
-            //            Avatar = "",
-            //            Address = {
-            //                 Country = "Украина",
-            //                 Region = "Одесская",
-            //                 City = "Одесса",
-            //                 Street = "Лютеранский Пер",
-            //                 House = "52"
-            //           }
-            //        }
-            //        );
-            //    context.SaveChanges();
-            //}
+                charityMaker.FullName = new FullName() { Name = "Bладимир", Surname = "Халин", Patronymic = "Тарасович" };
+                charityMaker.Birthday = new DateTime(1991, 12, 3);
+                charityMaker.Rating = 5;
+                charityMaker.Avatar = "";
+                charityMaker.Address = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Харьковская",
+                    City = "Харьков",
+                    Street = "Титова",
+                    House = "22"
+                };
+                #endregion
+
+                charityMakers.Add(charityMaker);
+
+                #region CharityMaker2
+
+                charityMaker = new CharityMaker();
+
+                charityMaker.FullName = new FullName() { Name = "Сергей", Surname = "Калинич", Patronymic = "Евгеньевич" };
+                charityMaker.Birthday = new DateTime(1972, 6, 12);
+                charityMaker.Rating = 7;
+                charityMaker.Avatar = "";
+                charityMaker.Address = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Львовская",
+                    City = "Львов",
+                    Street = "Наукова",
+                    House = "15"
+                };
+                #endregion
+
+                charityMakers.Add(charityMaker);
+
+                #region CharityMaker3
+
+                charityMaker = new CharityMaker();
+
+                charityMaker.FullName = new FullName() { Name = "Алена", Surname = "Чипко", Patronymic = "Максимовна" };
+                charityMaker.Birthday = new DateTime(1993, 4, 28);
+                charityMaker.Rating = 9;
+                charityMaker.Avatar = "";
+                charityMaker.Address = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Донецкая",
+                    City = "Донецк",
+                    Street = "Семашко",
+                    House = "86"
+                };
+                #endregion
+
+                charityMakers.Add(charityMaker);
+
+                #region CharityMaker4
+
+                charityMaker = new CharityMaker();
+
+                charityMaker.FullName = new FullName() { Name = "Кристина", Surname = "Юдина", Patronymic = "Сергеевна" };
+                charityMaker.Birthday = new DateTime(1984, 5, 18);
+                charityMaker.Rating = 10;
+                charityMaker.Avatar = "";
+                charityMaker.Address = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Одесская",
+                    City = "Одесса",
+                    Street = "Лютеранский Пер",
+                    House = "52"
+                };
+                #endregion
+
+                charityMakers.Add(charityMaker);
+
+                _unitOfWorkAsync.CharityMakers.AddRange(charityMakers);
+                _unitOfWorkAsync.SaveChangesAsync();
+            }
         }
     }
 }
