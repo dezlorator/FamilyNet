@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.Interfaces;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace FamilyNet.Controllers
 {
@@ -35,6 +37,7 @@ namespace FamilyNet.Controllers
                 var result = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    await _unitOfWorkAsync.UserManager.AddToRolesAsync(user, (IEnumerable<string>)model.DropDownRolesList.SelectedValues);
                     // установка куки.
                     await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home");

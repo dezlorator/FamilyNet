@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using FamilyNet.Infrastructure;
+using System.Collections;
 
 namespace FamilyNet.Models.ViewModels
 {
@@ -27,6 +30,10 @@ namespace FamilyNet.Models.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Подтвердить пароль")]
         public string PasswordConfirm { get; set; }
+
+        [Required]
+        [Display(Name = "Выберите вашу роль")]
+        public SelectList DropDownRolesList { get; set; } = new SelectList(new ArrayList() { "Orphan", "Representative", "Volunteer", "CharityMaker" });
 
     }
 }
