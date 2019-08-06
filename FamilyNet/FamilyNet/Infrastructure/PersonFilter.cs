@@ -11,7 +11,7 @@ namespace FamilyNet.Infrastructure
     {
         private static PersonSearchModel _searchModel;
 
-        //TODO: GENERIC Sorting+filtered in asp.net mvc
+        //TODO: AlPa -> GENERIC Sorting+filtered in asp.net mvc
         public static IQueryable<Person> GetFiltered(this IQueryable<Person> persons, PersonSearchModel searchModel)
         {
             if (searchModel != null)
@@ -21,10 +21,11 @@ namespace FamilyNet.Infrastructure
                 if (!string.IsNullOrEmpty(searchModel.FullNameString))
                     persons = persons.Where(x => IsContain(x.FullName));
 
-                if (searchModel.RatingNumber > 0)
-                    persons = persons.Where(x => x.Rating == searchModel.RatingNumber);
+                //TODO: Check type of RNumber for testing change to string
+                //if (searchModel.RatingNumber > 0)
+                //    persons = persons.Where(x => x.Rating == searchModel.RatingNumber);
             }
-            //TODO: REturn rersons.Where().Where;
+            //TODO: AlPa -> REturn rersons.Where().Where;
             return persons;
         }
 

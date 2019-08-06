@@ -243,7 +243,7 @@ namespace FamilyNet.Controllers
                     if (!OrphanageExists(orphanage.ID))
                         return NotFound();
                     else
-                        throw; //TODO: Loging
+                        throw; //TODO: AlPa ->  Loging
                 }
 
                 return RedirectToAction(nameof(Index));

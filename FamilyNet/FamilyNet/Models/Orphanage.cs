@@ -49,7 +49,7 @@ namespace FamilyNet.Models
             Adress.CopyState(sender.Adress);
         }
     }
-    public enum SortStateOrphanages // TODO : rewrite this byte
+    public enum SortStateOrphanages // TODO : AlPa -> rewrite this byte
     {
         NameAsc,
         NameDesc,

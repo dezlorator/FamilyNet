@@ -9,6 +9,6 @@ namespace FamilyNet.Models.ViewModels
     {
         public string FullNameString { get; set; }
 
-        public int RatingNumber { get; set; }
+        public string RatingNumber { get; set; }
     }
 }

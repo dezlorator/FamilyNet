@@ -27,7 +27,7 @@ namespace FamilyNet.Controllers
 
         #region Ctor
 
-        public RepresentativesController(IUnitOfWorkAsync unitOfWork) 
+        public RepresentativesController(IUnitOfWorkAsync unitOfWork)
             : base(unitOfWork)
         {
             //_personFilter = new PersonFilter();
@@ -38,18 +38,35 @@ namespace FamilyNet.Controllers
 
         // GET: Representatives
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
+        public async Task<IActionResult> Index(int id, 
+            /*FilterUtility.FilterParams*/PersonSearchModel searchModel)//TODO: REPR SEARCH MODEL
         {
             IQueryable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
             //sort -> IEnumerable
 
-            //TODO: CAST:
-            representatives = (IQueryable<Representative>)representatives.GetFiltered(searchModel); //фильтрация
+            #region Manual creating filterParams
+            //FilterUtility.FilterParams searchParamFullName = new FilterUtility.FilterParams();
+            //searchParamFullName.ColumnName = "FullNameString";//TODO: AlPa -> ?? Check working
+            //searchParamFullName.FilterValue = searchModel.FullNameString;
+            //searchParamFullName.FilterOptions = FilterUtility.FilterOptions.Contains;
+
+            //FilterUtility.FilterParams searchParamRate = new FilterUtility.FilterParams();
+            //searchParamRate.ColumnName = "Rating";//TODO: AlPa -> ?? Check working
+            //searchParamRate.FilterValue = searchModel.RatingNumber;
+            //searchParamRate.FilterOptions = FilterUtility.FilterOptions.IsGreaterThanOrEqualTo;
+            //IEnumerable<FilterUtility.FilterParams> enuParams = 
+            //    new List<FilterUtility.FilterParams>() { searchParamFullName, searchParamRate };
+            #endregion
+
+            PaginatedInputModel inm = new PaginatedInputModel();
+            //inm.FilterParam = enuParams;
+            //representatives = GetFilteredSortedPaginatedList(representatives, enuParams);
+
+            //TODO: AlPa ->  CAST:
+            //representatives = (IQueryable<Representative>)representatives.GetFiltered(searchModel); //фильтрация
             //representatives = (IQueryable<Representative>)_personFilter.GetFiltered(representatives, searchModel);
-            //Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[FamilyNet.Models.Person]
-
-
             //representatives = GetFiltered(searchModel, representatives);
+
             if (id == 0)
                 return View(await representatives.ToListAsync());
 
@@ -177,7 +194,7 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, 
+        public async Task<IActionResult> Edit(int id,
             [Bind("ID,FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative,
             int orphanageId, IFormFile file)
         {
@@ -214,7 +231,7 @@ namespace FamilyNet.Controllers
                     if (!RepresentativeExists(representative.ID))
                         return NotFound();
                     else
-                        throw; //TODO: Loging
+                        throw; //TODO: AlPa -> Loging
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -253,6 +270,44 @@ namespace FamilyNet.Controllers
         private bool RepresentativeExists(int id)
         {
             return _unitOfWorkAsync.Representatives.GetById(id) != null;
+        }
+
+        public async Task<PaginatedList<PersonSearchModel>> GetFilteredSortedPaginatedList(List<PersonSearchModel> persons, PaginatedInputModel pagingParams)
+        {
+            List<PersonSearchModel> sampleList = persons;
+
+
+            #region [Filter]  
+            if (pagingParams != null && pagingParams.FilterParam.Any())
+            {
+                sampleList = FilterUtility.Filter<PersonSearchModel>
+                    .GetFilteredData(pagingParams.FilterParam, sampleList).ToList() ?? sampleList;
+            }
+            #endregion
+
+            #region [Sorting]  
+            if (pagingParams != null && pagingParams.SortingParams.Count() > 0
+                    && Enum.IsDefined(typeof(SortingUtility.SortOrders),
+                    pagingParams.SortingParams.Select(x => x.SortOrder)))
+            {
+                sampleList = SortingUtility.Sorting<PersonSearchModel>
+                    .SortData(sampleList, pagingParams.SortingParams).ToList();
+            }
+            #endregion
+
+            #region [Grouping]  
+            if (pagingParams != null && pagingParams.GroupingColumns != null
+                    && pagingParams.GroupingColumns.Count() > 0)
+            {
+                sampleList = SortingUtility.Sorting<PersonSearchModel>
+                    .GroupingData(sampleList, pagingParams.GroupingColumns).ToList() ?? sampleList;
+            }
+            #endregion
+
+            #region [Paging]  
+            return await PaginatedList<PersonSearchModel>
+                .CreateAsync(sampleList, pagingParams.PageNumber, pagingParams.PageSize);
+            #endregion
         }
 
         #endregion
