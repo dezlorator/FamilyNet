@@ -32,7 +32,7 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        #region Methods
+        #region ActionMethods
 
         // GET: Orphanages
         [AllowAnonymous]
@@ -48,11 +48,11 @@ namespace FamilyNet.Controllers
             //    let addr = searchModel.AddressString
             //    where ((o.Rating >= rate) )
             //    && (string.IsNullOrEmpty(ns) || o.Name.Contains(ns))
-            //    && (string.IsNullOrEmpty(addr) || IsContain(o.Adress))
+            //    && (string.IsNullOrEmpty(addr) || Contains(o.Adress))
             //    select o;
 
-            orphanages = GetFiltered(searchModel, orphanages);
-            orphanages = GetSorted(sortOrder, orphanages);
+            orphanages = GetFiltered(orphanages, searchModel);
+            SortBy(orphanages, sortOrder);
 
             if (id == 0)
                 return View(await orphanages.ToListAsync());
@@ -63,7 +63,7 @@ namespace FamilyNet.Controllers
             return View(await orphanages.ToListAsync());
         }
 
-        private bool IsContain(Address addr)
+        private bool Contains(Address addr)
         {
             foreach (var word in _searchModel.AddressString.Split())
             {
@@ -79,8 +79,7 @@ namespace FamilyNet.Controllers
             return false;
         }
 
-        private IQueryable<Orphanage> GetSorted(SortStateOrphanages sortOrder,
-            IQueryable<Orphanage> orphanages)
+        private void SortBy(IQueryable<Orphanage> orphanages, SortStateOrphanages sortOrder)
         {
             ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc
                 ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
@@ -95,13 +94,15 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderByDescending(s => s.Name);
                     break;
                 case SortStateOrphanages.AddressAsc:
-                    orphanages = orphanages.OrderBy(s => s.Adress.Country)
+                    orphanages = orphanages
+                        .OrderBy(s => s.Adress.Country)
                         .ThenBy(s => s.Adress.Region)
                         .ThenBy(s => s.Adress.City)
                         .ThenBy(s => s.Adress.Street);
                     break;
                 case SortStateOrphanages.AddressDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Adress.Country)
+                    orphanages = orphanages
+                        .OrderByDescending(s => s.Adress.Country)
                         .ThenByDescending(s => s.Adress.Region)
                         .ThenByDescending(s => s.Adress.City)
                         .ThenByDescending(s => s.Adress.Street);
@@ -116,12 +117,10 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
-
-            return orphanages;
         }
 
-        private IQueryable<Orphanage> GetFiltered(OrphanageSearchModel searchModel,
-            IQueryable<Orphanage> orphanages)
+        private IQueryable<Orphanage> GetFiltered(IQueryable<Orphanage> orphanages,
+            OrphanageSearchModel searchModel)
         {
             if (searchModel != null)
             {
@@ -131,7 +130,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
 
                 if (!string.IsNullOrEmpty(searchModel.AddressString))
-                    orphanages = orphanages.Where(x => IsContain(x.Adress));
+                    orphanages = orphanages.Where(x => Contains(x.Adress));
 
                 if (searchModel.RatingNumber > 0)
                     orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
@@ -163,12 +162,13 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(
-            [Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
+        public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage,
+            IFormFile file) //TODO: AlPa -> Research Bind To Annotations
         {
             if (file != null && file.Length > 0)
             {
                 var fileName = Path.GetRandomFileName();
+                //TODO: Pasha -> Delete metaData 
                 fileName = Path.ChangeExtension(fileName, ".jpg");
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(),
                     "wwwroot\\avatars", fileName);
@@ -208,8 +208,8 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Representative")]
-        public async Task<IActionResult> Edit(int id, 
-            [Bind("ID,Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
+        public async Task<IActionResult> Edit([Bind("ID,Name,Adress,Rating,Avatar")]
+            Orphanage orphanage, int id, IFormFile file) //TODO: AlPa-> Check change id position
         {
             if (id != orphanage.ID)
                 return NotFound();
@@ -240,7 +240,7 @@ namespace FamilyNet.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OrphanageExists(orphanage.ID))
+                    if (!AnyOrphanageBy(orphanage.ID))
                         return NotFound();
                     else
                         throw; //TODO: AlPa ->  Loging
@@ -273,15 +273,15 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+            var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
             await _unitOfWorkAsync.Orphanages.Delete(orphanage.ID);
             _unitOfWorkAsync.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool OrphanageExists(int id) =>
-            (_unitOfWorkAsync.Orphanages.GetById(id) != null);
+        private bool AnyOrphanageBy(int id) => 
+            _unitOfWorkAsync.Orphanages.GetById(id) != null; //TODO: Pasha-> to generic repository
 
         [AllowAnonymous]
         public IActionResult SearchByTypeHelp() => View();
@@ -300,6 +300,7 @@ namespace FamilyNet.Controllers
 
             return View("SearchResult", list);
         }
+
         [AllowAnonymous]
         public IActionResult SearchOrphanageOnMap()
         {
@@ -308,6 +309,10 @@ namespace FamilyNet.Controllers
             return View(orphanages);
         }
 
+        #endregion
+
+        #region Private Helpers 
+        //TODO: it
         #endregion
     }
 }

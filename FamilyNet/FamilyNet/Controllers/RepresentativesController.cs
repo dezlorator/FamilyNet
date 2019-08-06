@@ -39,23 +39,23 @@ namespace FamilyNet.Controllers
         // GET: Representatives
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id, 
-            /*FilterUtility.FilterParams*/PersonSearchModel searchModel)//TODO: REPR SEARCH MODEL
+            /*FilterUtility.FilterParams*/PersonSearchModel searchModel)//TODO: Representative search model
         {
             IQueryable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
             //sort -> IEnumerable
 
             #region Manual creating filterParams
-            //FilterUtility.FilterParams searchParamFullName = new FilterUtility.FilterParams();
-            //searchParamFullName.ColumnName = "FullNameString";//TODO: AlPa -> ?? Check working
-            //searchParamFullName.FilterValue = searchModel.FullNameString;
-            //searchParamFullName.FilterOptions = FilterUtility.FilterOptions.Contains;
+            FilterUtility.FilterParams searchParamFullName = new FilterUtility.FilterParams();
+            searchParamFullName.ColumnName = "FullNameString";//TODO: AlPa -> ?? Check working
+            searchParamFullName.FilterValue = searchModel.FullNameString;
+            searchParamFullName.FilterOptions = FilterUtility.FilterOptions.Contains;
 
-            //FilterUtility.FilterParams searchParamRate = new FilterUtility.FilterParams();
-            //searchParamRate.ColumnName = "Rating";//TODO: AlPa -> ?? Check working
-            //searchParamRate.FilterValue = searchModel.RatingNumber;
-            //searchParamRate.FilterOptions = FilterUtility.FilterOptions.IsGreaterThanOrEqualTo;
-            //IEnumerable<FilterUtility.FilterParams> enuParams = 
-            //    new List<FilterUtility.FilterParams>() { searchParamFullName, searchParamRate };
+            FilterUtility.FilterParams searchParamRate = new FilterUtility.FilterParams();
+            searchParamRate.ColumnName = "Rating";//TODO: AlPa -> ?? Check working
+            searchParamRate.FilterValue = searchModel.RatingNumber;
+            searchParamRate.FilterOptions = FilterUtility.FilterOptions.IsGreaterThanOrEqualTo;
+            IEnumerable<FilterUtility.FilterParams> enuParams =
+                new List<FilterUtility.FilterParams>() { searchParamFullName, searchParamRate };
             #endregion
 
             PaginatedInputModel inm = new PaginatedInputModel();
@@ -84,7 +84,7 @@ namespace FamilyNet.Controllers
         //        _searchModel = searchModel;
 
         //        if (!string.IsNullOrEmpty(searchModel.FullNameString))
-        //            orphans = orphans.Where(x => IsContain(x.FullName));
+        //            orphans = orphans.Where(x => Contains(x.FullName));
 
         //        if (searchModel.RatingNumber > 0)
         //            orphans = orphans.Where(x => x.Rating == searchModel.RatingNumber);
@@ -93,7 +93,7 @@ namespace FamilyNet.Controllers
         //    return orphans;
         //}
 
-        //private bool IsContain(FullName fullname)
+        //private bool Contains(FullName fullname)
         //{
         //    foreach (var word in _searchModel.FullNameString.Split())
         //    {
