@@ -63,82 +63,6 @@ namespace FamilyNet.Controllers
             return View(await orphanages.ToListAsync());
         }
 
-        private bool Contains(Address addr)
-        {
-            foreach (var word in _searchModel.AddressString.Split())
-            {
-                string wordUpper = word.ToUpper();
-
-                if (addr.Street.ToUpper().Contains(wordUpper)
-                        || addr.City.ToUpper().Contains(wordUpper)
-                        || addr.Region.ToUpper().Contains(wordUpper)
-                        || addr.Country.ToUpper().Contains(wordUpper))
-                    return true;
-            }
-
-            return false;
-        }
-
-        private void SortBy(IQueryable<Orphanage> orphanages, SortStateOrphanages sortOrder)
-        {
-            ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc
-                ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
-            ViewData["AddressSort"] = sortOrder == SortStateOrphanages.AddressAsc
-                ? SortStateOrphanages.AddressDesc : SortStateOrphanages.AddressAsc;
-            ViewData["RatingSort"] = sortOrder == SortStateOrphanages.RatingAsc
-                ? SortStateOrphanages.RatingDesc : SortStateOrphanages.RatingAsc;
-
-            switch (sortOrder)
-            {
-                case SortStateOrphanages.NameDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Name);
-                    break;
-                case SortStateOrphanages.AddressAsc:
-                    orphanages = orphanages
-                        .OrderBy(s => s.Adress.Country)
-                        .ThenBy(s => s.Adress.Region)
-                        .ThenBy(s => s.Adress.City)
-                        .ThenBy(s => s.Adress.Street);
-                    break;
-                case SortStateOrphanages.AddressDesc:
-                    orphanages = orphanages
-                        .OrderByDescending(s => s.Adress.Country)
-                        .ThenByDescending(s => s.Adress.Region)
-                        .ThenByDescending(s => s.Adress.City)
-                        .ThenByDescending(s => s.Adress.Street);
-                    break;
-                case SortStateOrphanages.RatingAsc:
-                    orphanages = orphanages.OrderBy(s => s.Rating);
-                    break;
-                case SortStateOrphanages.RatingDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Rating);
-                    break;
-                default:
-                    orphanages = orphanages.OrderBy(s => s.Name);
-                    break;
-            }
-        }
-
-        private IQueryable<Orphanage> GetFiltered(IQueryable<Orphanage> orphanages,
-            OrphanageSearchModel searchModel)
-        {
-            if (searchModel != null)
-            {
-                _searchModel = searchModel;
-
-                if (!string.IsNullOrEmpty(searchModel.NameString))
-                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
-
-                if (!string.IsNullOrEmpty(searchModel.AddressString))
-                    orphanages = orphanages.Where(x => Contains(x.Adress));
-
-                if (searchModel.RatingNumber > 0)
-                    orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
-            }
-
-            return orphanages;
-        }
-
         // GET: Orphanages/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
@@ -311,8 +235,84 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        #region Private Helpers 
-        //TODO: it
+        #region Private Helpers
+
+        private bool Contains(Address addr)
+        {
+            foreach (var word in _searchModel.AddressString.Split())
+            {
+                string wordUpper = word.ToUpper();
+
+                if (addr.Street.ToUpper().Contains(wordUpper)
+                        || addr.City.ToUpper().Contains(wordUpper)
+                        || addr.Region.ToUpper().Contains(wordUpper)
+                        || addr.Country.ToUpper().Contains(wordUpper))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void SortBy(IQueryable<Orphanage> orphanages, SortStateOrphanages sortOrder)
+        {
+            ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc
+                ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
+            ViewData["AddressSort"] = sortOrder == SortStateOrphanages.AddressAsc
+                ? SortStateOrphanages.AddressDesc : SortStateOrphanages.AddressAsc;
+            ViewData["RatingSort"] = sortOrder == SortStateOrphanages.RatingAsc
+                ? SortStateOrphanages.RatingDesc : SortStateOrphanages.RatingAsc;
+
+            switch (sortOrder)
+            {
+                case SortStateOrphanages.NameDesc:
+                    orphanages = orphanages.OrderByDescending(s => s.Name);
+                    break;
+                case SortStateOrphanages.AddressAsc:
+                    orphanages = orphanages
+                        .OrderBy(s => s.Adress.Country)
+                        .ThenBy(s => s.Adress.Region)
+                        .ThenBy(s => s.Adress.City)
+                        .ThenBy(s => s.Adress.Street);
+                    break;
+                case SortStateOrphanages.AddressDesc:
+                    orphanages = orphanages
+                        .OrderByDescending(s => s.Adress.Country)
+                        .ThenByDescending(s => s.Adress.Region)
+                        .ThenByDescending(s => s.Adress.City)
+                        .ThenByDescending(s => s.Adress.Street);
+                    break;
+                case SortStateOrphanages.RatingAsc:
+                    orphanages = orphanages.OrderBy(s => s.Rating);
+                    break;
+                case SortStateOrphanages.RatingDesc:
+                    orphanages = orphanages.OrderByDescending(s => s.Rating);
+                    break;
+                default:
+                    orphanages = orphanages.OrderBy(s => s.Name);
+                    break;
+            }
+        }
+
+        private IQueryable<Orphanage> GetFiltered(IQueryable<Orphanage> orphanages,
+            OrphanageSearchModel searchModel)
+        {
+            if (searchModel != null)
+            {
+                _searchModel = searchModel;
+
+                if (!string.IsNullOrEmpty(searchModel.NameString))
+                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
+
+                if (!string.IsNullOrEmpty(searchModel.AddressString))
+                    orphanages = orphanages.Where(x => Contains(x.Adress));
+
+                if (searchModel.RatingNumber > 0)
+                    orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
+            }
+
+            return orphanages;
+        }
+
         #endregion
     }
 }

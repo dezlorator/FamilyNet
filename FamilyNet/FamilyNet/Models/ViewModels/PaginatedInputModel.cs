@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FamilyNet.Infrastructure;
 using FamilyNet.Models.ViewModels;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace FamilyNet.Infrastructure
 {
@@ -22,9 +21,10 @@ namespace FamilyNet.Infrastructure
     /// </summary> 
     public class PaginatedInputModel
     {
-        public IEnumerable<SortingUtility.SortingParams> SortingParams { set; get; }
         public IEnumerable<FilterUtility.FilterParams> FilterParam { get; set; }
+        public IEnumerable<SortingUtility.SortingParams> SortingParams { get; set; }
         public IEnumerable<string> GroupingColumns { get; set; } = null;
+
         int pageNumber = 1;
         public int PageNumber { get { return pageNumber; } set { if (value > 1) pageNumber = value; } }
 

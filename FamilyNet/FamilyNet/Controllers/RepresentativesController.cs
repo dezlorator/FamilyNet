@@ -38,29 +38,33 @@ namespace FamilyNet.Controllers
 
         // GET: Representatives
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id, 
-            /*FilterUtility.FilterParams*/PersonSearchModel searchModel)//TODO: Representative search model
+        public async Task<IActionResult> Index(int id,
+            IEnumerable<FilterUtility.FilterParams> filterParams/*PersonSearchModel searchModel*/)//TODO: Representative search model
         {
-            IQueryable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
+            IEnumerable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
             //sort -> IEnumerable
 
             #region Manual creating filterParams
-            FilterUtility.FilterParams searchParamFullName = new FilterUtility.FilterParams();
-            searchParamFullName.ColumnName = "FullNameString";//TODO: AlPa -> ?? Check working
-            searchParamFullName.FilterValue = searchModel.FullNameString;
-            searchParamFullName.FilterOptions = FilterUtility.FilterOptions.Contains;
+            //FilterUtility.FilterParams searchParamFullName = new FilterUtility.FilterParams();
+            //searchParamFullName.ColumnName = searchModel.FullNameString.ToString();//TODO: AlPa -> ?? Check working
+            //searchParamFullName.FilterValue = searchModel.FullNameString;
+            //searchParamFullName.FilterOptions = FilterUtility.FilterOptions.Contains;
 
-            FilterUtility.FilterParams searchParamRate = new FilterUtility.FilterParams();
-            searchParamRate.ColumnName = "Rating";//TODO: AlPa -> ?? Check working
-            searchParamRate.FilterValue = searchModel.RatingNumber;
-            searchParamRate.FilterOptions = FilterUtility.FilterOptions.IsGreaterThanOrEqualTo;
-            IEnumerable<FilterUtility.FilterParams> enuParams =
-                new List<FilterUtility.FilterParams>() { searchParamFullName, searchParamRate };
+            //FilterUtility.FilterParams searchParamRate = new FilterUtility.FilterParams();
+            //searchParamRate.ColumnName = searchModel.RatingNumber.ToString(); ;//TODO: AlPa -> ?? Check working
+            //searchParamRate.FilterValue = searchModel.RatingNumber;
+            //searchParamRate.FilterOptions = FilterUtility.FilterOptions.IsGreaterThanOrEqualTo;
+
+            //IEnumerable<FilterUtility.FilterParams> enuParams =
+            //    new List<FilterUtility.FilterParams>() { searchParamFullName, searchParamRate };
             #endregion
 
-            PaginatedInputModel inm = new PaginatedInputModel();
+            //PaginatedInputModel inm = new PaginatedInputModel();
             //inm.FilterParam = enuParams;
-            //representatives = GetFilteredSortedPaginatedList(representatives, enuParams);
+            
+            representatives = FilterUtility.Filter<Representative>
+                .GetFilteredData(filterParams, representatives);
+            //(representatives, enuParams);
 
             //TODO: AlPa ->  CAST:
             //representatives = (IQueryable<Representative>)representatives.GetFiltered(searchModel); //фильтрация
@@ -68,12 +72,12 @@ namespace FamilyNet.Controllers
             //representatives = GetFiltered(searchModel, representatives);
 
             if (id == 0)
-                return View(await representatives.ToListAsync());
+                return View(representatives);//await representatives.ToListAsync());
 
             if (id > 0)
                 representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
 
-            return View(await representatives.ToListAsync());
+            return View(representatives);//await representatives.ToListAsync());
         }
 
         //private IQueryable<Representative> GetFiltered(PersonSearchModel searchModel,
@@ -122,6 +126,7 @@ namespace FamilyNet.Controllers
 
             return View(representative);
         }
+
         [Authorize(Roles = "Admin")]
         // GET: Representatives/Create
         public async Task<IActionResult> Create()
@@ -272,43 +277,7 @@ namespace FamilyNet.Controllers
             return _unitOfWorkAsync.Representatives.GetById(id) != null;
         }
 
-        public async Task<PaginatedList<PersonSearchModel>> GetFilteredSortedPaginatedList(List<PersonSearchModel> persons, PaginatedInputModel pagingParams)
-        {
-            List<PersonSearchModel> sampleList = persons;
-
-
-            #region [Filter]  
-            if (pagingParams != null && pagingParams.FilterParam.Any())
-            {
-                sampleList = FilterUtility.Filter<PersonSearchModel>
-                    .GetFilteredData(pagingParams.FilterParam, sampleList).ToList() ?? sampleList;
-            }
-            #endregion
-
-            #region [Sorting]  
-            if (pagingParams != null && pagingParams.SortingParams.Count() > 0
-                    && Enum.IsDefined(typeof(SortingUtility.SortOrders),
-                    pagingParams.SortingParams.Select(x => x.SortOrder)))
-            {
-                sampleList = SortingUtility.Sorting<PersonSearchModel>
-                    .SortData(sampleList, pagingParams.SortingParams).ToList();
-            }
-            #endregion
-
-            #region [Grouping]  
-            if (pagingParams != null && pagingParams.GroupingColumns != null
-                    && pagingParams.GroupingColumns.Count() > 0)
-            {
-                sampleList = SortingUtility.Sorting<PersonSearchModel>
-                    .GroupingData(sampleList, pagingParams.GroupingColumns).ToList() ?? sampleList;
-            }
-            #endregion
-
-            #region [Paging]  
-            return await PaginatedList<PersonSearchModel>
-                .CreateAsync(sampleList, pagingParams.PageNumber, pagingParams.PageSize);
-            #endregion
-        }
+        
 
         #endregion
     }
