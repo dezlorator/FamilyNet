@@ -23,6 +23,10 @@
         <span asp-validation-for="PasswordConfirm"></span>
     </div>
     <div>
+        @Html.DropDownList(m => Model.DropDownRolesList);
+
+    </div>
+    <div>
         <input type="submit" value="Регистрация" />
     </div>
 </form>

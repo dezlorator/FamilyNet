@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using FamilyNet.Models.ViewModels;
-using FamilyNet.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using FamilyNet.Models;
+using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.Interfaces;
@@ -26,16 +30,20 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model, List<string> roles)
         {
             if (ModelState.IsValid)
             {
                 ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.Email, PhoneNumber = model.Phone };
                 // добавляем пользователя.
                 var result = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
+                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+                var addedRoles = roles.Except(allRoles);
+
                 if (result.Succeeded)
                 {
                     // установка куки.
+                    await _unitOfWorkAsync.UserManager.AddToRoleAsync(user, model.DropDownRolesList);
                     await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home");
                 }

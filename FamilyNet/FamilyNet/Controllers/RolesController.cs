@@ -16,13 +16,12 @@ namespace FamilyNet.Controllers
     [Authorize(Roles = "Admin")]
     public class RolesController : BaseController
     {
-        //RoleManager<IdentityRole> _roleManager;
-        //UserManager<ApplicationUser> _userManager;
+
         public RolesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
         {
 
         }
-        public IActionResult Index() => View(_unitOfWorkAsync.RoleManager.Roles.ToList());
+        public IActionResult Index() => View(_unitOfWorkAsync.RoleManager.Roles);
 
         public IActionResult Create() => View();
         [HttpPost]
@@ -57,7 +56,7 @@ namespace FamilyNet.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult UserList() => View(_unitOfWorkAsync.UserManager.Users.ToList());
+        public IActionResult UserList() => View(_unitOfWorkAsync.UserManager.Users);
 
         public async Task<IActionResult> Edit(string userId)
         {
