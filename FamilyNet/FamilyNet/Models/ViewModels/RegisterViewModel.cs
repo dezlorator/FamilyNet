@@ -29,9 +29,12 @@ namespace FamilyNet.Models.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Подтвердить пароль")]
         public string PasswordConfirm { get; set; }
-        
+
+       
+        public IEnumerable<SelectListItem> YourDropdownList { get; set; }
+
         [Required]
-        [Display(Name ="Выберите свою роль")]
-        public IQueryable<IdentityRole> DropDownRolesList { get; set; }
+        [Display(Name = "Выберите свою роль")]
+        public string YourDropdownSelectedValue { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyNet.Controllers
 {
@@ -25,25 +26,50 @@ namespace FamilyNet.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
-            return View();
+            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
+            {
+                Text = item.Name,
+                Value = item.Name
+            }).ToList(), "Value", "Text");
+            var viewModel = new RegisterViewModel()
+            {
+                // The Dropdownlist values
+                YourDropdownList = yourDropdownList
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel model, List<string> roles)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
+            {
+                Text = item.Name,
+                Value = item.Name
+            }).ToList(), "Value", "Text");
+            model.YourDropdownList = yourDropdownList;
             if (ModelState.IsValid)
             {
+
+                
                 ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.Email, PhoneNumber = model.Phone };
                 // добавляем пользователя.
                 var result = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
-                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
-                var addedRoles = roles.Except(allRoles);
+
+                await _unitOfWorkAsync.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
+
+                
+
 
                 if (result.Succeeded)
                 {
+                    
                     // установка куки.
-                    await _unitOfWorkAsync.UserManager.AddToRoleAsync(user, model.DropDownRolesList);
+                    
+                    
                     await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home");
                 }
@@ -55,6 +81,7 @@ namespace FamilyNet.Controllers
                     }
                 }
             }
+            
             return View(model);
         }
 

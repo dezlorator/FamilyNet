@@ -23,7 +23,8 @@
         <span asp-validation-for="PasswordConfirm"></span>
     </div>
     <div>
-        @Html.DropDownList(m => Model.DropDownRolesList);
+        <label asp-for=" YourDropdownSelectedValue"></label>
+        @Html.DropDownListFor(m => m.YourDropdownSelectedValue, Model.YourDropdownList, new { @class = "your-class" })
 
     </div>
     <div>

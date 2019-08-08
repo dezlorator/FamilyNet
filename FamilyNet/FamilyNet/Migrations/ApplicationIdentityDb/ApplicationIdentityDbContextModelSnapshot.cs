@@ -59,6 +59,8 @@ namespace FamilyNet.Migrations.ApplicationIdentityDb
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
 
+                    b.Property<string>("UserRole");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")

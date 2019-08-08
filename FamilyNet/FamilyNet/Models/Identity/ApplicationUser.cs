@@ -11,5 +11,6 @@ namespace FamilyNet.Models.Identity
     {
         [BindNever]
         public bool IsDeleted { get; set; } = false;
+        
     }
 }
