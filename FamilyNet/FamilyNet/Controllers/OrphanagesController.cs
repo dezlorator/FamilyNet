@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
+using Microsoft.Extensions.Localization;
+using System.Globalization;
 
 namespace FamilyNet.Controllers
 {
@@ -21,9 +23,12 @@ namespace FamilyNet.Controllers
     {
         private OrphanageSearchModel _searchModel;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment) : base(unitOfWork)
+        private readonly IStringLocalizer<OrphanagesController> _localizer; 
+
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer) : base(unitOfWork)
         {
             _hostingEnvironment = environment;
+            _localizer = localizer;
         }
 
         private bool IsContain(Address addr)
@@ -83,6 +88,11 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
+
+            var t = CultureInfo.CurrentCulture;
+
+            ViewData["ColumnName1"] = _localizer["Name"];
+            ViewData["ColumnName2"]=_localizer["Address"];
 
             return View(await orphanages.ToListAsync());
         }

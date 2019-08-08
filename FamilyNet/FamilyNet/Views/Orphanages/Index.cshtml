@@ -40,12 +40,12 @@
         <tr>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
-                    @Html.DisplayNameFor(model => model.Name)
+                    @ViewData["ColumnName1"]
                 </a>
             </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewBag.AddressSort">
-                    @Html.DisplayNameFor(model => model.Adress)
+                    @ViewData["ColumnName2"]
                 </a>
             </th>
             <th>
