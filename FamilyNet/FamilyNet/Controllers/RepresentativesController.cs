@@ -57,23 +57,16 @@ namespace FamilyNet.Controllers
             //if (representativeViewModel == null)
             //    representativeViewModel = new RepresentativeViewModel();
 
-            if (representativeViewModel.FilterModel?.FilterParam?.Count() == 0)
-            {
-                representativeViewModel.FilterModel.FilterParam = new List<FilterParams>()
-                {
-                    new FilterParams() { ColumnName = "Name", FilterOptions = FilterOptions.Contains },
-                        new FilterParams() { ColumnName = "Surname", FilterOptions = FilterOptions.Contains },
-                        new FilterParams() { ColumnName = "Patronymic", FilterOptions = FilterOptions.Contains },
-                        new FilterParams() { ColumnName = "Rating", FilterOptions = FilterOptions.IsGreaterThanOrEqualTo }
-                };
-            }
-            else representativeViewModel.FilterModel.FilterParam = new List<FilterParams>()
-                {
-                    new FilterParams() { ColumnName = "Name", FilterOptions = FilterOptions.Contains },
-                        new FilterParams() { ColumnName = "Surname", FilterOptions = FilterOptions.Contains },
-                        new FilterParams() { ColumnName = "Patronymic", FilterOptions = FilterOptions.Contains },
-                        new FilterParams() { ColumnName = "Rating", FilterOptions = FilterOptions.IsGreaterThanOrEqualTo }
-                };
+            //if (representativeViewModel.FilterModel?.FilterParam?.Count() == 0)
+            //{
+            //    representativeViewModel.FilterModel.FilterParam = new List<FilterParams>()
+            //    {
+            //            new FilterParams() { ColumnName = "Name", FilterOptions = FilterOptions.Contains },
+            //            new FilterParams() { ColumnName = "Surname", FilterOptions = FilterOptions.Contains },
+            //            new FilterParams() { ColumnName = "Patronymic", FilterOptions = FilterOptions.Contains },
+            //            new FilterParams() { ColumnName = "Rating", FilterOptions = FilterOptions.IsGreaterThanOrEqualTo }
+            //    };
+            //}
 
             representativeViewModel.Representatives = FilterGeneric<Representative>
                 .GetFilteredData(representativeViewModel.FilterModel.FilterParam, representatives);
