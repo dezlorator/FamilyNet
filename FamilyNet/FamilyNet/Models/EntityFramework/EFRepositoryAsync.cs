@@ -65,5 +65,10 @@ namespace FamilyNet.Models.EntityFramework {
             entity.IsDeleted = true;
             Update(entity);
         }
+
+        public virtual bool Any(int id)
+        {
+            return GetById(id) != null;
+        }
     }
 }

@@ -114,7 +114,7 @@ namespace FamilyNet.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!HasCharityMaker(charityMaker.ID))
+                    if (!_unitOfWorkAsync.CharityMakers.Any(charityMaker.ID))
                     {
                         return NotFound();
                     }
@@ -154,18 +154,13 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (HasCharityMaker(id))
+            if (!_unitOfWorkAsync.CharityMakers.Any(id))
             {
                 await _unitOfWorkAsync.CharityMakers.Delete(id);
                 _unitOfWorkAsync.SaveChangesAsync();
             }          
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool HasCharityMaker(int id)
-        {
-            return _unitOfWorkAsync.CharityMakers.GetById(id) != null;
         }
     }
 }
