@@ -18,13 +18,6 @@ namespace FamilyNet.Controllers
     [Authorize]
     public class RepresentativesController : BaseController
     {
-        #region Private fields
-
-        private PersonSearchModel _searchModel;
-        //private PersonFilter _personFilter;
-
-        #endregion
-
         #region Ctor
 
         public RepresentativesController(IUnitOfWorkAsync unitOfWork)
@@ -39,7 +32,7 @@ namespace FamilyNet.Controllers
         // GET: Representatives
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id,
-            IEnumerable<FilterUtility.FilterParams> filterParams/*PersonSearchModel searchModel*/)//TODO: Representative search model
+            RepresentativeViewModel representativeViewModel)
         {
             IEnumerable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
             //sort -> IEnumerable
@@ -58,26 +51,40 @@ namespace FamilyNet.Controllers
             //IEnumerable<FilterUtility.FilterParams> enuParams =
             //    new List<FilterUtility.FilterParams>() { searchParamFullName, searchParamRate };
             #endregion
-
             //PaginatedInputModel inm = new PaginatedInputModel();
             //inm.FilterParam = enuParams;
-            
-            representatives = FilterUtility.Filter<Representative>
-                .GetFilteredData(filterParams, representatives);
-            //(representatives, enuParams);
 
-            //TODO: AlPa ->  CAST:
-            //representatives = (IQueryable<Representative>)representatives.GetFiltered(searchModel); //фильтрация
-            //representatives = (IQueryable<Representative>)_personFilter.GetFiltered(representatives, searchModel);
-            //representatives = GetFiltered(searchModel, representatives);
+            //if (representativeViewModel == null)
+            //    representativeViewModel = new RepresentativeViewModel();
+
+            if (representativeViewModel.FilterModel?.FilterParam?.Count() == 0)
+            {
+                representativeViewModel.FilterModel.FilterParam = new List<FilterParams>()
+                {
+                    new FilterParams() { ColumnName = "Name", FilterOptions = FilterOptions.Contains },
+                        new FilterParams() { ColumnName = "Surname", FilterOptions = FilterOptions.Contains },
+                        new FilterParams() { ColumnName = "Patronymic", FilterOptions = FilterOptions.Contains },
+                        new FilterParams() { ColumnName = "Rating", FilterOptions = FilterOptions.IsGreaterThanOrEqualTo }
+                };
+            }
+            else representativeViewModel.FilterModel.FilterParam = new List<FilterParams>()
+                {
+                    new FilterParams() { ColumnName = "Name", FilterOptions = FilterOptions.Contains },
+                        new FilterParams() { ColumnName = "Surname", FilterOptions = FilterOptions.Contains },
+                        new FilterParams() { ColumnName = "Patronymic", FilterOptions = FilterOptions.Contains },
+                        new FilterParams() { ColumnName = "Rating", FilterOptions = FilterOptions.IsGreaterThanOrEqualTo }
+                };
+
+            representativeViewModel.Representatives = FilterGeneric<Representative>
+                .GetFilteredData(representativeViewModel.FilterModel.FilterParam, representatives);
 
             if (id == 0)
-                return View(representatives);//await representatives.ToListAsync());
+                return View(representativeViewModel);//await representatives.ToListAsync());
 
             if (id > 0)
-                representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
+                representativeViewModel.Representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
 
-            return View(representatives);//await representatives.ToListAsync());
+            return View(representativeViewModel);//await representatives.ToListAsync());
         }
 
         //private IQueryable<Representative> GetFiltered(PersonSearchModel searchModel,
@@ -276,8 +283,6 @@ namespace FamilyNet.Controllers
         {
             return _unitOfWorkAsync.Representatives.GetById(id) != null;
         }
-
-        
 
         #endregion
     }

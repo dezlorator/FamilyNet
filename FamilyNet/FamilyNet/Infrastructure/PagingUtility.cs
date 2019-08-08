@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FamilyNet.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,14 +8,14 @@ namespace FamilyNet.Infrastructure
 {
     public class PagingUtility<T>
     {
-        public async Task<PaginatedList<T>> GetPagingList(List<T> persons, PaginatedInputModel pagingParams)
+        public async Task<PaginatedList<T>> GetPagingList(List<T> persons, FilterModel pagingParams)
         {
             List<T> sampleList = persons;
 
             #region [Filter]  
             if (pagingParams != null && pagingParams.FilterParam.Any())
             {
-                sampleList = FilterUtility.Filter<T>
+                sampleList = FilterGeneric<T>
                     .GetFilteredData(pagingParams.FilterParam, sampleList).ToList() ?? sampleList;
             }
             #endregion

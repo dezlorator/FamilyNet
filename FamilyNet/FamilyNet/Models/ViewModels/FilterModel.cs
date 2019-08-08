@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FamilyNet.Infrastructure;
 using FamilyNet.Models.ViewModels;
 
-namespace FamilyNet.Infrastructure
+namespace FamilyNet.Models.ViewModels
 {
     /// <summary>  
     /// This class contains properites used for paging, sorting, grouping, filtering and will be used as a parameter model  
@@ -19,9 +19,9 @@ namespace FamilyNet.Infrastructure
     ///PageNumber   - Page Number to be displayed in UI, default to 1  
     ///PageSize     - Number of items per page, default to 3  
     /// </summary> 
-    public class PaginatedInputModel
+    public class FilterModel
     {
-        public IEnumerable<FilterUtility.FilterParams> FilterParam { get; set; }
+        public IEnumerable<FilterParams> FilterParam { get; set; }
         public IEnumerable<SortingUtility.SortingParams> SortingParams { get; set; }
         public IEnumerable<string> GroupingColumns { get; set; } = null;
 
@@ -30,5 +30,10 @@ namespace FamilyNet.Infrastructure
 
         int pageSize = 3;
         public int PageSize { get { return pageSize; } set { if (value > 1) pageSize = value; } }
+
+        public FilterModel()
+        {
+            FilterParam = new List<FilterParams>();
+        }
     }
 }

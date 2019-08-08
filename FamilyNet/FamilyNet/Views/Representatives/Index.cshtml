@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FamilyNet.Models.Representative>
+﻿@model FamilyNet.Models.ViewModels.RepresentativeViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -14,34 +14,35 @@
     </div>
 </div>
 
-@await Html.PartialAsync("PersonFilter")@*, FamilyNet.Infrastructure.FilterUtility.FilterParams)*@
+@await Html.PartialAsync("Filter", Model.FilterModel)@*, FamilyNet.Infrastructure.FilterUtility.FilterParams)*@
 
+@{var representativeColumn = Model.Representatives.FirstOrDefault(); }
 <table class="table table-hover">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FullName.Name)
+                @Html.DisplayNameFor(model => @*model.Representatives.FirstOrDefault().FullName.Name*@ representativeColumn.FullName.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FullName.Patronymic)
+                @Html.DisplayNameFor(model => representativeColumn.FullName.Patronymic)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FullName.Surname)
+                @Html.DisplayNameFor(model => representativeColumn.FullName.Surname)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Birthday)
+                @Html.DisplayNameFor(model => representativeColumn.Birthday)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Rating)
+                @Html.DisplayNameFor(model => representativeColumn.Rating)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Avatar)
+                @Html.DisplayNameFor(model => representativeColumn.Avatar)
             </th>
             @*<th> TODO: Add email from Identity
                 @Html.DisplayNameFor(model => model.Email)
                 </th>*@
             <th>
-                @Html.DisplayNameFor(model => model.Orphanage)
+                @Html.DisplayNameFor(model => representativeColumn.Orphanage)
             </th>
             <th>
                 Действия
@@ -49,7 +50,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Representatives)
         {
             <tr>
                 <th>
