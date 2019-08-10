@@ -9,6 +9,8 @@ using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace FamilyNet.Controllers
 {
@@ -59,8 +61,20 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("ID,FullName,Address,Birthday,Contacts,Rating")] CharityMaker charityMaker)
+        public async Task<IActionResult> Create([Bind("ID,FullName,Address,Birthday,Contacts,Rating,Avatar")] CharityMaker charityMaker, IFormFile file)
         {
+            if (file != null && file.Length > 0)
+            {
+                var fileName = Path.GetRandomFileName();
+                fileName = Path.ChangeExtension(fileName, ".jpg");
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\children", fileName);
+                using (var fileSteam = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileSteam);
+                }
+                charityMaker.Avatar = fileName;
+            }
+
             if (ModelState.IsValid)
             {
                 await _unitOfWorkAsync.CharityMakers.Create(charityMaker);
@@ -96,11 +110,23 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id,
-            [Bind("ID,FullName,Address,Birthday,Contacts,Rating")] CharityMaker charityMaker)
+            [Bind("ID,FullName,Address,Birthday,Contacts,Rating,Avatar")] CharityMaker charityMaker, IFormFile file)
         {
             if (id != charityMaker.ID)
             {
                 return NotFound();
+            }
+
+            if (file != null && file.Length > 0)
+            {
+                var fileName = Path.GetRandomFileName();
+                fileName = Path.ChangeExtension(fileName, ".jpg");
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\children", fileName);
+                using (var fileSteam = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileSteam);
+                }
+                charityMaker.Avatar = fileName;
             }
 
             if (ModelState.IsValid)
