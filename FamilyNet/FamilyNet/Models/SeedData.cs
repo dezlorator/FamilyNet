@@ -450,6 +450,31 @@ namespace FamilyNet.Models
                 _unitOfWorkAsync.CharityMakers.AddRange(charityMakers);
                 _unitOfWorkAsync.SaveChangesAsync();
             }
+
+            if (_unitOfWorkAsync.BaseItemTypes.Get(v => v.ID == v.ID) != null)
+            {
+                List<BaseItemType> baseItemTypes = new List<BaseItemType>();
+
+                BaseItemType baseItemType = new BaseItemType();
+
+                baseItemType.Name = "Обувь";
+                baseItemTypes.Add(baseItemType);
+
+                baseItemType = new BaseItemType();
+                baseItemType.Name = "Куртки";
+                baseItemTypes.Add(baseItemType);
+
+                baseItemType = new BaseItemType();
+                baseItemType.Name = "Штаны";
+                baseItemTypes.Add(baseItemType);
+
+                baseItemType = new BaseItemType();
+                baseItemType.Name = "Футболки";
+                baseItemTypes.Add(baseItemType);
+
+                _unitOfWorkAsync.BaseItemTypes.AddRange(baseItemTypes);
+                _unitOfWorkAsync.SaveChangesAsync();
+            }
         }
     }
 }

@@ -37,6 +37,7 @@ namespace FamilyNet.Models.EntityFramework
             UserManager = userManager;
             SignInManager = signInManager;
             RoleManager = roleManager;
+            BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
         }
 
 
@@ -70,6 +71,8 @@ namespace FamilyNet.Models.EntityFramework
         public SignInManager<ApplicationUser> SignInManager { get; set; }
 
         public RoleManager<IdentityRole> RoleManager { get; set; }
+
+        public IAsyncRepository<BaseItemType> BaseItemTypes { get; set; }
 
         public void SaveChangesAsync()
         {
