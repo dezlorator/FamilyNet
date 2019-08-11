@@ -1,0 +1,31 @@
+﻿@model FamilyNet.Models.DonationItemType
+@{
+    ViewData["Title"] = "CreateDonationItemType";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create Donation Item Type</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form enctype="multipart/form-data" asp-action="CreateDonationItemType">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Создать" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" type="submit" class="btn btn-primary">Назад</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

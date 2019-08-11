@@ -193,5 +193,13 @@ namespace FamilyNet.Controllers
         {
             return _unitOfWorkAsync.CharityMakers.GetById(id) != null;
         }
+
+        // GET: CharityMakers/Table
+        [Authorize(Roles = "Admin")]
+        public IActionResult Table()
+        {
+            var list = _unitOfWorkAsync.CharityMakers.GetAll().ToList();
+            return View(list);
+        }
     }
 }

@@ -41,6 +41,21 @@ namespace FamilyNet.Controllers
             return View(charityMaker);
         }
 
+        // GET: Donations/CreateDonationItemType
+        [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
+        public IActionResult CreateDonationItemType()
+        {
+            return View();
+        }
+
+        // GET: Donations/DonationItem
+        [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
+        public IActionResult CreateDonationItem()
+        {
+            ViewBag.ListOfDonationItemTypes = _unitOfWorkAsync.Donations.GetAll();
+            return View();
+        }
+
         // GET: Donations/CreateRequest
         [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
         public IActionResult CreateRequest()
@@ -56,7 +71,7 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
         public async Task<IActionResult> CreateRequest([Bind("ID,DonationItem,Orphanage")] Donation request, int idOrphanage)
-        {          
+        {
             if (ModelState.IsValid)
             {
                 request.OrphanageID = idOrphanage;              

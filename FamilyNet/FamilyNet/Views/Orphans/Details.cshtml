@@ -22,7 +22,7 @@
                             <p>
                                 @Html.DisplayFor(model => model.Birthday)
                             </p>
-                           
+
                             <h6>@Html.DisplayNameFor(model => model.Orphanage)</h6>
                             <p>
                                 @Html.DisplayFor(model => model.Orphanage.Name)
@@ -37,11 +37,16 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 order-lg-1 text-center">            
+        <div class="col-lg-4 order-lg-1 text-center">
             <img src="@Url.Content("~/children/" + Model.Avatar)" style="height: 300px; width: 100%; display: block;" alt="avatar">
             <label class="custom-file">
                 <input type="file" id="file" class="custom-file-input">
             </label>
-        </div>        
+        </div>
     </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-primary"> <i class="fas fa-edit"></i>Редактировать</a> 
+    <a asp-action="Index" type="submit" class="btn btn-primary">Вернуться к списку</a>
 </div>
