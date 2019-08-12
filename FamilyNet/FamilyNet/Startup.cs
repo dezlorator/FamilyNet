@@ -61,6 +61,12 @@ namespace FamilyNet
 
             services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
             services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddMvc()
+                .AddViewLocalization(
+                Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
+            //    opts => { opts.ResourcesPath = "Resources"; })
+                .AddDataAnnotationsLocalization();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -81,7 +87,7 @@ namespace FamilyNet
             var supportedCultures = new[]
             {
                 new CultureInfo("uk-UA"),
-                new CultureInfo("en-US"),
+                //new CultureInfo("en-US"),
                 new CultureInfo("ru-RU")
             };
 

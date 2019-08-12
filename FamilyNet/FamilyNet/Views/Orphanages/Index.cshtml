@@ -1,4 +1,9 @@
 ﻿@model IEnumerable<FamilyNet.Models.Orphanage>
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<SharedResource> SharedLocalizer
+
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -40,21 +45,21 @@
         <tr>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
-                    @ViewData["ColumnName1"]
+                    @ViewData["Name"]
                 </a>
             </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewBag.AddressSort">
-                    @ViewData["ColumnName2"]
+                    @SharedLocalizer["Address"]
                 </a>
             </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewBag.RatingSort">
-                    @Html.DisplayNameFor(model => model.Rating)
+                    @ViewData["Rating"]
                 </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Avatar)
+                @ViewData["Photo"]
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Representatives)
@@ -63,7 +68,7 @@
                 @Html.DisplayNameFor(model => model.Orphans)
             </th>
             <th>
-                Действия
+                @ViewData["Actions"]
             </th>
         </tr>
     </thead>

@@ -117,13 +117,103 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Address" xml:space="preserve">
-    <value>Адреса</value>
+  <data name="Actions" xml:space="preserve">
+    <value>Дії</value>
   </data>
-  <data name="Country" xml:space="preserve">
-    <value>Ukrain</value>
+  <data name="Add" xml:space="preserve">
+    <value>Додати</value>
+  </data>
+  <data name="Birthday" xml:space="preserve">
+    <value>День народження</value>
+  </data>
+  <data name="CharityMakersList" xml:space="preserve">
+    <value>Перелік меценатів</value>
+  </data>
+  <data name="CurrentCountry" xml:space="preserve">
+    <value>Ukraine</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>ПІБ</value>
+  </data>
+  <data name="House" xml:space="preserve">
+    <value>Будинок</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Назва</value>
+  </data>
+  <data name="OrphanagesList" xml:space="preserve">
+    <value>Перелік дитячих будинків</value>
+  </data>
+  <data name="OurVolunteers" xml:space="preserve">
+    <value>Наші волонтери</value>
+  </data>
+  <data name="PersonName" xml:space="preserve">
+    <value>Ім'я</value>
+  </data>
+  <data name="PersonSurname" xml:space="preserve">
+    <value>Прізвище</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Рейтинг</value>
+  </data>
+  <data name="SearchDonationItemTypes" xml:space="preserve">
+    <value>Пошук по виду допомоги</value>
+  </data>
+  <data name="Street" xml:space="preserve">
+    <value>Вулиця</value>
+  </data>
+  <data name="String22" xml:space="preserve">
+    <value>По батькові</value>
+  </data>
+  <data name="String23" xml:space="preserve">
+    <value>Область</value>
+  </data>
+  <data name="String24" xml:space="preserve">
+    <value>Представники дитячих закладів</value>
+  </data>
+  <data name="String25" xml:space="preserve">
+    <value>Рейтинг від</value>
+  </data>
+  <data name="String26" xml:space="preserve">
+    <value>Реєстрація нового користувача</value>
+  </data>
+  <data name="String27" xml:space="preserve">
+    <value>Вхід у додаток</value>
+  </data>
+  <data name="String28" xml:space="preserve">
+    <value>Телефон</value>
+  </data>
+  <data name="String29" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+  <data name="String30" xml:space="preserve">
+    <value>Підтвердити пароль</value>
+  </data>
+  <data name="String31" xml:space="preserve">
+    <value>Зареєструватися</value>
+  </data>
+  <data name="String32" xml:space="preserve">
+    <value>Вхід</value>
+  </data>
+  <data name="String33" xml:space="preserve">
+    <value>Запам'ятати</value>
+  </data>
+  <data name="String34" xml:space="preserve">
+    <value>Перелік ролей</value>
+  </data>
+  <data name="String35" xml:space="preserve">
+    <value>Обліковий запис</value>
+  </data>
+  <data name="String36" xml:space="preserve">
+    <value>Адмін</value>
+  </data>
+  <data name="String37" xml:space="preserve">
+    <value>Редагувати</value>
+  </data>
+  <data name="String38" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="String39" xml:space="preserve">
+    <value>Створити</value>
   </data>
 </root>

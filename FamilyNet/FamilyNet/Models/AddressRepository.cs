@@ -7,29 +7,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FamilyNet.Models
-{
-    public class AddressRepository
-    {
-        private List<string> _countries = new List<string> { "Ukrain", "Russia", "Belarus" };
-        private IEnumerable<Address> _allDataRows = null; 
+namespace FamilyNet.Models {
+
+    public enum Countries {
+        Ukraine,
+        Russia,
+        Belarus
+    }
+
+    public class AddressRepository {
+        private List<string> _countries = new List<string> { "Ukraine", "Russia", "Belarus" };
+        private IEnumerable<Address> _allDataRows = null;
         private string _filePath = null;
 
         private Address _address = null;
-        
-        public string this[int index]
-        {
+
+        public string this[int index] {
             get => _countries[index];
         }
 
+        public AddressRepository(IEnumerable<Address> addresses) {
+            _allDataRows = addresses;
+        }
 
-        public IEnumerable<string> GetCountries()
-        {
+        public IEnumerable<string> GetCountries() {
             return _countries;
         }
 
-        public IEnumerable<string> GetRegion(string country)
-        {
+        public IEnumerable<string> GetRegion(string country) {
             //TODO: part to switch into current CultureInfo
 
             IEnumerable<string> regions = null;
@@ -37,14 +42,12 @@ namespace FamilyNet.Models
 
             int index = _countries.IndexOf(_address.Country);
 
-            if (index != -1)
-            {
+            if (index != -1) {
                 _filePath = FilePath(index);
 
                 IEnumerable<Address> _allDataRows = from line in File.ReadLines(_filePath, Encoding.UTF8)
                                                     let data = line.Split(";")
-                                                    select new Address
-                                                    {
+                                                    select new Address {
                                                         Region = data[0],
                                                         City = data[2],
                                                         Street = data[4],
@@ -59,8 +62,7 @@ namespace FamilyNet.Models
         }
 
 
-        public IEnumerable<string> GetCities(string region)
-        {
+        public IEnumerable<string> GetCities(string region) {
             IEnumerable<string> cities = null;
             _address.Region = region;
 
@@ -71,8 +73,7 @@ namespace FamilyNet.Models
             return cities;
         }
 
-        public IEnumerable<string> GetStreets(string city)
-        {
+        public IEnumerable<string> GetStreets(string city) {
             IEnumerable<string> streets = null;
             _address.City = city;
 
@@ -83,8 +84,7 @@ namespace FamilyNet.Models
             return streets;
         }
 
-        public IEnumerable<string> GetHouses(string street)
-        {
+        public IEnumerable<string> GetHouses(string street) {
             IEnumerable<string> houses = null;
             _address.Street = street;
 
@@ -94,15 +94,13 @@ namespace FamilyNet.Models
             return houses;
         }
 
-        public Address GetFullAddress(string house)
-        {
+        public Address GetFullAddress(string house) {
             _address.House = house;
 
             return _address;
         }
 
-        public void AddNewCountry(string newCountry)
-        {
+        public void AddNewCountry(string newCountry) {
             string _country = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(newCountry.ToLower());
 
             _countries.Add(_country);
@@ -110,8 +108,7 @@ namespace FamilyNet.Models
 
 
 
-        private string FilePath(int countryIndex)
-        {
+        private string FilePath(int countryIndex) {
             //~\familynet\FamilyNet\FamilyNet folder
             string slnFolderPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 

@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
     ViewData["Title"] = "Home Page";
     Layout = "_Layout";
 }
@@ -17,8 +19,8 @@
                 <img class="d-block w-100" src="~/images/11.jpg" alt="First slide">
             </a>
             <div class="carousel-caption d-none d-md-block">
-                <h5>Поиск по виду помощи</h5>
-                <p>Вы можете найти детский дом, который нуждается в том, чем именно вы хотите пожертвовать</p>
+                <h5>@ViewData["FirstSlideComment"]</h5>
+                <p>@ViewData["Description1"]</p>
             </div>
         </div>
         <div class="carousel-item">
