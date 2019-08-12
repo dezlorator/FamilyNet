@@ -1,6 +1,7 @@
 ﻿using FamilyNet.Models.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,15 +12,11 @@ namespace FamilyNet.Models
     public class AddressRepository
     {
         private List<string> _countries = new List<string> { "Ukrain", "Russia", "Belarus" };
-        private IEnumerable<Address> _allDataRows = null; //(((((
+        private IEnumerable<Address> _allDataRows = null; 
         private string _filePath = null;
 
         private Address _address = null;
-
-        public AddressRepository(ApplicationDbContext context)
-        {
-        }
-
+        
         public string this[int index]
         {
             get => _countries[index];
@@ -33,6 +30,8 @@ namespace FamilyNet.Models
 
         public IEnumerable<string> GetRegion(string country)
         {
+            //TODO: part to switch into current CultureInfo
+
             IEnumerable<string> regions = null;
             _address.Country = country;
 
@@ -102,13 +101,25 @@ namespace FamilyNet.Models
             return _address;
         }
 
+        public void AddNewCountry(string newCountry)
+        {
+            string _country = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(newCountry.ToLower());
+
+            _countries.Add(_country);
+        }
+
 
 
         private string FilePath(int countryIndex)
         {
+            //~\familynet\FamilyNet\FamilyNet folder
             string slnFolderPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 
-            string path = String.Concat(slnFolderPath, Path.DirectorySeparatorChar, _countries[countryIndex], ".csv");
+            string path = String.Concat(
+                slnFolderPath, Path.DirectorySeparatorChar,
+                "wwwroot", Path.DirectorySeparatorChar,
+                "address", Path.DirectorySeparatorChar,
+                _countries[countryIndex], ".csv");
 
             return path;
         }

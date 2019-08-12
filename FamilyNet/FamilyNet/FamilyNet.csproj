@@ -28,7 +28,6 @@
     <Folder Include="Resources\OrphanagesController\" />
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\representatives\" />
-    <Folder Include="wwwroot\address\" />
   </ItemGroup>
 
 </Project>

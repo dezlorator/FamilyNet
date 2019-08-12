@@ -120,9 +120,6 @@
   <data name="Address" xml:space="preserve">
     <value>Адреса</value>
   </data>
-  <data name="AddressDBPath" xml:space="preserve">
-    <value>~\..\wwwroot\address\housesUkrain.csv</value>
-  </data>
   <data name="Country" xml:space="preserve">
     <value>Ukrain</value>
   </data>
