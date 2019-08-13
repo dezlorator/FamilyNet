@@ -78,7 +78,7 @@
                         @if (User.Identity.IsAuthenticated) {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Учетная запись
+                                    @SharedLocalizer["Account"]
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                     <p class="nav-link text-danger font-weight-bold">@User.Identity.Name</p>

@@ -120,7 +120,4 @@
   <data name="OrphansList" xml:space="preserve">
     <value>Перелік дітей-сиріт</value>
   </data>
-  <data name="Search" xml:space="preserve">
-    <value>Пошук</value>
-  </data>
 </root>

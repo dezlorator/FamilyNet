@@ -1,11 +1,14 @@
-﻿@model IEnumerable<FamilyNet.Models.Orphan>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<SharedResource> SharedLocalizer
+@model IEnumerable<FamilyNet.Models.Orphan>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row">  
-        <h2 class="text-center">Список детей-сирот</h2>   
+<div class="row">
+    <h2 class="text-center">Список детей-сирот</h2>
 </div>
 
 <div class="box">
@@ -17,11 +20,11 @@
                 <div class="col-md-4">
 
                     <div class="card mb-4 box-shadow text-center">
-                        <a asp-action="Details" asp-route-id="@item.ID" style="text-decoration:none;">                 
+                        <a asp-action="Details" asp-route-id="@item.ID" style="text-decoration:none;">
                             <img class="img-responsive" src="@Url.Content("~/children/" + @item.Avatar)" alt="Card image cap" width="100%" height="300px">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    @Html.DisplayFor(modelItem => item.FullName.Name)
+                                    @SharedLocalizer["PersonName"]
                                     @Html.DisplayFor(modelItem => item.FullName.Surname)
                                 </h5>
                                 <p class="card-text">

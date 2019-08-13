@@ -121,8 +121,24 @@
     <value>Ви можете знайти дитячий будинок, котрий потребує саме те що в Вас є</value>
     <comment>Вы можете найти детский дом, который нуждается в том, чем именно вы хотите пожертвовать</comment>
   </data>
+  <data name="Description2" xml:space="preserve">
+    <value>Вироби дітей-сиріт, котрі беруть участь в аукціоні</value>
+    <comment>Поделки детей-сирот, которые участвуют в аукционе</comment>
+  </data>
+  <data name="Description3" xml:space="preserve">
+    <value>Ви можете знайти дитячий будинок поблизу з Вами</value>
+    <comment>Вы можете посмотреть какой детдом поблизости с вами</comment>
+  </data>
   <data name="FirstSlideComment" xml:space="preserve">
     <value>Пошук по виду допомоги</value>
     <comment>Поиск по виду помощи</comment>
+  </data>
+  <data name="SecondSlideComment" xml:space="preserve">
+    <value>Благочинний аукціон</value>
+    <comment>Благотворительный аукцион</comment>
+  </data>
+  <data name="ThirdSlideComment" xml:space="preserve">
+    <value>Пошук дитячого будинку</value>
+    <comment>Поиск детдома</comment>
   </data>
 </root>

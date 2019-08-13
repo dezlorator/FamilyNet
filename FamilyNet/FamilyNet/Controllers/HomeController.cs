@@ -50,6 +50,10 @@ namespace FamilyNet.Controllers {
             ViewData["Volunteers"] = _localizer["Volunteers"];
             ViewData["FirstSlideComment"] = _localizer["FirstSlideComment"];
             ViewData["Description1"] = _localizer["Description1"];
+            ViewData["SecondSlideComment"] = _localizer["SecondSlideComment"];
+            ViewData["Description2"] = _localizer["Description2"];
+            ViewData["ThirdSlideComment"] = _localizer["ThirdSlideComment"];
+            ViewData["Description3"] = _localizer["Description3"];
         }
     }
 }

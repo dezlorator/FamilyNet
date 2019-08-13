@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
@@ -19,10 +20,13 @@ namespace FamilyNet.Controllers
     public class OrphansController : BaseController
     {
         private readonly IHostingEnvironment _hostingEnvironment;
-        public OrphansController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment) : base(unitOfWork)
+        private readonly IStringLocalizer<OrphansController> _localizer;
+
+        public OrphansController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphansController> localizer) : base(unitOfWork)
         {
             _hostingEnvironment = environment;
-        }       
+            _localizer = localizer;
+        }
 
         // GET: Orphans
         [AllowAnonymous]
@@ -33,8 +37,9 @@ namespace FamilyNet.Controllers
                 return View(list);
 
 
-            if (id >0)
+            if (id > 0)
                 list = list.Where(x => x.Orphanage.ID.Equals(id)).ToList();
+            GetViewData();
 
             return View(list);
         }
@@ -53,17 +58,19 @@ namespace FamilyNet.Controllers
             {
                 return NotFound();
             }
+            GetViewData();
 
             return View(orphan);
         }
 
         // GET: Orphans/Create
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             List<Orphanage> orphanagesList = new List<Orphanage>();
             orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
+            GetViewData();
 
             return View();
         }
@@ -92,11 +99,12 @@ namespace FamilyNet.Controllers
             {
                 var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
                 orphan.Orphanage = orphanage;
-                
+
                 await _unitOfWorkAsync.Orphans.Create(orphan);
                 await _unitOfWorkAsync.Orphans.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            GetViewData();
 
             return View(orphan);
         }
@@ -114,11 +122,12 @@ namespace FamilyNet.Controllers
             ViewBag.ListOfOrphanages = orphanagesList;
 
             var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
-            
+
             if (orphan == null)
             {
                 return NotFound();
             }
+            GetViewData();
 
             return View(orphan);
         }
@@ -172,6 +181,8 @@ namespace FamilyNet.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            GetViewData();
+
             return View(orphan);
         }
 
@@ -189,6 +200,7 @@ namespace FamilyNet.Controllers
             {
                 return NotFound();
             }
+            GetViewData();
 
             return View(orphan);
         }
@@ -200,19 +212,15 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
-            if(orphan == null)
+            if (orphan == null)
             {
                 return RedirectToAction(nameof(Index));
             }
             await _unitOfWorkAsync.Orphans.Delete((int)id);
             _unitOfWorkAsync.SaveChangesAsync();
+            GetViewData();
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool OrphanExists(int id)
-        {
-            return _unitOfWorkAsync.Orphans.GetById(id) != null;
         }
 
         // GET: Orphans/OrphansTable
@@ -220,7 +228,21 @@ namespace FamilyNet.Controllers
         public IActionResult OrphansTable()
         {
             var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
+            GetViewData();
+
             return View(list);
         }
+
+        private void GetViewData()
+        {
+            ViewData["OrphansList"] = _localizer["OrphansList"];
+        }
+
+        private bool OrphanExists(int id)
+        {
+            return _unitOfWorkAsync.Orphans.GetById(id) != null;
+        }
+
+
     }
 }
