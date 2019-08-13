@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class Orphanage : IEntity
+    public class Orphanage : IEntity, IAvatar
     {
         public int ID { get; set; }
 

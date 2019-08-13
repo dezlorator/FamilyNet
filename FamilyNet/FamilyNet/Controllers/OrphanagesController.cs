@@ -203,7 +203,7 @@ namespace FamilyNet.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OrphanageExists(orphanage.ID))
+                    if (!_unitOfWorkAsync.Orphanages.Any(orphanage.ID))
                         return NotFound();
                     else
                         throw;
@@ -240,9 +240,6 @@ namespace FamilyNet.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        private bool OrphanageExists(int id) =>
-            _unitOfWorkAsync.Orphanages.GetById(id) != null;
 
         [AllowAnonymous]
         public IActionResult SearchByTypeHelp()

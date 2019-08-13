@@ -13,6 +13,7 @@ namespace FamilyNet.Models.Interfaces
         IAsyncRepository<Volunteer> Volunteers { get; }
         IAsyncRepository<Donation> Donations { get; }
         IAsyncRepository<Orphan> Orphans { get; }
+        IAsyncRepository<BaseItemType> BaseItemTypes { get; }
         void SaveChangesAsync();
     }
 }

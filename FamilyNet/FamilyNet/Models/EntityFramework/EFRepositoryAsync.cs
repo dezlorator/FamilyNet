@@ -54,6 +54,11 @@ namespace FamilyNet.Models.EntityFramework {
                         .Where(predicate);
         }
 
+        public void AddRange(IEnumerable<TEntity> entities)
+        {
+             _dbContext.Set < TEntity >().AddRange(entities);
+        }
+
         public async Task SaveChangesAsync()
         {
             await _dbContext.SaveChangesAsync();
@@ -64,6 +69,11 @@ namespace FamilyNet.Models.EntityFramework {
             var entity = await GetById(id);
             entity.IsDeleted = true;
             Update(entity);
+        }
+
+        public virtual bool Any(int id)
+        {
+            return GetById(id) != null;
         }
     }
 }
