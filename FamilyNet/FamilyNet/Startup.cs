@@ -46,7 +46,9 @@ namespace FamilyNet
                 opts.Password.RequireUppercase = true;
                 opts.Password.RequireDigit = true;
 
-            }).AddEntityFrameworkStores<ApplicationIdentityDbContext>().AddDefaultTokenProviders();
+            }).AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+            .AddUserManager<ApplicationUserManager>()
+            .AddDefaultTokenProviders();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

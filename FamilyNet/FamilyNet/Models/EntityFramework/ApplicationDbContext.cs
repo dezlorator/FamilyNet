@@ -23,12 +23,14 @@ namespace FamilyNet.Models.EntityFramework
         public DbSet<Orphanage> Orphanages { get; set; }
         public DbSet<Donation> Donations { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
             optionsBuilder
                 .UseLazyLoadingProxies();
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
             base.OnModelCreating(modelBuilder);
 
             //Indexes
@@ -54,7 +56,7 @@ namespace FamilyNet.Models.EntityFramework
                 .WithOne(b => b.Orphanage)
                 .HasForeignKey(fk => fk.OrphanageID)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.ClientSetNull);
 
             #region Lots and Donation
 
@@ -70,6 +72,17 @@ namespace FamilyNet.Models.EntityFramework
                .WithOne(b => b.Item)
                .HasForeignKey(k => k.ItemID)
                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<DonationItem>()
+                .HasOne<Donation>()
+                .WithOne(d => d.DonationItem)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<Donation>()
+                .HasIndex(i => i.CharityMakerID);
+
+            modelBuilder.Entity<Donation>()
+                .HasIndex(i => i.OrphanageID);
 
             #endregion
 
@@ -97,6 +110,23 @@ namespace FamilyNet.Models.EntityFramework
                 .WithOne(cm => cm.Address)
                 .HasForeignKey<Volunteer>(f => f.AddressID)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            #region SoftDeleteSetUp
+
+            modelBuilder.Entity<Address>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<CharityMaker>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Orphan>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Volunteer>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Representative>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Orphanage>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<AuctionLot>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<AuctionLotItem>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<BaseItemType>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Donation>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<DonationItem>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<Location>().HasQueryFilter(entity => !entity.IsDeleted);
+
+            #endregion
         }
     }
 

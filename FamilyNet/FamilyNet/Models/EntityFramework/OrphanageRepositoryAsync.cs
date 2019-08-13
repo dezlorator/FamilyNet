@@ -10,19 +10,18 @@ namespace FamilyNet.Models.EntityFramework
     {
         public OrphanageRepositoryAsync(ApplicationDbContext dbContext) : base(dbContext)
         {
-            
+
         }
 
         public IQueryable<Orphanage> GetForSearchOrphanageOnMap()
         {
             var Orphanages = _dbContext.Orphanages.AsQueryable()
-                .Where(c => c.MapCoordX != null && c.MapCoordY != null)
+                .Where(c => c.Location.MapCoordX != null && c.Location.MapCoordY != null)
                 .Select(c => new Orphanage
                 {
                     Adress = c.Adress,
-                    MapCoordX = c.MapCoordX,
-                    MapCoordY = c.MapCoordY,
-                    Name = c.Name
+                    Name = c.Name,
+                    Location = new Location {MapCoordX=c.Location.MapCoordX, MapCoordY=c.Location.MapCoordY },
                 });
 
             return Orphanages;

@@ -20,7 +20,7 @@ namespace FamilyNet.Models.EntityFramework
         #region Constructors
 
         public EFUnitOfWorkAsync(ApplicationDbContext cont, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid, 
-            IPasswordHasher<ApplicationUser> passwordHash, UserManager<ApplicationUser> userManager,
+            IPasswordHasher<ApplicationUser> passwordHash, ApplicationUserManager userManager,
             SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _context = cont;

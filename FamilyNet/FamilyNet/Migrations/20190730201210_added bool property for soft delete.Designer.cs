@@ -4,14 +4,16 @@ using FamilyNet.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyNet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190730201210_added bool property for soft delete")]
+    partial class addedboolpropertyforsoftdelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,9 +170,7 @@ namespace FamilyNet.Migrations
 
                     b.HasIndex("CharityMakerID");
 
-                    b.HasIndex("DonationItemID")
-                        .IsUnique()
-                        .HasFilter("[DonationItemID] IS NOT NULL");
+                    b.HasIndex("DonationItemID");
 
                     b.HasIndex("OrphanageID");
 
@@ -195,23 +195,6 @@ namespace FamilyNet.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("DonationItem");
-                });
-
-            modelBuilder.Entity("FamilyNet.Models.Location", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<float?>("MapCoordX");
-
-                    b.Property<float?>("MapCoordY");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Location");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Orphan", b =>
@@ -256,7 +239,9 @@ namespace FamilyNet.Migrations
 
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<int?>("LocationID");
+                    b.Property<float?>("MapCoordX");
+
+                    b.Property<float?>("MapCoordY");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -268,8 +253,6 @@ namespace FamilyNet.Migrations
                     b.HasIndex("AdressID")
                         .IsUnique()
                         .HasFilter("[AdressID] IS NOT NULL");
-
-                    b.HasIndex("LocationID");
 
                     b.ToTable("Orphanages");
                 });
@@ -407,8 +390,8 @@ namespace FamilyNet.Migrations
                         .HasForeignKey("CharityMakerID");
 
                     b.HasOne("FamilyNet.Models.DonationItem", "DonationItem")
-                        .WithOne()
-                        .HasForeignKey("FamilyNet.Models.Donation", "DonationItemID");
+                        .WithMany()
+                        .HasForeignKey("DonationItemID");
 
                     b.HasOne("FamilyNet.Models.Orphanage", "Orphanage")
                         .WithMany("Donations")
@@ -419,7 +402,8 @@ namespace FamilyNet.Migrations
                 {
                     b.HasOne("FamilyNet.Models.Orphanage", "Orphanage")
                         .WithMany("Orphans")
-                        .HasForeignKey("OrphanageID");
+                        .HasForeignKey("OrphanageID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.OwnsOne("FamilyNet.Models.FullName", "FullName", b1 =>
                         {
@@ -453,10 +437,6 @@ namespace FamilyNet.Migrations
                         .WithOne()
                         .HasForeignKey("FamilyNet.Models.Orphanage", "AdressID")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("FamilyNet.Models.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationID");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Representative", b =>

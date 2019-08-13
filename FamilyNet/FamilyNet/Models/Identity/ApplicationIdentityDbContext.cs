@@ -64,5 +64,18 @@ namespace FamilyNet.Models.Identity
             }
         }
 
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+
+            #region SoftDeleteSetUp
+
+            modelBuilder.Entity<ApplicationUser>().HasQueryFilter(entity => !entity.IsDeleted);
+
+            #endregion
+        }
     }
 }
+
