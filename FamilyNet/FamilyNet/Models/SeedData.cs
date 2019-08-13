@@ -453,22 +453,22 @@ namespace FamilyNet.Models
 
             if (_unitOfWorkAsync.BaseItemTypes.Get(v => v.ID == v.ID) != null)
             {
-                List<BaseItemType> baseItemTypes = new List<BaseItemType>();
+                List<DonationItemType> baseItemTypes = new List<DonationItemType>();
 
-                BaseItemType baseItemType = new BaseItemType();
+                DonationItemType baseItemType = new DonationItemType();
 
                 baseItemType.Name = "Обувь";
                 baseItemTypes.Add(baseItemType);
 
-                baseItemType = new BaseItemType();
+                baseItemType = new DonationItemType();
                 baseItemType.Name = "Куртки";
                 baseItemTypes.Add(baseItemType);
 
-                baseItemType = new BaseItemType();
+                baseItemType = new DonationItemType();
                 baseItemType.Name = "Штаны";
                 baseItemTypes.Add(baseItemType);
 
-                baseItemType = new BaseItemType();
+                baseItemType = new DonationItemType();
                 baseItemType.Name = "Футболки";
                 baseItemTypes.Add(baseItemType);
 
