@@ -250,15 +250,15 @@ namespace FamilyNet.Controllers
         [AllowAnonymous]
         public IActionResult SearchResult(string typeHelp)
         {
-            ViewData["TypeHelp"] = typeHelp;
-            var list = _unitOfWorkAsync.Orphanages.Get(
-                orp => orp.Donations.Where(
-                    donat => donat.DonationItem.DonationItemTypes.Where(
-                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).Count() > 0
-                        && donat.IsRequest).
-                    Count() > 0);
+            //ViewData["TypeHelp"] = typeHelp;
+            //var list = _unitOfWorkAsync.Orphanages.Get(
+            //    orp => orp.Donations.Where(
+            //        donat => donat.DonationItem.DonationItemTypes.Where(
+            //            donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).Count() > 0
+            //            && donat.IsRequest).
+            //        Count() > 0);
 
-            return View("SearchResult", list);
+            return View("SearchResult");
         }
         [AllowAnonymous]
         public IActionResult SearchOrphanageOnMap()
