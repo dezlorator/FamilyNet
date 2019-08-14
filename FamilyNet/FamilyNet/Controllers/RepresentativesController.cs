@@ -20,11 +20,10 @@ namespace FamilyNet.Controllers
     {
         #region Ctor
 
-        public RepresentativesController(IUnitOfWorkAsync unitOfWork)
-            : base(unitOfWork)
+        public RepresentativesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
         {
-            //_personFilter = new PersonFilter();
         }
+
         #endregion
 
         #region Methods
@@ -35,7 +34,7 @@ namespace FamilyNet.Controllers
             PersonSearchModel searchModel)
         {
             IEnumerable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
-            
+
             representatives = RepresentativeFilter.GetFiltered(representatives, searchModel);
 
             if (id == 0)
@@ -83,18 +82,7 @@ namespace FamilyNet.Controllers
             [Bind("FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative,
             int id, IFormFile file)
         {
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(),
-                    "wwwroot\\representatives", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                representative.Avatar = fileName;
-            }
+            await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
 
             if (ModelState.IsValid)
             {
@@ -141,18 +129,7 @@ namespace FamilyNet.Controllers
             if (id != representative.ID)
                 return NotFound();
 
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(),
-                    "wwwroot\\representatives", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                representative.Avatar = fileName;
-            }
+            await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
 
             if (ModelState.IsValid)
             {
@@ -168,10 +145,10 @@ namespace FamilyNet.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RepresentativeExists(representative.ID))
+                    if (!_unitOfWorkAsync.Representatives.Any(representative.ID))
                         return NotFound();
                     else
-                        throw; //TODO: AlPa -> Loging
+                        throw; //TODO: Loging
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -188,6 +165,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
 
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
+
             if (representative == null)
                 return NotFound();
 
@@ -205,11 +183,6 @@ namespace FamilyNet.Controllers
             _unitOfWorkAsync.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool RepresentativeExists(int id)
-        {
-            return _unitOfWorkAsync.Representatives.GetById(id) != null;
         }
 
         #endregion

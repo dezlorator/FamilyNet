@@ -120,7 +120,7 @@ namespace FamilyNet.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VolunteerExists(volunteer.ID))
+                    if (!_unitOfWorkAsync.Volunteers.Any(volunteer.ID))
                     {
                         return NotFound();
                     }
@@ -163,11 +163,6 @@ namespace FamilyNet.Controllers
             await _unitOfWorkAsync.Volunteers.Delete(volunteer.ID);
             _unitOfWorkAsync.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool VolunteerExists(int id)
-        {
-            return _unitOfWorkAsync.Volunteers.GetById(id) !=null;
         }
     }
 }
