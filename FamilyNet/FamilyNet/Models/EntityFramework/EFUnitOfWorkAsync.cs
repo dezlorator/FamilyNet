@@ -7,22 +7,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNet.Models.EntityFramework
-{
-    public class EFUnitOfWorkAsync : IUnitOfWorkAsync
-    {
+namespace FamilyNet.Models.EntityFramework {
+    public class EFUnitOfWorkAsync : IUnitOfWorkAsync {
         #region Private fields
 
         private readonly ApplicationDbContext _context;
-       
+
         #endregion
 
         #region Constructors
 
-        public EFUnitOfWorkAsync(ApplicationDbContext cont, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid, 
+        public EFUnitOfWorkAsync(ApplicationDbContext cont, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid,
             IPasswordHasher<ApplicationUser> passwordHash, ApplicationUserManager userManager,
-            SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
-        {
+            SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager) {
             _context = cont;
             CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
             Donations = new EFRepositoryAsync<Donation>(cont);
@@ -37,6 +34,7 @@ namespace FamilyNet.Models.EntityFramework
             UserManager = userManager;
             SignInManager = signInManager;
             RoleManager = roleManager;
+            CatalogCountries = new AddressGetter(cont);
         }
 
 
@@ -70,9 +68,9 @@ namespace FamilyNet.Models.EntityFramework
         public SignInManager<ApplicationUser> SignInManager { get; set; }
 
         public RoleManager<IdentityRole> RoleManager { get; set; }
+        public AddressGetter CatalogCountries { get; set; }
 
-        public void SaveChangesAsync()
-        {
+        public void SaveChangesAsync() {
             _context.SaveChanges();
         }
 

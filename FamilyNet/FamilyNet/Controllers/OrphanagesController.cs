@@ -91,6 +91,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
+
             GetViewData();
 
             return View(await orphanages.ToListAsync());
@@ -329,6 +330,12 @@ namespace FamilyNet.Controllers
             ViewData["Details"] = _localizer["Details"];
             ViewData["Profile"] = _localizer["Profile"];
             ViewData["Address"] = _localizer["Address"];
+        }
+
+        public IActionResult GetAddress() {
+            var data = AddressGetter.GetAdresses("Ukraine");
+
+            return View(data);
         }
 
     }

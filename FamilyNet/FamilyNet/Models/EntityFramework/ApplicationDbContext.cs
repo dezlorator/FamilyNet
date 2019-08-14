@@ -8,11 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNet.Models.EntityFramework
-{
+namespace FamilyNet.Models.EntityFramework {
 
-    public class ApplicationDbContext : DbContext
-    {
+    public class ApplicationDbContext : DbContext {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
@@ -22,15 +20,17 @@ namespace FamilyNet.Models.EntityFramework
         public DbSet<Volunteer> Volunteers { get; set; }
         public DbSet<Orphanage> Orphanages { get; set; }
         public DbSet<Donation> Donations { get; set; }
+        public DbSet<CatalogCountry> CatalogCountries { get; set; }
+        public DbSet<CatalogRegion> CatalogRegions { get; set; }
+        public DbSet<CatalogCity> CatalogCities { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder
                 .UseLazyLoadingProxies();
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);
 
             //Indexes
@@ -111,6 +111,16 @@ namespace FamilyNet.Models.EntityFramework
                 .HasForeignKey<Volunteer>(f => f.AddressID)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<CatalogCountry>()
+                .HasMany<CatalogRegion>(m => m.CatalogRegions)
+                .WithOne(r=>r.Country)
+                .HasForeignKey(k => k.CountryID);
+
+            modelBuilder.Entity<CatalogRegion>()
+                .HasMany<CatalogCity>(c => c.CatalogCities)
+                .WithOne(t => t.Region)
+                .HasForeignKey(k => k.RegionID);
+
             #region SoftDeleteSetUp
 
             modelBuilder.Entity<Address>().HasQueryFilter(entity => !entity.IsDeleted);
@@ -131,8 +141,7 @@ namespace FamilyNet.Models.EntityFramework
     }
 
     public class ApplicationDbContextFactory
-            : IDesignTimeDbContextFactory<ApplicationDbContext>
-    {
+            : IDesignTimeDbContextFactory<ApplicationDbContext> {
 
         public ApplicationDbContext CreateDbContext(string[] args) =>
             Program.BuildWebHost(args).Services

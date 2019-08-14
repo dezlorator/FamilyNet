@@ -210,6 +210,21 @@
   <data name="SearchHelp" xml:space="preserve">
     <value>Пошук допомоги</value>
   </data>
+  <data name="SelectCity" xml:space="preserve">
+    <value>Виберіть місто</value>
+  </data>
+  <data name="SelectCountry" xml:space="preserve">
+    <value>Виберіть країну</value>
+  </data>
+  <data name="SelectHouse" xml:space="preserve">
+    <value>Виберіть будинок</value>
+  </data>
+  <data name="SelectRegion" xml:space="preserve">
+    <value>Виберіть область</value>
+  </data>
+  <data name="SelectStreet" xml:space="preserve">
+    <value>Виберіть вулицю</value>
+  </data>
   <data name="SingIn" xml:space="preserve">
     <value>Вхід</value>
   </data>

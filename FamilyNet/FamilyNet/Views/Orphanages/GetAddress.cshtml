@@ -1,0 +1,13 @@
+﻿@model IEnumerable<Address>
+
+@{
+    ViewData["Title"] = "GetAddress";
+}
+
+<h1>GetAddress</h1>
+
+<select id="city" name="City">
+    @foreach (var item in Model) {
+        <option value="@item.City">@item.Street</option>
+    }
+</select>
