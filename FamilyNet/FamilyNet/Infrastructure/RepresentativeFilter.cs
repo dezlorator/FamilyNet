@@ -11,7 +11,6 @@ namespace FamilyNet.Infrastructure
     {
         private static PersonSearchModel _searchModel;
 
-        //TODO: AlPa -> GENERIC Sorting+filtered in asp.net mvc
         public static IEnumerable<Representative> GetFiltered(this IEnumerable<Representative> persons,
             PersonSearchModel searchModel)
         {

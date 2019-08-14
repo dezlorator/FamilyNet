@@ -23,8 +23,8 @@ namespace FamilyNet.Infrastructure
                     persons = persons.Where(x => IsContain(x.FullName));
 
                 //TODO: Check type of RNumber for testing change to string
-                //if (searchModel.RatingNumber > 0)
-                //    persons = persons.Where(x => x.Rating == searchModel.RatingNumber);
+                if (searchModel.RatingNumber > 0)
+                    persons = persons.Where(x => x.Rating >= searchModel.RatingNumber);
             }
             //TODO: AlPa -> REturn rersons.Where().Where;
             return persons;

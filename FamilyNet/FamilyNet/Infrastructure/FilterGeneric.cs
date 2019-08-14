@@ -124,37 +124,52 @@ namespace FamilyNet.Infrastructure
                     break;
 
                 case FilterOptions.IsGreaterThanOrEqualTo:
-                    if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
+                    if ((filterColumn.PropertyType == typeof(Int32) 
+                            || filterColumn.PropertyType == typeof(Nullable<Int32>)) 
+                            && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) >= outValue).ToList();
+                        data = data.Where(x => 
+                        Convert.ToInt32(filterColumn.GetValue(x, null)) >= outValue).ToList();
                     }
-                    else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
+                    else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) 
+                            && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) >= dateValue).ToList();
+                        data = data.Where(x => 
+                        Convert.ToDateTime(filterColumn.GetValue(x, null)) >= dateValue).ToList();
                         break;
                     }
                     break;
 
                 case FilterOptions.IsLessThan:
-                    if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
+                    if ((filterColumn.PropertyType == typeof(Int32) 
+                            || filterColumn.PropertyType == typeof(Nullable<Int32>)) 
+                            && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) < outValue).ToList();
+                        data = data.Where(x => 
+                        Convert.ToInt32(filterColumn.GetValue(x, null)) < outValue).ToList();
                     }
-                    else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
+                    else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) 
+                        && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) < dateValue).ToList();
+                        data = data.Where(x => 
+                        Convert.ToDateTime(filterColumn.GetValue(x, null)) < dateValue).ToList();
                         break;
                     }
                     break;
 
                 case FilterOptions.IsLessThanOrEqualTo:
-                    if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
+                    if ((filterColumn.PropertyType == typeof(Int32) 
+                            || filterColumn.PropertyType == typeof(Nullable<Int32>)) 
+                            && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) <= outValue).ToList();
+                        data = data.Where(x => 
+                        Convert.ToInt32(filterColumn.GetValue(x, null)) <= outValue).ToList();
                     }
-                    else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
+                    else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) 
+                            && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) <= dateValue).ToList();
+                        data = data.Where(x => 
+                        Convert.ToDateTime(filterColumn.GetValue(x, null)) <= dateValue).ToList();
                         break;
                     }
                     break;
@@ -163,40 +178,56 @@ namespace FamilyNet.Infrastructure
                     if (filterValue == string.Empty)
                     {
                         data = data.Where(x => filterColumn.GetValue(x, null) == null
-                                        || (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() == string.Empty)).ToList();
+                                || (filterColumn.GetValue(x, null) != null 
+                                        && filterColumn.GetValue(x, null).ToString()
+                                        .ToLower() == string.Empty)).ToList();
                     }
                     else
                     {
-                        if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
+                        if ((filterColumn.PropertyType == typeof(Int32) 
+                                || filterColumn.PropertyType == typeof(Nullable<Int32>)) 
+                                && Int32.TryParse(filterValue, out outValue))
                         {
-                            data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) == outValue).ToList();
+                            data = data.Where(x => 
+                            Convert.ToInt32(filterColumn.GetValue(x, null)) == outValue).ToList();
                         }
-                        else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
+                        else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) 
+                                && DateTime.TryParse(filterValue, out dateValue))
                         {
-                            data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) == dateValue).ToList();
+                            data = data.Where(x => 
+                            Convert.ToDateTime(filterColumn.GetValue(x, null)) == dateValue).ToList();
                             break;
                         }
                         else
                         {
-                            data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() == filterValue.ToLower()).ToList();
+                            data = data.Where(x => filterColumn.GetValue(x, null) != null 
+                                && filterColumn.GetValue(x, null).ToString()
+                                .ToLower() == filterValue.ToLower()).ToList();
                         }
                     }
                     break;
 
                 case FilterOptions.IsNotEqualTo:
-                    if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
+                    if ((filterColumn.PropertyType == typeof(Int32) 
+                            || filterColumn.PropertyType == typeof(Nullable<Int32>)) 
+                            && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) != outValue).ToList();
+                        data = data.Where(x => 
+                        Convert.ToInt32(filterColumn.GetValue(x, null)) != outValue).ToList();
                     }
-                    else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
+                    else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) 
+                            && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) != dateValue).ToList();
+                        data = data.Where(x => 
+                        Convert.ToDateTime(filterColumn.GetValue(x, null)) != dateValue).ToList();
                         break;
                     }
                     else
                     {
-                        data = data.Where(x => filterColumn.GetValue(x, null) == null ||
-                                         (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() != filterValue.ToLower())).ToList();
+                        data = data.Where(x => filterColumn.GetValue(x, null) == null 
+                                || (filterColumn.GetValue(x, null) != null 
+                                    && filterColumn.GetValue(x, null)
+                                    .ToString().ToLower() != filterValue.ToLower())).ToList();
                     }
                     break;
                     #endregion
