@@ -53,25 +53,27 @@ namespace FamilyNet.Controllers
             model.YourDropdownList = yourDropdownList;
             if (ModelState.IsValid)
             {
-
-                
-                ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.Email, PhoneNumber = model.Phone };
+                ApplicationUser user = new ApplicationUser
+                {
+                    Email = model.Email,
+                    UserName = model.Email,
+                    PhoneNumber = model.Phone,
+                    PersonType = GetPersonType(model.YourDropdownSelectedValue),
+                    PersonID = null
+                };
                 // добавляем пользователя.
                 var result = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
 
                 await _unitOfWorkAsync.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
 
-                
-
-
                 if (result.Succeeded)
                 {
-                    
+
                     // установка куки.
-                    
-                    
+
                     await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
-                    return RedirectToAction("Index", "Home");
+                    return GetRedirect(model.YourDropdownSelectedValue, "Create");
+
                 }
                 else
                 {
@@ -81,9 +83,11 @@ namespace FamilyNet.Controllers
                     }
                 }
             }
-            
+
             return View(model);
+            
         }
+
 
         //В Get-версии метода Login мы получаем адрес для возврата в виде параметра returnUrl и передаем его в модель LoginViewModel.
         //    В Post-версии метода Login получаем данные из представления в виде модели LoginViewModel.
@@ -151,6 +155,58 @@ namespace FamilyNet.Controllers
             return View();
         }
 
+        public IActionResult GetDetails()
+        {
+            var url = Url.Action("Details", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
+            return Redirect(url);            
+        }
 
+        public IActionResult AccountEdits()
+        {
+            var url = Url.Action("Edit", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
+            return Redirect(url);
+        }
+
+        public IActionResult PersonalRoom()
+        {
+            return View();
+        }
+
+        private IActionResult GetRedirect(string role , string action)
+        {
+            switch (role)
+            {
+                case "CharityMaker":
+                    return RedirectToAction(action, "CharityMakers");
+                case "Orphan":
+                    return RedirectToAction(action, "Orphans");
+                case "Representative":
+                    return RedirectToAction(action, "Representatives");
+                case "Volunteer":
+                    return RedirectToAction(action, "Volunteers");
+                default:
+                    return RedirectToAction(action, "Index");
+            }
+        }
+
+
+        private static PersonType GetPersonType(string role)
+        {
+            switch (role)
+            {
+                case "CharityMaker":
+                    return PersonType.CharityMaker;
+                case "Representative":
+                    return PersonType.Representative;
+                case "Volunteer":
+                    return PersonType.Volunteer;
+                case "Orphan":
+                    return PersonType.Orphan;
+                case "User":
+                    return PersonType.User;
+                default:
+                    return PersonType.User;
+            }
+        }
     }
 }

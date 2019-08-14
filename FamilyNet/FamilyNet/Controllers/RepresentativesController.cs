@@ -52,22 +52,26 @@ namespace FamilyNet.Controllers
 
             return View(representative);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         // GET: Representatives/Create
         public async Task<IActionResult> Create()
         {
+            await Check();
+
             List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll().OrderBy(o => o.Name).ToList();
             ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
 
             return View();
         }
 
+        
+
         // POST: Representatives/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Create([Bind("FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative, int id, IFormFile file)
         {
             await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
@@ -79,22 +83,35 @@ namespace FamilyNet.Controllers
 
                 await _unitOfWorkAsync.Representatives.Create(representative);
                 await _unitOfWorkAsync.Representatives.SaveChangesAsync();
+
+                var user = await GetCurrentUserAsync();
+                user.PersonID = representative.ID;
+                user.PersonType = Models.Identity.PersonType.Representative;
+                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(representative);
         }
 
         // GET: Representatives/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Edit(int? id)
         {
-            List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll().OrderBy(o => o.Name).ToList();
-            ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
-
             if (id == null)
             {
                 return NotFound();
             }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
+            }
+
+            List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll().OrderBy(o => o.Name).ToList();
+            ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
 
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
 
@@ -110,13 +127,20 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative, int orphanageId, IFormFile file)
         {
 
             if (id != representative.ID)
             {
                 return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
             }
 
             await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");

@@ -81,8 +81,14 @@ namespace FamilyNet
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "default2",
+                    template: "{controller}/{action}/{id?}"
+                    );
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+                
+                    
             });
 
             ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,

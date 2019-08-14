@@ -40,7 +40,10 @@ namespace FamilyNet.Migrations.ApplicationIdentityDb
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    PersonID = table.Column<int>(nullable: true),
+                    PersonType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

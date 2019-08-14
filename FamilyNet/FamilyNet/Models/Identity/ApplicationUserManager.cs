@@ -30,5 +30,8 @@ namespace FamilyNet.Models.Identity
         {
             return await base.DeleteAsync(user);
         }
+
+        
+
     }
 }

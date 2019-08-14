@@ -47,9 +47,10 @@ namespace FamilyNet.Controllers
         }
 
         // GET: CharityMakers/Create
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CharityMaker")]
         public IActionResult Create()
         {
+            Check();
             return View();
         }
 
@@ -58,25 +59,38 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CharityMaker")]
         public async Task<IActionResult> Create([Bind("ID,FullName,Address,Birthday,Contacts,Rating")] CharityMaker charityMaker)
         {
             if (ModelState.IsValid)
             {
                 await _unitOfWorkAsync.CharityMakers.Create(charityMaker);
                 await _unitOfWorkAsync.CharityMakers.SaveChangesAsync();
+
+                var user = await GetCurrentUserAsync();
+                user.PersonID = charityMaker.ID;
+                user.PersonType = Models.Identity.PersonType.CharityMaker;
+                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(charityMaker);
         }
 
         // GET: CharityMakers/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CharityMaker")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if(checkResult)
+            {
+                return check;
             }
 
             var charityMaker = await _unitOfWorkAsync.CharityMakers.GetById((int)id);
@@ -94,10 +108,17 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CharityMaker")]
         public async Task<IActionResult> Edit(int id,
             [Bind("ID,FullName,Address,Birthday,Contacts,Rating")] CharityMaker charityMaker)
         {
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
+            }
+
             if (id != charityMaker.ID)
             {
                 return NotFound();
