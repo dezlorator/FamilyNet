@@ -42,7 +42,7 @@ namespace FamilyNet.Controllers
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
 
             orphanages = GetFiltered(orphanages, searchModel);
-            SortBy(orphanages, sortOrder);
+            orphanages = GetSorted(orphanages, sortOrder);
 
             if (id == 0)
                 return View(await orphanages.ToListAsync());
@@ -79,7 +79,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage,
             IFormFile file) //TODO: AlPa -> Research Bind To Annotations
         {
-            await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\representatives");
+            await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\avatars");
 
             //part to add location when obj creating
             bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
@@ -130,7 +130,7 @@ namespace FamilyNet.Controllers
             if (id != orphanage.ID)
                 return NotFound();
 
-            await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\representatives");
+            await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\avatars");
 
             if (ModelState.IsValid)
             {
@@ -246,7 +246,7 @@ namespace FamilyNet.Controllers
             return false;
         }
 
-        private void SortBy(IQueryable<Orphanage> orphanages, SortStateOrphanages sortOrder)
+        private IQueryable<Orphanage> GetSorted(IQueryable<Orphanage> orphanages, SortStateOrphanages sortOrder)
         {
             ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc
                 ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
@@ -284,6 +284,8 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
+
+            return orphanages;
         }
 
         private IQueryable<Orphanage> GetFiltered(IQueryable<Orphanage> orphanages,
