@@ -11,6 +11,7 @@ using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Infrastructure;
 
 namespace FamilyNet.Controllers
 {
@@ -69,17 +70,7 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative, int id, IFormFile file)
         {
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\representatives", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                representative.Avatar = fileName;
-            }
+            await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
 
             if (ModelState.IsValid)
             {
@@ -128,17 +119,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\representatives", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                representative.Avatar = fileName;
-            }
+            await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
 
             if (ModelState.IsValid)
             {
@@ -154,7 +135,7 @@ namespace FamilyNet.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RepresentativeExists(representative.ID))
+                    if (!_unitOfWorkAsync.Representatives.Any(representative.ID))
                     {
                         return NotFound();
                     }
@@ -197,11 +178,6 @@ namespace FamilyNet.Controllers
             _unitOfWorkAsync.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool RepresentativeExists(int id)
-        {
-            return _unitOfWorkAsync.Representatives.GetById(id) != null;
         }
     }
 }
