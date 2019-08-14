@@ -67,11 +67,7 @@ namespace FamilyNet.Models.EntityFramework
                 .HasForeignKey(k => k.ItemID)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
-            modelBuilder.Entity<DonationItem>()
-               .HasMany<DonationItemType>(d => d.DonationItemTypes)
-               .WithOne(b => b.Item)
-               .HasForeignKey(k => k.ItemID)
-               .OnDelete(DeleteBehavior.ClientSetNull);
+
 
             modelBuilder.Entity<DonationItem>()
                 .HasOne<Donation>()
@@ -91,6 +87,19 @@ namespace FamilyNet.Models.EntityFramework
                 .WithOne(b => b.Orphan)
                 .HasForeignKey(fk => fk.OrphanID)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<TypeBaseItem>()
+          .HasKey(t => new { t.ItemID, t.TypeID});;
+
+            modelBuilder.Entity<TypeBaseItem>()
+                .HasOne(tbi => tbi.Item )
+                .WithMany(i => i.TypeBaseItem)
+                .HasForeignKey(tbi => tbi.ItemID);
+
+            modelBuilder.Entity<TypeBaseItem>()
+                .HasOne(tbi => tbi.Type)
+                .WithMany(t => t.TypeBaseItem)
+                .HasForeignKey(tbi => tbi.TypeID);
 
             //second part
             modelBuilder.Entity<Address>()
@@ -120,10 +129,10 @@ namespace FamilyNet.Models.EntityFramework
             modelBuilder.Entity<Representative>().HasQueryFilter(entity => !entity.IsDeleted);
             modelBuilder.Entity<Orphanage>().HasQueryFilter(entity => !entity.IsDeleted);
             modelBuilder.Entity<AuctionLot>().HasQueryFilter(entity => !entity.IsDeleted);
-            modelBuilder.Entity<AuctionLotItem>().HasQueryFilter(entity => !entity.IsDeleted);
+            modelBuilder.Entity<BaseItem>().HasQueryFilter(entity => !entity.IsDeleted);
             modelBuilder.Entity<BaseItemType>().HasQueryFilter(entity => !entity.IsDeleted);
             modelBuilder.Entity<Donation>().HasQueryFilter(entity => !entity.IsDeleted);
-            modelBuilder.Entity<DonationItem>().HasQueryFilter(entity => !entity.IsDeleted);
+            
             modelBuilder.Entity<Location>().HasQueryFilter(entity => !entity.IsDeleted);
 
             #endregion
