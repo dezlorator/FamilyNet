@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Infrastructure
 {
-    public class SortingUtility
+    public class SortingUtility  //TODO: Split and Implement this 
     {
         public enum SortOrders
         {

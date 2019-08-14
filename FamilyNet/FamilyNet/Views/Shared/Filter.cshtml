@@ -7,11 +7,12 @@
     <table class="table">
         @foreach (var item in Model.FilterParam)
         {
-            <th>
-                @Html.Label(item.ColumnName, item.ColumnName + ":")
-                <br />
-                @Html.TextBoxFor(m =>item.FilterValue, item.FilterValue)
-            </th>
+        <th>
+            @Html.Label(item.ColumnName, item.ColumnName + ":")
+            <br />
+            @Html.TextBoxFor(m => item.FilterValue, item.FilterValue,  new { @class = "form-control" })
+            @*<input asp-for="" class="form-control" />*@
+        </th>
         }
 
         @*<th>

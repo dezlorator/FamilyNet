@@ -32,85 +32,20 @@ namespace FamilyNet.Controllers
         // GET: Representatives
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id,
-            RepresentativeViewModel representativeViewModel)
+            PersonSearchModel searchModel)
         {
             IEnumerable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
-            //sort -> IEnumerable
-
-            #region Manual creating filterParams
-            //FilterUtility.FilterParams searchParamFullName = new FilterUtility.FilterParams();
-            //searchParamFullName.ColumnName = searchModel.FullNameString.ToString();//TODO: AlPa -> ?? Check working
-            //searchParamFullName.FilterValue = searchModel.FullNameString;
-            //searchParamFullName.FilterOptions = FilterUtility.FilterOptions.Contains;
-
-            //FilterUtility.FilterParams searchParamRate = new FilterUtility.FilterParams();
-            //searchParamRate.ColumnName = searchModel.RatingNumber.ToString(); ;//TODO: AlPa -> ?? Check working
-            //searchParamRate.FilterValue = searchModel.RatingNumber;
-            //searchParamRate.FilterOptions = FilterUtility.FilterOptions.IsGreaterThanOrEqualTo;
-
-            //IEnumerable<FilterUtility.FilterParams> enuParams =
-            //    new List<FilterUtility.FilterParams>() { searchParamFullName, searchParamRate };
-            #endregion
-            //PaginatedInputModel inm = new PaginatedInputModel();
-            //inm.FilterParam = enuParams;
-
-            //if (representativeViewModel == null)
-            //    representativeViewModel = new RepresentativeViewModel();
-
-            //if (representativeViewModel.FilterModel?.FilterParam?.Count() == 0)
-            //{
-            //    representativeViewModel.FilterModel.FilterParam = new List<FilterParams>()
-            //    {
-            //            new FilterParams() { ColumnName = "Name", FilterOptions = FilterOptions.Contains },
-            //            new FilterParams() { ColumnName = "Surname", FilterOptions = FilterOptions.Contains },
-            //            new FilterParams() { ColumnName = "Patronymic", FilterOptions = FilterOptions.Contains },
-            //            new FilterParams() { ColumnName = "Rating", FilterOptions = FilterOptions.IsGreaterThanOrEqualTo }
-            //    };
-            //}
-
-            representativeViewModel.Representatives = FilterGeneric<Representative>
-                .GetFilteredData(representativeViewModel.FilterModel.FilterParam, representatives);
+            
+            representatives = RepresentativeFilter.GetFiltered(representatives, searchModel);
 
             if (id == 0)
-                return View(representativeViewModel);//await representatives.ToListAsync());
+                return View(representatives);
 
             if (id > 0)
-                representativeViewModel.Representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
+                representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
 
-            return View(representativeViewModel);//await representatives.ToListAsync());
+            return View(representatives);
         }
-
-        //private IQueryable<Representative> GetFiltered(PersonSearchModel searchModel,
-        //    IQueryable<Representative> orphans)
-        //{
-        //    if (searchModel != null)
-        //    {
-        //        _searchModel = searchModel;
-
-        //        if (!string.IsNullOrEmpty(searchModel.FullNameString))
-        //            orphans = orphans.Where(x => Contains(x.FullName));
-
-        //        if (searchModel.RatingNumber > 0)
-        //            orphans = orphans.Where(x => x.Rating == searchModel.RatingNumber);
-        //    }
-
-        //    return orphans;
-        //}
-
-        //private bool Contains(FullName fullname)
-        //{
-        //    foreach (var word in _searchModel.FullNameString.Split())
-        //    {
-        //        string wordUpper = word.ToUpper();
-
-        //        if (fullname.Name.ToUpper().Contains(wordUpper)
-        //                || fullname.Surname.ToUpper().Contains(wordUpper)
-        //                || fullname.Patronymic.ToUpper().Contains(wordUpper))
-        //            return true;
-        //    }
-
-        //    return false;
-        //}
 
         // GET: Representatives/Details/5
         [AllowAnonymous]

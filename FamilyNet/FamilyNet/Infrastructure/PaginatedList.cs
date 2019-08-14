@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Infrastructure
 {
-    public class PaginatedList<T> : List<T>
+    public class PaginatedList<T> : List<T>  //TODO: Implement this 
     {
         public int PageIndex { get; private set; }
         public int TotalPages { get; private set; }

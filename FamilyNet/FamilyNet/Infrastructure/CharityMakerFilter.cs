@@ -1,19 +1,18 @@
-﻿using System;
+﻿using FamilyNet.Models;
+using FamilyNet.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
-using FamilyNet.Models.ViewModels;
 
 namespace FamilyNet.Infrastructure
 {
-    public static class PersonFilter
+    public static class CharityMakerFilter
     {
         private static PersonSearchModel _searchModel;
 
-        //TODO: AlPa -> GENERIC Sorting+filtered in asp.net mvc
-        public static IQueryable<Person> GetFiltered(this IQueryable<Person> persons, PersonSearchModel searchModel)
+        public static IEnumerable<CharityMaker> GetFiltered(this IEnumerable<CharityMaker> persons,
+            PersonSearchModel searchModel)
         {
             if (searchModel != null)
             {
@@ -22,11 +21,9 @@ namespace FamilyNet.Infrastructure
                 if (!string.IsNullOrEmpty(searchModel.FullNameString))
                     persons = persons.Where(x => IsContain(x.FullName));
 
-                //TODO: Check type of RNumber for testing change to string
-                //if (searchModel.RatingNumber > 0)
-                //    persons = persons.Where(x => x.Rating == searchModel.RatingNumber);
+                if (searchModel.RatingNumber > 0)
+                    persons = persons.Where(x => x.Rating == searchModel.RatingNumber);
             }
-            //TODO: AlPa -> REturn rersons.Where().Where;
             return persons;
         }
 

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Infrastructure
 {
-    public class FilterGeneric<T>
+    public class FilterGeneric<T> //TODO: Implement this 
     {
-        //TODO: AlPa -> REFACTORING
         /// <summary>
         /// The FilteredData() method is responsible for handling multiple filters
         /// in the complex type, because the above code can handle multiple filters

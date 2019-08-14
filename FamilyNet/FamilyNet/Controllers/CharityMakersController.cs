@@ -9,6 +9,8 @@ using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Models.ViewModels;
+using FamilyNet.Infrastructure;
 
 namespace FamilyNet.Controllers
 {
@@ -20,11 +22,13 @@ namespace FamilyNet.Controllers
 
         // GET: CharityMakers
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PersonSearchModel searchModel)
         {
-            var list = await _unitOfWorkAsync.CharityMakers.GetAll().ToListAsync();
+            IEnumerable<CharityMaker> charityMakers =  _unitOfWorkAsync.CharityMakers.GetAll();
 
-            return View(list);
+            charityMakers = CharityMakerFilter.GetFiltered(charityMakers, searchModel);
+
+            return View(charityMakers);
         }
 
         // GET: CharityMakers/Details/5
