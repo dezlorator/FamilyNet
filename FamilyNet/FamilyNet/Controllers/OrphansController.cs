@@ -121,20 +121,6 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-
-            //if (file != null && file.Length > 0)
-            //{
-            //    var fileName = Path.GetRandomFileName();
-            //    fileName = Path.ChangeExtension(fileName, ".jpg");
-            //    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\children", fileName);
-
-            //    using (var fileSteam = new FileStream(filePath, FileMode.Create))
-            //    {
-            //        await file.CopyToAsync(fileSteam);
-            //    }
-            //    orphan.Avatar = fileName;
-            //}
-
             await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");
 
 

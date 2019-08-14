@@ -5,8 +5,18 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Список потребностей <a asp-action="CreateRequest" class="btn btn-primary float-right">Создать</a></h1>
 
+<div class="row">
+    <div class="col-md-5">
+        <h1>Список потребностей</h1>
+    </div>
+    <div class="col-md-3">
+        <a asp-action="CreateRequest" class="btn btn-primary float-right">+ Потребность</a>
+    </div>
+    <div class="col-md-3">
+        <a asp-action="CreateDonationItemType" class="btn btn-primary float-right">+ Категория</a>
+    </div>
+</div>
 <table class="table table-hover">
     <thead>
         <tr>
@@ -23,7 +33,7 @@
                 @Html.DisplayNameFor(model => model.LastDateWhenStatusChanged)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DonationItem)
+                @Html.DisplayNameFor(model => model.DonationItem.DonationItemTypes)
             </th>
             <th>
                 Действия
@@ -33,29 +43,29 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Orphanage.Adress.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Orphanage.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastDateWhenStatusChanged)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DonationItem.Name) <br>
-                @Html.DisplayFor(modelItem => item.DonationItem.Description)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
-                <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
-                <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Orphanage.Adress.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Orphanage.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastDateWhenStatusChanged)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DonationItem.Name)
+                    @*@Html.DisplayFor(modelItem => item.DonationItem.Description)*@
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
+                    <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
+                    <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>

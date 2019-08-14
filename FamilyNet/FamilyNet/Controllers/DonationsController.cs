@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace FamilyNet.Controllers
 {
@@ -21,31 +22,30 @@ namespace FamilyNet.Controllers
         {
             return View(_unitOfWorkAsync.Donations.GetAll());
         }
-
-        // GET: Donations/Details/5
-        [AllowAnonymous]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var charityMaker = await _unitOfWorkAsync.CharityMakers.GetById((int)id);
-
-            if (charityMaker == null)
-            {
-                return NotFound();
-            }
-
-            return View(charityMaker);
-        }
+      
 
         // GET: Donations/CreateDonationItemType
         [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
         public IActionResult CreateDonationItemType()
         {
             return View();
+        }
+
+        // POST: Donations/CreateDonationItemType
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
+        public async Task<IActionResult> CreateDonationItemType([Bind("ID,Name")] DonationItemType request)
+        {
+            if (ModelState.IsValid)
+            {
+                await _unitOfWorkAsync.BaseItemTypes.Create(request);                
+                await _unitOfWorkAsync.Donations.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(request);
         }
 
         // GET: Donations/DonationItem
@@ -61,6 +61,7 @@ namespace FamilyNet.Controllers
         public IActionResult CreateRequest()
         {
             ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
+            ViewBag.ListOfDonationItemTypes = _unitOfWorkAsync.BaseItemTypes.GetAll();
             return View();
         }
 
@@ -200,6 +201,24 @@ namespace FamilyNet.Controllers
         private bool DonationExists(int id)
         {
             return _unitOfWorkAsync.Donations.GetById(id) != null;
+        }
+
+        // GET: Donations/Details/5
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var orphan = await _unitOfWorkAsync.Donations.GetById((int)id);
+            if (orphan == null)
+            {
+                return NotFound();
+            }
+
+            return View(orphan);
         }
     }
 }
