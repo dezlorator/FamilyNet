@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Models.ViewModels;
 using FamilyNet.Infrastructure;
 
 namespace FamilyNet.Controllers
@@ -27,17 +28,19 @@ namespace FamilyNet.Controllers
 
         // GET: Orphans
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id)
+        public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
-            var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
-            if (id == 0)
-                return View(list);
+            IEnumerable<Orphan> orphans = _unitOfWorkAsync.Orphans.GetAll();
 
+            orphans = OrphanFilter.GetFiltered(orphans, searchModel);
+
+            if (id == 0)
+                return View(orphans);
 
             if (id >0)
-                list = list.Where(x => x.Orphanage.ID.Equals(id)).ToList();
+                orphans = orphans.Where(x => x.Orphanage.ID.Equals(id)).ToList();
 
-            return View(list);
+            return View(orphans);
         }
 
         // GET: Orphans/Details/5
@@ -193,10 +196,19 @@ namespace FamilyNet.Controllers
 
         // GET: Orphans/OrphansTable
         [AllowAnonymous]
-        public IActionResult OrphansTable()
+        public IActionResult OrphansTable(int id, PersonSearchModel searchModel)
         {
-            var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
-            return View(list);
+            IEnumerable<Orphan> orphans = _unitOfWorkAsync.Orphans.GetAll();
+
+            orphans = OrphanFilter.GetFiltered(orphans, searchModel);
+
+            if (id == 0)
+                return View(orphans);
+
+            if (id > 0)
+                orphans = orphans.Where(x => x.Orphanage.ID.Equals(id)).ToList();
+
+            return View(orphans);
         }
 
     }

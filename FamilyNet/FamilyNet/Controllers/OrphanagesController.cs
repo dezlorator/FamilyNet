@@ -1,88 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
-using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
+using FamilyNet.Infrastructure;
+using System;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
     public class OrphanagesController : BaseController
     {
+        #region Private fields
+
         private OrphanageSearchModel _searchModel;
-        private readonly IHostingEnvironment _hostingEnvironment;
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment) : base(unitOfWork)
+
+        #endregion
+
+        #region Ctor
+
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork)
+            : base(unitOfWork)
         {
-            _hostingEnvironment = environment;
         }
 
-        private bool IsContain(Address addr)
-        {
-            foreach (var word in _searchModel.AddressString.Split())
-            {
-                if (addr.Street.ToUpper().Contains(word.ToUpper())
-                || addr.City.ToUpper().Contains(word.ToUpper())
-                || addr.Region.ToUpper().Contains(word.ToUpper())
-                || addr.Country.ToUpper().Contains(word.ToUpper()))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+        #endregion
+
+        #region ActionMethods
+
         // GET: Orphanages
         [AllowAnonymous]
-        public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
+        public async Task<IActionResult> Index(int id, OrphanageSearchModel searchModel, 
+            SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
 
-            if (searchModel != null)
-            {
-                _searchModel = searchModel;
-                if (!string.IsNullOrEmpty(searchModel.NameString))
-                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
-                if (!string.IsNullOrEmpty(searchModel.AddressString))
-                    orphanages = orphanages.Where(x => IsContain(x.Adress));
+            orphanages = GetFiltered(orphanages, searchModel);
+            orphanages = GetSorted(orphanages, sortOrder);
 
-                if (searchModel.RatingNumber > 0)
-                    orphanages = orphanages.Where(x => x.Rating == searchModel.RatingNumber);
-            }
+            if (id == 0)
+                return View(await orphanages.ToListAsync());
 
-            ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
-            ViewData["AddressSort"] = sortOrder == SortStateOrphanages.AddressAsc ? SortStateOrphanages.AddressDesc : SortStateOrphanages.AddressAsc;
-            ViewData["RatingSort"] = sortOrder == SortStateOrphanages.RatingAsc ? SortStateOrphanages.RatingDesc : SortStateOrphanages.RatingAsc;
-
-            switch (sortOrder)
-            {
-                case SortStateOrphanages.NameDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Name);
-                    break;
-                case SortStateOrphanages.AddressAsc:
-                    orphanages = orphanages.OrderBy(s => s.Adress.Country).ThenBy(s => s.Adress.Region).ThenBy(s => s.Adress.City).ThenBy(s => s.Adress.Street);
-                    break;
-                case SortStateOrphanages.AddressDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Adress.Country).ThenByDescending(s => s.Adress.Region).ThenByDescending(s => s.Adress.City).ThenByDescending(s => s.Adress.Street);
-                    break;
-                case SortStateOrphanages.RatingAsc:
-                    orphanages = orphanages.OrderBy(s => s.Rating);
-                    break;
-                case SortStateOrphanages.RatingDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Rating);
-                    break;
-                default:
-                    orphanages = orphanages.OrderBy(s => s.Name);
-                    break;
-            }
+            if (id > 0)
+                orphanages = orphanages.Where(x => x.ID.Equals(id));
 
             return View(await orphanages.ToListAsync());
         }
@@ -93,7 +59,9 @@ namespace FamilyNet.Controllers
         {
             if (id == null)
                 return NotFound();
+
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+
             if (orphanage == null)
                 return NotFound();
 
@@ -107,36 +75,30 @@ namespace FamilyNet.Controllers
         // POST: Orphanages/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage,
+            IFormFile file) //TODO: AlPa -> Research Bind To Annotations
         {
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\avatars", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                orphanage.Avatar = fileName;
-            }
+            await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\avatars");
 
             //part to add location when obj creating
             bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
             if (IsLocationNotNull)
             {
-                orphanage.Location = new Location() { MapCoordX = Location.Item1, MapCoordY = Location.Item2 };
+                orphanage.Location = new Location()
+                {
+                    MapCoordX = Location.Item1,
+                    MapCoordY = Location.Item2
+                };
             }
             else
-            {
                 orphanage.LocationID = null;
-            }
 
             if (ModelState.IsValid)
             {
-
                 await _unitOfWorkAsync.Orphanages.Create(orphanage);
                 await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -149,7 +111,9 @@ namespace FamilyNet.Controllers
         {
             if (id == null)
                 return NotFound();
+
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+
             if (orphanage == null)
                 return NotFound();
 
@@ -160,22 +124,13 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Representative")]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Adress,Rating,Avatar")] Orphanage orphanage, IFormFile file)
+        public async Task<IActionResult> Edit([Bind("ID,Name,Adress,Rating,Avatar")]
+            Orphanage orphanage, int id, IFormFile file) //TODO: Check change id position
         {
             if (id != orphanage.ID)
                 return NotFound();
 
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\avatars", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                orphanage.Avatar = fileName;
-            }
+            await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\avatars");
 
             if (ModelState.IsValid)
             {
@@ -191,12 +146,14 @@ namespace FamilyNet.Controllers
                     bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
                     if (IsLocationNotNull)
                     {
-                        orphanageToEdit.Location = new Location() { MapCoordX = Location.Item1, MapCoordY = Location.Item2 };
+                        orphanageToEdit.Location = new Location()
+                        {
+                            MapCoordX = Location.Item1,
+                            MapCoordY = Location.Item2
+                        };
                     }
                     else
-                    {
                         orphanageToEdit.LocationID = null;
-                    }
 
                     _unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
@@ -206,8 +163,9 @@ namespace FamilyNet.Controllers
                     if (!_unitOfWorkAsync.Orphanages.Any(orphanage.ID))
                         return NotFound();
                     else
-                        throw;
+                        throw; //TODO: Loging
                 }
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -222,6 +180,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
 
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+
             if (orphanage == null)
                 return NotFound();
 
@@ -234,7 +193,7 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+            var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
             await _unitOfWorkAsync.Orphanages.Delete(orphanage.ID);
             _unitOfWorkAsync.SaveChangesAsync();
 
@@ -242,10 +201,8 @@ namespace FamilyNet.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult SearchByTypeHelp()
-        {
-            return View();
-        }
+        public IActionResult SearchByTypeHelp() => View();
+
         [HttpPost]
         [AllowAnonymous]
         public IActionResult SearchResult(string typeHelp)
@@ -260,12 +217,95 @@ namespace FamilyNet.Controllers
 
             return View("SearchResult", list);
         }
+
         [AllowAnonymous]
         public IActionResult SearchOrphanageOnMap()
         {
             var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
 
             return View(orphanages);
+        }
+
+        #endregion
+
+        #region Private Helpers
+
+        private bool Contains(Address addr)
+        {
+            foreach (var word in _searchModel.AddressString.Split())
+            {
+                string wordUpper = word.ToUpper();
+
+                if (addr.Street.ToUpper().Contains(wordUpper)
+                        || addr.City.ToUpper().Contains(wordUpper)
+                        || addr.Region.ToUpper().Contains(wordUpper)
+                        || addr.Country.ToUpper().Contains(wordUpper))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private IQueryable<Orphanage> GetSorted(IQueryable<Orphanage> orphanages, SortStateOrphanages sortOrder)
+        {
+            ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc
+                ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
+            ViewData["AddressSort"] = sortOrder == SortStateOrphanages.AddressAsc
+                ? SortStateOrphanages.AddressDesc : SortStateOrphanages.AddressAsc;
+            ViewData["RatingSort"] = sortOrder == SortStateOrphanages.RatingAsc
+                ? SortStateOrphanages.RatingDesc : SortStateOrphanages.RatingAsc;
+
+            switch (sortOrder)
+            {
+                case SortStateOrphanages.NameDesc:
+                    orphanages = orphanages.OrderByDescending(s => s.Name);
+                    break;
+                case SortStateOrphanages.AddressAsc:
+                    orphanages = orphanages
+                        .OrderBy(s => s.Adress.Country)
+                        .ThenBy(s => s.Adress.Region)
+                        .ThenBy(s => s.Adress.City)
+                        .ThenBy(s => s.Adress.Street);
+                    break;
+                case SortStateOrphanages.AddressDesc:
+                    orphanages = orphanages
+                        .OrderByDescending(s => s.Adress.Country)
+                        .ThenByDescending(s => s.Adress.Region)
+                        .ThenByDescending(s => s.Adress.City)
+                        .ThenByDescending(s => s.Adress.Street);
+                    break;
+                case SortStateOrphanages.RatingAsc:
+                    orphanages = orphanages.OrderBy(s => s.Rating);
+                    break;
+                case SortStateOrphanages.RatingDesc:
+                    orphanages = orphanages.OrderByDescending(s => s.Rating);
+                    break;
+                default:
+                    orphanages = orphanages.OrderBy(s => s.Name);
+                    break;
+            }
+
+            return orphanages;
+        }
+
+        private IQueryable<Orphanage> GetFiltered(IQueryable<Orphanage> orphanages,
+            OrphanageSearchModel searchModel)
+        {
+            if (searchModel != null)
+            {
+                _searchModel = searchModel;
+
+                if (!string.IsNullOrEmpty(searchModel.NameString))
+                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
+
+                if (!string.IsNullOrEmpty(searchModel.AddressString))
+                    orphanages = orphanages.Where(x => Contains(x.Adress));
+
+                if (searchModel.RatingNumber > 0)
+                    orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
+            }
+
+            return orphanages;
         }
 
         private bool GetCoordProp(Address address, out Tuple<float?, float?> result)
@@ -294,5 +334,6 @@ namespace FamilyNet.Controllers
 
             return forOut;
         }
+		#endregion
     }
 }

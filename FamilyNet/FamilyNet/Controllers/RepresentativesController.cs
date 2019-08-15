@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
-using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Models.ViewModels;
 using FamilyNet.Infrastructure;
 
 namespace FamilyNet.Controllers
@@ -18,21 +18,32 @@ namespace FamilyNet.Controllers
     [Authorize]
     public class RepresentativesController : BaseController
     {
+        #region Ctor
+
         public RepresentativesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
-        { }
+        {
+        }
+
+        #endregion
+
+        #region Methods
 
         // GET: Representatives
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id)
+        public async Task<IActionResult> Index(int id,
+            PersonSearchModel searchModel)
         {
-            var list = _unitOfWorkAsync.Representatives.GetAll().ToList();
+            IEnumerable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
+
+            representatives = RepresentativeFilter.GetFiltered(representatives, searchModel);
+
             if (id == 0)
-                return View(list);
+                return View(representatives);
 
             if (id > 0)
-                list = list.Where(x => x.ID.Equals(id)).ToList();
+                representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
 
-            return View(list);
+            return View(representatives);
         }
 
         // GET: Representatives/Details/5
@@ -40,23 +51,22 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
+
             if (representative == null)
-            {
                 return NotFound();
-            }
 
             return View(representative);
         }
+
         [Authorize(Roles = "Admin")]
         // GET: Representatives/Create
         public async Task<IActionResult> Create()
         {
-            List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll().OrderBy(o => o.Name).ToList();
+            List<Orphanage> orphanages = await _unitOfWorkAsync.Orphanages.GetAll()
+                .OrderBy(o => o.Name).ToListAsync();
             ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
 
             return View();
@@ -68,7 +78,9 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative, int id, IFormFile file)
+        public async Task<IActionResult> Create(
+            [Bind("FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative,
+            int id, IFormFile file)
         {
             await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
 
@@ -79,6 +91,7 @@ namespace FamilyNet.Controllers
 
                 await _unitOfWorkAsync.Representatives.Create(representative);
                 await _unitOfWorkAsync.Representatives.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(representative);
@@ -88,20 +101,18 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-            List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll().OrderBy(o => o.Name).ToList();
+            List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll()
+                .OrderBy(o => o.Name).ToList();
             ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
 
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
 
             if (representative == null)
-            {
                 return NotFound();
-            }
+
             return View(representative);
         }
 
@@ -111,13 +122,12 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative, int orphanageId, IFormFile file)
+        public async Task<IActionResult> Edit(int id,
+            [Bind("ID,FullName,Birthday,Rating,Avatar,Orphanage")] Representative representative,
+            int orphanageId, IFormFile file)
         {
-
             if (id != representative.ID)
-            {
                 return NotFound();
-            }
 
             await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
 
@@ -136,16 +146,14 @@ namespace FamilyNet.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!_unitOfWorkAsync.Representatives.Any(representative.ID))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
-                        throw;
-                    }
+                        throw; //TODO: Loging
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(representative);
         }
 
@@ -154,15 +162,12 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
+
             if (representative == null)
-            {
                 return NotFound();
-            }
 
             return View(representative);
         }
@@ -179,5 +184,7 @@ namespace FamilyNet.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        #endregion
     }
 }
