@@ -50,6 +50,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Details/5
+        //[HttpGet("[controller]/[action]/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -69,9 +70,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Create
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles ="Admin, Orphan")]
         public IActionResult Create()
         {
+            Check();
+
             List<Orphanage> orphanagesList = new List<Orphanage>();
             orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
@@ -85,7 +88,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create([Bind("FullName,Address,Birthday,Orphanage,Avatar")] Orphan orphan, int id, IFormFile file)
         {
             await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");
@@ -97,6 +100,14 @@ namespace FamilyNet.Controllers
 
                 await _unitOfWorkAsync.Orphans.Create(orphan);
                 await _unitOfWorkAsync.Orphans.SaveChangesAsync();
+
+                var user = await GetCurrentUserAsync();
+                user.PersonID = orphan.ID;
+                user.PersonType = Models.Identity.PersonType.Orphan;
+                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                
+
+               
                 return RedirectToAction(nameof(Index));
             }
             GetViewData();
@@ -105,12 +116,20 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
             }
 
             List<Orphanage> orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
@@ -132,12 +151,19 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,FullName,Birthday,Orphanage,Avatar")] Orphan orphan, int idOrphanage, IFormFile file)
         {
             if (id != orphan.ID)
             {
                 return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
             }
 
             await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");

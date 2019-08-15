@@ -48,6 +48,10 @@ namespace FamilyNet.Migrations.ApplicationIdentityDb
 
                     b.Property<string>("PasswordHash");
 
+                    b.Property<int?>("PersonID");
+
+                    b.Property<int>("PersonType");
+
                     b.Property<string>("PhoneNumber");
 
                     b.Property<bool>("PhoneNumberConfirmed");

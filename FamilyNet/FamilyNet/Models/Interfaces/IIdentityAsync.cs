@@ -21,5 +21,7 @@ namespace FamilyNet.Models.Interfaces
 
         RoleManager<IdentityRole> RoleManager { get; }
 
+
+
     }
 }

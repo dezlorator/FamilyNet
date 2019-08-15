@@ -52,9 +52,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Create
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Volunteer")]
         public IActionResult Create()
         {
+            Check();
+
             List<Orphanage> orphanagesList = new List<Orphanage>();
             orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
@@ -67,25 +69,38 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Create([Bind("FullName, Address, Birthday, Contacts")] Volunteer volunteer)
         {
             if (ModelState.IsValid)
             {
                 await _unitOfWorkAsync.Volunteers.Create(volunteer);
                 await _unitOfWorkAsync.Volunteers.SaveChangesAsync();
+
+                var user = await GetCurrentUserAsync();
+                user.PersonID = volunteer.ID;
+                user.PersonType = Models.Identity.PersonType.Volunteer;
+                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(volunteer);
         }
 
         // GET: Volunteers/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
             }
 
             var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
@@ -101,12 +116,19 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Edit(int id, [Bind("ID, FullName, Address, Birthday, Contacts, Rating")] Volunteer volunteer)
         {
             if (id != volunteer.ID)
             {
                 return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
             }
 
             if (ModelState.IsValid)

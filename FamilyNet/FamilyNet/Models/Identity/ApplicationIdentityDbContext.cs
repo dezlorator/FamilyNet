@@ -34,7 +34,8 @@ namespace FamilyNet.Models.Identity
                 ApplicationUser user = new ApplicationUser
                 {
                     UserName = email,
-                    Email = email
+                    Email = email,
+                    PersonType = PersonType.User
 
                 };
 

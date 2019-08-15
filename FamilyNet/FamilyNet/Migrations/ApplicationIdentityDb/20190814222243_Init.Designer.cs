@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNet.Migrations.ApplicationIdentityDb
 {
     [DbContext(typeof(ApplicationIdentityDbContext))]
-    [Migration("20190731210547_SoftDelete")]
-    partial class SoftDelete
+    [Migration("20190814222243_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -49,6 +49,10 @@ namespace FamilyNet.Migrations.ApplicationIdentityDb
                         .HasMaxLength(256);
 
                     b.Property<string>("PasswordHash");
+
+                    b.Property<int?>("PersonID");
+
+                    b.Property<int>("PersonType");
 
                     b.Property<string>("PhoneNumber");
 

@@ -1,16 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using FamilyNet.Models.ViewModels;
-using FamilyNet.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using FamilyNet.Models;
+using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
-
+    
     public class AccountController : BaseController
     {
         private readonly IStringLocalizer<HomeController> _localizer;
@@ -25,23 +30,64 @@ namespace FamilyNet.Controllers
         public IActionResult Register()
         {
             GetViewData();
-            return View();
+            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
+            {
+                Text = item.Name,
+                Value = item.Name
+            }).ToList(), "Value", "Text");
+            var viewModel = new RegisterViewModel()
+            {
+                // The Dropdownlist values
+                YourDropdownList = yourDropdownList
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            GetViewData();
+            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
+            {
+                Text = item.Name,
+                Value = item.Name
+            }).ToList(), "Value", "Text");
+            model.YourDropdownList = yourDropdownList;
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.Email, PhoneNumber = model.Phone };
+                ApplicationUser user = new ApplicationUser
+                {
+                    Email = model.Email,
+                    UserName = model.Email,
+                    PhoneNumber = model.Phone,
+                    PersonType = GetPersonType(model.YourDropdownSelectedValue),
+                    PersonID = null
+                };
                 // добавляем пользователя.
                 var result = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
+
+                await _unitOfWorkAsync.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
+
                 if (result.Succeeded)
                 {
-                    // установка куки.
-                    await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
-                    return RedirectToAction("Index", "Home");
+
+                    var code = await _unitOfWorkAsync.UserManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action(
+                        "ConfirmEmail",
+                        "Account",
+                        new { userId = user.Id, code = code },
+                        protocol: HttpContext.Request.Scheme);
+                    EmailService emailService = new EmailService();
+                    await emailService.SendEmailAsync(model.Email, "Confirm your account",
+                        $"Подтвердите регистрацию, перейдя по ссылке: <a href='{callbackUrl}'>link</a>");
+
+
+                    return Content("Для завершения регистрации проверьте электронную почту и перейдите по ссылке, указанной в письме");
+                    //await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
+                    //return RedirectToAction("Index", "Home");
                 }
                 else
                 {
@@ -52,14 +98,35 @@ namespace FamilyNet.Controllers
                 }
             }
 
-            GetViewData();
             return View(model);
+            
         }
 
-        //В Get-версии метода Login мы получаем адрес для возврата в виде параметра returnUrl и передаем его в модель LoginViewModel.
-        //    В Post-версии метода Login получаем данные из представления в виде модели LoginViewModel.
-        //    Всю работу по аутентификации пользователя выполняет метод signInManager.PasswordSignInAsync().
-        //    Этот метод принимает логин и пароль пользователя.Третий параметр метода указывает, надо ли сохранять устанавливаемые куки на долгое время.
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if(userId == null || code == null)
+            {
+                return View("Error");
+            }
+            var user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            if(user == null)
+            {
+                return View("Error");
+            }
+            var result = await _unitOfWorkAsync.UserManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+            {
+                await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return View("Error");
+            }
+        }
+       
 
         [HttpGet]
         [AllowAnonymous]
@@ -74,11 +141,17 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+            GetViewData();
             if (ModelState.IsValid)
             {
                 ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
+                    if(!await _unitOfWorkAsync.UserManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
+                        return View(model);
+                    }
                     await _unitOfWorkAsync.SignInManager.SignOutAsync();
                     Microsoft.AspNetCore.Identity.SignInResult result =
                             await _unitOfWorkAsync.SignInManager.PasswordSignInAsync(
@@ -104,8 +177,6 @@ namespace FamilyNet.Controllers
                     ModelState.AddModelError("", "Такого пользователя не существует, зарегистрируйтесь, пожалуйста!");
                 }
             }
-
-            GetViewData();
             return View(model);
         }
 
@@ -125,6 +196,64 @@ namespace FamilyNet.Controllers
         {
             GetViewData();
             return View();
+        }
+
+        public IActionResult GetDetails()
+        {
+            var url = Url.Action("Details", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
+            return Redirect(url);            
+        }
+
+        public IActionResult AccountEdits()
+        {
+            var url = Url.Action("Edit", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
+            return Redirect(url);
+        }
+
+        public IActionResult PersonalRoom()
+        {
+            if(!GetCurrentUserAsync().Result.HasPerson)
+            {
+                return GetRedirect(GetCurrentUserAsync().Result.PersonType.ToString(), "Create");
+            }
+            return View();
+        }
+
+        private IActionResult GetRedirect(string role , string action)
+        {
+            switch (role)
+            {
+                case "CharityMaker":
+                    return RedirectToAction(action, "CharityMakers");
+                case "Orphan":
+                    return RedirectToAction(action, "Orphans");
+                case "Representative":
+                    return RedirectToAction(action, "Representatives");
+                case "Volunteer":
+                    return RedirectToAction(action, "Volunteers");
+                default:
+                    return RedirectToAction(action, "Index");
+            }
+        }
+
+
+        private static PersonType GetPersonType(string role)
+        {
+            switch (role)
+            {
+                case "CharityMaker":
+                    return PersonType.CharityMaker;
+                case "Representative":
+                    return PersonType.Representative;
+                case "Volunteer":
+                    return PersonType.Volunteer;
+                case "Orphan":
+                    return PersonType.Orphan;
+                case "User":
+                    return PersonType.User;
+                default:
+                    return PersonType.User;
+            }
         }
 
         private void GetViewData()
