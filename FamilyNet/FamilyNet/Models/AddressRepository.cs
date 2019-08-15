@@ -1,5 +1,6 @@
 ﻿using FamilyNet.Models.EntityFramework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -9,33 +10,34 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class AddressRepository
+    public interface IGetAllAddresses
     {
-        private List<string> _countries = new List<string> { "Ukrain", "Russia", "Belarus" };
-        private IEnumerable<Address> _allDataRows = null; 
+        IEnumerable<Address> GetAdresses(string country);
+    }
+
+
+    public class AddressGetter : IGetAllAddresses
+    {
+        private static List<string> _countries = new List<string> { "Ukraine", "Russia", " Belarus" };
+        private IEnumerable<Address> _allDataRows = null;
+        private Address _address = null;
+        private string _country = null;
         private string _filePath = null;
 
-        private Address _address = null;
-        
-        public string this[int index]
+        public string Country { get => _country; }
+        public Address Address { get => _address; }
+
+        public AddressGetter(string country)
         {
-            get => _countries[index];
+            _country = country;
+            _allDataRows = GetAdresses(_country);
         }
 
-
-        public IEnumerable<string> GetCountries()
+        public IEnumerable<Address> GetAdresses(string country)
         {
-            return _countries;
-        }
+            IEnumerable<Address> result = null;
 
-        public IEnumerable<string> GetRegion(string country)
-        {
-            //TODO: part to switch into current CultureInfo
-
-            IEnumerable<string> regions = null;
-            _address.Country = country;
-
-            int index = _countries.IndexOf(_address.Country);
+            int index = _countries.IndexOf(Address.Country);
 
             if (index != -1)
             {
@@ -50,45 +52,55 @@ namespace FamilyNet.Models
                                                         Street = data[4],
                                                         House = data[5]
                                                     };
-
-                regions = (from line in _allDataRows
-                           select line.Region).Distinct();
             }
+
+            return result;
+        }
+
+        public IEnumerable<string> GetRegion(string country, IEnumerable<Address> addresses)
+        {
+            //TODO: part to switch into current CultureInfo
+
+            IEnumerable<string> regions = null;
+            Address.Country = country;
+
+            regions = (from line in addresses
+                       select line.Region).Distinct();
 
             return regions;
         }
 
 
-        public IEnumerable<string> GetCities(string region)
+        public IEnumerable<string> GetCities(string region, IEnumerable<Address> addresses)
         {
             IEnumerable<string> cities = null;
-            _address.Region = region;
+            Address.Region = region;
 
-            cities = (from line in _allDataRows
+            cities = (from line in addresses
                       where line.Region == region
                       select line.City).Distinct();
 
             return cities;
         }
 
-        public IEnumerable<string> GetStreets(string city)
+        public IEnumerable<string> GetStreets(string city, IEnumerable<Address> addresses)
         {
             IEnumerable<string> streets = null;
-            _address.City = city;
+            Address.City = city;
 
-            streets = (from line in _allDataRows
+            streets = (from line in addresses
                        where line.City == city
                        select line.Street).Distinct();
 
             return streets;
         }
 
-        public IEnumerable<string> GetHouses(string street)
+        public IEnumerable<string> GetHouses(string street, IEnumerable<Address> addresses)
         {
             IEnumerable<string> houses = null;
-            _address.Street = street;
+            Address.Street = street;
 
-            houses = (IEnumerable<string>)from line in _allDataRows
+            houses = (IEnumerable<string>)from line in addresses
                                           select line.Street.Split(",");
 
             return houses;
@@ -96,9 +108,9 @@ namespace FamilyNet.Models
 
         public Address GetFullAddress(string house)
         {
-            _address.House = house;
+            Address.House = house;
 
-            return _address;
+            return Address;
         }
 
         public void AddNewCountry(string newCountry)
@@ -108,7 +120,10 @@ namespace FamilyNet.Models
             _countries.Add(_country);
         }
 
-
+        public static IEnumerable<string> GetCountries()
+        {
+            return _countries;
+        }
 
         private string FilePath(int countryIndex)
         {

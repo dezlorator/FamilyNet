@@ -1,7 +1,10 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
     ViewData["Title"] = "Home Page";
     Layout = "_Layout";
 }
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
 
@@ -17,14 +20,14 @@
                 <img class="d-block w-100" src="~/images/11.jpg" alt="First slide">
             </a>
             <div class="carousel-caption d-none d-md-block">
-                <h5>Поиск по виду помощи</h5>
-                <p>Вы можете найти детский дом, который нуждается в том, чем именно вы хотите пожертвовать</p>
+                <h5>@ViewData["FirstSlideComment"]</h5>
+                <p>@ViewData["Description1"]</p>
             </div>
         </div>
         <div class="carousel-item">
             <div class="carousel-caption d-none d-md-block">
-                <h5>Благотворительный аукцион</h5>
-                <p>Поделки детей-сирот, которые участвуют в аукционе</p>
+                <h5>@ViewData["SecondSlideComment"]</h5>
+                <p>@ViewData["Description2"]</p>
             </div>
             <img class="d-block w-100" src="~/images/22.jpg" alt="Second slide">
         </div>
@@ -32,8 +35,8 @@
             <img class="d-block w-100" src="~/images/33.jpg" alt="Third slide">
             <div class="carousel-caption d-none d-md-block">
                 <a asp-area="" asp-controller="Orphanages" asp-action="SearchOrphanageOnMap">
-                    <h5>Поиск детдома</h5>
-                    <p>Вы можете посмотреть какой детдом поблизости с вами</p>
+                    <h5>@ViewData["ThirdSlideComment"]</h5>
+                    <p>@ViewData["Description3"]</p>
                 </a>
             </div>
         </div>

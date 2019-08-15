@@ -23,12 +23,15 @@ namespace FamilyNet.Controllers
     {
         private OrphanageSearchModel _searchModel;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IStringLocalizer<OrphanagesController> _localizer; 
+        private readonly IStringLocalizer<OrphanagesController> _localizer;
+        private readonly IStringLocalizer<SharedResource> _sharedLocalizer;
 
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer) : base(unitOfWork)
+
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork)
         {
             _hostingEnvironment = environment;
             _localizer = localizer;
+            _sharedLocalizer = sharedLocalizer;
         }
 
         private bool IsContain(Address addr)
@@ -88,11 +91,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
-
-            var t = CultureInfo.CurrentCulture;
-
-            ViewData["ColumnName1"] = _localizer["Name"];
-            ViewData["ColumnName2"]=_localizer["Address"];
+            GetViewData();
 
             return View(await orphanages.ToListAsync());
         }
@@ -106,6 +105,7 @@ namespace FamilyNet.Controllers
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
             if (orphanage == null)
                 return NotFound();
+            GetViewData();
 
             return View(orphanage);
         }
@@ -149,6 +149,7 @@ namespace FamilyNet.Controllers
                 await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            GetViewData();
 
             return View(orphanage);
         }
@@ -162,6 +163,7 @@ namespace FamilyNet.Controllers
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
             if (orphanage == null)
                 return NotFound();
+            GetViewData();
 
             return View(orphanage);
         }
@@ -220,6 +222,7 @@ namespace FamilyNet.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            GetViewData();
 
             return View(orphanage);
         }
@@ -234,6 +237,7 @@ namespace FamilyNet.Controllers
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
             if (orphanage == null)
                 return NotFound();
+            GetViewData();
 
             return View(orphanage);
         }
@@ -247,6 +251,7 @@ namespace FamilyNet.Controllers
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
             await _unitOfWorkAsync.Orphanages.Delete(orphanage.ID);
             _unitOfWorkAsync.SaveChangesAsync();
+            GetViewData();
 
             return RedirectToAction(nameof(Index));
         }
@@ -254,8 +259,10 @@ namespace FamilyNet.Controllers
         [AllowAnonymous]
         public IActionResult SearchByTypeHelp()
         {
+            GetViewData();
             return View();
         }
+
         [HttpPost]
         [AllowAnonymous]
         public IActionResult SearchResult(string typeHelp)
@@ -267,6 +274,7 @@ namespace FamilyNet.Controllers
                         donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).Count() > 0
                         && donat.IsRequest).
                     Count() > 0);
+            GetViewData();
 
             return View("SearchResult", list);
         }
@@ -274,6 +282,7 @@ namespace FamilyNet.Controllers
         public IActionResult SearchOrphanageOnMap()
         {
             var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
+            GetViewData();
 
             return View(orphanages);
         }
@@ -304,5 +313,20 @@ namespace FamilyNet.Controllers
 
             return forOut;
         }
+
+        private void GetViewData()
+        {
+            ViewData["Name"] = _localizer["Name"];
+            ViewData["Rating"] = _localizer["Rating"];
+            ViewData["Photo"] = _localizer["Photo"];
+            ViewData["Actions"] = _localizer["Actions"];
+            ViewData["SaveChanges"] = _localizer["SaveChanges"];
+
+            ViewData["ReturnToList"] = _localizer["ReturnToList"];
+            ViewData["Details"] = _localizer["Details"];
+            ViewData["Profile"] = _localizer["Profile"];
+            ViewData["Address"] = _localizer["Address"];
+        }
+
     }
 }

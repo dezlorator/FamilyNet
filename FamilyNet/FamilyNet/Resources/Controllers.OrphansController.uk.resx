@@ -117,74 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Actions" xml:space="preserve">
-    <value>Дії</value>
-  </data>
-  <data name="Add" xml:space="preserve">
-    <value>Додати</value>
-  </data>
-  <data name="Address" xml:space="preserve">
-    <value>Адреса</value>
-  </data>
-  <data name="CharityMakersList" xml:space="preserve">
-    <value>Перелік меценатів</value>
-  </data>
-  <data name="CurrentCountry" xml:space="preserve">
-    <value>Ukraine</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Докладніше</value>
-    <comment>Подробно</comment>
-  </data>
-  <data name="FullName" xml:space="preserve">
-    <value>ПІБ</value>
-  </data>
-  <data name="House" xml:space="preserve">
-    <value>Будинок</value>
-  </data>
-  <data name="Name" xml:space="preserve">
-    <value>Назва</value>
-  </data>
-  <data name="OrphanagesList" xml:space="preserve">
-    <value>Перелік дитячих будинків</value>
-  </data>
-  <data name="OurVolunteers" xml:space="preserve">
-    <value>Наші волонтери</value>
-  </data>
-  <data name="Profile" xml:space="preserve">
-    <value>Профіль</value>
-    <comment>Профиль детского дома</comment>
-  </data>
-  <data name="Rating" xml:space="preserve">
-    <value>Рейтинг</value>
-  </data>
-  <data name="ReturnsToList" xml:space="preserve">
-    <value>Повернутися до списку</value>
-    <comment>Вернуться к списку</comment>
-  </data>
-  <data name="SaveChanges" xml:space="preserve">
-    <value>Зберегти зміни</value>
-    <comment>Сохранить изменения</comment>
-  </data>
-  <data name="SearchDonationItemTypes" xml:space="preserve">
-    <value>Пошук по виду допомоги</value>
-  </data>
-  <data name="Street" xml:space="preserve">
-    <value>Вулиця</value>
-  </data>
-  <data name="String23" xml:space="preserve">
-    <value>Область</value>
-  </data>
-  <data name="String24" xml:space="preserve">
-    <value>Представники дитячих закладів</value>
-  </data>
-  <data name="String25" xml:space="preserve">
-    <value>Рейтинг від</value>
-  </data>
-  <data name="String26" xml:space="preserve">
-    <value>Реєстрація нового користувача</value>
-  </data>
-  <data name="String27" xml:space="preserve">
-    <value>Вхід у додаток</value>
+  <data name="OrphansList" xml:space="preserve">
+    <value>Перелік дітей-сиріт</value>
   </data>
 </root>
