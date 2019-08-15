@@ -12,6 +12,35 @@
         <a asp-action="Create" class="btn btn-primary">Создать</a>
     </div>
 </div>
+
+<form asp-action="Filter">
+    <table class="table">
+        <th>
+            @Html.Label(@Html.DisplayNameFor(model => model.FullName) + ":")
+            @Html.TextBox("FullNameString", "", new { @class = "form-control" })
+        </th>
+        <th width="11%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " от:")
+            @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+            </button>
+            @Html.ActionLink("", "OrphansTable", "Orphans", null, new { @class = "fas fa-ban" })
+        </th>
+
+    </table>
+</form>
+
 <table class="table table-hover">
     <thead>
         <tr>
