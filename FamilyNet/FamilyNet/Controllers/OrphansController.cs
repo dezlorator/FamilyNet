@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Infrastructure;
 
 namespace FamilyNet.Controllers
 {
@@ -76,17 +77,7 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("FullName,Address,Birthday,Orphanage,Avatar")] Orphan orphan, int id, IFormFile file)
         {
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\children", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                orphan.Avatar = fileName;
-            }
+            await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");
 
             if (ModelState.IsValid)
             {
@@ -136,17 +127,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\children", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                orphan.Avatar = fileName;
-            }
+            await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");
 
             if (ModelState.IsValid)
             {
@@ -161,7 +142,7 @@ namespace FamilyNet.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OrphanExists(orphan.ID))
+                    if (!_unitOfWorkAsync.Orphans.Any(orphan.ID))
                     {
                         return NotFound();
                     }
@@ -174,7 +155,7 @@ namespace FamilyNet.Controllers
             }
             return View(orphan);
         }
-
+       
         // GET: Orphans/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
@@ -210,11 +191,6 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool OrphanExists(int id)
-        {
-            return _unitOfWorkAsync.Orphans.GetById(id) != null;
-        }
-
         // GET: Orphans/OrphansTable
         [AllowAnonymous]
         public IActionResult OrphansTable()
@@ -222,5 +198,6 @@ namespace FamilyNet.Controllers
             var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
             return View(list);
         }
+
     }
 }

@@ -22,6 +22,9 @@ namespace FamilyNet.Models.Interfaces
         Task Delete(int id);
 
         Task SaveChangesAsync();
-        
+
+        bool Any(int id);
+
+
     }
 }
