@@ -136,11 +136,17 @@
     <value>Докладніше</value>
     <comment>Подробно</comment>
   </data>
+  <data name="From" xml:space="preserve">
+    <value>від</value>
+  </data>
   <data name="FullName" xml:space="preserve">
     <value>ПІБ</value>
   </data>
   <data name="House" xml:space="preserve">
     <value>Будинок</value>
+  </data>
+  <data name="ListOrphanages" xml:space="preserve">
+    <value>Перелік дитячих будинків</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Назва</value>
@@ -171,6 +177,9 @@
   </data>
   <data name="Street" xml:space="preserve">
     <value>Вулиця</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>ListOrphanages</value>
   </data>
   <data name="String23" xml:space="preserve">
     <value>Область</value>

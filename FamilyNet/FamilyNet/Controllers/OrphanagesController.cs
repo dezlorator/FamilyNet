@@ -47,6 +47,7 @@ namespace FamilyNet.Controllers
                 }
             }
             return false;
+        }
 
         #endregion
 
@@ -315,7 +316,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
-
+         
             return orphanages;
         }
 
@@ -335,6 +336,7 @@ namespace FamilyNet.Controllers
                 if (searchModel.RatingNumber > 0)
                     orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
             }
+            GetViewData();
 
             return orphanages;
         }
@@ -378,7 +380,10 @@ namespace FamilyNet.Controllers
             ViewData["Details"] = _localizer["Details"];
             ViewData["Profile"] = _localizer["Profile"];
             ViewData["Address"] = _localizer["Address"];
+            ViewData["From"]= _localizer["From"];
+            @ViewData["ListOrphanages"] = _localizer["ListOrphanages"];
         }
 
+        #endregion
     }
 }

@@ -9,7 +9,7 @@
 }
 
 <h1>
-    Список детских домов
+    @ViewData["ListOrphanages"]
 
     @if (User.IsInRole("Admin"))
     {
@@ -27,10 +27,8 @@
             @Html.Label(@ViewData["Address"] + ":")
             @Html.TextBox("AddressString", "", new { @class = "form-control" })
         </th>
-        <th width="9%">
-            @Html.Label(@ViewData["Rating"] + ":")
         <th width="11%">
-            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " от:")
+            @Html.Label(@ViewData["Rating"] + " " + @ViewData["From"] + ":")
             @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
         </th>
         <th></th>
