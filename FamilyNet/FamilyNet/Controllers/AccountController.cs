@@ -6,21 +6,25 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.Interfaces;
+using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
-    
+
     public class AccountController : BaseController
     {
-        public AccountController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        private readonly IStringLocalizer<HomeController> _localizer;
+
+        public AccountController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer) : base(unitOfWork)
         {
-          
+            _localizer = localizer;
         }
 
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
         {
+            GetViewData();
             return View();
         }
 
@@ -47,6 +51,8 @@ namespace FamilyNet.Controllers
                     }
                 }
             }
+
+            GetViewData();
             return View(model);
         }
 
@@ -59,6 +65,7 @@ namespace FamilyNet.Controllers
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
+            GetViewData();
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
 
@@ -97,6 +104,8 @@ namespace FamilyNet.Controllers
                     ModelState.AddModelError("", "Такого пользователя не существует, зарегистрируйтесь, пожалуйста!");
                 }
             }
+
+            GetViewData();
             return View(model);
         }
 
@@ -107,15 +116,21 @@ namespace FamilyNet.Controllers
         {
             // удаляем аутентификационные куки
             await _unitOfWorkAsync.SignInManager.SignOutAsync();
+            GetViewData();
             return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
         public IActionResult AccessDenied()
         {
+            GetViewData();
             return View();
         }
 
-
+        private void GetViewData()
+        {
+            ViewData["CharityMakers"] = _localizer["CharityMakers"];
+            
+        }
     }
 }

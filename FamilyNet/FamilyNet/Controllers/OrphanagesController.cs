@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
+using Microsoft.Extensions.Localization;
+using System.Globalization;
 using FamilyNet.Infrastructure;
 using System;
 
@@ -20,14 +22,31 @@ namespace FamilyNet.Controllers
         #region Private fields
 
         private OrphanageSearchModel _searchModel;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IStringLocalizer<OrphanagesController> _localizer;
+        private readonly IStringLocalizer<SharedResource> _sharedLocalizer;
 
-        #endregion
 
-        #region Ctor
-
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork)
-            : base(unitOfWork)
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork)
         {
+            _hostingEnvironment = environment;
+            _localizer = localizer;
+            _sharedLocalizer = sharedLocalizer;
+        }
+
+        private bool IsContain(Address addr)
+        {
+            foreach (var word in _searchModel.AddressString.Split())
+            {
+                if (addr.Street.ToUpper().Contains(word.ToUpper())
+                || addr.City.ToUpper().Contains(word.ToUpper())
+                || addr.Region.ToUpper().Contains(word.ToUpper())
+                || addr.Country.ToUpper().Contains(word.ToUpper()))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         #endregion
@@ -64,6 +83,7 @@ namespace FamilyNet.Controllers
 
             if (orphanage == null)
                 return NotFound();
+            GetViewData();
 
             return View(orphanage);
         }
@@ -101,6 +121,7 @@ namespace FamilyNet.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+            GetViewData();
 
             return View(orphanage);
         }
@@ -116,6 +137,7 @@ namespace FamilyNet.Controllers
 
             if (orphanage == null)
                 return NotFound();
+            GetViewData();
 
             return View(orphanage);
         }
@@ -168,6 +190,7 @@ namespace FamilyNet.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+            GetViewData();
 
             return View(orphanage);
         }
@@ -183,6 +206,7 @@ namespace FamilyNet.Controllers
 
             if (orphanage == null)
                 return NotFound();
+            GetViewData();
 
             return View(orphanage);
         }
@@ -196,12 +220,17 @@ namespace FamilyNet.Controllers
             var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
             await _unitOfWorkAsync.Orphanages.Delete(orphanage.ID);
             _unitOfWorkAsync.SaveChangesAsync();
+            GetViewData();
 
             return RedirectToAction(nameof(Index));
         }
 
         [AllowAnonymous]
-        public IActionResult SearchByTypeHelp() => View();
+        public IActionResult SearchByTypeHelp()
+        {
+            GetViewData();
+            return View();
+        }
 
         [HttpPost]
         [AllowAnonymous]
@@ -214,6 +243,7 @@ namespace FamilyNet.Controllers
                         donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).Count() > 0
                         && donat.IsRequest).
                     Count() > 0);
+            GetViewData();
 
             return View("SearchResult", list);
         }
@@ -222,10 +252,12 @@ namespace FamilyNet.Controllers
         public IActionResult SearchOrphanageOnMap()
         {
             var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
+            GetViewData();
 
             return View(orphanages);
         }
 
+       
         #endregion
 
         #region Private Helpers
@@ -284,7 +316,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
-
+         
             return orphanages;
         }
 
@@ -304,6 +336,7 @@ namespace FamilyNet.Controllers
                 if (searchModel.RatingNumber > 0)
                     orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
             }
+            GetViewData();
 
             return orphanages;
         }
@@ -334,6 +367,23 @@ namespace FamilyNet.Controllers
 
             return forOut;
         }
-		#endregion
+
+        private void GetViewData()
+        {
+            ViewData["Name"] = _localizer["Name"];
+            ViewData["Rating"] = _localizer["Rating"];
+            ViewData["Photo"] = _localizer["Photo"];
+            ViewData["Actions"] = _localizer["Actions"];
+            ViewData["SaveChanges"] = _localizer["SaveChanges"];
+
+            ViewData["ReturnToList"] = _localizer["ReturnToList"];
+            ViewData["Details"] = _localizer["Details"];
+            ViewData["Profile"] = _localizer["Profile"];
+            ViewData["Address"] = _localizer["Address"];
+            ViewData["From"]= _localizer["From"];
+            @ViewData["ListOrphanages"] = _localizer["ListOrphanages"];
+        }
+
+        #endregion
     }
 }
