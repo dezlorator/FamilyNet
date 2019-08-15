@@ -1,18 +1,20 @@
-﻿@model FamilyNet.Models.Orphanage
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model FamilyNet.Models.Orphanage
+@inject IHtmlLocalizer<SharedResource> SharedLocalizer
 
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Подробно</h1>
+<h1>@ViewData["Details"]</h1>
 
 <div class="container">
     <div class="row my-2">
         <div class="col-lg-8 order-lg-2">
             <div class="tab-content py-4">
                 <div class="tab-pane active" id="profile">
-                    <h5 class="mb-3">Профиль детского дома</h5>
+                    <h5 class="mb-3">@ViewData["Profile"]</h5>
                     <div class="row">
                         <div class="col-md-6">
                             <b>@Html.DisplayNameFor(model => model.Name):</b>
@@ -43,13 +45,13 @@
         </div>
         <div class="col-lg-4 order-lg-1 text-center">
             <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content("~/avatars/" + Model.Avatar)" alt="">
-           
-            
+
+
         </div>
     </div>
 </div>
 
 <div>
     <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-warning"> <i class="fas fa-edit"></i>Редактировать</a> |
-    <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
+    <a asp-action="Index" type="submit" class="btn btn-info">@ViewData["ReturnsToList"]</a>
 </div>

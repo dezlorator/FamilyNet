@@ -16,6 +16,7 @@ namespace FamilyNet.Models.ViewModels
         public string Password { get; set; }
 
         [Display(Name = "Запомнить?")]
+        //[Display(Name = "RememberMe", ResourceType = typeof(LoginViewModel))]
         public bool RememberMe { get; set; }
         // Не работает пока что, что-то с сервисами куки надо сделать
 

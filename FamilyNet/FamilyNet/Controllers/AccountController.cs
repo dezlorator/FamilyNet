@@ -17,15 +17,18 @@ namespace FamilyNet.Controllers
     
     public class AccountController : BaseController
     {
-        public AccountController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        private readonly IStringLocalizer<HomeController> _localizer;
+
+        public AccountController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer) : base(unitOfWork)
         {
-          
+            _localizer = localizer;
         }
 
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
         {
+            GetViewData();
             var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
             {
@@ -44,6 +47,7 @@ namespace FamilyNet.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            GetViewData();
             var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
             {
@@ -127,6 +131,7 @@ namespace FamilyNet.Controllers
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
+            GetViewData();
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
 
@@ -135,6 +140,7 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+            GetViewData();
             if (ModelState.IsValid)
             {
                 ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
@@ -180,12 +186,14 @@ namespace FamilyNet.Controllers
         {
             // удаляем аутентификационные куки
             await _unitOfWorkAsync.SignInManager.SignOutAsync();
+            GetViewData();
             return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
         public IActionResult AccessDenied()
         {
+            GetViewData();
             return View();
         }
 
@@ -245,6 +253,12 @@ namespace FamilyNet.Controllers
                 default:
                     return PersonType.User;
             }
+        }
+
+        private void GetViewData()
+        {
+            ViewData["CharityMakers"] = _localizer["CharityMakers"];
+            
         }
     }
 }
