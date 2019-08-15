@@ -18,7 +18,24 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            @using (Html.BeginForm()) {
+                <div>
+                    @Html.LabelFor(m => m.SelectedCity)
+                    @Html.DropDownListFor(m => m.SelectedCity, Model.CityList, "Please select")
+                    @Html.ValidationMessageFor(m => m.SelectedCity)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.SelectedLocality)
+                    @Html.DropDownListFor(m => m.SelectedLocality, Model.LocalityList)
+                    @Html.ValidationMessageFor(m => m.SelectedLocality)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.SelectedSubLocality)
+                    @Html.DropDownListFor(m => m.SelectedSubLocality, Model.SubLocalityList)
+                    @Html.ValidationMessageFor(m => m.SelectedSubLocality)
+                </div>
+                @*<div class="form-group">
                 <label asp-for="Adress.Country" class="control-label"></label>
                 <input asp-for="Adress.Country" class="form-control" />
                 <span asp-validation-for="Adress.Country" class="text-danger"></span>
@@ -42,21 +59,21 @@
                 <label asp-for="Adress.House" class="control-label"></label>
                 <input asp-for="Adress.House" class="form-control" />
                 <span asp-validation-for="Adress.House" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Rating" class="control-label"></label>
-                <input asp-for="Rating" type="number" class="form-control" />
-                <span asp-validation-for="Rating" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Avatar" class="control-label"></label>
-                <input asp-for="Avatar" type="file" name="file" class="form-control" />
-                <span asp-validation-for="Avatar" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Создать" class="btn btn-success" />
-            </div>
-        </form>
+            </div>*@
+                <div class="form-group">
+                    <label asp-for="Rating" class="control-label"></label>
+                    <input asp-for="Rating" type="number" class="form-control" />
+                    <span asp-validation-for="Rating" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Avatar" class="control-label"></label>
+                    <input asp-for="Avatar" type="file" name="file" class="form-control" />
+                    <span asp-validation-for="Avatar" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Создать" class="btn btn-success" />
+                </div>
+            </form>
     </div>
 </div>
 
@@ -67,3 +84,41 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<!-- JS includes -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+<script src="//ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+			var localityUrl = '@Url.Action("FetchLocalities")';
+			var subLocalityUrl = '@Url.Action("FetchSubLocalities")';
+			var localities = $('#SelectedLocality');
+			var subLocalities = $('#SelectedSubLocality');
+			$('#SelectedCity').change(function() {
+				localities.empty();
+				subLocalities.empty();
+				$.getJSON(localityUrl, { ID: $(this).val() },function(data) {
+					if (!data) {
+						return;
+					}
+					localities.append($('<option></option>').val('').text('Please select'));
+					$.each(data, function(index, item) {
+						localities.append($('<option></option>').val(item.Value).text(item.Text));
+					});
+				});
+			})
+			$('#SelectedLocality').change(function() {
+				subLocalities.empty();
+				$.getJSON(subLocalityUrl, { ID: $(this).val() },function(data) {
+					if (!data) {
+						return;
+					}
+					subLocalities.append($('<option></option>').val('').text('Please select'));
+					$.each(data, function(index, item) {
+						subLocalities.append($('<option></option>').val(item.Value).text(item.Text));
+					});
+				});
+			})
+
+</script>

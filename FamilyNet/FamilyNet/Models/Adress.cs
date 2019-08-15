@@ -1,4 +1,5 @@
-﻿using FamilyNet.Models.Interfaces;
+﻿using FamilyNet.Models.AddressCatalog;
+using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class Address
-    {
+    public class Address: ICatalogAddress {
         public int ID { get; set; }
 
         [Required(ErrorMessage = "Пожалуйста введите страну")]
