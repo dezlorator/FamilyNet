@@ -11,6 +11,7 @@ using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
