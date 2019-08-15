@@ -12,6 +12,14 @@
     <None Remove="Content\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Views\Shared\Index.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Shared\Index.cshtml" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="FontAwesome" Version="4.7.0" />

@@ -4,7 +4,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Список детских домов <a asp-action="Create" class="btn btn-primary float-right"><i class="fas fa-plus"></i></a></h1>
+<h1>
+    Список детских домов
+
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary float-right"><i class="fas fa-plus"></i></a>
+    }
+</h1>
 
 <form asp-action="Filter">
     <table class="table">
@@ -16,10 +23,13 @@
             @Html.Label(@Html.DisplayNameFor(model => model.Adress) + ":")
             @Html.TextBox("AddressString", "", new { @class = "form-control" })
         </th>
-        <th width="9%">
-            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + ":")
+        <th width="11%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " от:")
             @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
         </th>
+        <th></th>
+        <th></th>
+        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -35,7 +45,7 @@
     </table>
 </form>
 
-<table class="table center">
+<table class="table table-hover center">
     <thead class="thead-light">
         <tr>
             <th>
@@ -100,15 +110,18 @@
                     </a>
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning">
-                        <i class="fas fa-edit"></i>
-                    </a> |
                     <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">
                         <i class="fas fa-info-circle"></i>
-                    </a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger">
-                        <i class="fas fa-minus-circle"></i>
                     </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger">
+                            <i class="fas fa-minus-circle"></i>
+                        </a>
+                    }
                 </td>
             </tr>
         }

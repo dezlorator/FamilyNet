@@ -38,16 +38,16 @@
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Rating" class="control-label"></label>
-                                    <input asp-for="Rating" class="form-control" />
+                                    <input asp-for="Rating" type="number" class="form-control" />
                                     <span asp-validation-for="Rating" class="text-danger"></span>
                                 </div>
-                                <div class="form-group">
+                                @*TODO: Make with identity*@
+                                @*<div class="form-group">
                                     <label asp-for="EmailID" class="control-label"></label>
                                     <input asp-for="EmailID" class="form-control" />
                                     <span asp-validation-for="EmailID" class="text-danger"></span>
-                                </div>
+                                </div>*@
                                 <div class="form-group">
-                                    @*@Html.DropDownList("Orphanage.ID", ViewBag.Orphanages as SelectList, "Select an orphanage")*@
                                     <label asp-for="Orphanage" class="control-label"></label>
                                     <select asp-for="Orphanage.ID"
                                             class="form-control"
@@ -59,10 +59,11 @@
                                     <label asp-for="Avatar" class="control-label"></label>
                                     <input asp-for="Avatar" type="file" name="file" class="form-control" />
                                     <span asp-validation-for="Avatar" class="text-danger"></span>
+                                    <label> Поддержка только *.jpg</label>
                                 </div>
                                 <div class="col-md-12 text-center">
                                     <input type="submit" class="btn btn-primary" value="Создать" />
-                                    <a asp-action="Index" class="btn btn-primary">Вернуться обратно</a>
+                                    <a asp-action="Index" class="btn btn-primary" type="submit">Вернуться обратно</a>
                                 </div>
                             </div>
                         </div>

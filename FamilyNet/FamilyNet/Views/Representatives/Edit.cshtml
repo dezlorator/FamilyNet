@@ -15,6 +15,15 @@
                         <h3 class="register-heading">Редактировать представителя детдома</h3>
                         <div class="row register-form">
                             <div class="col-md-6">
+                                <p>
+                                    <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content("~/representatives/" + Model.Avatar)" width="350" height="350" alt="">
+                                </p>
+                                <div class="form-group">
+                                    <label asp-for="Avatar" class="control-label"></label>
+                                    <input asp-for="Avatar" type="file" name="file" class="form-control" />
+                                    <span asp-validation-for="Avatar" class="text-danger"></span>
+                                    <label> Поддержка только *.jpg</label>
+                                </div>
                                 <div class="form-group">
                                     <label asp-for="FullName.Name" class="control-label"></label>
                                     <input asp-for="FullName.Name" class="form-control" />
@@ -46,23 +55,12 @@
                                     <span asp-validation-for="Avatar" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="EmailID" class="control-label"></label>
-                                    <input asp-for="EmailID" class="form-control" />
-                                    <span asp-validation-for="EmailID" class="text-danger"></span>
-                                </div>
-                                <div class="form-group">
-                                    @*@Html.DropDownList("Orphanage.ID", ViewBag.Orphanages as SelectList, "Select an orphanage")*@
                                     <label asp-for="Orphanage" class="control-label"></label>
                                     <select asp-for="Orphanage.ID"
                                             class="form-control"
                                             name="orphanageId"
                                             asp-items="@ViewBag.Orphanages as SelectList"></select>
                                     <span asp-validation-for="Orphanage.Name" class="text-danger"></span>
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Avatar" class="control-label"></label>
-                                    <input asp-for="Avatar" type="file" name="file" class="form-control" />
-                                    <span asp-validation-for="Avatar" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-12 text-center">
                                     <input type="submit" class="btn btn-primary" value="Сохранить" />
