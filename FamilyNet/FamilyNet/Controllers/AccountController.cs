@@ -113,7 +113,8 @@ namespace FamilyNet.Controllers
             var result = await _unitOfWorkAsync.UserManager.ConfirmEmailAsync(user, code);
             if (result.Succeeded)
             {
-                return GetRedirect(model.YourDropdownSelectedValue, "Create");
+                await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
+                return RedirectToAction("Index", "Home");
             }
             else
             {
@@ -202,6 +203,10 @@ namespace FamilyNet.Controllers
 
         public IActionResult PersonalRoom()
         {
+            if(!GetCurrentUserAsync().Result.HasPerson)
+            {
+                return GetRedirect(GetCurrentUserAsync().Result.PersonType.ToString(), "Create");
+            }
             return View();
         }
 
