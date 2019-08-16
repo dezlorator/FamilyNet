@@ -13,28 +13,28 @@ namespace FamilyNet.Models
     {
         public int ID { get; set; }
 
-        [Required(ErrorMessage = "Пожалуйста введите название")]
-        [Display(Name = "Название")]
+        [Required(ErrorMessage = "Будь ласка введіть назву")]
+        [Display(Name = "Назва")]
         public string Name { get; set; }
 
         public int? AdressID { get; set; }
 
-        [Display(Name = "Адрес")]
+        [Display(Name = "Адреса")]
         public virtual Address Adress { get; set; }
 
-        [Required(ErrorMessage = "Пожалуйста введите Рейтинг")]
+        [Required(ErrorMessage = "Будь ласка введіть рейтинг")]
         [Display(Name = "Рейтинг")]
         public float Rating { get; set; }
 
         [Display(Name = "Фото")]
         public string Avatar { get; set; }
 
-        [Display(Name = "Представители")]
+        [Display(Name = "Представники")]
         public virtual ICollection<Representative> Representatives { get; set; }
 
-        [Display(Name = "Дети")]
+        [Display(Name = "Діти")]
         public virtual ICollection<Orphan> Orphans { get; set; }
-        [Display(Name = "Потребности")]
+        [Display(Name = "Потреби")]
         public virtual ICollection<Donation> Donations { get; set; }
 
         public int? LocationID { get; set; }

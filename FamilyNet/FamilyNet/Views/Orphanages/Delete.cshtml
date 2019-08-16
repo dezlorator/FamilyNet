@@ -5,9 +5,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Удаление детского дома</h1>
+<h1>Видалення дитячого будинку</h1>
 
-<h3>Вы уверены, что хотите удалить это?</h3>
+<h3>Ви впевненні, що бажаєте видалити?</h3>
 <div>
     <h4>Orphanage</h4>
     <hr />
@@ -65,7 +65,7 @@
     <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
         <input type="hidden" asp-for="Adress.ID" />
-        <input type="submit" value="Удаление" class="btn btn-danger" /> 
-        <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
+        <input type="submit" value="Видалення" class="btn btn-danger" /> 
+        <a asp-action="Index" type="submit" class="btn btn-info">Повернутися до переліку</a>
     </form>
 </div>

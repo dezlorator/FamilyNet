@@ -9,13 +9,13 @@ namespace FamilyNet.Models
 {
     public class FullName
     {
-        [Display(Name = "Имя")]
+        [Display(Name = "Ім'я")]
         public string Name { get; set; }
 
-        [Display(Name = "Фамилия")]
+        [Display(Name = "Прізвище")]
         public string Surname { get; set; }
 
-        [Display(Name = "Отчество")]
+        [Display(Name = "По батькові")]
         public string Patronymic { get; set; }
 
         public virtual void CopyState(FullName sender)

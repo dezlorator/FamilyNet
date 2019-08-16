@@ -5,9 +5,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Создание</h1>
+<h1>Створення</h1>
 
-<h4>детского дома</h4>
+<h4>дитячого будинку</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -52,17 +52,17 @@
                 <label asp-for="Avatar" class="control-label"></label>
                 <input asp-for="Avatar" type="file" name="file" class="form-control" />
                 <span asp-validation-for="Avatar" class="text-danger"></span>
-                <label> Поддержка только *.jpg</label>
+                @*<label> Поддержка только *.jpg</label>*@
             </div>
             <div class="form-group">
-                <input type="submit" value="Создать" class="btn btn-success" />
+                <input type="submit" value="Створити" class="btn btn-success" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
+    <a asp-action="Index" type="submit" class="btn btn-info">Повернутися до переліку</a>
 </div>
 
 @section Scripts {
