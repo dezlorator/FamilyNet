@@ -1,19 +1,21 @@
-﻿@model IEnumerable<FamilyNet.Models.Volunteer>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<SharedResource> SharedLocalizer
+@model IEnumerable<FamilyNet.Models.Volunteer>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Наши волонтеры</h1>
+<h1>@ViewData["OurVolonteers"]</h1>
 
 <form asp-action="Filter">
     <table class="table">
         <th>
-            @Html.Label(@Html.DisplayNameFor(model => model.FullName) + ":")
+            <a>@SharedLocalizer["FullName"]:</a>
             @Html.TextBox("FullNameString", "", new { @class = "form-control" })
         </th>
-        <th width="11%">
-            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " от:")
+        <th width="15%">
+            <a>@SharedLocalizer["Rating"] @SharedLocalizer["From"]:</a>
             @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
         </th>
         <th></th>
@@ -38,19 +40,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FullName)
+                @SharedLocalizer["FullName"]
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Address.Country)
+                @SharedLocalizer["Country"]
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Address.City)
+                @SharedLocalizer["City"]
             </th>
 
             <th>
-                @Html.DisplayNameFor(model => model.Rating)
+                @SharedLocalizer["Rating"]
             </th>
-            <th><a asp-action="Create" class="btn btn-outline-success"><i class="far fa-plus-square"></i>Добавить</a></th>
+            <th><a asp-action="Create" class="btn btn-outline-success"><i class="far fa-plus-square"></i>@SharedLocalizer["Add"]</a></th>
         </tr>
     </thead>
     <tbody>
