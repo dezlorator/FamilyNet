@@ -1,0 +1,39 @@
+﻿@model FamilyNet.Models.DonationItemType
+
+@{
+    ViewData["Title"] = "Подробности";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Подробности потребности</h1>
+
+<div class="container">
+    <div class="row my-2">
+        <div class="col-lg-8 order-lg-2">
+            <div class="tab-content py-4">
+                <div class="tab-pane active" id="profile">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <b>@Html.DisplayNameFor(model => model.Name):</b>
+                            @Html.DisplayFor(model => model.Name)
+                            <p>
+                            <b>@Html.DisplayNameFor(model => model.TypeBaseItem):</b>
+                            @if (Model.TypeBaseItem != null)
+                            {
+                                @foreach (var t in Model.TypeBaseItem)
+                                {
+                                    @Html.DisplayFor(modelItem => @t.Item.Name) <br />
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="EditCategory" asp-route-id="@Model.ID" type="submit" class="btn btn-warning"> <i class="fas fa-edit"></i>Редактировать</a> |
+    <a asp-action="CategoriesTable" type="submit" class="btn btn-info">Вернуться к списку</a>
+</div>

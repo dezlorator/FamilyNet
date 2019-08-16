@@ -23,6 +23,7 @@ namespace FamilyNet.Controllers {
         public async Task<IActionResult> Index() {
             ViewData["Best"] = _unitOfWorkAsync.Orphanages.GetAll()
               .OrderByDescending(c => c.Rating)
+
               .Take(3);
 
             GetViewData();

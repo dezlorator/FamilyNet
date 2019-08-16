@@ -2,6 +2,7 @@
 using FamilyNet.Models.Identity;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,8 @@ namespace FamilyNet.Models.EntityFramework
             UserManager = userManager;
             SignInManager = signInManager;
             RoleManager = roleManager;
+            BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
+            TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
         }
 
 
@@ -55,6 +58,8 @@ namespace FamilyNet.Models.EntityFramework
 
         public IAsyncRepository<Donation> Donations { get; set; }
 
+        public DbSet<TypeBaseItem> TypeBaseItems { get; set; } // TODO : rewrite this
+
         public IAsyncRepository<Orphan> Orphans { get; set; }
 
         public IUserValidator<ApplicationUser> UserValidator { get; set; }
@@ -70,6 +75,8 @@ namespace FamilyNet.Models.EntityFramework
         public SignInManager<ApplicationUser> SignInManager { get; set; }
 
         public RoleManager<IdentityRole> RoleManager { get; set; }
+
+        public IAsyncRepository<BaseItemType> BaseItemTypes { get; set; }
 
         public void SaveChangesAsync()
         {

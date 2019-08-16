@@ -34,7 +34,7 @@ namespace FamilyNet.Models
 
         [Display(Name = "Дети")]
         public virtual ICollection<Orphan> Orphans { get; set; }
-
+        [Display(Name = "Потребности")]
         public virtual ICollection<Donation> Donations { get; set; }
 
         public int? LocationID { get; set; }

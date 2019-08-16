@@ -72,13 +72,16 @@ namespace FamilyNet.Migrations
                     b.ToTable("AuctionLot");
                 });
 
-            modelBuilder.Entity("FamilyNet.Models.AuctionLotItem", b =>
+            modelBuilder.Entity("FamilyNet.Models.BaseItem", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Description");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
 
                     b.Property<bool>("IsDeleted");
 
@@ -89,7 +92,9 @@ namespace FamilyNet.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("AuctionLotItem");
+                    b.ToTable("BaseItem");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseItem");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.BaseItemType", b =>
@@ -175,26 +180,6 @@ namespace FamilyNet.Migrations
                     b.HasIndex("OrphanageID");
 
                     b.ToTable("Donations");
-                });
-
-            modelBuilder.Entity("FamilyNet.Models.DonationItem", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<float>("Price");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("DonationItem");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Location", b =>
@@ -299,6 +284,19 @@ namespace FamilyNet.Migrations
                     b.ToTable("Representatives");
                 });
 
+            modelBuilder.Entity("FamilyNet.Models.TypeBaseItem", b =>
+                {
+                    b.Property<int>("ItemID");
+
+                    b.Property<int>("TypeID");
+
+                    b.HasKey("ItemID", "TypeID");
+
+                    b.HasIndex("TypeID");
+
+                    b.ToTable("TypeBaseItems");
+                });
+
             modelBuilder.Entity("FamilyNet.Models.Volunteer", b =>
                 {
                     b.Property<int>("ID")
@@ -326,6 +324,20 @@ namespace FamilyNet.Migrations
                     b.ToTable("Volunteers");
                 });
 
+            modelBuilder.Entity("FamilyNet.Models.AuctionLotItem", b =>
+                {
+                    b.HasBaseType("FamilyNet.Models.BaseItem");
+
+                    b.HasDiscriminator().HasValue("AuctionLotItem");
+                });
+
+            modelBuilder.Entity("FamilyNet.Models.DonationItem", b =>
+                {
+                    b.HasBaseType("FamilyNet.Models.BaseItem");
+
+                    b.HasDiscriminator().HasValue("DonationItem");
+                });
+
             modelBuilder.Entity("FamilyNet.Models.AuctionLotItemType", b =>
                 {
                     b.HasBaseType("FamilyNet.Models.BaseItemType");
@@ -335,18 +347,6 @@ namespace FamilyNet.Migrations
                     b.HasIndex("ItemID");
 
                     b.HasDiscriminator().HasValue("AuctionLotItemType");
-                });
-
-            modelBuilder.Entity("FamilyNet.Models.DonationItemType", b =>
-                {
-                    b.HasBaseType("FamilyNet.Models.BaseItemType");
-
-                    b.Property<int?>("ItemID")
-                        .HasColumnName("DonationItemType_ItemID");
-
-                    b.HasIndex("ItemID");
-
-                    b.HasDiscriminator().HasValue("DonationItemType");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.AuctionLot", b =>
@@ -492,6 +492,19 @@ namespace FamilyNet.Migrations
                         });
                 });
 
+            modelBuilder.Entity("FamilyNet.Models.TypeBaseItem", b =>
+                {
+                    b.HasOne("FamilyNet.Models.BaseItem", "Item")
+                        .WithMany("TypeBaseItem")
+                        .HasForeignKey("ItemID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("FamilyNet.Models.BaseItemType", "Type")
+                        .WithMany("TypeBaseItem")
+                        .HasForeignKey("TypeID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("FamilyNet.Models.Volunteer", b =>
                 {
                     b.HasOne("FamilyNet.Models.Address", "Address")
@@ -529,13 +542,6 @@ namespace FamilyNet.Migrations
                 {
                     b.HasOne("FamilyNet.Models.AuctionLotItem", "Item")
                         .WithMany("AuctionLotItemTypes")
-                        .HasForeignKey("ItemID");
-                });
-
-            modelBuilder.Entity("FamilyNet.Models.DonationItemType", b =>
-                {
-                    b.HasOne("FamilyNet.Models.DonationItem", "Item")
-                        .WithMany("DonationItemTypes")
                         .HasForeignKey("ItemID");
                 });
 #pragma warning restore 612, 618

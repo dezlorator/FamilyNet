@@ -42,7 +42,7 @@ namespace FamilyNet.Controllers
             if (id == 0)
                 return View(orphans);
 
-            if (id >0)
+            if (id > 0)
                 orphans = orphans.Where(x => x.Orphanage.ID.Equals(id)).ToList();
             GetViewData();
 
@@ -168,6 +168,7 @@ namespace FamilyNet.Controllers
 
             await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");
 
+
             if (ModelState.IsValid)
             {
                 try
@@ -235,6 +236,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/OrphansTable
+
         [AllowAnonymous]
         public IActionResult OrphansTable(int id, PersonSearchModel searchModel)
         {

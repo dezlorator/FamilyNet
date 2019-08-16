@@ -1,0 +1,53 @@
+﻿@model IEnumerable<FamilyNet.Models.BaseItemType>
+@{
+    ViewData["Title"] = "Категории";
+}
+
+<div class="row">
+    <div class="col-md-5">
+        <h1>Список категорий</h1>
+    </div>
+    <div class="col-md-3">
+        <a asp-action="DonationsTable" class="btn btn-primary float-right">Потребности</a>
+    </div>
+    <div class="col-md-3">
+        <a asp-action="CreateCategory" class="btn btn-primary float-right">+ Категория</a>
+    </div>
+</div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>         
+            <th>
+                @Html.DisplayNameFor(model => model.TypeBaseItem)
+            </th>
+            <th>
+                Действия
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @if (item != null && item.TypeBaseItem != null)
+                    {
+                        @foreach (var t in item.TypeBaseItem)
+                        {
+                            @Html.DisplayFor(modelItem => @t.Item.Name) <br />                           
+                        }
+                    }
+                </td>                
+                <td>
+                    <a asp-action="DeleteCategory" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

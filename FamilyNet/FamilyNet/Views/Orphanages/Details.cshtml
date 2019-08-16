@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
 @model FamilyNet.Models.Orphanage
 @inject IHtmlLocalizer<SharedResource> SharedLocalizer
 
@@ -7,7 +7,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>@ViewData["Details"]</h1>
+<h1>
+    @ViewData["Details"]
+    @if (User.IsInRole("CharityMaker") || User.IsInRole("Admin"))
+    {
+        <a asp-controller="Donations" asp-action="CreateDonation" class="btn btn-primary float-right">Создать Потребноть</a>
+    }
+</h1>
 
 <div class="container">
     <div class="row my-2">
@@ -37,7 +43,26 @@
                             <p>
                                 <b>@Html.DisplayNameFor(model => model.Rating)</b>
                                 @Html.DisplayFor(model => model.Rating) <br>
-
+                            <p>
+                                @if (Model.Donations.Count != 0)
+                                {
+                                    <b>@Html.DisplayNameFor(model => model.Donations)</b> <br />
+                                    @foreach (var donation in Model.Donations)
+                                    {
+                                        if (donation.DonationItem.TypeBaseItem.Count != 0)
+                                        {
+                                            @foreach (var item in donation.DonationItem.TypeBaseItem)
+                                            {
+                                                if (item.Type != null)
+                                                {
+                                                    <b>@item.Type.Name: </b>
+                                                }
+                                                @item.Item.Name
+                                                <a asp-controller="Donations" asp-action="Details" asp-route-id="@donation.ID">(Подробнее)</a> <br>
+                                            }
+                                        }
+                                    }
+                                }
                         </div>
                     </div>
                 </div>
@@ -55,3 +80,4 @@
     <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-warning"> <i class="fas fa-edit"></i>Редактировать</a> |
     <a asp-action="Index" type="submit" class="btn btn-info">@ViewData["ReturnsToList"]</a>
 </div>
+

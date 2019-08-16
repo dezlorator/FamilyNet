@@ -212,6 +212,10 @@ namespace FamilyNet.Controllers
 
         public IActionResult PersonalRoom()
         {
+            if(GetCurrentUserAsync().Result.PersonType == PersonType.User)
+            {
+                RedirectToAction("Index", "Home");
+            }
             if(!GetCurrentUserAsync().Result.HasPerson)
             {
                 return GetRedirect(GetCurrentUserAsync().Result.PersonType.ToString(), "Create");

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +13,7 @@ using Microsoft.Extensions.Localization;
 using System.Globalization;
 using FamilyNet.Infrastructure;
 using System;
+using System.Collections.Generic;
 
 namespace FamilyNet.Controllers
 {
@@ -234,11 +235,13 @@ namespace FamilyNet.Controllers
         public IActionResult SearchResult(string typeHelp)
         {
             ViewData["TypeHelp"] = typeHelp;
-            var list = _unitOfWorkAsync.Orphanages.Get(
+            IEnumerable<Orphanage> list = new List<Orphanage>();
+            if(typeHelp != null)
+            list = _unitOfWorkAsync.Orphanages.Get(
                 orp => orp.Donations.Where(
-                    donat => donat.DonationItem.DonationItemTypes.Where(
-                        donatitem => donatitem.Name.ToLower().Contains(typeHelp.ToLower())).Count() > 0
-                        && donat.IsRequest).
+                    donat => donat.DonationItem.TypeBaseItem.Where(
+                        donatitem =>  donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
+                        Count() > 0 && donat.IsRequest).
                     Count() > 0);
             GetViewData();
 
@@ -384,3 +387,4 @@ namespace FamilyNet.Controllers
         #endregion
     }
 }
+

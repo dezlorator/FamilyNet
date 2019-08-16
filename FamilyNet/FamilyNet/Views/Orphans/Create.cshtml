@@ -44,7 +44,7 @@
                                             asp-items="@(new SelectList(@ViewBag.ListOfOrphanages,"ID", "Name"))"></select>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="Avatar" class="control-label"></label>
+                                    <label asp-for="Avatar" class="control-label">Фото</label>
                                     <input asp-for="Avatar" type="file" name="file" class="form-control" />
                                     <span asp-validation-for="Avatar" class="text-danger"></span>
                                 </div>
@@ -53,7 +53,6 @@
                                     <a asp-action="Index" class="btn btn-primary">Назад</a>
                                 </div>
                             </div>
-                        </div>
                     </div>
                 </div>
             </form>

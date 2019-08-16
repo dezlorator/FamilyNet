@@ -1,12 +1,17 @@
 ﻿@model IEnumerable<FamilyNet.Models.Orphan>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Дети";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row">
-    <h2 class="text-center">Список детей-сирот</h2>
-</div>
+
+<h1>
+    Список детей
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="OrphansTable" class="btn btn-primary float-right">Таблица</a>
+    }
+</h1>
 
 
 <form asp-action="Filter">
@@ -52,7 +57,14 @@
 
                     <div class="card mb-4 box-shadow text-center">
                         <a asp-action="Details" asp-route-id="@item.ID" style="text-decoration:none;">
-                            <img class="img-responsive" src="@Url.Content("~/children/" + @item.Avatar)" alt="Card image cap" width="100%" height="300px">
+                            @if (item.Avatar != null || item.Avatar != "")
+                            {
+                                <img class="img-responsive" src="@Url.Content("~/children/" + @item.Avatar)" alt="Card image cap" width="100%" height="300px">
+                            }
+                            else
+                            {
+                                <img class="img-responsive" src="@Url.Content("~/images/anonimusjpg.jpg")" alt="Card image cap" width="100%" height="300px">
+                            }
                             <div class="card-body">
                                 <h5 class="card-title">
                                     @Html.DisplayFor(modelItem => item.FullName.Name)
@@ -67,13 +79,6 @@
                                 </p>
                             </div>
                         </a>
-
-                        <div class="card-body">
-                            <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
-                            <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
-                            <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
-                        </div>
-
                     </div>
                 </div>
             }
