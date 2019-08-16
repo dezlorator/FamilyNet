@@ -42,7 +42,7 @@ namespace FamilyNet.Controllers
         {
             var user = await GetCurrentUserAsync();
 
-            if (!(HttpContext.User.IsInRole("Admin") || user.HasPerson) || user.PersonID != id)
+            if (!(HttpContext.User.IsInRole("Admin") || (user.HasPerson && user.PersonID == id)) )
             {
                 return RedirectToAction("Index", "Home");
             }
