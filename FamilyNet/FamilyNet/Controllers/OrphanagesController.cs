@@ -13,6 +13,7 @@ using Microsoft.Extensions.Localization;
 using System.Globalization;
 using FamilyNet.Infrastructure;
 using System;
+using System.Collections.Generic;
 
 namespace FamilyNet.Controllers
 {
@@ -55,7 +56,7 @@ namespace FamilyNet.Controllers
 
         // GET: Orphanages
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id, OrphanageSearchModel searchModel, 
+        public async Task<IActionResult> Index(int id, OrphanageSearchModel searchModel,
             SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
@@ -237,11 +238,13 @@ namespace FamilyNet.Controllers
         public IActionResult SearchResult(string typeHelp)
         {
             ViewData["TypeHelp"] = typeHelp;
-            var list = _unitOfWorkAsync.Orphanages.Get(
+            IEnumerable<Orphanage> list = new List<Orphanage>();
+            if(typeHelp != null)
+            list = _unitOfWorkAsync.Orphanages.Get(
                 orp => orp.Donations.Where(
                     donat => donat.DonationItem.TypeBaseItem.Where(
-                        donatitem => donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).Count() > 0
-                        && donat.IsRequest).
+                        donatitem =>  donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
+                        Count() > 0 && donat.IsRequest).
                     Count() > 0);
             GetViewData();
 
