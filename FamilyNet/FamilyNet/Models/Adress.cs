@@ -12,24 +12,24 @@ namespace FamilyNet.Models
     {
         public int ID { get; set; }
 
-        [Required(ErrorMessage = "Пожалуйста введите страну")]
-        [Display(Name = "Cтрана")]
+        [Required(ErrorMessage = "Будь ласка введіть країну")]
+        [Display(Name = "Країна")]
         public string Country { get; set; }
 
-        [Required(ErrorMessage = "Пожалуйста введите название области")]
+        [Required(ErrorMessage = "Будь ласка введіть назву області")]
         [Display(Name = "Область")]
         public string Region { get; set; }
 
-        [Required(ErrorMessage = "Пожалуйста введите название города")]
-        [Display(Name = "Город")]
+        [Required(ErrorMessage = "Будь ласка введіть назву міста")]
+        [Display(Name = "Місто")]
         public string City { get; set; }
 
-        [Required(ErrorMessage = "Пожалуйста введите название улицы")]
-        [Display(Name = "Улица")]
+        [Required(ErrorMessage = "Будь ласка введіть назву вулиці")]
+        [Display(Name = "Вулиця")]
         public string Street { get; set; }
 
-        [Required(ErrorMessage = "Пожалуйста введите номер дома")]
-        [Display(Name = "Дом")]
+        [Required(ErrorMessage = "Будь ласка введіть назву номер будинку")]
+        [Display(Name = "Будинок")]
         public string House { get; set; }
 
         [BindNever]
