@@ -14,8 +14,14 @@
                 <div class="tab-pane active" id="profile">
                     <div class="row">
                         <div class="col-md-6">
-                            <b>@Html.DisplayNameFor(model => model.DonationItem.Name):</b>
-                            @Html.DisplayFor(model => model.DonationItem.Name)
+                            <b>@Html.DisplayNameFor(model => model.DonationItem.TypeBaseItem):</b>                            
+                                @foreach (var t in Model.DonationItem.TypeBaseItem)
+                                {
+                                    @t.Type.Name
+                                }                          
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.DonationItem.Name):</b>
+                                @Html.DisplayFor(model => model.DonationItem.Name)
                             <p>
                                 <b>@Html.DisplayNameFor(model => model.DonationItem.Description):</b>
                                 @Html.DisplayFor(model => model.DonationItem.Description)
@@ -25,7 +31,7 @@
                                 @Html.DisplayFor(model => model.Orphanage.Name)
                             <p>
                                 <b>@Html.DisplayNameFor(model => model.Orphanage.Adress.City)</b>
-                                @Html.DisplayFor(model =>  model.Orphanage.Adress.City)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.City)
                             <p>
                                 <b>@Html.DisplayNameFor(model => model.Orphanage.Adress.Street)</b>
                                 @Html.DisplayFor(model => model.Orphanage.Adress.Street)

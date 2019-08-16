@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FamilyNet.Models
 {
@@ -42,5 +43,18 @@ namespace FamilyNet.Models
             Aproved,
             Taken,
         }
+
+        public void CopyState(Donation sender)
+        {            
+            Donation donationSended = sender as Donation;
+            Orphanage = donationSended.Orphanage;
+            Status = donationSended.Status;
+            LastDateWhenStatusChanged = donationSended.LastDateWhenStatusChanged;
+            DonationItem = donationSended.DonationItem;            
+        }
+
+        [Display(Name = "Категория")]
+        [NotMapped]
+        public int idDonationItem { get; set; }
     }
 }

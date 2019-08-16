@@ -22,6 +22,7 @@ namespace FamilyNet.Models.EntityFramework
         public DbSet<Volunteer> Volunteers { get; set; }
         public DbSet<Orphanage> Orphanages { get; set; }
         public DbSet<Donation> Donations { get; set; }
+        public DbSet<TypeBaseItem> TypeBaseItems { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

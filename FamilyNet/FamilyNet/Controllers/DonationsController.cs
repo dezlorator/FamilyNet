@@ -16,110 +16,151 @@ namespace FamilyNet.Controllers
 
         }
 
-        // GET: Donations
+        // GET: DonationsTable
         [AllowAnonymous]
-        public IActionResult Index()
+        public IActionResult DonationsTable()
         {
             return View(_unitOfWorkAsync.Donations.GetAll());
         }
-      
 
-        // GET: Donations/CreateDonationItemType
+        // GET: CategoriesTable
+        [AllowAnonymous]
+        public IActionResult CategoriesTable()
+        {
+            return View(_unitOfWorkAsync.BaseItemTypes.GetAll());
+        }
+
+        #region CreateCategory
+
+        // GET: DonationsTable/CreateCategory
         [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
-        public IActionResult CreateDonationItemType()
+        public IActionResult CreateCategory()
         {
             return View();
         }
 
-        // POST: Donations/CreateDonationItemType
+        // POST: Donations/CreateCategory
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
-        public async Task<IActionResult> CreateDonationItemType([Bind("ID,Name")] DonationItemType request)
+        public async Task<IActionResult> CreateCategory([Bind("ID,Name")] DonationItemType request)
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWorkAsync.BaseItemTypes.Create(request);                
-                await _unitOfWorkAsync.Donations.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                await _unitOfWorkAsync.BaseItemTypes.Create(request);
+                await _unitOfWorkAsync.BaseItemTypes.SaveChangesAsync();
+                return RedirectToAction(nameof(CategoriesTable));
             }
             return View(request);
         }
 
-        // GET: Donations/DonationItem
-        [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
-        public IActionResult CreateDonationItem()
-        {
-            ViewBag.ListOfDonationItemTypes = _unitOfWorkAsync.Donations.GetAll();
-            return View();
-        }
+        #endregion
 
-        // GET: Donations/CreateRequest
-        [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
-        public IActionResult CreateRequest()
-        {
-            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
-            ViewBag.ListOfDonationItemTypes = _unitOfWorkAsync.BaseItemTypes.GetAll();
-            return View();
-        }
+        #region DeleteCategory
 
-        // POST: Donations/CreateRequest
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
-        public async Task<IActionResult> CreateRequest([Bind("ID,DonationItem,Orphanage")] Donation request, int idOrphanage)
-        {
-            if (ModelState.IsValid)
-            {
-                request.OrphanageID = idOrphanage;              
-                request.IsRequest = true;
-                //request.DonationItem.Name = request.DonationItem.DonationItemTypes.ToString();
-                await _unitOfWorkAsync.Donations.Create(request);
-               
-                await _unitOfWorkAsync.Donations.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(request);
-        }
-
-        // POST: Donations/CreateDonation
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "CharityMaker,Volunteer")]
-        public async Task<IActionResult> CreateDonation([Bind("ID,DonationItem,Orphanage")] Donation donation)
-        {
-            if (ModelState.IsValid)
-            {
-                await _unitOfWorkAsync.Donations.Create(donation);
-                await _unitOfWorkAsync.Donations.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(donation);
-        }
-
-        // GET: Donations/Edit/5
+        // GET: CategoriesTable/Delete/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> DeleteCategory(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var charityMaker = await _unitOfWorkAsync.CharityMakers.GetById((int)id);
+            BaseItemType category = await _unitOfWorkAsync.BaseItemTypes
+                .GetById((int)id);
 
-            if (charityMaker == null)
+            if (category == null)
             {
                 return NotFound();
             }
 
-            return View(charityMaker);
+            return View(category);
+        }
+
+        // POST: CategoriesTable/Delete/5
+        [HttpPost, ActionName("DeleteCategory")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteCategoryConfirmed(int id)
+        {
+            var category = await _unitOfWorkAsync.BaseItemTypes.GetById((int)id);
+            if (category == null)
+            {
+                return RedirectToAction(nameof(CategoriesTable));
+            }
+            await _unitOfWorkAsync.BaseItemTypes.Delete((int)id);
+            _unitOfWorkAsync.SaveChangesAsync();
+
+            return RedirectToAction(nameof(CategoriesTable));
+        }
+
+        #endregion
+
+        #region CreateDonation
+
+        // GET: DonationsTable/CreateRequest
+        [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
+        public IActionResult CreateDonation()
+        {
+            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
+            ViewBag.ListOfBaseItemTypes = _unitOfWorkAsync.BaseItemTypes.GetAll();
+            return View();
+        }
+
+        // POST: DonationsTable/CreateRequest
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
+        public async Task<IActionResult> CreateDonation([Bind("ID,DonationItem,Orphanage")] Donation request, int idOrphanage, int idDonationItem)
+        {
+            if (ModelState.IsValid)
+            {
+                request.OrphanageID = idOrphanage;
+                //request.DonationItem.TypeBaseItem = idDonationItem;
+                //request.DonationItem.TypeBaseItem.Add(idDonationItem);
+                
+                request.IsRequest = true;
+
+                await _unitOfWorkAsync.Donations.Create(request);
+                await _unitOfWorkAsync.Donations.SaveChangesAsync();
+
+                _unitOfWorkAsync.TypeBaseItems.Add(new TypeBaseItem() { ItemID = request.DonationItem.ID, TypeID = idDonationItem  });
+
+                _unitOfWorkAsync.SaveChangesAsync();
+
+                return RedirectToAction(nameof(DonationsTable));
+            }
+            return View(request);
+        }
+
+        #endregion      
+
+        #region EditDonation
+
+        // GET: Donations/Edit/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditDonation(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            
+            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
+            ViewBag.ListOfBaseItemTypes = _unitOfWorkAsync.BaseItemTypes.GetAll();
+            var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
+
+            if (donation == null)
+            {
+                return NotFound();
+            }
+
+            return View(donation);
         }
 
         // POST: Donations/Edit/5
@@ -128,10 +169,10 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id,
-            [Bind("ID,DonationItem")] CharityMaker charityMaker)
+        public async Task<IActionResult> EditDonation(int id,
+            [Bind("ID,DonationItem")] Donation donation)
         {
-            if (id != charityMaker.ID)
+            if (id != donation.ID)
             {
                 return NotFound();
             }
@@ -140,14 +181,14 @@ namespace FamilyNet.Controllers
             {
                 try
                 {
-                    CharityMaker charityMakerToEdit = await _unitOfWorkAsync.CharityMakers.GetById(id);
-                    charityMakerToEdit.CopyState(charityMaker);
-                    _unitOfWorkAsync.CharityMakers.Update(charityMakerToEdit);
+                    Donation donationToEdit = await _unitOfWorkAsync.Donations.GetById(id);
+                    donationToEdit.CopyState(donation);
+                    _unitOfWorkAsync.Donations.Update(donationToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DonationExists(charityMaker.ID))
+                    if (!DonationExists(donation.ID))
                     {
                         return NotFound();
                     }
@@ -156,14 +197,18 @@ namespace FamilyNet.Controllers
                         throw; // TODO : logging
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(DonationsTable));
             }
-            return View(charityMaker);
+            return View(donation);
         }
 
-        // GET: Donations/Delete/5
+        #endregion
+
+        #region DeleteDonation
+
+        // GET: DonationsTable/Delete/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeleteDonation(int? id)
         {
             if (id == null)
             {
@@ -181,27 +226,26 @@ namespace FamilyNet.Controllers
             return View(donation);
         }
 
-        // POST: Orphans/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: DonationsTable/Delete/5
+        [HttpPost, ActionName("DeleteDonation")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteDonationConfirmed(int id)
         {
-            var orphan = await _unitOfWorkAsync.Donations.GetById((int)id);
-            if (orphan == null)
+            var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
+            if (donation == null)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(DonationsTable));
             }
             await _unitOfWorkAsync.Donations.Delete((int)id);
             _unitOfWorkAsync.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(DonationsTable));
         }
 
-        private bool DonationExists(int id)
-        {
-            return _unitOfWorkAsync.Donations.GetById(id) != null;
-        }
+        #endregion
+
+        #region DetailsDonation
 
         // GET: Donations/Details/5
         [AllowAnonymous]
@@ -212,13 +256,45 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var orphan = await _unitOfWorkAsync.Donations.GetById((int)id);
-            if (orphan == null)
+            var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
+            if (donation == null)
             {
                 return NotFound();
             }
 
-            return View(orphan);
+            return View(donation);
         }
+
+        #endregion
+
+        #region DetailsCategory
+        public async Task<IActionResult> DetailsCategory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var category = await _unitOfWorkAsync.BaseItemTypes.GetById((int)id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            return View(category);
+        }
+
+        #endregion
+
+        private bool DonationExists(int id)
+        {
+            return _unitOfWorkAsync.Donations.GetById(id) != null;
+        }
+
+        private bool CategoryExists(int id)
+        {
+            return _unitOfWorkAsync.BaseItemTypes.GetById(id) != null;
+        }
+
     }
 }

@@ -2,6 +2,7 @@
 using FamilyNet.Models.Identity;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,7 @@ namespace FamilyNet.Models.EntityFramework
             SignInManager = signInManager;
             RoleManager = roleManager;
             BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
+            TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
         }
 
 
@@ -55,6 +57,8 @@ namespace FamilyNet.Models.EntityFramework
         public IAsyncRepository<Volunteer> Volunteers { get; set; }
 
         public IAsyncRepository<Donation> Donations { get; set; }
+
+        public DbSet<TypeBaseItem> TypeBaseItems { get; set; } // TODO : rewrite this
 
         public IAsyncRepository<Orphan> Orphans { get; set; }
 
