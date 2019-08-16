@@ -5,9 +5,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row">
-    <h2 class="text-center">Список детей-сирот</h2>
-</div>
+<h1>
+    Список детей
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="OrphansTable" class="btn btn-primary float-right">Таблица</a>
+    }
+</h1>
+
 
 <form asp-action="Filter">
     <table class="table">

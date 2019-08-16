@@ -240,7 +240,7 @@ namespace FamilyNet.Controllers
             var list = _unitOfWorkAsync.Orphanages.Get(
                 orp => orp.Donations.Where(
                     donat => donat.DonationItem.TypeBaseItem.Where(
-                        donatitem => donatitem.Type.ToString().ToLower().Contains(typeHelp.ToLower())).Count() > 0
+                        donatitem => donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).Count() > 0
                         && donat.IsRequest).
                     Count() > 0);
             GetViewData();

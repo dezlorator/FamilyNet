@@ -121,8 +121,6 @@ namespace FamilyNet.Controllers
             if (ModelState.IsValid)
             {
                 request.OrphanageID = idOrphanage;
-                //request.DonationItem.TypeBaseItem = idDonationItem;
-                //request.DonationItem.TypeBaseItem.Add(idDonationItem);
                 
                 request.IsRequest = true;
 
