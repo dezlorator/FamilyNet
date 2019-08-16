@@ -1,13 +1,13 @@
-﻿@model FamilyNet.Models.Volunteer
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<SharedResource> SharedLocalizer
+@model FamilyNet.Models.Volunteer
 
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Создать</h1>
-
-<h4>Волонтера</h4>
+<h1>@SharedLocalizer["Create"] @ViewData["CreateVolonteer"]</h1>
 <hr />
 
 <div class="row">
@@ -15,53 +15,53 @@
         <form asp-action="Create">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="FullName.Name" class="control-label"></label>
+                <label class="control-label">@SharedLocalizer["PersonName"]</label>
                 <input asp-for="FullName.Name" class="form-control" />
                 <span asp-validation-for="FullName.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FullName.Surname" class="control-label"></label>
+                <label class="control-label">@SharedLocalizer["PersonSurname"]</label>
                 <input asp-for="FullName.Surname" class="form-control" />
                 <span asp-validation-for="FullName.Surname" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FullName.Patronymic" class="control-label"></label>
+                <label class="control-label">@SharedLocalizer["FathersName"]</label>
                 <input asp-for="FullName.Patronymic" class="form-control" />
                 <span asp-validation-for="FullName.Patronymic" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address.Country" class="control-label"></label>
+                <label class="control-label">@SharedLocalizer["Country"]</label>
                 <input asp-for="Address.Country" class="form-control" />
                 <span asp-validation-for="Address.Country" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address.City" class="control-label"></label>
+                <label class="control-label">@SharedLocalizer["City"]</label>
                 <input asp-for="Address.City" class="form-control" />
                 <span asp-validation-for="Address.City" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address.Region" class="control-label"></label>
+                <label class="control-label">@SharedLocalizer["Region"]</label>
                 <input asp-for="Address.Region" class="form-control" />
                 <span asp-validation-for="Address.Region" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address.Street" class="control-label"></label>
+                <label class="control-label">@SharedLocalizer["Street"]</label>
                 <input asp-for="Address.Street" class="form-control" />
                 <span asp-validation-for="Address.Street" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address.House" class="control-label"></label>
+                <label class="control-label">@SharedLocalizer["House"]</label>
                 <input asp-for="Address.House" class="form-control" />
                 <span asp-validation-for="Address.House" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Birthday" class="control-label"></label>
+                <label>@SharedLocalizer["Birthday"]</label>
                 <input asp-for="Birthday" class="form-control" />
                 <span asp-validation-for="Birthday" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <a asp-action="Index"><i class="fas fa-chevron-circle-left"></i></a>
-                <input type="submit" value="Создать" class="btn btn-primary" />
+                <input type="submit" value=@SharedLocalizer["Create"] class="btn btn-primary" />
             </div>
         </form>
     </div>

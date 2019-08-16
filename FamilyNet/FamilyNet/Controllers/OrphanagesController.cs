@@ -24,14 +24,11 @@ namespace FamilyNet.Controllers
         private OrphanageSearchModel _searchModel;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IStringLocalizer<OrphanagesController> _localizer;
-        private readonly IStringLocalizer<SharedResource> _sharedLocalizer;
 
-
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork)
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
         {
             _hostingEnvironment = environment;
             _localizer = localizer;
-            _sharedLocalizer = sharedLocalizer;
         }
 
         private bool IsContain(Address addr)
@@ -55,7 +52,7 @@ namespace FamilyNet.Controllers
 
         // GET: Orphanages
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id, OrphanageSearchModel searchModel, 
+        public async Task<IActionResult> Index(int id, OrphanageSearchModel searchModel,
             SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
@@ -257,7 +254,7 @@ namespace FamilyNet.Controllers
             return View(orphanages);
         }
 
-       
+
         #endregion
 
         #region Private Helpers
@@ -316,7 +313,7 @@ namespace FamilyNet.Controllers
                     orphanages = orphanages.OrderBy(s => s.Name);
                     break;
             }
-         
+
             return orphanages;
         }
 
@@ -380,7 +377,7 @@ namespace FamilyNet.Controllers
             ViewData["Details"] = _localizer["Details"];
             ViewData["Profile"] = _localizer["Profile"];
             ViewData["Address"] = _localizer["Address"];
-            ViewData["From"]= _localizer["From"];
+            ViewData["From"] = _localizer["From"];
             @ViewData["ListOrphanages"] = _localizer["ListOrphanages"];
         }
 

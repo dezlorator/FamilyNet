@@ -20,7 +20,7 @@ namespace FamilyNet.Controllers
     {
         private readonly IStringLocalizer<HomeController> _localizer;
 
-        public AccountController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer) : base(unitOfWork)
+        public AccountController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;
         }

@@ -11,15 +11,23 @@ using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Infrastructure;
+using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
     public class VolunteersController : BaseController
     {
+        #region Fields
 
-        public VolunteersController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
-        { }
+        private readonly IStringLocalizer<VolunteersController> _localizer;
+
+        #endregion
+
+        public VolunteersController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<VolunteersController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        {
+            _localizer = localizer;
+        }
 
         // GET: Volunteers
         [AllowAnonymous]
@@ -29,6 +37,7 @@ namespace FamilyNet.Controllers
             IEnumerable<Volunteer> volunteers = _unitOfWorkAsync.Volunteers.GetAll();
 
             volunteers = VolunteerFilter.GetFiltered(volunteers, searchModel);
+            GetViewData();
 
             return View(volunteers);
         }
@@ -37,6 +46,8 @@ namespace FamilyNet.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
+            GetViewData();
+
             if (id == null)
             {
                 return NotFound();
@@ -56,11 +67,13 @@ namespace FamilyNet.Controllers
         public IActionResult Create()
         {
             Check();
+            GetViewData();
 
             List<Orphanage> orphanagesList = new List<Orphanage>();
             orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
 
+            GetViewData();
             return View();
         }
 
@@ -72,6 +85,8 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Create([Bind("FullName, Address, Birthday, Contacts")] Volunteer volunteer)
         {
+
+
             if (ModelState.IsValid)
             {
                 await _unitOfWorkAsync.Volunteers.Create(volunteer);
@@ -81,9 +96,12 @@ namespace FamilyNet.Controllers
                 user.PersonID = volunteer.ID;
                 user.PersonType = Models.Identity.PersonType.Volunteer;
                 await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                GetViewData();
 
                 return RedirectToAction(nameof(Index));
             }
+            GetViewData();
+
             return View(volunteer);
         }
 
@@ -91,6 +109,8 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Edit(int? id)
         {
+            GetViewData();
+
             if (id == null)
             {
                 return NotFound();
@@ -108,6 +128,7 @@ namespace FamilyNet.Controllers
             {
                 return NotFound();
             }
+
             return View(volunteer);
         }
 
@@ -119,6 +140,8 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Edit(int id, [Bind("ID, FullName, Address, Birthday, Contacts, Rating")] Volunteer volunteer)
         {
+            GetViewData();
+
             if (id != volunteer.ID)
             {
                 return NotFound();
@@ -153,6 +176,7 @@ namespace FamilyNet.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(volunteer);
         }
 
@@ -171,6 +195,7 @@ namespace FamilyNet.Controllers
             {
                 return NotFound();
             }
+            GetViewData();
 
             return View(volunteer);
         }
@@ -184,7 +209,18 @@ namespace FamilyNet.Controllers
             var volunteer = await _unitOfWorkAsync.Volunteers.GetById(id);
             await _unitOfWorkAsync.Volunteers.Delete(volunteer.ID);
             _unitOfWorkAsync.SaveChangesAsync();
+            GetViewData();
+
             return RedirectToAction(nameof(Index));
         }
+
+        #region PrivateHelpers
+        private void GetViewData()
+        {
+            ViewData["CreateVolonteer"] = _localizer["CreateVolonteer"];
+            ViewData["OurVolonteers"] = _localizer["OurVolonteers"];
+        }
+
+        #endregion
     }
 }
