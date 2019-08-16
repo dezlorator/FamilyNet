@@ -1,17 +1,46 @@
-﻿@model IQueryable<FamilyNet.Models.Orphan>
+﻿@model IEnumerable<FamilyNet.Models.Orphan>
 
 @{
     ViewData["Title"] = "Дети";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>
-    Список детей-сирот
-    @if (User.IsInRole("Admin"))
-    {
-        <a asp-action="OrphansTable" class="btn btn-primary float-right">Таблица</a>
-    }
-</h1><hr />
+<div class="row">
+    <h2 class="text-center">Список детей-сирот</h2>
+</div>
+
+<form asp-action="Filter">
+    <table class="table">
+        <th>
+            @Html.Label(@Html.DisplayNameFor(model => model.FullName) + ":")
+            @Html.TextBox("FullNameString", "", new { @class = "form-control" })
+        </th>
+        <th width="12%">
+            @Html.Label("Вiк вiд:")
+            @Html.TextBox("AgeNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th width="12%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " вiд:")
+            @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+            </button>
+            @Html.ActionLink("", "Index", "Orphans", null, new { @class = "fas fa-ban" })
+        </th>
+
+    </table>
+</form>
+
 
 <div class="box">
     <div class="container">

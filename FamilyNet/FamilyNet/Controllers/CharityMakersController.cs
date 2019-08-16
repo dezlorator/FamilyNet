@@ -9,8 +9,8 @@ using FamilyNet.Models;
 using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using System.IO;
+using FamilyNet.Models.ViewModels;
+using FamilyNet.Infrastructure;
 
 namespace FamilyNet.Controllers
 {
@@ -24,9 +24,13 @@ namespace FamilyNet.Controllers
 
         // GET: CharityMakers
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(PersonSearchModel searchModel)
         {
-            return View(_unitOfWorkAsync.CharityMakers.GetAll());
+            IEnumerable<CharityMaker> charityMakers =  _unitOfWorkAsync.CharityMakers.GetAll();
+
+            charityMakers = CharityMakerFilter.GetFiltered(charityMakers, searchModel);
+
+            return View(charityMakers);
         }
 
         // GET: CharityMakers/Details/5
@@ -49,9 +53,10 @@ namespace FamilyNet.Controllers
         }
 
         // GET: CharityMakers/Create
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CharityMaker")]
         public IActionResult Create()
         {
+            Check();
             return View();
         }
 
@@ -60,37 +65,38 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("ID,FullName,Address,Birthday,Contacts,Rating,Avatar")] CharityMaker charityMaker, IFormFile file)
+        [Authorize(Roles = "Admin, CharityMaker")]
+        public async Task<IActionResult> Create([Bind("ID,FullName,Address,Birthday,Contacts,Rating")] CharityMaker charityMaker)
         {
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\children", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                charityMaker.Avatar = fileName;
-            }
-
             if (ModelState.IsValid)
             {
                 await _unitOfWorkAsync.CharityMakers.Create(charityMaker);
                 await _unitOfWorkAsync.CharityMakers.SaveChangesAsync();
+
+                var user = await GetCurrentUserAsync();
+                user.PersonID = charityMaker.ID;
+                user.PersonType = Models.Identity.PersonType.CharityMaker;
+                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(charityMaker);
         }
 
         // GET: CharityMakers/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CharityMaker")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if(checkResult)
+            {
+                return check;
             }
 
             var charityMaker = await _unitOfWorkAsync.CharityMakers.GetById((int)id);
@@ -108,25 +114,20 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CharityMaker")]
         public async Task<IActionResult> Edit(int id,
-            [Bind("ID,FullName,Address,Birthday,Contacts,Rating,Avatar")] CharityMaker charityMaker, IFormFile file)
+            [Bind("ID,FullName,Address,Birthday,Contacts,Rating")] CharityMaker charityMaker)
         {
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
+            }
+
             if (id != charityMaker.ID)
             {
                 return NotFound();
-            }
-
-            if (file != null && file.Length > 0)
-            {
-                var fileName = Path.GetRandomFileName();
-                fileName = Path.ChangeExtension(fileName, ".jpg");
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\children", fileName);
-                using (var fileSteam = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileSteam);
-                }
-                charityMaker.Avatar = fileName;
             }
 
             if (ModelState.IsValid)

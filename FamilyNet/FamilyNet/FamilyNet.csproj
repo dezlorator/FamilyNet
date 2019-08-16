@@ -12,9 +12,19 @@
     <None Remove="Content\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Views\Shared\Index.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Shared\Index.cshtml" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="FontAwesome" Version="4.7.0" />
+    <PackageReference Include="MailKit" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.6" />
@@ -24,6 +34,7 @@
 
 
   <ItemGroup>
+    <Folder Include="Resources\OrphanagesController\" />
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\representatives\" />
   </ItemGroup>

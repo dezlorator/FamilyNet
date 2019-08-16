@@ -62,7 +62,7 @@ namespace FamilyNet.Models
       
     }
 
-    public enum SortStateOrphanages // TODO : rewrite this
+    public enum SortStateOrphanages // TODO : rewrite this byte
     {
         NameAsc,
         NameDesc,

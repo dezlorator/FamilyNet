@@ -12,7 +12,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Models.ViewModels;
 using FamilyNet.Infrastructure;
+
+using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
@@ -20,23 +23,34 @@ namespace FamilyNet.Controllers
     public class OrphansController : BaseController
     {
         private readonly IHostingEnvironment _hostingEnvironment;
-        public OrphansController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment) : base(unitOfWork)
+        private readonly IStringLocalizer<OrphansController> _localizer;
+
+        public OrphansController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphansController> localizer) : base(unitOfWork)
         {
             _hostingEnvironment = environment;
-        }       
+            _localizer = localizer;
+        }
 
         // GET: Orphans
         [AllowAnonymous]
-        public async Task<IActionResult> Index(uint id)
+        public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
-            var orphans = from o in _unitOfWorkAsync.Orphans.GetAll()
-                        where (id == 0 || o.ID == id)
-                        select o;
+            IEnumerable<Orphan> orphans = _unitOfWorkAsync.Orphans.GetAll();
+
+            orphans = OrphanFilter.GetFiltered(orphans, searchModel);
+
+            if (id == 0)
+                return View(orphans);
+
+            if (id > 0)
+                orphans = orphans.Where(x => x.Orphanage.ID.Equals(id)).ToList();
+            GetViewData();
 
             return View(orphans);
         }
 
         // GET: Orphans/Details/5
+        //[HttpGet("[controller]/[action]/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -50,15 +64,21 @@ namespace FamilyNet.Controllers
             {
                 return NotFound();
             }
+            GetViewData();
 
             return View(orphan);
         }
 
         // GET: Orphans/Create
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin, Orphan")]
         public IActionResult Create()
         {
-            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
+            Check();
+
+            List<Orphanage> orphanagesList = new List<Orphanage>();
+            orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            ViewBag.ListOfOrphanages = orphanagesList;
+            GetViewData();
 
             return View();
         }
@@ -68,7 +88,7 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create([Bind("FullName,Address,Birthday,Orphanage,Avatar")] Orphan orphan, int id, IFormFile file)
         {
             await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");
@@ -77,33 +97,51 @@ namespace FamilyNet.Controllers
             {
                 var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
                 orphan.Orphanage = orphanage;
-                
+
                 await _unitOfWorkAsync.Orphans.Create(orphan);
                 await _unitOfWorkAsync.Orphans.SaveChangesAsync();
+
+                var user = await GetCurrentUserAsync();
+                user.PersonID = orphan.ID;
+                user.PersonType = Models.Identity.PersonType.Orphan;
+                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                
+
+               
                 return RedirectToAction(nameof(Index));
             }
+            GetViewData();
 
             return View(orphan);
         }
 
         // GET: Orphans/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
             }
 
             List<Orphanage> orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
 
             var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
-            
+
             if (orphan == null)
             {
                 return NotFound();
             }
+            GetViewData();
 
             return View(orphan);
         }
@@ -113,12 +151,19 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,FullName,Birthday,Orphanage,Avatar")] Orphan orphan, int idOrphanage, IFormFile file)
         {
             if (id != orphan.ID)
             {
                 return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
             }
 
             await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");
@@ -148,6 +193,8 @@ namespace FamilyNet.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            GetViewData();
+
             return View(orphan);
         }
        
@@ -165,6 +212,7 @@ namespace FamilyNet.Controllers
             {
                 return NotFound();
             }
+            GetViewData();
 
             return View(orphan);
         }
@@ -176,23 +224,47 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
-            if(orphan == null)
+            if (orphan == null)
             {
                 return RedirectToAction(nameof(Index));
             }
             await _unitOfWorkAsync.Orphans.Delete((int)id);
             _unitOfWorkAsync.SaveChangesAsync();
+            GetViewData();
 
             return RedirectToAction(nameof(Index));
         }
 
         // GET: Orphans/OrphansTable
-        [Authorize(Roles = "Admin, Representative, Orphan")]
-        public IActionResult OrphansTable()
+
+        [AllowAnonymous]
+        public IActionResult OrphansTable(int id, PersonSearchModel searchModel)
         {
-            var list = _unitOfWorkAsync.Orphans.GetAll().ToList();
-            return View(list);
+            IEnumerable<Orphan> orphans = _unitOfWorkAsync.Orphans.GetAll();
+
+            orphans = OrphanFilter.GetFiltered(orphans, searchModel);
+
+            if (id == 0)
+                return View(orphans);
+
+            if (id > 0)
+                orphans = orphans.Where(x => x.Orphanage.ID.Equals(id)).ToList();
+
+            GetViewData();
+
+            return View(orphans);
         }
+
+        private void GetViewData()
+        {
+            ViewData["OrphansList"] = _localizer["OrphansList"];
+        }
+
+        private bool OrphanExists(int id)
+        {
+            return _unitOfWorkAsync.Orphans.GetById(id) != null;
+        }
+
 
     }
 }

@@ -13,6 +13,7 @@ namespace FamilyNet.Models
     {
         public int ID { get; set; }
 
+        //TODO: AlPa -> customer Attr AllowSorting
         [Display(Name = "Полное имя")]
         public virtual FullName FullName { get; set; }
 
@@ -24,7 +25,7 @@ namespace FamilyNet.Models
         [Display(Name = "Рейтинг")]
         public float Rating { get; set; }
 
-        [Display(Name = "Автар")]
+        [Display(Name = "Аватар")]
         public string Avatar { get; set; }
 
         public int EmailID { get; set; }
