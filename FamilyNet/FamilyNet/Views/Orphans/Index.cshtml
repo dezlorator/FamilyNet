@@ -57,7 +57,7 @@
 
                     <div class="card mb-4 box-shadow text-center">
                         <a asp-action="Details" asp-route-id="@item.ID" style="text-decoration:none;">
-                            @if (item.Avatar != null || item.Avatar != "")
+                            @if (item.Avatar != null && item.Avatar != "")
                             {
                                 <img class="img-responsive" src="@Url.Content("~/children/" + @item.Avatar)" alt="Card image cap" width="100%" height="300px">
                             }
