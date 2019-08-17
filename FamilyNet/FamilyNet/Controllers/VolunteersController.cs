@@ -13,26 +13,22 @@ using FamilyNet.Models.ViewModels;
 using FamilyNet.Infrastructure;
 using Microsoft.Extensions.Localization;
 
-namespace FamilyNet.Controllers
-{
+namespace FamilyNet.Controllers {
     [Authorize]
-    public class VolunteersController : BaseController
-    {
+    public class VolunteersController : BaseController {
         #region Fields
 
         private readonly IStringLocalizer<VolunteersController> _localizer;
 
         #endregion
 
-        public VolunteersController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<VolunteersController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
-        {
+        public VolunteersController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<VolunteersController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer) {
             _localizer = localizer;
         }
 
         // GET: Volunteers
         [AllowAnonymous]
-        public async Task<IActionResult> Index(PersonSearchModel searchModel)
-        {
+        public async Task<IActionResult> Index(PersonSearchModel searchModel) {
 
             IEnumerable<Volunteer> volunteers = _unitOfWorkAsync.Volunteers.GetAll();
 
@@ -44,28 +40,23 @@ namespace FamilyNet.Controllers
 
         // GET: Volunteers/Details/5
         [AllowAnonymous]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id) 
         {
-            GetViewData();
-
-            if (id == null)
-            {
+            if (id == null) {
                 return NotFound();
             }
 
             var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
-            if (volunteer == null)
-            {
+            if (volunteer == null) {
                 return NotFound();
             }
-
+         
             return View(volunteer);
         }
 
         // GET: Volunteers/Create
         [Authorize(Roles = "Admin, Volunteer")]
-        public IActionResult Create()
-        {
+        public IActionResult Create() {
             Check();
             GetViewData();
 
@@ -83,12 +74,10 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Volunteer")]
-        public async Task<IActionResult> Create([Bind("FullName, Address, Birthday, Contacts")] Volunteer volunteer)
-        {
+        public async Task<IActionResult> Create([Bind("FullName, Address, Birthday, Contacts")] Volunteer volunteer) {
 
 
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 await _unitOfWorkAsync.Volunteers.Create(volunteer);
                 await _unitOfWorkAsync.Volunteers.SaveChangesAsync();
 
@@ -107,25 +96,21 @@ namespace FamilyNet.Controllers
 
         // GET: Volunteers/Edit/5
         [Authorize(Roles = "Admin, Volunteer")]
-        public async Task<IActionResult> Edit(int? id)
-        {
+        public async Task<IActionResult> Edit(int? id) {
             GetViewData();
 
-            if (id == null)
-            {
+            if (id == null) {
                 return NotFound();
             }
 
             var check = CheckById((int)id).Result;
             var checkResult = check != null;
-            if (checkResult)
-            {
+            if (checkResult) {
                 return check;
             }
 
             var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
-            if (volunteer == null)
-            {
+            if (volunteer == null) {
                 return NotFound();
             }
 
@@ -138,39 +123,31 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Volunteer")]
-        public async Task<IActionResult> Edit(int id, [Bind("ID, FullName, Address, Birthday, Contacts, Rating")] Volunteer volunteer)
-        {
+        public async Task<IActionResult> Edit(int id, [Bind("ID, FullName, Address, Birthday, Contacts, Rating")] Volunteer volunteer) {
             GetViewData();
 
-            if (id != volunteer.ID)
-            {
+            if (id != volunteer.ID) {
                 return NotFound();
             }
 
             var check = CheckById((int)id).Result;
             var checkResult = check != null;
-            if (checkResult)
-            {
+            if (checkResult) {
                 return check;
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
+            if (ModelState.IsValid) {
+                try {
                     var volunteerToEdit = await _unitOfWorkAsync.Volunteers.GetById(id);
                     volunteerToEdit.CopyState(volunteer);
                     _unitOfWorkAsync.Volunteers.Update(volunteerToEdit);
                     _unitOfWorkAsync.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_unitOfWorkAsync.Volunteers.Any(volunteer.ID))
-                    {
+                catch (DbUpdateConcurrencyException) {
+                    if (!_unitOfWorkAsync.Volunteers.Any(volunteer.ID)) {
                         return NotFound();
                     }
-                    else
-                    {
+                    else {
                         throw;
                     }
                 }
@@ -182,20 +159,18 @@ namespace FamilyNet.Controllers
 
         // GET: Volunteers/Delete/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Delete(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             var volunteer = await _unitOfWorkAsync.Volunteers
                 .GetById((int)id);
-            if (volunteer == null)
-            {
+            if (volunteer == null) {
                 return NotFound();
             }
-            GetViewData();
+
+            ViewData["AreYouSure"] = _localizer["AreYouSure"];
 
             return View(volunteer);
         }
@@ -204,8 +179,7 @@ namespace FamilyNet.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
             var volunteer = await _unitOfWorkAsync.Volunteers.GetById(id);
             await _unitOfWorkAsync.Volunteers.Delete(volunteer.ID);
             _unitOfWorkAsync.SaveChangesAsync();
@@ -215,8 +189,7 @@ namespace FamilyNet.Controllers
         }
 
         #region PrivateHelpers
-        private void GetViewData()
-        {
+        private void GetViewData() {
             ViewData["CreateVolonteer"] = _localizer["CreateVolonteer"];
             ViewData["OurVolonteers"] = _localizer["OurVolonteers"];
         }

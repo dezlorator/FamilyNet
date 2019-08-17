@@ -243,4 +243,16 @@
   <data name="Street" xml:space="preserve">
     <value>Вулиця</value>
   </data>
+  <data name="Needs" xml:space="preserve">
+    <value>Потреби</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Деталі</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Зберегти</value>
+  </data>
+  <data name="Volunteer" xml:space="preserve">
+    <value>Волонтер</value>
+  </data>
 </root>
