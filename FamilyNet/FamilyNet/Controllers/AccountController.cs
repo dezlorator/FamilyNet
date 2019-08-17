@@ -214,7 +214,7 @@ namespace FamilyNet.Controllers
         {
             if(GetCurrentUserAsync().Result.PersonType == PersonType.User)
             {
-                RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
             if(!GetCurrentUserAsync().Result.HasPerson)
             {

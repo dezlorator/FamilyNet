@@ -88,7 +88,7 @@ namespace FamilyNet
             {
                 new CultureInfo("uk-UA"),
                 //new CultureInfo("en-US"),
-                new CultureInfo("ru-RU")
+                //new CultureInfo("ru-RU")
             };
 
             app.UseRequestLocalization(new RequestLocalizationOptions

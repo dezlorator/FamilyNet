@@ -127,7 +127,7 @@ namespace FamilyNet.Controllers
                 await _unitOfWorkAsync.Donations.Create(request);
                 await _unitOfWorkAsync.Donations.SaveChangesAsync();
 
-                _unitOfWorkAsync.TypeBaseItems.Add(new TypeBaseItem() { ItemID = request.DonationItem.ID, TypeID = idDonationItem  });
+                 await _unitOfWorkAsync.TypeBaseItems.Create(new TypeBaseItem() { ItemID = request.DonationItem.ID, TypeID = idDonationItem  });
 
                 _unitOfWorkAsync.SaveChangesAsync();
 

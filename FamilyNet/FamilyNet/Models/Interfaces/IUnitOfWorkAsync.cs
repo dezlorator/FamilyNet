@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Infrastructure;
+using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ namespace FamilyNet.Models.Interfaces
         IAsyncRepository<Orphan> Orphans { get; }
         IAsyncRepository<BaseItemType> BaseItemTypes { get; }
 
-        DbSet<TypeBaseItem> TypeBaseItems { get; set; }// TODO : rewrite this
+        TypeBaseItemRepository TypeBaseItems { get; set; }// TODO : rewrite this
 
         void SaveChangesAsync();
     }

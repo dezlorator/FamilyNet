@@ -39,7 +39,7 @@ namespace FamilyNet.Models.EntityFramework
             SignInManager = signInManager;
             RoleManager = roleManager;
             BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
-            TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
+            TypeBaseItems = new TypeBaseItemRepository(cont); // TODO : rewrite this
         }
 
 
@@ -58,7 +58,7 @@ namespace FamilyNet.Models.EntityFramework
 
         public IAsyncRepository<Donation> Donations { get; set; }
 
-        public DbSet<TypeBaseItem> TypeBaseItems { get; set; } // TODO : rewrite this
+        public TypeBaseItemRepository TypeBaseItems { get; set; } // TODO : rewrite this
 
         public IAsyncRepository<Orphan> Orphans { get; set; }
 
