@@ -34,7 +34,7 @@ namespace FamilyNet.Controllers
 
             if (!(HttpContext.User.IsInRole("Admin") || user.HasPerson))
             {
-                RedirectToAction("Index", "Home");
+                RedirectToAction("AccessDenied", "Account");
             }
         }
 
@@ -44,7 +44,7 @@ namespace FamilyNet.Controllers
 
             if (!(HttpContext.User.IsInRole("Admin") || user.HasPerson || user.PersonID != id))
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("AccessDenied", "Account");
             }
 
             return null;
