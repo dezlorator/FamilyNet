@@ -14,12 +14,12 @@ namespace FamilyNet.Models
         public int ID { get; set; }
 
         //TODO: AlPa -> customer Attr AllowSorting
-        [Display(Name = "Полное имя")]
+        [Display(Name = "Повне ім'я")]
         public virtual FullName FullName { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        [Display(Name = "День рождения")]
+        [Display(Name = "День народження")]
         public virtual DateTime Birthday { get; set; }
 
         [Display(Name = "Рейтинг")]
