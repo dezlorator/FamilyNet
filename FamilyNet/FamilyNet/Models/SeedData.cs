@@ -168,7 +168,7 @@ namespace FamilyNet.Models
                 orphan.FullName = new FullName() { Name = "Гліб", Surname = "Левада", Patronymic = "Русланович" };
                 orphan.Birthday = new DateTime(2002, 2, 4);
                 orphan.Rating = 5;
-                orphan.Avatar = "";
+                orphan.Avatar = "fdghdg.jpg";
                 orphan.ChildInOrphanage = true;
                 orphan.Confirmation = true;
             
@@ -179,7 +179,7 @@ namespace FamilyNet.Models
                 orphan.FullName = new FullName() { Name = "Олег", Surname = "Курасов", Patronymic = "Михайлович" };
                 orphan.Birthday = new DateTime(2001, 4, 12);
                 orphan.Rating = 6;
-                orphan.Avatar = "";
+                orphan.Avatar = "52yfanuw.jpg";
                 orphan.ChildInOrphanage = true;
                 orphan.Confirmation = true;
 
@@ -228,7 +228,7 @@ namespace FamilyNet.Models
                 orphan.FullName = new FullName(){Name = "Анастасія", Surname = "Горб", Patronymic = "Андріївна" };
                 orphan.Birthday = new DateTime(2004, 5, 14);
                 orphan.Rating = 8;
-                orphan.Avatar = "";
+                orphan.Avatar = "vqprrir1.jpg";
                 orphan.ChildInOrphanage = true;
                 orphan.Confirmation = true;
 
@@ -240,7 +240,7 @@ namespace FamilyNet.Models
                 orphan.FullName = new FullName() { Name = "Марія", Surname = "Павленко", Patronymic = "Олександрівна" };
                 orphan.Birthday = new DateTime(2010, 8, 11);
                 orphan.Rating = 7;
-                orphan.Avatar = "";
+                orphan.Avatar = "kllej0sf.jpg";
                 orphan.ChildInOrphanage = true;
                 orphan.Confirmation = true;
 
@@ -291,7 +291,7 @@ namespace FamilyNet.Models
                 orphan.FullName= new FullName(){Name = "Арсен", Surname = "Зубарян", Patronymic = "Кирилович" };
                 orphan.Birthday = new DateTime(2004, 5, 14);
                 orphan.Rating = 8;
-                orphan.Avatar = "";
+                orphan.Avatar = "fhjgvhjb.jpg";
                 orphan.ChildInOrphanage = true;
                 orphan.Confirmation = true;
 
@@ -301,7 +301,7 @@ namespace FamilyNet.Models
                 orphan.FullName = new FullName() { Name = "Віталій", Surname = "Цаль", Patronymic = "Ільіч" };
                 orphan.Birthday = new DateTime(2010, 8, 11);
                 orphan.Rating = 7;
-                orphan.Avatar = "";
+                orphan.Avatar = "child-8.jpg";
                 orphan.ChildInOrphanage = true;
                 orphan.Confirmation = true;
 
@@ -352,7 +352,7 @@ namespace FamilyNet.Models
                 orphan.FullName = new FullName() { Name = "Захар", Surname = "Мисра", Patronymic = "Володимирович" };
                 orphan.Birthday = new DateTime(2011, 11, 14);
                 orphan.Rating = 7;
-                orphan.Avatar = "";
+                orphan.Avatar = "1f53uexk.jpg";
                 orphan.ChildInOrphanage = true;
                 orphan.Confirmation = true;
 
@@ -364,7 +364,7 @@ namespace FamilyNet.Models
                 orphan.FullName = new FullName() { Name = "Ганна", Surname = "Анісімова", Patronymic = "Сергіївна" };
                 orphan.Birthday = new DateTime(2014, 7, 25);
                 orphan.Rating = 9;
-                orphan.Avatar = "";
+                orphan.Avatar = "fdsfgwew.jpg";
                 orphan.ChildInOrphanage = true;
                 orphan.Confirmation = true;
 
@@ -393,7 +393,7 @@ namespace FamilyNet.Models
                 charityMaker.FullName = new FullName() { Name = "Володимир", Surname = "Халін", Patronymic = "Тарасович" };
                 charityMaker.Birthday = new DateTime(1991, 12, 3);
                 charityMaker.Rating = 5;
-                charityMaker.Avatar = "";
+                charityMaker.Avatar = "irutk.jpg";
                 charityMaker.Address = new Address()
                 {
                     Country = "Україна",
@@ -413,7 +413,7 @@ namespace FamilyNet.Models
                 charityMaker.FullName = new FullName() { Name = "Сергій", Surname = "Калініч", Patronymic = "Євгенович" };
                 charityMaker.Birthday = new DateTime(1972, 6, 12);
                 charityMaker.Rating = 7;
-                charityMaker.Avatar = "";
+                charityMaker.Avatar = "fewyn.jpg";
                 charityMaker.Address = new Address()
                 {
                     Country = "Україна",
@@ -433,7 +433,7 @@ namespace FamilyNet.Models
                 charityMaker.FullName = new FullName() { Name = "Альона", Surname = "Чіпко", Patronymic = "Максимівна" };
                 charityMaker.Birthday = new DateTime(1993, 4, 28);
                 charityMaker.Rating = 9;
-                charityMaker.Avatar = "";
+                charityMaker.Avatar = "qjohrnyr.jpg";
                 charityMaker.Address = new Address()
                 {
                     Country = "Україна",
@@ -453,7 +453,7 @@ namespace FamilyNet.Models
                 charityMaker.FullName = new FullName() { Name = "Христина", Surname = "Юдіна", Patronymic = "Сергіївна" };
                 charityMaker.Birthday = new DateTime(1984, 5, 18);
                 charityMaker.Rating = 10;
-                charityMaker.Avatar = "";
+                charityMaker.Avatar = "rwerw.jpg";
                 charityMaker.Address = new Address()
                 {
                     Country = "Україна",

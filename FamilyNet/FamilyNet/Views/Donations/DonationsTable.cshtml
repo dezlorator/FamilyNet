@@ -61,7 +61,11 @@
                 {
                     @foreach (var t in item.DonationItem.TypeBaseItem)
                     {
-                        @t.Type.Name
+                        if (t.Type != null)
+                        {
+                            @t.Type.Name
+                        }
+
                     }
                 }
             </td> 
