@@ -28,17 +28,19 @@ namespace FamilyNet.Controllers
 
         protected Task<ApplicationUser> GetCurrentUserAsync() => _unitOfWorkAsync.UserManager.GetUserAsync(HttpContext.User);
 
-        protected async Task Check() // TODO : rewrite name
+        protected async Task<IActionResult> CheckAccess() // TODO : rewrite name
         {
-            var user = await GetCurrentUserAsync();
+            var user = await GetCurrentUserAsync(); 
 
             if (!(HttpContext.User.IsInRole("Admin") || user.HasPerson))
             {
-                RedirectToAction("AccessDenied", "Account");
+                return RedirectToAction("AccessDenied", "Account");
             }
+
+            return null;
         }
 
-        protected async Task<IActionResult> CheckById(int id) // TODO : rewrite name
+        protected async Task<IActionResult> CheckAccess(int id) // TODO : rewrite name
         {
             var user = await GetCurrentUserAsync();
 

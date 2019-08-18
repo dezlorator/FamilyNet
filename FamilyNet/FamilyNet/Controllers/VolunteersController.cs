@@ -57,7 +57,9 @@ namespace FamilyNet.Controllers {
         // GET: Volunteers/Create
         [Authorize(Roles = "Admin, Volunteer")]
         public IActionResult Create() {
-            Check();
+            var access = CheckAccess().Result;
+            
+
             GetViewData();
 
             List<Orphanage> orphanagesList = new List<Orphanage>();
@@ -65,7 +67,7 @@ namespace FamilyNet.Controllers {
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
-            return View();
+            return access == null ? access : View();
         }
 
         // POST: Volunteers/Create
@@ -103,7 +105,7 @@ namespace FamilyNet.Controllers {
                 return NotFound();
             }
 
-            var check = CheckById((int)id).Result;
+            var check = CheckAccess((int)id).Result;
             var checkResult = check != null;
             if (checkResult) {
                 return check;
@@ -130,7 +132,7 @@ namespace FamilyNet.Controllers {
                 return NotFound();
             }
 
-            var check = CheckById((int)id).Result;
+            var check = CheckAccess((int)id).Result;
             var checkResult = check != null;
             if (checkResult) {
                 return check;

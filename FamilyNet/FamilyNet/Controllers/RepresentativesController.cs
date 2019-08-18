@@ -65,14 +65,15 @@ namespace FamilyNet.Controllers
         // GET: Representatives/Create
         public async Task<IActionResult> Create()
         {
-            await Check();
+            var access = CheckAccess().Result;
+            
 
             List<Orphanage> orphanages = await _unitOfWorkAsync.Orphanages.GetAll()
                 .OrderBy(o => o.Name).ToListAsync();
 
             ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
 
-            return View();
+            return access == null ? access : View();
         }
 
         
@@ -119,7 +120,7 @@ namespace FamilyNet.Controllers
             if (id == null)
                 return NotFound();
 
-            var check = CheckById((int)id).Result;
+            var check = CheckAccess((int)id).Result;
             var checkResult = check != null;
             if (checkResult)
             {
@@ -148,7 +149,7 @@ namespace FamilyNet.Controllers
             if (id != representative.ID)
                 return NotFound();
 
-            var check = CheckById((int)id).Result;
+            var check = CheckAccess((int)id).Result;
             var checkResult = check != null;
             if (checkResult)
             {

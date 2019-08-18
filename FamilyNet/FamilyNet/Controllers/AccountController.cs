@@ -212,7 +212,8 @@ namespace FamilyNet.Controllers
 
         public IActionResult PersonalRoom()
         {
-            if(GetCurrentUserAsync().Result.PersonType == PersonType.User)
+            GetViewData();
+            if (GetCurrentUserAsync().Result.PersonType == PersonType.User)
             {
                 return RedirectToAction("Index", "Home");
             }

@@ -1,12 +1,12 @@
 ﻿@model FamilyNet.Models.CharityMaker
 
 @{
-    ViewData["Title"] = "Удаление";
+    ViewData["Title"] = "Видалення";
 }
 
-<h1>Удаление</h1>
+<h1>Видалення</h1>
 
-<h3>Вы уверены, что хотите удалить это?</h3>
+<h3>Ви впевненi, що бажаєте видалити це?</h3>
 <div>
     <h4>Филантроп</h4>
     <hr />
@@ -76,6 +76,6 @@
     <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
         <input type="submit" value="Удалить" class="btn btn-danger" /> |
-		<a asp-action="Index">Вернуться к списку</a>
+		<a asp-action="Index">Повернутися до списку</a>
     </form>
 </div>

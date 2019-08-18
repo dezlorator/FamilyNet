@@ -73,14 +73,15 @@ namespace FamilyNet.Controllers
         [Authorize(Roles ="Admin, Orphan")]
         public IActionResult Create()
         {
-            Check();
+            var access = CheckAccess().Result;
+            
 
-            List<Orphanage> orphanagesList = new List<Orphanage>();
+            List <Orphanage> orphanagesList = new List<Orphanage>();
             orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
             GetViewData();
 
-            return View();
+            return access == null ? access : View();
         }
 
         // POST: Orphans/Create
@@ -125,7 +126,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var check = CheckById((int)id).Result;
+            var check = CheckAccess((int)id).Result;
             var checkResult = check != null;
             if (checkResult)
             {
@@ -159,7 +160,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var check = CheckById((int)id).Result;
+            var check = CheckAccess((int)id).Result;
             var checkResult = check != null;
             if (checkResult)
             {

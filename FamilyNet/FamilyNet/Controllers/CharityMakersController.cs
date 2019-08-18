@@ -11,15 +11,18 @@ using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Infrastructure;
+using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
     public class CharityMakersController : BaseController
     {
-        public CharityMakersController(IUnitOfWorkAsync unitOfWork) : base (unitOfWork)
+        private readonly IStringLocalizer<CharityMakersController> _localizer;
+        
+        public CharityMakersController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<CharityMakersController> localizer) : base (unitOfWork)
         {
-
+            _localizer = localizer;
         }
 
         // GET: CharityMakers
@@ -56,8 +59,8 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin, CharityMaker")]
         public IActionResult Create()
         {
-            Check();
-            return View();
+            var access = CheckAccess().Result;
+            return access == null ? access : View();
         }
 
         // POST: CharityMakers/Create
@@ -92,7 +95,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var check = CheckById((int)id).Result;
+            var check = CheckAccess((int)id).Result;
             var checkResult = check != null;
             if(checkResult)
             {
@@ -118,7 +121,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Edit(int id,
             [Bind("ID,FullName,Address,Birthday,Contacts,Rating")] CharityMaker charityMaker)
         {
-            var check = CheckById((int)id).Result;
+            var check = CheckAccess((int)id).Result;
             var checkResult = check != null;
             if (checkResult)
             {
@@ -190,11 +193,6 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool HasCharityMaker(int id)
-        {
-            return _unitOfWorkAsync.CharityMakers.GetById(id) != null;
-        }
-
         // GET: CharityMakers/Table
         [Authorize(Roles = "Admin")]
         public IActionResult Table()
@@ -203,5 +201,15 @@ namespace FamilyNet.Controllers
             return View(list);
         }
 
+        private void GetViewData()
+        {
+            ViewData["Edit"] = _localizer["Edit"];
+            ViewData["BackToList"] = _localizer["BackToList"];
+        }
+
+        private bool HasCharityMaker(int id)
+        {
+            return _unitOfWorkAsync.CharityMakers.GetById(id) != null;
+        }
     }
 }
