@@ -10,7 +10,7 @@ namespace FamilyNet.Models
         public int ID { get; set; }
 
         [Required]
-        [Display(Name = "Название")]
+        [Display(Name = "Назва")]
         public string Name { get; set; }
 
         [Display(Name = "Родитель")]
@@ -19,7 +19,7 @@ namespace FamilyNet.Models
         [BindNever]
         public bool IsDeleted { get; set; } = false;
 
-        [Display(Name = "Потребности")]
+        [Display(Name = "Потреби")]
         public virtual ICollection<TypeBaseItem> TypeBaseItem { get; set; }
     }
 }

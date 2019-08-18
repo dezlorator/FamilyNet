@@ -12,7 +12,7 @@ namespace FamilyNet.Models
 
         public int? DonationItemID { get; set; }
 
-        [Display(Name = "Потребность")]
+        [Display(Name = "Потреба")]
         public virtual DonationItem DonationItem { get; set; }  
 
         public bool IsRequest { get; set; }
@@ -24,7 +24,7 @@ namespace FamilyNet.Models
 
         public int? OrphanageID { get; set; }
 
-        [Display(Name = "Детский дом")]
+        [Display(Name = "Дитячий будинок")]
         public virtual Orphanage Orphanage { get; set; }
 
         [Display(Name = "Статус")]
@@ -50,10 +50,11 @@ namespace FamilyNet.Models
             Orphanage = donationSended.Orphanage;
             Status = donationSended.Status;
             LastDateWhenStatusChanged = donationSended.LastDateWhenStatusChanged;
-            DonationItem = donationSended.DonationItem;            
+            DonationItem = donationSended.DonationItem;
+            idDonationItem = donationSended.idDonationItem;
         }
 
-        [Display(Name = "Категория")]
+        [Display(Name = "Категорія")]
         [NotMapped]
         public int idDonationItem { get; set; }
     }

@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="col-lg-4 order-lg-1 text-center">
-            @if (Model.Avatar != null || Model.Avatar != "")
+            @if (Model.Avatar != null && Model.Avatar != "")
             {
                 <img class="img-responsive" src="@Url.Content("~/children/" + Model.Avatar)" alt="Card image cap" style="height: 300px; width: 100%; display: block;" alt="avatar">
             }
@@ -54,6 +54,6 @@
 </div>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-primary"> <i class="fas fa-edit"></i>Редактировать</a> 
-    <a asp-action="Index" type="submit" class="btn btn-primary">Вернуться к списку</a>
+    <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-primary"> <i class="fas fa-edit"></i>Редагувати</a> 
+    <a asp-action="Index" type="submit" class="btn btn-primary">Повернутися</a>
 </div>

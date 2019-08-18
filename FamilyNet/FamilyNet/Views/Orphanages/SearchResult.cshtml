@@ -7,13 +7,13 @@
 @if (Model.Count() == 0)
 {
     <form asp-controller="Orphanages" asp-action="SearchByTypeHelp">
-        <p class="text-danger h5">По указаной категории  @ViewData["TypeHelp"] ничего найдено не было</p>
-        <button class="btn btn-primary">Вернуться к поиску</button>
+        <p class="text-danger h5">В категорії допомоги @ViewData["TypeHelp"] ніхто не потребує</p>
+        <button class="btn btn-primary">Повернутися до пошуку</button>
     </form>
 }
 else
 {
-    <p class="text-center h5">В указаной категории помощи (@ViewData["TypeHelp"]) нуждаются следующие детские дома</p>
+    <p class="text-center h5">В категорії допомоги (@ViewData["TypeHelp"]) потребують наступні дитячі будинки</p>
     <table class="table center">
         <thead class="thead-light">
             <tr>

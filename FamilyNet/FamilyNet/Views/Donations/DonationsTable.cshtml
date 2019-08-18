@@ -8,13 +8,13 @@
 
 <div class="row">
     <div class="col-md-5">
-        <h1>Список потребностей</h1>
+        <h1>Перелік потреб</h1>
     </div>
     <div class="col-md-3">
-        <a asp-action="CreateDonation" class="btn btn-primary float-right">+ Потребность</a>
+        <a asp-action="CreateDonation" class="btn btn-primary float-right">+ Потреба</a>
     </div>
     <div class="col-md-3">
-        <a asp-action="CategoriesTable" class="btn btn-primary float-right">Категории</a>
+        <a asp-action="CategoriesTable" class="btn btn-primary float-right">Категорії</a>
     </div>
 </div>
 <table class="table table-hover">
@@ -27,12 +27,6 @@
                 @Html.DisplayNameFor(model => model.Orphanage)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastDateWhenStatusChanged)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.DonationItem.Name)
             </th>
             <th>
@@ -42,7 +36,7 @@
                 @Html.DisplayNameFor(model => model.DonationItem.TypeBaseItem)
             </th>
             <th>
-                Действия
+                Дії
             </th>
         </tr>
     </thead>
@@ -55,12 +49,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Orphanage.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastDateWhenStatusChanged)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DonationItem.Name)

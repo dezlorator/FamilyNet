@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="col-lg-4 order-lg-1 text-center">
-            @if (Model.Avatar != null || Model.Avatar != "")
+            @if (Model.Avatar != null && Model.Avatar != "")
             {
                 <img class="img-responsive" src="@Url.Content("~/children/" + Model.Avatar)" alt="Card image cap" style="height: 300px; width: 100%; display: block;" alt="avatar">
             }
