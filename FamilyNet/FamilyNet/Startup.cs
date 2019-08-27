@@ -120,6 +120,7 @@ namespace FamilyNet
             ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
                     Configuration).Wait();
             ApplicationIdentityDbContext.InitializeRolesAsync(app.ApplicationServices).Wait();
+            ApplicationIdentityDbContext.CreateUserAccounts(app.ApplicationServices,Configuration).Wait();
 
 
 

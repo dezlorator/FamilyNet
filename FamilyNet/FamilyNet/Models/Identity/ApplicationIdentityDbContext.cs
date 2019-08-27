@@ -65,6 +65,112 @@ namespace FamilyNet.Models.Identity
             }
         }
 
+        public static async Task CreateUserAccounts(IServiceProvider serviceProvider, IConfiguration configuration)
+        {
+            #region CharityMaker
+            UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            string charityMakerEmail = configuration["Data:CharityMaker:Email"];
+            string charityMakerPassword = configuration["Data:CharityMaker:Password"];
+            string charityMakerRole = configuration["Data:CharityMaker:Role"];
+
+            if (await userManager.FindByEmailAsync(charityMakerEmail) == null)
+            {
+               
+                ApplicationUser user = new ApplicationUser
+                {
+                    UserName = charityMakerEmail,
+                    Email = charityMakerEmail,
+                    PersonType = PersonType.User
+
+                };
+
+                user.EmailConfirmed = true;
+                IdentityResult result = await userManager.CreateAsync(user, charityMakerPassword);
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, charityMakerRole);
+                }
+            }
+            #endregion
+            #region Representative
+            string representativeEmail = configuration["Data:Representative:Email"];
+            string representativePassword = configuration["Data:Representative:Password"];
+            string representativeRole = configuration["Data:Representative:Role"];
+
+            if (await userManager.FindByEmailAsync(representativeEmail) == null)
+            {
+
+                ApplicationUser user = new ApplicationUser
+                {
+                    UserName = representativeEmail,
+                    Email = representativeEmail,
+                    PersonType = PersonType.User
+
+                };
+
+                user.EmailConfirmed = true;
+                IdentityResult result = await userManager.CreateAsync(user, representativePassword);
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, representativeRole);
+                }
+            }
+            #endregion
+            #region Volunteer
+            string volunteerEmail = configuration["Data:Volunteer:Email"];
+            string volunteerPassword = configuration["Data:Volunteer:Password"];
+            string volunteerRole = configuration["Data:Volunteer:Role"];
+
+            if (await userManager.FindByEmailAsync(volunteerEmail) == null)
+            {
+
+                ApplicationUser user = new ApplicationUser
+                {
+                    UserName = volunteerEmail,
+                    Email = volunteerEmail,
+                    PersonType = PersonType.User
+
+                };
+
+                user.EmailConfirmed = true;
+                IdentityResult result = await userManager.CreateAsync(user, volunteerPassword);
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, volunteerRole);
+                }
+            }
+            #endregion
+            #region Orphan
+            string orphanEmail = configuration["Data:Orphan:Email"];
+            string orphanPassword = configuration["Data:Orphan:Password"];
+            string orphanRole = configuration["Data:Orphan:Role"];
+
+            if (await userManager.FindByEmailAsync(orphanEmail) == null)
+            {
+
+                ApplicationUser user = new ApplicationUser
+                {
+                    UserName = orphanEmail,
+                    Email = orphanEmail,
+                    PersonType = PersonType.User
+
+                };
+
+                user.EmailConfirmed = true;
+                IdentityResult result = await userManager.CreateAsync(user, orphanPassword);
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, orphanRole);
+                }
+            }
+            #endregion
+        }
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
