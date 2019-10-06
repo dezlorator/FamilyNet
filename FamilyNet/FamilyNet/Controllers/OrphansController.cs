@@ -15,6 +15,9 @@ using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
+    /// <summary>
+    /// The controller accepts and processes requests about Orphans
+    /// </summary>
     [Authorize]
     public class OrphansController : BaseController
     {
@@ -28,6 +31,12 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans
+        /// <summary>
+        /// Method provides list of Orphans
+        /// </summary>
+        /// <param name="id">Orphan's identifier</param>
+        /// <param name="searchModel">parameters for filter</param>
+        /// <returns>view with list of Orphans</returns>
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
@@ -47,6 +56,11 @@ namespace FamilyNet.Controllers
 
         // GET: Orphans/Details/5
         //[HttpGet("[controller]/[action]/{id}")]
+        /// <summary>
+        /// Method provides information about Orphan by id
+        /// </summary>
+        /// <param name="id">Orphan's identifier</param>
+        /// <returns>view with details about Orphan or returns NotFound page</returns>
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -66,6 +80,10 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Create
+        /// <summary>
+        /// Method provides view for add new Orphan into database
+        /// </summary>
+        /// <returns>view with inputs</returns>
         [Authorize(Roles ="Admin, Orphan")]
         public IActionResult Create()
         {
@@ -82,6 +100,13 @@ namespace FamilyNet.Controllers
         // POST: Orphans/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Method validates and adds new Orphan into database
+        /// </summary>
+        /// <param name="orphan">adding entity</param>
+        /// <param name="id">Orphan's identifier</param>
+        /// <param name="file">Orphan's photo</param>
+        /// <returns>Redirect to Index if model is valid or return to Create page</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
@@ -101,9 +126,7 @@ namespace FamilyNet.Controllers
                 user.PersonID = orphan.ID;
                 user.PersonType = Models.Identity.PersonType.Orphan;
                 await _unitOfWorkAsync.UserManager.UpdateAsync(user);
-                
 
-               
                 return RedirectToAction(nameof(Index));
             }
             GetViewData();
@@ -112,6 +135,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Edit/5
+        /// <summary>
+        ///  Method provides view for edit Orphan
+        /// </summary>
+        /// <param name="id">Orphan's identifier</param>
+        /// <returns>view with editing entity</returns>
         [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -145,6 +173,14 @@ namespace FamilyNet.Controllers
         // POST: Orphans/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Method validates and updates Orphan in database
+        /// </summary>
+        /// <param name="id">Orphan's identifier</param>
+        /// <param name="orphan">Orphon's details by id</param>
+        /// <param name="idOrphanage">identifier of Orphanage</param>
+        /// <param name="file">Orphan's photo</param>
+        /// <returns>Redirect to index if model is valid or return to Edit page</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
@@ -193,8 +229,13 @@ namespace FamilyNet.Controllers
 
             return View(orphan);
         }
-       
+
         // GET: Orphans/Delete/5
+        /// <summary>
+        /// Method provides page for deletes Orphan by id from database
+        /// </summary>
+        /// <param name="id">Orphan's identifier</param>
+        /// <returns>view delete if model is valid or redirect to NotFound page</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -214,6 +255,11 @@ namespace FamilyNet.Controllers
         }
 
         // POST: Orphans/Delete/5
+        /// <summary>
+        /// Method deletes Orphan by id from database
+        /// </summary>
+        /// <param name="id">Orphan's identifier</param>
+        /// <returns>Redirect to Index page</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -232,7 +278,12 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/OrphansTable
-
+        /// <summary>
+        /// Method provides table of Orphans
+        /// </summary>
+        /// <param name="id">Orphan's identifier</param>
+        /// <param name="searchModel">filter parameters</param>
+        /// <returns>view table</returns>
         [AllowAnonymous]
         public IActionResult OrphansTable(int id, PersonSearchModel searchModel)
         {
@@ -251,11 +302,19 @@ namespace FamilyNet.Controllers
             return View(orphans);
         }
 
+        /// <summary>
+        /// Method sets to ViewData localized strings
+        /// </summary>
         private void GetViewData()
         {
             ViewData["OrphansList"] = _localizer["OrphansList"];
         }
 
+        /// <summary>
+        /// Method checks existing Orphan by id
+        /// </summary>
+        /// <param name="id">identifier of Orphan</param>
+        /// <returns>true if Orphan with id is exists</returns>
         private bool OrphanExists(int id)
         {
             return _unitOfWorkAsync.Orphans.GetById(id) != null;

@@ -1,5 +1,10 @@
 \hypertarget{class_family_net_1_1_controllers_1_1_base_controller}{}\doxysection{Family\+Net.\+Controllers.\+Base\+Controller Class Reference}
 \label{class_family_net_1_1_controllers_1_1_base_controller}\index{FamilyNet.Controllers.BaseController@{FamilyNet.Controllers.BaseController}}
+
+
+The base controller in project  
+
+
 Inheritance diagram for Family\+Net.\+Controllers.\+Base\+Controller\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -18,15 +23,12 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Base\+Controller\+:\begin{fi
 \doxysubsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_base_controller_a2c519af4d39b44a884e624e9af6330ae}\label{class_family_net_1_1_controllers_1_1_base_controller_a2c519af4d39b44a884e624e9af6330ae}} 
-Task$<$ \mbox{\hyperlink{class_family_net_1_1_models_1_1_identity_1_1_application_user}{Application\+User}} $>$ {\bfseries Get\+Current\+User\+Async} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_base_controller_ae4cb044eecfdea30682aa9164a154e08}\label{class_family_net_1_1_controllers_1_1_base_controller_ae4cb044eecfdea30682aa9164a154e08}} 
-async Task {\bfseries Check} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_base_controller_a3bc2920c25282e7469046c0bb6853b40}\label{class_family_net_1_1_controllers_1_1_base_controller_a3bc2920c25282e7469046c0bb6853b40}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Check\+By\+Id} (int id)
-\end{DoxyCompactItemize}
+Task$<$ \mbox{\hyperlink{class_family_net_1_1_models_1_1_identity_1_1_application_user}{Application\+User}} $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_base_controller_a2c519af4d39b44a884e624e9af6330ae}{Get\+Current\+User\+Async}} ()
+\begin{DoxyCompactList}\small\item\em Method provides current authorized user \end{DoxyCompactList}\item 
+async Task \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_base_controller_ae4cb044eecfdea30682aa9164a154e08}{Check}} ()
+\begin{DoxyCompactList}\small\item\em Method checks current role \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_base_controller_a3bc2920c25282e7469046c0bb6853b40}{Check\+By\+Id}} (int id)
+\begin{DoxyCompactList}\small\item\em Method checks valid authorized user role, id \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -36,6 +38,58 @@ async Task$<$ I\+Action\+Result $>$ {\bfseries Check\+By\+Id} (int id)
 \mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_base_controller_a921c7995fb455bf2fedb34cd1a47fd9c}\label{class_family_net_1_1_controllers_1_1_base_controller_a921c7995fb455bf2fedb34cd1a47fd9c}} 
 I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_shared_resource}{Shared\+Resource}} $>$ {\bfseries \+\_\+shared\+Localizer}
 \end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The base controller in project 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_base_controller_ae4cb044eecfdea30682aa9164a154e08}\label{class_family_net_1_1_controllers_1_1_base_controller_ae4cb044eecfdea30682aa9164a154e08}} 
+\index{FamilyNet.Controllers.BaseController@{FamilyNet.Controllers.BaseController}!Check@{Check}}
+\index{Check@{Check}!FamilyNet.Controllers.BaseController@{FamilyNet.Controllers.BaseController}}
+\doxysubsubsection{\texorpdfstring{Check()}{Check()}}
+{\footnotesize\ttfamily async Task Family\+Net.\+Controllers.\+Base\+Controller.\+Check (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Method checks current role 
+
+\begin{DoxyReturn}{Returns}
+Redirect to Home/\+Index page if authorized user is not Admin,Charity\+Maker, Volunteer, Orphan, Representative
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_base_controller_a3bc2920c25282e7469046c0bb6853b40}\label{class_family_net_1_1_controllers_1_1_base_controller_a3bc2920c25282e7469046c0bb6853b40}} 
+\index{FamilyNet.Controllers.BaseController@{FamilyNet.Controllers.BaseController}!CheckById@{CheckById}}
+\index{CheckById@{CheckById}!FamilyNet.Controllers.BaseController@{FamilyNet.Controllers.BaseController}}
+\doxysubsubsection{\texorpdfstring{CheckById()}{CheckById()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Base\+Controller.\+Check\+By\+Id (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Method checks valid authorized user role, id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & user\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to /\+Home/\+Index if authorized user role, id are not valid or return null
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_base_controller_a2c519af4d39b44a884e624e9af6330ae}\label{class_family_net_1_1_controllers_1_1_base_controller_a2c519af4d39b44a884e624e9af6330ae}} 
+\index{FamilyNet.Controllers.BaseController@{FamilyNet.Controllers.BaseController}!GetCurrentUserAsync@{GetCurrentUserAsync}}
+\index{GetCurrentUserAsync@{GetCurrentUserAsync}!FamilyNet.Controllers.BaseController@{FamilyNet.Controllers.BaseController}}
+\doxysubsubsection{\texorpdfstring{GetCurrentUserAsync()}{GetCurrentUserAsync()}}
+{\footnotesize\ttfamily Task$<$\mbox{\hyperlink{class_family_net_1_1_models_1_1_identity_1_1_application_user}{Application\+User}}$>$ Family\+Net.\+Controllers.\+Base\+Controller.\+Get\+Current\+User\+Async (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Method provides current authorized user 
+
+\begin{DoxyReturn}{Returns}
+authorized user
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}

@@ -1,5 +1,10 @@
 \hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller}{}\doxysection{Family\+Net.\+Controllers.\+Orphans\+Controller Class Reference}
 \label{class_family_net_1_1_controllers_1_1_orphans_controller}\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+
+
+The controller accepts and processes requests about Orphans  
+
+
 Inheritance diagram for Family\+Net.\+Controllers.\+Orphans\+Controller\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -12,34 +17,204 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Orphans\+Controller\+:\begin
 \mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a5a57c935275ba56c35b50e025d7feccd}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a5a57c935275ba56c35b50e025d7feccd}} 
 {\bfseries Orphans\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work, I\+Hosting\+Environment environment, I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller}{Orphans\+Controller}} $>$ localizer)
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_ab593c812a78149a809aefe0cf3feb32d}\label{class_family_net_1_1_controllers_1_1_orphans_controller_ab593c812a78149a809aefe0cf3feb32d}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Index} (int id, \mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a3ecfaff2f71552acb06e41dd6c5641bb}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a3ecfaff2f71552acb06e41dd6c5641bb}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Details} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a8a42287c748e20e133bc488f77daa417}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a8a42287c748e20e133bc488f77daa417}} 
-I\+Action\+Result {\bfseries Create} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a2f70eed90981d732ce489a57b7668545}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a2f70eed90981d732ce489a57b7668545}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create} (\mbox{[}Bind(\char`\"{}Full\+Name,\mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}},Birthday,\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}},Avatar\char`\"{})\mbox{]} Orphan orphan, int id, I\+Form\+File file)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a0d3f731a3aee7821e61d03bb91b8d269}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a0d3f731a3aee7821e61d03bb91b8d269}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_ac47c5f34de57d9cba7a4b1ff81137b9a}\label{class_family_net_1_1_controllers_1_1_orphans_controller_ac47c5f34de57d9cba7a4b1ff81137b9a}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int id, \mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}},Birthday,\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}},Avatar\char`\"{})\mbox{]} Orphan orphan, int id\+Orphanage, I\+Form\+File file)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a186b6f85d3eb342e24c18e236f7e2677}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a186b6f85d3eb342e24c18e236f7e2677}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_aac80f4264abd9adf770be2f109148151}\label{class_family_net_1_1_controllers_1_1_orphans_controller_aac80f4264abd9adf770be2f109148151}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Confirmed} (int id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_aa5ba193013e5b37aaccbe313388f63f7}\label{class_family_net_1_1_controllers_1_1_orphans_controller_aa5ba193013e5b37aaccbe313388f63f7}} 
-I\+Action\+Result {\bfseries Orphans\+Table} (int id, \mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
-\end{DoxyCompactItemize}
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller_ab593c812a78149a809aefe0cf3feb32d}{Index}} (int id, \mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
+\begin{DoxyCompactList}\small\item\em Method provides list of Orphans \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller_a3ecfaff2f71552acb06e41dd6c5641bb}{Details}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides information about Orphan by id \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller_a8a42287c748e20e133bc488f77daa417}{Create}} ()
+\begin{DoxyCompactList}\small\item\em Method provides view for add new Orphan into database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller_a2f70eed90981d732ce489a57b7668545}{Create}} (\mbox{[}Bind(\char`\"{}Full\+Name,\mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}},Birthday,\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}},Avatar\char`\"{})\mbox{]} Orphan orphan, int id, I\+Form\+File file)
+\begin{DoxyCompactList}\small\item\em Method validates and adds new Orphan into database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller_a0d3f731a3aee7821e61d03bb91b8d269}{Edit}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides view for edit Orphan \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller_ac47c5f34de57d9cba7a4b1ff81137b9a}{Edit}} (int id, \mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}},Birthday,\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}},Avatar\char`\"{})\mbox{]} Orphan orphan, int id\+Orphanage, I\+Form\+File file)
+\begin{DoxyCompactList}\small\item\em Method validates and updates Orphan in database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller_a186b6f85d3eb342e24c18e236f7e2677}{Delete}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides page for deletes Orphan by id from database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller_aac80f4264abd9adf770be2f109148151}{Delete\+Confirmed}} (int id)
+\begin{DoxyCompactList}\small\item\em Method deletes Orphan by id from database \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphans_controller_aa5ba193013e5b37aaccbe313388f63f7}{Orphans\+Table}} (int id, \mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
+\begin{DoxyCompactList}\small\item\em Method provides table of Orphans \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+The controller accepts and processes requests about Orphans 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a8a42287c748e20e133bc488f77daa417}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a8a42287c748e20e133bc488f77daa417}} 
+\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Orphans\+Controller.\+Create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Method provides view for add new Orphan into database 
+
+\begin{DoxyReturn}{Returns}
+view with inputs
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a2f70eed90981d732ce489a57b7668545}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a2f70eed90981d732ce489a57b7668545}} 
+\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphans\+Controller.\+Create (\begin{DoxyParamCaption}\item[{\mbox{[}\+Bind(\char`\"{}\+Full\+Name,\+Address,\+Birthday,\+Orphanage,\+Avatar\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_orphan}{Orphan}}}]{orphan,  }\item[{int}]{id,  }\item[{I\+Form\+File}]{file }\end{DoxyParamCaption})}
+
+
+
+Method validates and adds new Orphan into database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em orphan} & adding entity\\
+\hline
+{\em id} & Orphan\textquotesingle{}s identifier\\
+\hline
+{\em file} & Orphan\textquotesingle{}s photo\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to Index if model is valid or return to Create page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a186b6f85d3eb342e24c18e236f7e2677}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a186b6f85d3eb342e24c18e236f7e2677}} 
+\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}!Delete@{Delete}}
+\index{Delete@{Delete}!FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+\doxysubsubsection{\texorpdfstring{Delete()}{Delete()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphans\+Controller.\+Delete (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})}
+
+
+
+Method provides page for deletes Orphan by id from database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Orphan\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view delete if model is valid or redirect to Not\+Found page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_aac80f4264abd9adf770be2f109148151}\label{class_family_net_1_1_controllers_1_1_orphans_controller_aac80f4264abd9adf770be2f109148151}} 
+\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}!DeleteConfirmed@{DeleteConfirmed}}
+\index{DeleteConfirmed@{DeleteConfirmed}!FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+\doxysubsubsection{\texorpdfstring{DeleteConfirmed()}{DeleteConfirmed()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphans\+Controller.\+Delete\+Confirmed (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})}
+
+
+
+Method deletes Orphan by id from database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Orphan\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to Index page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a3ecfaff2f71552acb06e41dd6c5641bb}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a3ecfaff2f71552acb06e41dd6c5641bb}} 
+\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}!Details@{Details}}
+\index{Details@{Details}!FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+\doxysubsubsection{\texorpdfstring{Details()}{Details()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphans\+Controller.\+Details (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})}
+
+
+
+Method provides information about Orphan by id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Orphan\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with details about Orphan or returns Not\+Found page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_ac47c5f34de57d9cba7a4b1ff81137b9a}\label{class_family_net_1_1_controllers_1_1_orphans_controller_ac47c5f34de57d9cba7a4b1ff81137b9a}} 
+\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphans\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{[}\+Bind(\char`\"{}\+I\+D,\+Full\+Name,\+Birthday,\+Orphanage,\+Avatar\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_orphan}{Orphan}}}]{orphan,  }\item[{int}]{id\+Orphanage,  }\item[{I\+Form\+File}]{file }\end{DoxyParamCaption})}
+
+
+
+Method validates and updates Orphan in database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Orphan\textquotesingle{}s identifier\\
+\hline
+{\em orphan} & Orphon\textquotesingle{}s details by id\\
+\hline
+{\em id\+Orphanage} & identifier of Orphanage\\
+\hline
+{\em file} & Orphan\textquotesingle{}s photo\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to index if model is valid or return to Edit page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_a0d3f731a3aee7821e61d03bb91b8d269}\label{class_family_net_1_1_controllers_1_1_orphans_controller_a0d3f731a3aee7821e61d03bb91b8d269}} 
+\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphans\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})}
+
+
+
+Method provides view for edit Orphan 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Orphan\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with editing entity
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_ab593c812a78149a809aefe0cf3feb32d}\label{class_family_net_1_1_controllers_1_1_orphans_controller_ab593c812a78149a809aefe0cf3feb32d}} 
+\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}!Index@{Index}}
+\index{Index@{Index}!FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+\doxysubsubsection{\texorpdfstring{Index()}{Index()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphans\+Controller.\+Index (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}}}]{search\+Model }\end{DoxyParamCaption})}
+
+
+
+Method provides list of Orphans 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Orphan\textquotesingle{}s identifier\\
+\hline
+{\em search\+Model} & parameters for filter\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with list of Orphans
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphans_controller_aa5ba193013e5b37aaccbe313388f63f7}\label{class_family_net_1_1_controllers_1_1_orphans_controller_aa5ba193013e5b37aaccbe313388f63f7}} 
+\index{FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}!OrphansTable@{OrphansTable}}
+\index{OrphansTable@{OrphansTable}!FamilyNet.Controllers.OrphansController@{FamilyNet.Controllers.OrphansController}}
+\doxysubsubsection{\texorpdfstring{OrphansTable()}{OrphansTable()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Orphans\+Controller.\+Orphans\+Table (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}}}]{search\+Model }\end{DoxyParamCaption})}
+
+
+
+Method provides table of Orphans 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Orphan\textquotesingle{}s identifier\\
+\hline
+{\em search\+Model} & filter parameters\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view table
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
