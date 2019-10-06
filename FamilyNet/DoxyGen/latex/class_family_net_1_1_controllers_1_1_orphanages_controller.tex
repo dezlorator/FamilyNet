@@ -1,0 +1,53 @@
+\hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller}{}\doxysection{Family\+Net.\+Controllers.\+Orphanages\+Controller Class Reference}
+\label{class_family_net_1_1_controllers_1_1_orphanages_controller}\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+Inheritance diagram for Family\+Net.\+Controllers.\+Orphanages\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_family_net_1_1_controllers_1_1_orphanages_controller}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a242cf1c81ecf9442012144e8ab9db442}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a242cf1c81ecf9442012144e8ab9db442}} 
+{\bfseries Orphanages\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work, I\+Hosting\+Environment environment, I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller}{Orphanages\+Controller}} $>$ localizer, I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_shared_resource}{Shared\+Resource}} $>$ shared\+Localizer)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_ab3a4edcdf4ce5bb1f43fd315f5619197}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_ab3a4edcdf4ce5bb1f43fd315f5619197}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Index} (int id, \mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_orphanage_search_model}{Orphanage\+Search\+Model}} search\+Model, Sort\+State\+Orphanages sort\+Order=Sort\+State\+Orphanages.\+Name\+Asc)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a3cd0c1e62e1b9b617a1ec585da6d0102}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a3cd0c1e62e1b9b617a1ec585da6d0102}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Details} (int? id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_aca0ca528b7a0667ba9ac1800d27f99f7}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_aca0ca528b7a0667ba9ac1800d27f99f7}} 
+I\+Action\+Result {\bfseries Create} ()
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a91bf0d1b50506083ae2c116bd8e673b8}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a91bf0d1b50506083ae2c116bd8e673b8}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Create} (\mbox{[}Bind(\char`\"{}Name,Adress,Rating,Avatar\char`\"{})\mbox{]} Orphanage orphanage, I\+Form\+File file)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a3d5b82b22a4c7b5509907afa325e3dba}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a3d5b82b22a4c7b5509907afa325e3dba}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int? id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_abb4bf7ab6cb48db7725d21e1fd73979d}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_abb4bf7ab6cb48db7725d21e1fd73979d}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (\mbox{[}Bind(\char`\"{}ID,Name,Adress,Rating,Avatar\char`\"{})\mbox{]} Orphanage orphanage, int id, I\+Form\+File file)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_af3d83ad27cfca590d21b4d7d3f573b79}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_af3d83ad27cfca590d21b4d7d3f573b79}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Delete} (int? id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_af4bfd7c9198550d5baedb0f32bc7548f}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_af4bfd7c9198550d5baedb0f32bc7548f}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Confirmed} (int id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a8db2fdec5c7600543dadf892cfc0f4e4}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a8db2fdec5c7600543dadf892cfc0f4e4}} 
+I\+Action\+Result {\bfseries Search\+By\+Type\+Help} ()
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_ae7e84ac1ac3190a03fbb30027048ac8f}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_ae7e84ac1ac3190a03fbb30027048ac8f}} 
+I\+Action\+Result {\bfseries Search\+Result} (string type\+Help)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a7b60dea8439398dff9c5a6c7c62d3700}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a7b60dea8439398dff9c5a6c7c62d3700}} 
+I\+Action\+Result {\bfseries Search\+Orphanage\+On\+Map} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Orphanages\+Controller.\+cs\end{DoxyCompactItemize}

@@ -1,0 +1,62 @@
+\hypertarget{class_family_net_1_1_controllers_1_1_donations_controller}{}\doxysection{Family\+Net.\+Controllers.\+Donations\+Controller Class Reference}
+\label{class_family_net_1_1_controllers_1_1_donations_controller}\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+Inheritance diagram for Family\+Net.\+Controllers.\+Donations\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_family_net_1_1_controllers_1_1_donations_controller}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_ad8960805a59d348975f3c2f14626ebe9}\label{class_family_net_1_1_controllers_1_1_donations_controller_ad8960805a59d348975f3c2f14626ebe9}} 
+{\bfseries Donations\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a6d003f5ca60bf2a46a9b74449448afbc}\label{class_family_net_1_1_controllers_1_1_donations_controller_a6d003f5ca60bf2a46a9b74449448afbc}} 
+I\+Action\+Result {\bfseries Donations\+Table} ()
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a2b22399488950371c30379931f68b453}\label{class_family_net_1_1_controllers_1_1_donations_controller_a2b22399488950371c30379931f68b453}} 
+I\+Action\+Result {\bfseries Categories\+Table} ()
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a8e9cd6a3bfe5f3cac24272f1dc453df7}\label{class_family_net_1_1_controllers_1_1_donations_controller_a8e9cd6a3bfe5f3cac24272f1dc453df7}} 
+I\+Action\+Result {\bfseries Create\+Category} ()
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a2a3abb01c41e1b75bf077cbf600b0dd6}\label{class_family_net_1_1_controllers_1_1_donations_controller_a2a3abb01c41e1b75bf077cbf600b0dd6}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Create\+Category} (\mbox{[}Bind(\char`\"{}ID,Name\char`\"{})\mbox{]} Donation\+Item\+Type request)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_afb7607260d85f8c68877ab795bd31a67}\label{class_family_net_1_1_controllers_1_1_donations_controller_afb7607260d85f8c68877ab795bd31a67}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Category} (int? id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a752901c945314c50811cd63efa800459}\label{class_family_net_1_1_controllers_1_1_donations_controller_a752901c945314c50811cd63efa800459}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Category\+Confirmed} (int id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a9ebd60e8468f3359fd20a848a7981c56}\label{class_family_net_1_1_controllers_1_1_donations_controller_a9ebd60e8468f3359fd20a848a7981c56}} 
+I\+Action\+Result {\bfseries Create\+Donation} ()
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a337eff72a2f79e25c151872102f6d7d7}\label{class_family_net_1_1_controllers_1_1_donations_controller_a337eff72a2f79e25c151872102f6d7d7}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Create\+Donation} (\mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_donation_item}{Donation\+Item}},\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}}\char`\"{})\mbox{]} Donation request, int id\+Orphanage, int id\+Donation\+Item)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a42c042551dbded4d1321ad9d1190c949}\label{class_family_net_1_1_controllers_1_1_donations_controller_a42c042551dbded4d1321ad9d1190c949}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Edit\+Donation} (int? id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a52f7674208a1c5877b0aa8959f7fd06f}\label{class_family_net_1_1_controllers_1_1_donations_controller_a52f7674208a1c5877b0aa8959f7fd06f}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Edit\+Donation} (int id, \mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_donation_item}{Donation\+Item}}\char`\"{})\mbox{]} Donation donation)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_ab3828f8ba76196504beefdaa2e1b52c0}\label{class_family_net_1_1_controllers_1_1_donations_controller_ab3828f8ba76196504beefdaa2e1b52c0}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Donation} (int? id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a0ae35c72750a62d2394fbb76b8a43d67}\label{class_family_net_1_1_controllers_1_1_donations_controller_a0ae35c72750a62d2394fbb76b8a43d67}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Donation\+Confirmed} (int id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a8e55e6c43107e2f3c3802edfe8e3b188}\label{class_family_net_1_1_controllers_1_1_donations_controller_a8e55e6c43107e2f3c3802edfe8e3b188}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Details} (int? id)
+\item 
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a48ddbf71bb45cf46fd24d5a48e774923}\label{class_family_net_1_1_controllers_1_1_donations_controller_a48ddbf71bb45cf46fd24d5a48e774923}} 
+async Task$<$ I\+Action\+Result $>$ {\bfseries Details\+Category} (int? id)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Donations\+Controller.\+cs\end{DoxyCompactItemize}
