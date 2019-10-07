@@ -24,7 +24,7 @@ namespace FamilyNet.Controllers
 
         //первая инициализация в методе index
         /// <summary>
-        /// Поисковая модель
+        /// Search model
         /// </summary>
         private OrphanageSearchModel _searchModel;
 
@@ -32,7 +32,7 @@ namespace FamilyNet.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
 
         /// <summary>
-        /// Хранит данные, связанные с локализацией
+        /// Stores localization related data
         /// </summary>
         private readonly IStringLocalizer<OrphanagesController> _localizer;
 
@@ -66,12 +66,12 @@ namespace FamilyNet.Controllers
 
         // GET: Orphanages
         /// <summary>
-        /// Получает список всех приютов по указанному id
+        /// Gets a list of all orphanages by the id
         /// </summary>
-        /// <param name="id">Уникальный id приюта</param>
-        /// <param name="searchModel">Поисковая модель</param>
-        /// <param name="sortOrder">Параметр сортировки</param>
-        /// <returns>Возращает объект представления с параметром IQueryable<Orphanage></returns>
+        /// <param name="id">Unique orphanages id</param>
+        /// <param name="searchModel">Search model</param>
+        /// <param name="sortOrder">Sort option</param>
+        /// <returns>view with IQueryable<Orphanage></returns>
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id, OrphanageSearchModel searchModel,
             SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
@@ -99,10 +99,10 @@ namespace FamilyNet.Controllers
 
         // GET: Orphanages/Details/5
         /// <summary>
-        /// Отображает полное состояние приюта, указанного по id
+        /// Displays the orphanage indicated by id
         /// </summary>
-        /// <param name="id">Уникальный id приюта</param>
-        /// <returns>Возращает объект представления с параметром Orphanage</returns>
+        /// <param name="id">Unique orphanages id</param>
+        /// <returns>view with Orphanage</returns>
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -120,19 +120,19 @@ namespace FamilyNet.Controllers
 
         // GET: Orphanages/Create
         /// <summary>
-        /// Отображает форму для ввода данных приюта
+        /// Display a form for entering orphanage data
         /// </summary>
-        /// <returns>Возращает объект представления</returns>
+        /// <returns>view</returns>
         [Authorize(Roles = "Admin")]
         public IActionResult Create() => View();
 
         // POST: Orphanages/Create
         /// <summary>
-        /// Добавляет нового Orphanage в БД
+        /// Adds a new Orphanage to the database
         /// </summary>
-        /// <param name="orphanage">Добавляемый приют</param>
-        /// <param name="file">Объект загрузки файла на сервер</param>
-        /// <returns>Возращает объект представления</returns>
+        /// <param name="orphanage">Added Orphanage</param>
+        /// <param name="file">Object to upload a file to the server</param>
+        /// <returns>view with orphanage</returns>
         [HttpPost]
         //для валидации
         [ValidateAntiForgeryToken]
@@ -174,10 +174,10 @@ namespace FamilyNet.Controllers
 
         // GET: Orphanages/Edit/5
         /// <summary>
-        /// Выводит форму для редактирования конкретного приюта, указанного по id
+        /// Displays a form for editing a specific orphanage specified by id
         /// </summary>
-        /// <param name="id">Уникальный id приюта</param>
-        /// <returns>Возращает объект представления</returns>
+        /// <param name="id">Unique orphanages id</param>
+        /// <returns> view with orphanage </returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -195,12 +195,12 @@ namespace FamilyNet.Controllers
 
         // POST: Orphanages/Edit/5
         /// <summary>
-        /// Редактирует конкретный приют, указанный по id
+        /// Edits a specific orphanage specified by id
         /// </summary>
-        /// <param name="orphanage">Объект, что будет редактироваться</param>
-        /// <param name="id">Уникальный id приюта</param>
-        /// <param name="file">Объект загрузки файла на сервер</param>
-        /// <returns>Возращает объект представления</returns>
+        /// <param name="orphanage">edited object</param>
+        /// <param name="id">Unique orphanages id</param>
+        /// <param name="file">Object to upload a file to the server</param>
+        /// <returns>view with orphanages</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Representative")]
@@ -255,10 +255,10 @@ namespace FamilyNet.Controllers
 
         // GET: Orphanages/Delete/5
         /// <summary>
-        /// Выводит форму для удаления конкретного приюта по указанному id
+        /// Displays a form for removing a specific orphanage at the specified id
         /// </summary>
-        /// <param name="id">Уникальный id приюта</param>
-        /// <returns>Возращает объект представления</returns>
+        /// <param name="id">Unique orphanages id</param>
+        /// <returns>view with orphanages</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -276,10 +276,10 @@ namespace FamilyNet.Controllers
 
         // POST: Orphanages/Delete/5
         /// <summary>
-        /// Удаляет выбранный по id приют из БД
+        /// Deletes the selected orphanage from id from the database
         /// </summary>
-        /// <param name="id">Уникальный id приюта</param>
-        /// <returns>Возращает объект представления</returns>
+        /// <param name="id">Unique orphanages id</param>
+        /// <returns>redirect to index view</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -294,9 +294,9 @@ namespace FamilyNet.Controllers
         }
 
         /// <summary>
-        /// Выводит форму для поиска приюта по виду помощи
+        /// Displays a form for finding orphanage by type of assistance
         /// </summary>
-        /// <returns>Возращает обьект представления</returns>
+        /// <returns>view</returns>
         [AllowAnonymous]
         public IActionResult SearchByTypeHelp()
         {
@@ -305,9 +305,9 @@ namespace FamilyNet.Controllers
         }
 
         /// <summary>
-        /// Выполняет поиск приюта по введенному виду помощи
+        /// Searches for orphanage by type of help entered
         /// </summary>
-        /// <returns>Возращает объект представления со списом приютов </returns>
+        /// <returns>view with orphanage list</returns>
         [HttpPost]
         [AllowAnonymous]
         public IActionResult SearchResult(string typeHelp)
@@ -327,9 +327,9 @@ namespace FamilyNet.Controllers
         }
 
         /// <summary>
-        /// Показывает карту с приютами
+        /// Shows a map with orphanages
         /// </summary>
-        /// <returns>Возращает объект представления со всеми приютами</returns>
+        /// <returns>view with all orphanages</returns>
         [AllowAnonymous]
         public IActionResult SearchOrphanageOnMap()
         {
@@ -345,10 +345,10 @@ namespace FamilyNet.Controllers
         #region Private Helpers
 
         /// <summary>
-        /// Содержит ли Address указанную строку
+        /// Does Address contain the specified string
         /// </summary>
-        /// <param name="addr">Полный формат адреса</param>
-        /// <returns>Возращает true, если содержит</returns>
+        /// <param name="addr">Full address format</param>
+        /// <returns>Returns true if contains</returns>
         private bool Contains(Address addr)
         {
             foreach (var word in _searchModel.AddressString.Split())
@@ -366,11 +366,11 @@ namespace FamilyNet.Controllers
         }
 
         /// <summary>
-        /// Выполняет сортировку приютов по указанному критерию
+        ///Sorts orphanages by specified criteria
         /// </summary>
-        /// <param name="orphanages">Список приютов</param>
-        /// <param name="sortOrder">Критерий сортировки</param>
-        /// <returns>Возращает отсортированный список приютов</returns>
+        /// <param name="orphanages">Orphanages list</param>
+        /// <param name="sortOrder">Sorting criteria</param>
+        /// <returns>Returns a sorted orphanages list</returns>
         private IQueryable<Orphanage> GetSorted(IQueryable<Orphanage> orphanages, SortStateOrphanages sortOrder)
         {
             //данные для ui
@@ -416,11 +416,11 @@ namespace FamilyNet.Controllers
         }
 
         /// <summary>
-        /// Выолняет выборку приютов по заданному фильтру
+        /// Selects orphanages by a given filter
         /// </summary>
-        /// <param name="orphanages">Список приютов</param>
-        /// <param name="searchModel">Фильтр для выборки приютов</param>
-        /// <returns>Возращает список приютов</returns>
+        /// <param name="orphanages">Orphanages list</param>
+        /// <param name="searchModel">Filter for the orphanages selection</param>
+        /// <returns>Returns orphanages list</returns>
         private IQueryable<Orphanage> GetFiltered(IQueryable<Orphanage> orphanages,
             OrphanageSearchModel searchModel)
         {
@@ -446,11 +446,11 @@ namespace FamilyNet.Controllers
         }
 
         /// <summary>
-        /// Вычисляет координаты по указанному адресу
+        /// Calculates the coordinates at the specified address
         /// </summary>
-        /// <param name="address">Адресс для вычисления</param>
-        /// <param name="result">Кортеж с координатами</param>
-        /// <returns>Возращает true, если удалось вычислить координаты</returns>
+        /// <param name="address">Address to calculate</param>
+        /// <param name="result">Tuple with coordinates</param>
+        /// <returns>Returns true if coordinates were calculated</returns>
         private bool GetCoordProp(Address address, out Tuple<float?, float?> result)
         {
             result = null;
@@ -481,7 +481,7 @@ namespace FamilyNet.Controllers
         }
 
         /// <summary>
-        /// Инициализирует ViewData и передает данные локализации на ui
+        /// Initializes ViewData and transfers localization data to ui
         /// </summary>
         private void GetViewData()
         {
