@@ -8,15 +8,24 @@ using System.Collections.Generic;
 
 namespace FamilyNet.Controllers
 {
+    ///контроллер донатов
     [Authorize]
     public class DonationsController : BaseController
     {
-        public DonationsController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        /// <summary>
+        /// Конструктор BaseController.
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        public DonationsController(IUnitOfWorkAsync unitOfWork)
+            : base(unitOfWork)
         {
 
         }
 
         // GET: DonationsTable
+        /// <summary>
+        /// Передает на интерфейс таблицу донатов. Доступно для всех.
+        /// </summary>
         [AllowAnonymous]
         public IActionResult DonationsTable()
         {
@@ -24,6 +33,9 @@ namespace FamilyNet.Controllers
         }
 
         // GET: CategoriesTable
+        /// <summary>
+        /// Передает на интерфейс таблицу категорий. Доступно для всех.
+        /// </summary>
         [AllowAnonymous]
         public IActionResult CategoriesTable()
         {
@@ -33,6 +45,9 @@ namespace FamilyNet.Controllers
         #region CreateCategory
 
         // GET: DonationsTable/CreateCategory
+        /// <summary>
+        /// Создание категории(GET). Доступно для Admin,CharityMaker,Volunteer,Representative.
+        /// </summary>
         [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
         public IActionResult CreateCategory()
         {
@@ -40,8 +55,10 @@ namespace FamilyNet.Controllers
         }
 
         // POST: Donations/CreateCategory
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Создание категории(POST). Доступно для Admin,CharityMaker,Volunteer.
+        /// </summary>
+        /// <param name="request">Свойства ID,Name</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
@@ -60,7 +77,11 @@ namespace FamilyNet.Controllers
 
         #region DeleteCategory
 
-        // GET: CategoriesTable/Delete/5
+        // GET: CategoriesTable/Delete/id
+        /// <summary>
+        /// Удаление категории по id(GET). Доступно для Admin.
+        /// </summary>
+        /// <param name="id">id категории</param>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory(int? id)
         {
@@ -80,7 +101,11 @@ namespace FamilyNet.Controllers
             return View(category);
         }
 
-        // POST: CategoriesTable/Delete/5
+        // POST: CategoriesTable/Delete/id
+        /// <summary>
+        /// Подтверждение удаления категории по id(GET). Доступно для Admin.
+        /// </summary>
+        /// <param name="id">id категории</param>
         [HttpPost, ActionName("DeleteCategory")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -102,6 +127,9 @@ namespace FamilyNet.Controllers
         #region CreateDonation
 
         // GET: DonationsTable/CreateRequest
+        /// <summary>
+        /// Просмотр таблицы потребностей. Доступен для Admin,CharityMaker,Volunteer,Representative.
+        /// </summary>
         [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
         public IActionResult CreateDonation()
         {
@@ -111,23 +139,33 @@ namespace FamilyNet.Controllers
         }
 
         // POST: DonationsTable/CreateRequest
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Создать потребность. Доступен для Admin,CharityMaker,Volunteer.
+        /// </summary>
+        /// <param name="request">Свойства ID,DonationItem,Orphanage</param>
+        /// <param name="idOrphanage">id приюта</param>
+        /// <param name="idDonationItem">id пожертвования</param>
+        /// <returns>View</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
-        public async Task<IActionResult> CreateDonation([Bind("ID,DonationItem,Orphanage")] Donation request, int idOrphanage, int idDonationItem)
+        public async Task<IActionResult> CreateDonation([Bind("ID,DonationItem,Orphanage")] Donation request,
+                                                        int idOrphanage, int idDonationItem)
         {
             if (ModelState.IsValid)
             {
                 request.OrphanageID = idOrphanage;
-                
+
                 request.IsRequest = true;
 
                 await _unitOfWorkAsync.Donations.Create(request);
                 await _unitOfWorkAsync.Donations.SaveChangesAsync();
 
-                _unitOfWorkAsync.TypeBaseItems.Add(new TypeBaseItem() { ItemID = request.DonationItem.ID, TypeID = idDonationItem  });
+                _unitOfWorkAsync.TypeBaseItems.Add(new TypeBaseItem()
+                {
+                    ItemID = request.DonationItem.ID,
+                    TypeID = idDonationItem
+                });
 
                 _unitOfWorkAsync.SaveChangesAsync();
 
@@ -141,6 +179,11 @@ namespace FamilyNet.Controllers
         #region EditDonation
 
         // GET: Donations/Edit/5
+        /// <summary>
+        /// Изменение пожертвования(GET). Доступно для Admin.
+        /// </summary>
+        /// <param name="id">id пожертвования для изменения</param>
+        /// <returns>NotFound или View</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditDonation(int? id)
         {
@@ -148,7 +191,7 @@ namespace FamilyNet.Controllers
             {
                 return NotFound();
             }
-            
+
             ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
             ViewBag.ListOfBaseItemTypes = _unitOfWorkAsync.BaseItemTypes.GetAll();
             var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
@@ -164,6 +207,12 @@ namespace FamilyNet.Controllers
         // POST: Donations/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Изменение пожертвования(Post).  Доступно для Admin.
+        /// </summary>
+        /// <param name="id">id пожертвования</param>
+        /// <param name="donation">свойства ID,DonationItem</param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -204,7 +253,12 @@ namespace FamilyNet.Controllers
 
         #region DeleteDonation
 
-        // GET: DonationsTable/Delete/5
+        // GET: DonationsTable/Delete/id
+        /// <summary>
+        /// Удаление пожертования по id(GET). Доступно для Admin.
+        /// </summary>
+        /// <param name="id">id пожертвования</param>
+        /// <returns>NotFound или View</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDonation(int? id)
         {
@@ -224,7 +278,11 @@ namespace FamilyNet.Controllers
             return View(donation);
         }
 
-        // POST: DonationsTable/Delete/5
+        // POST: DonationsTable/Delete/id
+        /// <summary>
+        /// Подтвержение удаления по id. Доступо для Admin.
+        /// </summary>
+        /// <param name="id">id пожертвования</param>
         [HttpPost, ActionName("DeleteDonation")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -245,7 +303,12 @@ namespace FamilyNet.Controllers
 
         #region DetailsDonation
 
-        // GET: Donations/Details/5
+        // GET: Donations/Details/id
+        /// <summary>
+        /// Получить детали пожертвования по id. Доступно для всех. 
+        /// </summary>
+        /// <param name="id">id пожертвования</param>
+        /// <returns>View(donation) или NotFound</returns>
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -266,6 +329,11 @@ namespace FamilyNet.Controllers
         #endregion
 
         #region DetailsCategory
+        /// <summary>
+        /// Получить детали категории по id.
+        /// </summary>
+        /// <param name="id">id категории</param>
+        /// <returns>View(category) или NotFound</returns>
         public async Task<IActionResult> DetailsCategory(int? id)
         {
             if (id == null)
@@ -293,6 +361,5 @@ namespace FamilyNet.Controllers
         {
             return _unitOfWorkAsync.BaseItemTypes.GetById(id) != null;
         }
-
     }
 }
