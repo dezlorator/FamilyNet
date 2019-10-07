@@ -22,16 +22,29 @@ namespace FamilyNet.Controllers
     {
         #region Private fields
 
+        //первая инициализация в методе index
+        /// <summary>
+        /// Поисковая модель
+        /// </summary>
         private OrphanageSearchModel _searchModel;
+
+        //это кажется не надо. Не используется в этом контроллере
         private readonly IHostingEnvironment _hostingEnvironment;
+
+        /// <summary>
+        /// Хранит данные, связанные с локализацией
+        /// </summary>
         private readonly IStringLocalizer<OrphanagesController> _localizer;
 
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment,
+            IStringLocalizer<OrphanagesController> localizer, IStringLocalizer<SharedResource> sharedLocalizer)
+            : base(unitOfWork, sharedLocalizer)
         {
             _hostingEnvironment = environment;
             _localizer = localizer;
         }
 
+        //это нигде не используется
         private bool IsContain(Address addr)
         {
             foreach (var word in _searchModel.AddressString.Split())
@@ -52,25 +65,44 @@ namespace FamilyNet.Controllers
         #region ActionMethods
 
         // GET: Orphanages
+        /// <summary>
+        /// Получает список всех приютов по указанному id
+        /// </summary>
+        /// <param name="id">Уникальный id приюта</param>
+        /// <param name="searchModel">Поисковая модель</param>
+        /// <param name="sortOrder">Параметр сортировки</param>
+        /// <returns>Возращает объект представления с параметром IQueryable<Orphanage></returns>
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id, OrphanageSearchModel searchModel,
             SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
             IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
 
+            //выполняем фильтрацию
             orphanages = GetFiltered(orphanages, searchModel);
+            //сортируем
             orphanages = GetSorted(orphanages, sortOrder);
 
+            //выводим много много много абсолютно все приюты
             if (id == 0)
+                // можно убрать ToListAsync()
                 return View(await orphanages.ToListAsync());
 
+            //выводим только один приют
             if (id > 0)
                 orphanages = orphanages.Where(x => x.ID.Equals(id));
 
+            // можно убрать ToListAsync() ????
             return View(await orphanages.ToListAsync());
         }
 
+
         // GET: Orphanages/Details/5
+        /// <summary>
+        /// Отображает полное состояние приюта, указанного по id
+        /// </summary>
+        /// <param name="id">Уникальный id приюта</param>
+        /// <returns>Возращает объект представления с параметром Orphanage</returns>
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -87,18 +119,32 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphanages/Create
+        /// <summary>
+        /// Отображает форму для ввода данных приюта
+        /// </summary>
+        /// <returns>Возращает объект представления</returns>
         [Authorize(Roles = "Admin")]
         public IActionResult Create() => View();
 
         // POST: Orphanages/Create
+        /// <summary>
+        /// Добавляет нового Orphanage в БД
+        /// </summary>
+        /// <param name="orphanage">Добавляемый приют</param>
+        /// <param name="file">Объект загрузки файла на сервер</param>
+        /// <returns>Возращает объект представления</returns>
         [HttpPost]
+        //для валидации
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage,
             IFormFile file) //TODO: AlPa -> Research Bind To Annotations
         {
+            //file нужен для загрузки файлов на сервер
+            //установка аватара
             await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\avatars");
 
+            //вычисляем координаты по введенным данным
             //part to add location when obj creating
             bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
             if (IsLocationNotNull)
@@ -112,6 +158,7 @@ namespace FamilyNet.Controllers
             else
                 orphanage.LocationID = null;
 
+            //если все ок, то добавляем в бд и возвращемся в главный метод
             if (ModelState.IsValid)
             {
                 await _unitOfWorkAsync.Orphanages.Create(orphanage);
@@ -121,10 +168,16 @@ namespace FamilyNet.Controllers
             }
             GetViewData();
 
+            //если не ок, то вводим данные заново
             return View(orphanage);
         }
 
         // GET: Orphanages/Edit/5
+        /// <summary>
+        /// Выводит форму для редактирования конкретного приюта, указанного по id
+        /// </summary>
+        /// <param name="id">Уникальный id приюта</param>
+        /// <returns>Возращает объект представления</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -141,6 +194,13 @@ namespace FamilyNet.Controllers
         }
 
         // POST: Orphanages/Edit/5
+        /// <summary>
+        /// Редактирует конкретный приют, указанный по id
+        /// </summary>
+        /// <param name="orphanage">Объект, что будет редактироваться</param>
+        /// <param name="id">Уникальный id приюта</param>
+        /// <param name="file">Объект загрузки файла на сервер</param>
+        /// <returns>Возращает объект представления</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Representative")]
@@ -194,6 +254,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphanages/Delete/5
+        /// <summary>
+        /// Выводит форму для удаления конкретного приюта по указанному id
+        /// </summary>
+        /// <param name="id">Уникальный id приюта</param>
+        /// <returns>Возращает объект представления</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -210,6 +275,11 @@ namespace FamilyNet.Controllers
         }
 
         // POST: Orphanages/Delete/5
+        /// <summary>
+        /// Удаляет выбранный по id приют из БД
+        /// </summary>
+        /// <param name="id">Уникальный id приюта</param>
+        /// <returns>Возращает объект представления</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -223,6 +293,10 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Выводит форму для поиска приюта по виду помощи
+        /// </summary>
+        /// <returns>Возращает обьект представления</returns>
         [AllowAnonymous]
         public IActionResult SearchByTypeHelp()
         {
@@ -230,24 +304,32 @@ namespace FamilyNet.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Выполняет поиск приюта по введенному виду помощи
+        /// </summary>
+        /// <returns>Возращает объект представления со списом приютов </returns>
         [HttpPost]
         [AllowAnonymous]
         public IActionResult SearchResult(string typeHelp)
         {
             ViewData["TypeHelp"] = typeHelp;
             IEnumerable<Orphanage> list = new List<Orphanage>();
-            if(typeHelp != null)
-            list = _unitOfWorkAsync.Orphanages.Get(
-                orp => orp.Donations.Where(
-                    donat => donat.DonationItem.TypeBaseItem.Where(
-                        donatitem =>  donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
-                        Count() > 0 && donat.IsRequest).
-                    Count() > 0);
+            if (typeHelp != null)
+                list = _unitOfWorkAsync.Orphanages.Get(
+                    orp => orp.Donations.Where(
+                        donat => donat.DonationItem.TypeBaseItem.Where(
+                            donatitem => donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
+                            Count() > 0 && donat.IsRequest).
+                        Count() > 0);
             GetViewData();
 
             return View("SearchResult", list);
         }
 
+        /// <summary>
+        /// Показывает карту с приютами
+        /// </summary>
+        /// <returns>Возращает объект представления со всеми приютами</returns>
         [AllowAnonymous]
         public IActionResult SearchOrphanageOnMap()
         {
@@ -262,6 +344,11 @@ namespace FamilyNet.Controllers
 
         #region Private Helpers
 
+        /// <summary>
+        /// Содержит ли Address указанную строку
+        /// </summary>
+        /// <param name="addr">Полный формат адреса</param>
+        /// <returns>Возращает true, если содержит</returns>
         private bool Contains(Address addr)
         {
             foreach (var word in _searchModel.AddressString.Split())
@@ -278,8 +365,15 @@ namespace FamilyNet.Controllers
             return false;
         }
 
+        /// <summary>
+        /// Выполняет сортировку приютов по указанному критерию
+        /// </summary>
+        /// <param name="orphanages">Список приютов</param>
+        /// <param name="sortOrder">Критерий сортировки</param>
+        /// <returns>Возращает отсортированный список приютов</returns>
         private IQueryable<Orphanage> GetSorted(IQueryable<Orphanage> orphanages, SortStateOrphanages sortOrder)
         {
+            //данные для ui
             ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc
                 ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
             ViewData["AddressSort"] = sortOrder == SortStateOrphanages.AddressAsc
@@ -287,6 +381,7 @@ namespace FamilyNet.Controllers
             ViewData["RatingSort"] = sortOrder == SortStateOrphanages.RatingAsc
                 ? SortStateOrphanages.RatingDesc : SortStateOrphanages.RatingAsc;
 
+            //в зависимости от состояния выпоняем сортировку
             switch (sortOrder)
             {
                 case SortStateOrphanages.NameDesc:
@@ -320,6 +415,12 @@ namespace FamilyNet.Controllers
             return orphanages;
         }
 
+        /// <summary>
+        /// Выолняет выборку приютов по заданному фильтру
+        /// </summary>
+        /// <param name="orphanages">Список приютов</param>
+        /// <param name="searchModel">Фильтр для выборки приютов</param>
+        /// <returns>Возращает список приютов</returns>
         private IQueryable<Orphanage> GetFiltered(IQueryable<Orphanage> orphanages,
             OrphanageSearchModel searchModel)
         {
@@ -327,12 +428,15 @@ namespace FamilyNet.Controllers
             {
                 _searchModel = searchModel;
 
+                //ищем дет дома по указ имени
                 if (!string.IsNullOrEmpty(searchModel.NameString))
                     orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
 
+                //ищем дет дома по указ адресу
                 if (!string.IsNullOrEmpty(searchModel.AddressString))
                     orphanages = orphanages.Where(x => Contains(x.Adress));
 
+                //ищем по рейтингу
                 if (searchModel.RatingNumber > 0)
                     orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
             }
@@ -341,12 +445,20 @@ namespace FamilyNet.Controllers
             return orphanages;
         }
 
+        /// <summary>
+        /// Вычисляет координаты по указанному адресу
+        /// </summary>
+        /// <param name="address">Адресс для вычисления</param>
+        /// <param name="result">Кортеж с координатами</param>
+        /// <returns>Возращает true, если удалось вычислить координаты</returns>
         private bool GetCoordProp(Address address, out Tuple<float?, float?> result)
         {
             result = null;
             bool forOut = false;
 
+            //геокодирование !?
             var nominatim = new Nominatim.API.Geocoders.ForwardGeocoder();
+            //формируем геоданные
             var d = nominatim.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest()
             {
                 Country = address.Country,
@@ -368,6 +480,9 @@ namespace FamilyNet.Controllers
             return forOut;
         }
 
+        /// <summary>
+        /// Инициализирует ViewData и передает данные локализации на ui
+        /// </summary>
         private void GetViewData()
         {
             ViewData["Name"] = _localizer["Name"];
