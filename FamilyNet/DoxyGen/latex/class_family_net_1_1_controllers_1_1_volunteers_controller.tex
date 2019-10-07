@@ -1,5 +1,10 @@
 \hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller}{}\doxysection{Family\+Net.\+Controllers.\+Volunteers\+Controller Class Reference}
 \label{class_family_net_1_1_controllers_1_1_volunteers_controller}\index{FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}}
+
+
+The controller accepts and processes requests about Volunteers  
+
+
 Inheritance diagram for Family\+Net.\+Controllers.\+Volunteers\+Controller\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -12,33 +17,174 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Volunteers\+Controller\+:\be
 \mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a629fdd2239e17e029e907527833c7acc}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a629fdd2239e17e029e907527833c7acc}} 
 {\bfseries Volunteers\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work, I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_volunteers_controller}{Volunteers\+Controller}} $>$ localizer, I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_shared_resource}{Shared\+Resource}} $>$ shared\+Localizer)
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a8b7715f05df8ca0ba05f8817a7cf002f}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a8b7715f05df8ca0ba05f8817a7cf002f}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Index} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a14306c896052842e78b3e1b0f3b247e9}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a14306c896052842e78b3e1b0f3b247e9}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Details} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a62a5582d3c8668a2ba73782e19524dc4}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a62a5582d3c8668a2ba73782e19524dc4}} 
-I\+Action\+Result {\bfseries Create} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a2667036904bbd576241481b55be8c30e}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a2667036904bbd576241481b55be8c30e}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create} (\mbox{[}Bind(\char`\"{}Full\+Name, \mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}}, Birthday, Contacts\char`\"{})\mbox{]} Volunteer volunteer)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_aa9c37ca7a22f042566c29cb8acf06f22}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_aa9c37ca7a22f042566c29cb8acf06f22}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a9e406afa3475c8b5d82dfb3d9889050e}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a9e406afa3475c8b5d82dfb3d9889050e}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int id, \mbox{[}Bind(\char`\"{}ID, \mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}}, \mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}}, Birthday, Contacts, Rating\char`\"{})\mbox{]} Volunteer volunteer)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a4b661ddc22041053eb5f633d5b0a26c1}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a4b661ddc22041053eb5f633d5b0a26c1}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a6efa2e0859fa18614cb9e9db261850d1}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a6efa2e0859fa18614cb9e9db261850d1}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Confirmed} (int id)
-\end{DoxyCompactItemize}
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_volunteers_controller_a8b7715f05df8ca0ba05f8817a7cf002f}{Index}} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
+\begin{DoxyCompactList}\small\item\em Method provides list of Volunteers \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_volunteers_controller_a14306c896052842e78b3e1b0f3b247e9}{Details}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides information about volunteer by id \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_volunteers_controller_a62a5582d3c8668a2ba73782e19524dc4}{Create}} ()
+\begin{DoxyCompactList}\small\item\em Method provides a view for adding new Volunteer into database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_volunteers_controller_a2667036904bbd576241481b55be8c30e}{Create}} (\mbox{[}Bind(\char`\"{}Full\+Name, \mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}}, Birthday, Contacts\char`\"{})\mbox{]} Volunteer volunteer)
+\begin{DoxyCompactList}\small\item\em Method validates and adds new Volunteer into database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_volunteers_controller_aa9c37ca7a22f042566c29cb8acf06f22}{Edit}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides view for editing Volunteer \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_volunteers_controller_a9e406afa3475c8b5d82dfb3d9889050e}{Edit}} (int id, \mbox{[}Bind(\char`\"{}ID, \mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}}, \mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}}, Birthday, Contacts, Rating\char`\"{})\mbox{]} Volunteer volunteer)
+\begin{DoxyCompactList}\small\item\em Method validates and updates Volunteer in database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_volunteers_controller_a4b661ddc22041053eb5f633d5b0a26c1}{Delete}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides page for deleting Volunteer by id from database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_volunteers_controller_a6efa2e0859fa18614cb9e9db261850d1}{Delete\+Confirmed}} (int id)
+\begin{DoxyCompactList}\small\item\em Method deletes Volunteer by id from database \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+The controller accepts and processes requests about Volunteers 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a62a5582d3c8668a2ba73782e19524dc4}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a62a5582d3c8668a2ba73782e19524dc4}} 
+\index{FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Volunteers\+Controller.\+Create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides a view for adding new Volunteer into database 
+
+\begin{DoxyReturn}{Returns}
+View with input form
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a2667036904bbd576241481b55be8c30e}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a2667036904bbd576241481b55be8c30e}} 
+\index{FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Volunteers\+Controller.\+Create (\begin{DoxyParamCaption}\item[{\mbox{[}\+Bind(\char`\"{}\+Full\+Name, Address, Birthday, Contacts\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_volunteer}{Volunteer}}}]{volunteer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method validates and adds new Volunteer into database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em volunteer} & adding entity\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to Index if model is valid or return to Create page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a4b661ddc22041053eb5f633d5b0a26c1}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a4b661ddc22041053eb5f633d5b0a26c1}} 
+\index{FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}!Delete@{Delete}}
+\index{Delete@{Delete}!FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}}
+\doxysubsubsection{\texorpdfstring{Delete()}{Delete()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Volunteers\+Controller.\+Delete (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides page for deleting Volunteer by id from database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Volunteer\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Delete view if model is valid or redirect to Not\+Found page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a6efa2e0859fa18614cb9e9db261850d1}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a6efa2e0859fa18614cb9e9db261850d1}} 
+\index{FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}!DeleteConfirmed@{DeleteConfirmed}}
+\index{DeleteConfirmed@{DeleteConfirmed}!FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}}
+\doxysubsubsection{\texorpdfstring{DeleteConfirmed()}{DeleteConfirmed()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Volunteers\+Controller.\+Delete\+Confirmed (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method deletes Volunteer by id from database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Volunteer\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to Index page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a14306c896052842e78b3e1b0f3b247e9}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a14306c896052842e78b3e1b0f3b247e9}} 
+\index{FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}!Details@{Details}}
+\index{Details@{Details}!FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}}
+\doxysubsubsection{\texorpdfstring{Details()}{Details()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Volunteers\+Controller.\+Details (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides information about volunteer by id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Volunteer\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+View with details about Volunteer or Not\+Found page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a9e406afa3475c8b5d82dfb3d9889050e}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a9e406afa3475c8b5d82dfb3d9889050e}} 
+\index{FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Volunteers\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{[}\+Bind(\char`\"{}\+I\+D, Full\+Name, Address, Birthday, Contacts, Rating\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_volunteer}{Volunteer}}}]{volunteer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method validates and updates Volunteer in database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Volunteer\textquotesingle{}s identifier\\
+\hline
+{\em volunteer} & Volunteer\textquotesingle{}s details by id\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to index if model is valid or return to Edit page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_aa9c37ca7a22f042566c29cb8acf06f22}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_aa9c37ca7a22f042566c29cb8acf06f22}} 
+\index{FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Volunteers\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides view for editing Volunteer 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Volunteer\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+View with editing entity
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_volunteers_controller_a8b7715f05df8ca0ba05f8817a7cf002f}\label{class_family_net_1_1_controllers_1_1_volunteers_controller_a8b7715f05df8ca0ba05f8817a7cf002f}} 
+\index{FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}!Index@{Index}}
+\index{Index@{Index}!FamilyNet.Controllers.VolunteersController@{FamilyNet.Controllers.VolunteersController}}
+\doxysubsubsection{\texorpdfstring{Index()}{Index()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Volunteers\+Controller.\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}}}]{search\+Model }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides list of Volunteers 
+
+
+\begin{DoxyParams}{Parameters}
+{\em search\+Model} & parameters for filter\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+View with list of Volunteers
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Volunteers\+Controller.\+cs\end{DoxyCompactItemize}
+Controllers/Volunteers\+Controller.\+cs\end{DoxyCompactItemize}

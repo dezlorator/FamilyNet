@@ -1,5 +1,10 @@
 \hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller}{}\doxysection{Family\+Net.\+Controllers.\+Charity\+Makers\+Controller Class Reference}
 \label{class_family_net_1_1_controllers_1_1_charity_makers_controller}\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+
+
+This controller gets and procecced requests about charity makers  
+
+
 Inheritance diagram for Family\+Net.\+Controllers.\+Charity\+Makers\+Controller\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -12,36 +17,189 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Charity\+Makers\+Controller\
 \mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_aa4d97ea898f085e9cb7688c5123bd15e}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_aa4d97ea898f085e9cb7688c5123bd15e}} 
 {\bfseries Charity\+Makers\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work)
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7fd31e3fb386cb2f1c4c92209d501b78}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7fd31e3fb386cb2f1c4c92209d501b78}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Index} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a13a7a953ec30a96fb8d263bf9995a48c}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a13a7a953ec30a96fb8d263bf9995a48c}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Details} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_aa552e877f8efdb3e265acefadf7beb4e}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_aa552e877f8efdb3e265acefadf7beb4e}} 
-I\+Action\+Result {\bfseries Create} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a6b22621f5dd53516d4b27290c7741a11}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a6b22621f5dd53516d4b27290c7741a11}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create} (\mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}},\mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}},Birthday,Contacts,Rating\char`\"{})\mbox{]} Charity\+Maker charity\+Maker)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a01ac2659f1c7266f817a65f3539c4f70}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a01ac2659f1c7266f817a65f3539c4f70}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_accdcc7a0f7217531590346ea5a88df3b}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_accdcc7a0f7217531590346ea5a88df3b}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int id, \mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}},\mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}},Birthday,Contacts,Rating\char`\"{})\mbox{]} Charity\+Maker charity\+Maker)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a25494245e4666efd47eaf6c9ecaa3968}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a25494245e4666efd47eaf6c9ecaa3968}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_ac0e6972697c146e24c612ae7ae9b30b6}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_ac0e6972697c146e24c612ae7ae9b30b6}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Confirmed} (int id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7c9c8c407b065d5bc302103c10d53aeb}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7c9c8c407b065d5bc302103c10d53aeb}} 
-I\+Action\+Result {\bfseries Table} ()
-\end{DoxyCompactItemize}
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7fd31e3fb386cb2f1c4c92209d501b78}{Index}} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
+\begin{DoxyCompactList}\small\item\em Method provides list of charity makers \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_charity_makers_controller_a13a7a953ec30a96fb8d263bf9995a48c}{Details}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides detail information about charity makers by id \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_charity_makers_controller_aa552e877f8efdb3e265acefadf7beb4e}{Create}} ()
+\begin{DoxyCompactList}\small\item\em Method provides view to add user, if this user is admin or charity maker \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_charity_makers_controller_a6b22621f5dd53516d4b27290c7741a11}{Create}} (\mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}},\mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}},Birthday,Contacts,Rating\char`\"{})\mbox{]} Charity\+Maker charity\+Maker)
+\begin{DoxyCompactList}\small\item\em Method provides creating new charity maker \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_charity_makers_controller_a01ac2659f1c7266f817a65f3539c4f70}{Edit}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides getting Edit view with charity maker id \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_charity_makers_controller_accdcc7a0f7217531590346ea5a88df3b}{Edit}} (int id, \mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}},\mbox{\hyperlink{class_family_net_1_1_models_1_1_address}{Address}},Birthday,Contacts,Rating\char`\"{})\mbox{]} Charity\+Maker charity\+Maker)
+\begin{DoxyCompactList}\small\item\em Method provides editing charity maker \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_charity_makers_controller_a25494245e4666efd47eaf6c9ecaa3968}{Delete}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides getting Delete view with charity maker \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_charity_makers_controller_ac0e6972697c146e24c612ae7ae9b30b6}{Delete\+Confirmed}} (int id)
+\begin{DoxyCompactList}\small\item\em Method provides deleting charity maker \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7c9c8c407b065d5bc302103c10d53aeb}{Table}} ()
+\begin{DoxyCompactList}\small\item\em Method provides getting Table view with all charity makers \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+This controller gets and procecced requests about charity makers 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_aa552e877f8efdb3e265acefadf7beb4e}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_aa552e877f8efdb3e265acefadf7beb4e}} 
+\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Charity\+Makers\+Controller.\+Create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides view to add user, if this user is admin or charity maker 
+
+\begin{DoxyReturn}{Returns}
+Create view
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a6b22621f5dd53516d4b27290c7741a11}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a6b22621f5dd53516d4b27290c7741a11}} 
+\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Charity\+Makers\+Controller.\+Create (\begin{DoxyParamCaption}\item[{\mbox{[}\+Bind(\char`\"{}\+I\+D,\+Full\+Name,\+Address,\+Birthday,\+Contacts,\+Rating\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_charity_maker}{Charity\+Maker}}}]{charity\+Maker }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides creating new charity maker 
+
+
+\begin{DoxyParams}{Parameters}
+{\em charity\+Maker} & parameter with info about new charity maker\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to Index if is added or Create view if didn\`{}t
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a25494245e4666efd47eaf6c9ecaa3968}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a25494245e4666efd47eaf6c9ecaa3968}} 
+\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}!Delete@{Delete}}
+\index{Delete@{Delete}!FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+\doxysubsubsection{\texorpdfstring{Delete()}{Delete()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Charity\+Makers\+Controller.\+Delete (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides getting Delete view with charity maker 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & charity maker identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Delete view if id exists or not found if don\`{}t
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_ac0e6972697c146e24c612ae7ae9b30b6}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_ac0e6972697c146e24c612ae7ae9b30b6}} 
+\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}!DeleteConfirmed@{DeleteConfirmed}}
+\index{DeleteConfirmed@{DeleteConfirmed}!FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+\doxysubsubsection{\texorpdfstring{DeleteConfirmed()}{DeleteConfirmed()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Charity\+Makers\+Controller.\+Delete\+Confirmed (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides deleting charity maker 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & charity maker identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to Index view
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a13a7a953ec30a96fb8d263bf9995a48c}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a13a7a953ec30a96fb8d263bf9995a48c}} 
+\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}!Details@{Details}}
+\index{Details@{Details}!FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+\doxysubsubsection{\texorpdfstring{Details()}{Details()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Charity\+Makers\+Controller.\+Details (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides detail information about charity makers by id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & parameter for identifying charity maker\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns Details view with current charity maker or return not found if charity maker does not exist
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_accdcc7a0f7217531590346ea5a88df3b}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_accdcc7a0f7217531590346ea5a88df3b}} 
+\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Charity\+Makers\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{[}\+Bind(\char`\"{}\+I\+D,\+Full\+Name,\+Address,\+Birthday,\+Contacts,\+Rating\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_charity_maker}{Charity\+Maker}}}]{charity\+Maker }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides editing charity maker 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & charity maker\`{}s id, who you want to change\\
+\hline
+{\em charity\+Maker} & new info about charity maker\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to index when added successfully, not found if id not found or Charity\+Maker view if info about charity maker is invalid
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a01ac2659f1c7266f817a65f3539c4f70}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a01ac2659f1c7266f817a65f3539c4f70}} 
+\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Charity\+Makers\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides getting Edit view with charity maker id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & parameter to identify charity maker, which you want to edit\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Edit view if id exists or not found if doesn\`{}t
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7fd31e3fb386cb2f1c4c92209d501b78}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7fd31e3fb386cb2f1c4c92209d501b78}} 
+\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}!Index@{Index}}
+\index{Index@{Index}!FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+\doxysubsubsection{\texorpdfstring{Index()}{Index()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Charity\+Makers\+Controller.\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}}}]{search\+Model }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides list of charity makers 
+
+
+\begin{DoxyParams}{Parameters}
+{\em search\+Model} & parameter for filtre charity makers\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Index view with list of charity makers
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7c9c8c407b065d5bc302103c10d53aeb}\label{class_family_net_1_1_controllers_1_1_charity_makers_controller_a7c9c8c407b065d5bc302103c10d53aeb}} 
+\index{FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}!Table@{Table}}
+\index{Table@{Table}!FamilyNet.Controllers.CharityMakersController@{FamilyNet.Controllers.CharityMakersController}}
+\doxysubsubsection{\texorpdfstring{Table()}{Table()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Charity\+Makers\+Controller.\+Table (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Method provides getting Table view with all charity makers 
+
+\begin{DoxyReturn}{Returns}
+Table view with list of charity makers
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Charity\+Makers\+Controller.\+cs\end{DoxyCompactItemize}
+Controllers/Charity\+Makers\+Controller.\+cs\end{DoxyCompactItemize}

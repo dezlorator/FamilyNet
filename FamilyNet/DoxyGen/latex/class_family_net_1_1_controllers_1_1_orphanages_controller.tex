@@ -12,42 +12,222 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Orphanages\+Controller\+:\be
 \mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a242cf1c81ecf9442012144e8ab9db442}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a242cf1c81ecf9442012144e8ab9db442}} 
 {\bfseries Orphanages\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work, I\+Hosting\+Environment environment, I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller}{Orphanages\+Controller}} $>$ localizer, I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_shared_resource}{Shared\+Resource}} $>$ shared\+Localizer)
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_ab3a4edcdf4ce5bb1f43fd315f5619197}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_ab3a4edcdf4ce5bb1f43fd315f5619197}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Index} (int id, \mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_orphanage_search_model}{Orphanage\+Search\+Model}} search\+Model, Sort\+State\+Orphanages sort\+Order=Sort\+State\+Orphanages.\+Name\+Asc)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a3cd0c1e62e1b9b617a1ec585da6d0102}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a3cd0c1e62e1b9b617a1ec585da6d0102}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Details} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_aca0ca528b7a0667ba9ac1800d27f99f7}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_aca0ca528b7a0667ba9ac1800d27f99f7}} 
-I\+Action\+Result {\bfseries Create} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a91bf0d1b50506083ae2c116bd8e673b8}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a91bf0d1b50506083ae2c116bd8e673b8}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create} (\mbox{[}Bind(\char`\"{}Name,Adress,Rating,Avatar\char`\"{})\mbox{]} Orphanage orphanage, I\+Form\+File file)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a3d5b82b22a4c7b5509907afa325e3dba}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a3d5b82b22a4c7b5509907afa325e3dba}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_abb4bf7ab6cb48db7725d21e1fd73979d}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_abb4bf7ab6cb48db7725d21e1fd73979d}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (\mbox{[}Bind(\char`\"{}ID,Name,Adress,Rating,Avatar\char`\"{})\mbox{]} Orphanage orphanage, int id, I\+Form\+File file)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_af3d83ad27cfca590d21b4d7d3f573b79}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_af3d83ad27cfca590d21b4d7d3f573b79}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_af4bfd7c9198550d5baedb0f32bc7548f}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_af4bfd7c9198550d5baedb0f32bc7548f}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Confirmed} (int id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a8db2fdec5c7600543dadf892cfc0f4e4}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a8db2fdec5c7600543dadf892cfc0f4e4}} 
-I\+Action\+Result {\bfseries Search\+By\+Type\+Help} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_ae7e84ac1ac3190a03fbb30027048ac8f}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_ae7e84ac1ac3190a03fbb30027048ac8f}} 
-I\+Action\+Result {\bfseries Search\+Result} (string type\+Help)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a7b60dea8439398dff9c5a6c7c62d3700}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a7b60dea8439398dff9c5a6c7c62d3700}} 
-I\+Action\+Result {\bfseries Search\+Orphanage\+On\+Map} ()
-\end{DoxyCompactItemize}
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_ab3a4edcdf4ce5bb1f43fd315f5619197}{Index}} (int id, \mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_orphanage_search_model}{Orphanage\+Search\+Model}} search\+Model, Sort\+State\+Orphanages sort\+Order=Sort\+State\+Orphanages.\+Name\+Asc)
+\begin{DoxyCompactList}\small\item\em Gets a list of all orphanages by the id \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_a3cd0c1e62e1b9b617a1ec585da6d0102}{Details}} (int? id)
+\begin{DoxyCompactList}\small\item\em Displays the orphanage indicated by id \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_aca0ca528b7a0667ba9ac1800d27f99f7}{Create}} ()
+\begin{DoxyCompactList}\small\item\em Display a form for entering orphanage data \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_a91bf0d1b50506083ae2c116bd8e673b8}{Create}} (\mbox{[}Bind(\char`\"{}Name,Adress,Rating,Avatar\char`\"{})\mbox{]} Orphanage orphanage, I\+Form\+File file)
+\begin{DoxyCompactList}\small\item\em Adds a new Orphanage to the database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_a3d5b82b22a4c7b5509907afa325e3dba}{Edit}} (int? id)
+\begin{DoxyCompactList}\small\item\em Displays a form for editing a specific orphanage specified by id \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_abb4bf7ab6cb48db7725d21e1fd73979d}{Edit}} (\mbox{[}Bind(\char`\"{}ID,Name,Adress,Rating,Avatar\char`\"{})\mbox{]} Orphanage orphanage, int id, I\+Form\+File file)
+\begin{DoxyCompactList}\small\item\em Edits a specific orphanage specified by id \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_af3d83ad27cfca590d21b4d7d3f573b79}{Delete}} (int? id)
+\begin{DoxyCompactList}\small\item\em Displays a form for removing a specific orphanage at the specified id \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_af4bfd7c9198550d5baedb0f32bc7548f}{Delete\+Confirmed}} (int id)
+\begin{DoxyCompactList}\small\item\em Deletes the selected orphanage from id from the database \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_a8db2fdec5c7600543dadf892cfc0f4e4}{Search\+By\+Type\+Help}} ()
+\begin{DoxyCompactList}\small\item\em Displays a form for finding orphanage by type of assistance \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_ae7e84ac1ac3190a03fbb30027048ac8f}{Search\+Result}} (string type\+Help)
+\begin{DoxyCompactList}\small\item\em Searches for orphanage by type of help entered \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_orphanages_controller_a7b60dea8439398dff9c5a6c7c62d3700}{Search\+Orphanage\+On\+Map}} ()
+\begin{DoxyCompactList}\small\item\em Shows a map with orphanages \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_aca0ca528b7a0667ba9ac1800d27f99f7}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_aca0ca528b7a0667ba9ac1800d27f99f7}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Display a form for entering orphanage data 
+
+\begin{DoxyReturn}{Returns}
+view
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a91bf0d1b50506083ae2c116bd8e673b8}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a91bf0d1b50506083ae2c116bd8e673b8}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Create (\begin{DoxyParamCaption}\item[{\mbox{[}\+Bind(\char`\"{}\+Name,\+Adress,\+Rating,\+Avatar\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}}}]{orphanage,  }\item[{I\+Form\+File}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds a new Orphanage to the database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em orphanage} & Added Orphanage\\
+\hline
+{\em file} & Object to upload a file to the server\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with orphanage
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_af3d83ad27cfca590d21b4d7d3f573b79}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_af3d83ad27cfca590d21b4d7d3f573b79}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!Delete@{Delete}}
+\index{Delete@{Delete}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{Delete()}{Delete()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Delete (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Displays a form for removing a specific orphanage at the specified id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique orphanages id\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with orphanages
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_af4bfd7c9198550d5baedb0f32bc7548f}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_af4bfd7c9198550d5baedb0f32bc7548f}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!DeleteConfirmed@{DeleteConfirmed}}
+\index{DeleteConfirmed@{DeleteConfirmed}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{DeleteConfirmed()}{DeleteConfirmed()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Delete\+Confirmed (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Deletes the selected orphanage from id from the database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique orphanages id\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+redirect to index view
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a3cd0c1e62e1b9b617a1ec585da6d0102}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a3cd0c1e62e1b9b617a1ec585da6d0102}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!Details@{Details}}
+\index{Details@{Details}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{Details()}{Details()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Details (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Displays the orphanage indicated by id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique orphanages id\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with Orphanage
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_abb4bf7ab6cb48db7725d21e1fd73979d}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_abb4bf7ab6cb48db7725d21e1fd73979d}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{\mbox{[}\+Bind(\char`\"{}\+I\+D,\+Name,\+Adress,\+Rating,\+Avatar\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}}}]{orphanage,  }\item[{int}]{id,  }\item[{I\+Form\+File}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Edits a specific orphanage specified by id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em orphanage} & edited object\\
+\hline
+{\em id} & Unique orphanages id\\
+\hline
+{\em file} & Object to upload a file to the server\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with orphanages
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a3d5b82b22a4c7b5509907afa325e3dba}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a3d5b82b22a4c7b5509907afa325e3dba}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Displays a form for editing a specific orphanage specified by id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique orphanages id\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with orphanage 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_ab3a4edcdf4ce5bb1f43fd315f5619197}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_ab3a4edcdf4ce5bb1f43fd315f5619197}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!Index@{Index}}
+\index{Index@{Index}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{Index()}{Index()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Index (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_orphanage_search_model}{Orphanage\+Search\+Model}}}]{search\+Model,  }\item[{Sort\+State\+Orphanages}]{sort\+Order = {\ttfamily SortStateOrphanages.NameAsc} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets a list of all orphanages by the id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique orphanages id\\
+\hline
+{\em search\+Model} & Search model\\
+\hline
+{\em sort\+Order} & Sort option\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with I\+Queryable$<$\+Orphanage$>$
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a8db2fdec5c7600543dadf892cfc0f4e4}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a8db2fdec5c7600543dadf892cfc0f4e4}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!SearchByTypeHelp@{SearchByTypeHelp}}
+\index{SearchByTypeHelp@{SearchByTypeHelp}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{SearchByTypeHelp()}{SearchByTypeHelp()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Search\+By\+Type\+Help (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Displays a form for finding orphanage by type of assistance 
+
+\begin{DoxyReturn}{Returns}
+view
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_a7b60dea8439398dff9c5a6c7c62d3700}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_a7b60dea8439398dff9c5a6c7c62d3700}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!SearchOrphanageOnMap@{SearchOrphanageOnMap}}
+\index{SearchOrphanageOnMap@{SearchOrphanageOnMap}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{SearchOrphanageOnMap()}{SearchOrphanageOnMap()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Search\+Orphanage\+On\+Map (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Shows a map with orphanages 
+
+\begin{DoxyReturn}{Returns}
+view with all orphanages
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_orphanages_controller_ae7e84ac1ac3190a03fbb30027048ac8f}\label{class_family_net_1_1_controllers_1_1_orphanages_controller_ae7e84ac1ac3190a03fbb30027048ac8f}} 
+\index{FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}!SearchResult@{SearchResult}}
+\index{SearchResult@{SearchResult}!FamilyNet.Controllers.OrphanagesController@{FamilyNet.Controllers.OrphanagesController}}
+\doxysubsubsection{\texorpdfstring{SearchResult()}{SearchResult()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Orphanages\+Controller.\+Search\+Result (\begin{DoxyParamCaption}\item[{string}]{type\+Help }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Searches for orphanage by type of help entered 
+
+\begin{DoxyReturn}{Returns}
+view with orphanage list
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Orphanages\+Controller.\+cs\end{DoxyCompactItemize}
+Controllers/Orphanages\+Controller.\+cs\end{DoxyCompactItemize}

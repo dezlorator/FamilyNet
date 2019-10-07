@@ -1,5 +1,10 @@
 \hypertarget{class_family_net_1_1_controllers_1_1_donations_controller}{}\doxysection{Family\+Net.\+Controllers.\+Donations\+Controller Class Reference}
 \label{class_family_net_1_1_controllers_1_1_donations_controller}\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+
+
+контроллер донатов  
+
+
 Inheritance diagram for Family\+Net.\+Controllers.\+Donations\+Controller\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -9,54 +14,277 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Donations\+Controller\+:\beg
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_ad8960805a59d348975f3c2f14626ebe9}\label{class_family_net_1_1_controllers_1_1_donations_controller_ad8960805a59d348975f3c2f14626ebe9}} 
-{\bfseries Donations\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a6d003f5ca60bf2a46a9b74449448afbc}\label{class_family_net_1_1_controllers_1_1_donations_controller_a6d003f5ca60bf2a46a9b74449448afbc}} 
-I\+Action\+Result {\bfseries Donations\+Table} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a2b22399488950371c30379931f68b453}\label{class_family_net_1_1_controllers_1_1_donations_controller_a2b22399488950371c30379931f68b453}} 
-I\+Action\+Result {\bfseries Categories\+Table} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a8e9cd6a3bfe5f3cac24272f1dc453df7}\label{class_family_net_1_1_controllers_1_1_donations_controller_a8e9cd6a3bfe5f3cac24272f1dc453df7}} 
-I\+Action\+Result {\bfseries Create\+Category} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a2a3abb01c41e1b75bf077cbf600b0dd6}\label{class_family_net_1_1_controllers_1_1_donations_controller_a2a3abb01c41e1b75bf077cbf600b0dd6}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create\+Category} (\mbox{[}Bind(\char`\"{}ID,Name\char`\"{})\mbox{]} Donation\+Item\+Type request)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_afb7607260d85f8c68877ab795bd31a67}\label{class_family_net_1_1_controllers_1_1_donations_controller_afb7607260d85f8c68877ab795bd31a67}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Category} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a752901c945314c50811cd63efa800459}\label{class_family_net_1_1_controllers_1_1_donations_controller_a752901c945314c50811cd63efa800459}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Category\+Confirmed} (int id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a9ebd60e8468f3359fd20a848a7981c56}\label{class_family_net_1_1_controllers_1_1_donations_controller_a9ebd60e8468f3359fd20a848a7981c56}} 
-I\+Action\+Result {\bfseries Create\+Donation} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a337eff72a2f79e25c151872102f6d7d7}\label{class_family_net_1_1_controllers_1_1_donations_controller_a337eff72a2f79e25c151872102f6d7d7}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create\+Donation} (\mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_donation_item}{Donation\+Item}},\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}}\char`\"{})\mbox{]} Donation request, int id\+Orphanage, int id\+Donation\+Item)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a42c042551dbded4d1321ad9d1190c949}\label{class_family_net_1_1_controllers_1_1_donations_controller_a42c042551dbded4d1321ad9d1190c949}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit\+Donation} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a52f7674208a1c5877b0aa8959f7fd06f}\label{class_family_net_1_1_controllers_1_1_donations_controller_a52f7674208a1c5877b0aa8959f7fd06f}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit\+Donation} (int id, \mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_donation_item}{Donation\+Item}}\char`\"{})\mbox{]} Donation donation)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_ab3828f8ba76196504beefdaa2e1b52c0}\label{class_family_net_1_1_controllers_1_1_donations_controller_ab3828f8ba76196504beefdaa2e1b52c0}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Donation} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a0ae35c72750a62d2394fbb76b8a43d67}\label{class_family_net_1_1_controllers_1_1_donations_controller_a0ae35c72750a62d2394fbb76b8a43d67}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Donation\+Confirmed} (int id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a8e55e6c43107e2f3c3802edfe8e3b188}\label{class_family_net_1_1_controllers_1_1_donations_controller_a8e55e6c43107e2f3c3802edfe8e3b188}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Details} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a48ddbf71bb45cf46fd24d5a48e774923}\label{class_family_net_1_1_controllers_1_1_donations_controller_a48ddbf71bb45cf46fd24d5a48e774923}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Details\+Category} (int? id)
-\end{DoxyCompactItemize}
+\mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_ad8960805a59d348975f3c2f14626ebe9}{Donations\+Controller}} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work)
+\begin{DoxyCompactList}\small\item\em Конструктор \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_base_controller}{Base\+Controller}}. \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a6d003f5ca60bf2a46a9b74449448afbc}{Donations\+Table}} ()
+\begin{DoxyCompactList}\small\item\em Передает на интерфейс таблицу донатов. Доступно для всех. \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a2b22399488950371c30379931f68b453}{Categories\+Table}} ()
+\begin{DoxyCompactList}\small\item\em Передает на интерфейс таблицу категорий. Доступно для всех. \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a8e9cd6a3bfe5f3cac24272f1dc453df7}{Create\+Category}} ()
+\begin{DoxyCompactList}\small\item\em Создание категории(\+G\+E\+T). Доступно для Admin,Charity\+Maker,Volunteer,Representative. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a2a3abb01c41e1b75bf077cbf600b0dd6}{Create\+Category}} (\mbox{[}Bind(\char`\"{}ID,Name\char`\"{})\mbox{]} Donation\+Item\+Type request)
+\begin{DoxyCompactList}\small\item\em Создание категории(\+P\+O\+S\+T). Доступно для Admin,Charity\+Maker,Volunteer. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_afb7607260d85f8c68877ab795bd31a67}{Delete\+Category}} (int? id)
+\begin{DoxyCompactList}\small\item\em Удаление категории по id(\+G\+E\+T). Доступно для Admin. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a752901c945314c50811cd63efa800459}{Delete\+Category\+Confirmed}} (int id)
+\begin{DoxyCompactList}\small\item\em Подтверждение удаления категории по id(\+G\+E\+T). Доступно для Admin. \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a9ebd60e8468f3359fd20a848a7981c56}{Create\+Donation}} ()
+\begin{DoxyCompactList}\small\item\em Просмотр таблицы потребностей. Доступен для Admin,Charity\+Maker,Volunteer,Representative. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a337eff72a2f79e25c151872102f6d7d7}{Create\+Donation}} (\mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_donation_item}{Donation\+Item}},\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}}\char`\"{})\mbox{]} Donation request, int id\+Orphanage, int id\+Donation\+Item)
+\begin{DoxyCompactList}\small\item\em Создать потребность. Доступен для Admin,Charity\+Maker,Volunteer. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a42c042551dbded4d1321ad9d1190c949}{Edit\+Donation}} (int? id)
+\begin{DoxyCompactList}\small\item\em Изменение пожертвования(\+G\+E\+T). Доступно для Admin. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a52f7674208a1c5877b0aa8959f7fd06f}{Edit\+Donation}} (int id, \mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_donation_item}{Donation\+Item}}\char`\"{})\mbox{]} Donation donation)
+\begin{DoxyCompactList}\small\item\em Изменение пожертвования(\+Post). Доступно для Admin. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_ab3828f8ba76196504beefdaa2e1b52c0}{Delete\+Donation}} (int? id)
+\begin{DoxyCompactList}\small\item\em Удаление пожертования по id(\+G\+E\+T). Доступно для Admin. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a0ae35c72750a62d2394fbb76b8a43d67}{Delete\+Donation\+Confirmed}} (int id)
+\begin{DoxyCompactList}\small\item\em Подтвержение удаления по id. Доступо для Admin. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a8e55e6c43107e2f3c3802edfe8e3b188}{Details}} (int? id)
+\begin{DoxyCompactList}\small\item\em Получить детали пожертвования по id. Доступно для всех. \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_donations_controller_a48ddbf71bb45cf46fd24d5a48e774923}{Details\+Category}} (int? id)
+\begin{DoxyCompactList}\small\item\em Получить детали категории по id. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+контроллер донатов 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_ad8960805a59d348975f3c2f14626ebe9}\label{class_family_net_1_1_controllers_1_1_donations_controller_ad8960805a59d348975f3c2f14626ebe9}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!DonationsController@{DonationsController}}
+\index{DonationsController@{DonationsController}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{DonationsController()}{DonationsController()}}
+{\footnotesize\ttfamily Family\+Net.\+Controllers.\+Donations\+Controller.\+Donations\+Controller (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}}}]{unit\+Of\+Work }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Конструктор \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_base_controller}{Base\+Controller}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em unit\+Of\+Work} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a2b22399488950371c30379931f68b453}\label{class_family_net_1_1_controllers_1_1_donations_controller_a2b22399488950371c30379931f68b453}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!CategoriesTable@{CategoriesTable}}
+\index{CategoriesTable@{CategoriesTable}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{CategoriesTable()}{CategoriesTable()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Donations\+Controller.\+Categories\+Table (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Передает на интерфейс таблицу категорий. Доступно для всех. 
+
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a8e9cd6a3bfe5f3cac24272f1dc453df7}\label{class_family_net_1_1_controllers_1_1_donations_controller_a8e9cd6a3bfe5f3cac24272f1dc453df7}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!CreateCategory@{CreateCategory}}
+\index{CreateCategory@{CreateCategory}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{CreateCategory()}{CreateCategory()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Donations\+Controller.\+Create\+Category (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Создание категории(\+G\+E\+T). Доступно для Admin,Charity\+Maker,Volunteer,Representative. 
+
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a2a3abb01c41e1b75bf077cbf600b0dd6}\label{class_family_net_1_1_controllers_1_1_donations_controller_a2a3abb01c41e1b75bf077cbf600b0dd6}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!CreateCategory@{CreateCategory}}
+\index{CreateCategory@{CreateCategory}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{CreateCategory()}{CreateCategory()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Create\+Category (\begin{DoxyParamCaption}\item[{\mbox{[}\+Bind(\char`\"{}\+I\+D,\+Name\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_donation_item_type}{Donation\+Item\+Type}}}]{request }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Создание категории(\+P\+O\+S\+T). Доступно для Admin,Charity\+Maker,Volunteer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em request} & Свойства ID,Name\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a9ebd60e8468f3359fd20a848a7981c56}\label{class_family_net_1_1_controllers_1_1_donations_controller_a9ebd60e8468f3359fd20a848a7981c56}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!CreateDonation@{CreateDonation}}
+\index{CreateDonation@{CreateDonation}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{CreateDonation()}{CreateDonation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Donations\+Controller.\+Create\+Donation (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Просмотр таблицы потребностей. Доступен для Admin,Charity\+Maker,Volunteer,Representative. 
+
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a337eff72a2f79e25c151872102f6d7d7}\label{class_family_net_1_1_controllers_1_1_donations_controller_a337eff72a2f79e25c151872102f6d7d7}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!CreateDonation@{CreateDonation}}
+\index{CreateDonation@{CreateDonation}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{CreateDonation()}{CreateDonation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Create\+Donation (\begin{DoxyParamCaption}\item[{\mbox{[}\+Bind(\char`\"{}\+I\+D,\+Donation\+Item,\+Orphanage\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_donation}{Donation}}}]{request,  }\item[{int}]{id\+Orphanage,  }\item[{int}]{id\+Donation\+Item }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Создать потребность. Доступен для Admin,Charity\+Maker,Volunteer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em request} & Свойства ID,Donation\+Item,Orphanage\\
+\hline
+{\em id\+Orphanage} & id приюта\\
+\hline
+{\em id\+Donation\+Item} & id пожертвования\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+View
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_afb7607260d85f8c68877ab795bd31a67}\label{class_family_net_1_1_controllers_1_1_donations_controller_afb7607260d85f8c68877ab795bd31a67}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!DeleteCategory@{DeleteCategory}}
+\index{DeleteCategory@{DeleteCategory}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{DeleteCategory()}{DeleteCategory()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Delete\+Category (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Удаление категории по id(\+G\+E\+T). Доступно для Admin. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id категории\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a752901c945314c50811cd63efa800459}\label{class_family_net_1_1_controllers_1_1_donations_controller_a752901c945314c50811cd63efa800459}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!DeleteCategoryConfirmed@{DeleteCategoryConfirmed}}
+\index{DeleteCategoryConfirmed@{DeleteCategoryConfirmed}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{DeleteCategoryConfirmed()}{DeleteCategoryConfirmed()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Delete\+Category\+Confirmed (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Подтверждение удаления категории по id(\+G\+E\+T). Доступно для Admin. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id категории\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_ab3828f8ba76196504beefdaa2e1b52c0}\label{class_family_net_1_1_controllers_1_1_donations_controller_ab3828f8ba76196504beefdaa2e1b52c0}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!DeleteDonation@{DeleteDonation}}
+\index{DeleteDonation@{DeleteDonation}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{DeleteDonation()}{DeleteDonation()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Delete\+Donation (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Удаление пожертования по id(\+G\+E\+T). Доступно для Admin. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id пожертвования\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Not\+Found или View
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a0ae35c72750a62d2394fbb76b8a43d67}\label{class_family_net_1_1_controllers_1_1_donations_controller_a0ae35c72750a62d2394fbb76b8a43d67}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!DeleteDonationConfirmed@{DeleteDonationConfirmed}}
+\index{DeleteDonationConfirmed@{DeleteDonationConfirmed}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{DeleteDonationConfirmed()}{DeleteDonationConfirmed()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Delete\+Donation\+Confirmed (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Подтвержение удаления по id. Доступо для Admin. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id пожертвования\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a8e55e6c43107e2f3c3802edfe8e3b188}\label{class_family_net_1_1_controllers_1_1_donations_controller_a8e55e6c43107e2f3c3802edfe8e3b188}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!Details@{Details}}
+\index{Details@{Details}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{Details()}{Details()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Details (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Получить детали пожертвования по id. Доступно для всех. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id пожертвования\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+View(donation) или Not\+Found
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a48ddbf71bb45cf46fd24d5a48e774923}\label{class_family_net_1_1_controllers_1_1_donations_controller_a48ddbf71bb45cf46fd24d5a48e774923}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!DetailsCategory@{DetailsCategory}}
+\index{DetailsCategory@{DetailsCategory}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{DetailsCategory()}{DetailsCategory()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Details\+Category (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Получить детали категории по id. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id категории\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+View(category) или Not\+Found
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a6d003f5ca60bf2a46a9b74449448afbc}\label{class_family_net_1_1_controllers_1_1_donations_controller_a6d003f5ca60bf2a46a9b74449448afbc}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!DonationsTable@{DonationsTable}}
+\index{DonationsTable@{DonationsTable}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{DonationsTable()}{DonationsTable()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Donations\+Controller.\+Donations\+Table (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Передает на интерфейс таблицу донатов. Доступно для всех. 
+
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a52f7674208a1c5877b0aa8959f7fd06f}\label{class_family_net_1_1_controllers_1_1_donations_controller_a52f7674208a1c5877b0aa8959f7fd06f}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!EditDonation@{EditDonation}}
+\index{EditDonation@{EditDonation}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{EditDonation()}{EditDonation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Edit\+Donation (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{[}\+Bind(\char`\"{}\+I\+D,\+Donation\+Item\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_donation}{Donation}}}]{donation }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Изменение пожертвования(\+Post). Доступно для Admin. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id пожертвования\\
+\hline
+{\em donation} & свойства ID,Donation\+Item\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_donations_controller_a42c042551dbded4d1321ad9d1190c949}\label{class_family_net_1_1_controllers_1_1_donations_controller_a42c042551dbded4d1321ad9d1190c949}} 
+\index{FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}!EditDonation@{EditDonation}}
+\index{EditDonation@{EditDonation}!FamilyNet.Controllers.DonationsController@{FamilyNet.Controllers.DonationsController}}
+\doxysubsubsection{\texorpdfstring{EditDonation()}{EditDonation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Donations\+Controller.\+Edit\+Donation (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Изменение пожертвования(\+G\+E\+T). Доступно для Admin. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id пожертвования для изменения\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Not\+Found или View
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Donations\+Controller.\+cs\end{DoxyCompactItemize}
+Controllers/Donations\+Controller.\+cs\end{DoxyCompactItemize}
