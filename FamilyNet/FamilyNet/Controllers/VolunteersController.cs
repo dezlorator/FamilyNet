@@ -15,6 +15,9 @@ using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
+    /// <summary>
+    /// The controller accepts and processes requests about Volunteers
+    /// </summary>
     [Authorize]
     public class VolunteersController : BaseController
     {
@@ -30,6 +33,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers
+        /// <summary>
+        /// Method provides list of Volunteers
+        /// </summary>
+        /// <param name="searchModel">parameters for filter</param>
+        /// <returns>View with list of Volunteers</returns>
         [AllowAnonymous]
         public async Task<IActionResult> Index(PersonSearchModel searchModel)
         {
@@ -43,6 +51,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Details/5
+        /// <summary>
+        /// Method provides information about volunteer by id
+        /// </summary>
+        /// <param name="id">Volunteer's identifier</param>
+        /// <returns>View with details about Volunteer or NotFound page</returns>
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -63,6 +76,10 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Create
+        /// <summary>
+        /// Method provides a view for adding new Volunteer into database
+        /// </summary>
+        /// <returns>View with input form</returns>
         [Authorize(Roles = "Admin, Volunteer")]
         public IActionResult Create()
         {
@@ -80,6 +97,11 @@ namespace FamilyNet.Controllers
         // POST: Volunteers/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Method validates and adds new Volunteer into database
+        /// </summary>
+        /// <param name="volunteer">adding entity</param>
+        /// <returns>Redirect to Index if model is valid or return to Create page</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Volunteer")]
@@ -106,6 +128,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Edit/5
+        /// <summary>
+        ///  Method provides view for editing Volunteer
+        /// </summary>
+        /// <param name="id">Volunteer's identifier</param>
+        /// <returns>View with editing entity</returns>
         [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -135,6 +162,12 @@ namespace FamilyNet.Controllers
         // POST: Volunteers/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Method validates and updates Volunteer in database
+        /// </summary>
+        /// <param name="id">Volunteer's identifier</param>
+        /// <param name="volunteer">Volunteer's details by id</param>
+        /// <returns>Redirect to index if model is valid or return to Edit page</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Volunteer")]
@@ -181,6 +214,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Volunteers/Delete/5
+        /// <summary>
+        /// Method provides page for deleting Volunteer by id from database
+        /// </summary>
+        /// <param name="id">Volunteer's identifier</param>
+        /// <returns>Delete view if model is valid or redirect to NotFound page</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -201,6 +239,11 @@ namespace FamilyNet.Controllers
         }
 
         // POST: Volunteers/Delete/5
+        /// <summary>
+        /// Method deletes Volunteer by id from database
+        /// </summary>
+        /// <param name="id">Volunteer's identifier</param>
+        /// <returns>Redirect to Index page</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
