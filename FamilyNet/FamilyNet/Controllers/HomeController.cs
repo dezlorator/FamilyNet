@@ -9,18 +9,39 @@ using FamilyNet.Models.Interfaces;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Hosting;
 
-namespace FamilyNet.Controllers {
-    public class HomeController : BaseController {
+namespace FamilyNet.Controllers
+{
+
+    public class HomeController : BaseController
+    {
+
+        /// <summary>
+        /// хранит данные для локализации
+        /// </summary>
+
         private readonly IStringLocalizer<HomeController> _localizer;
+
+        /// <summary>
+        /// нигде не используется
+        /// </summary>
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        public HomeController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<HomeController> localizer) : base(unitOfWork) {
+
+        public HomeController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<HomeController> localizer) : base(unitOfWork)
+        {
             _localizer = localizer;
             _hostingEnvironment = environment;
 
         }
 
-        public async Task<IActionResult> Index() {
+        /// <summary>
+        /// best????
+        /// async медод на самом деле НЕ async
+        /// инициализирует ViewData передает данные на интерфейс
+        /// </summary>
+        /// <returns>возвращает view Index</returns>
+        public async Task<IActionResult> Index()
+        {
             ViewData["Best"] = _unitOfWorkAsync.Orphanages.GetAll()
               .OrderByDescending(c => c.Rating)
 
@@ -29,18 +50,32 @@ namespace FamilyNet.Controllers {
             GetViewData();
             return View();
         }
-        public IActionResult Privacy() {
+        /// <summary>
+        /// возвращает view Privacy
+        /// </summary>
+        /// <returns>view Privacy</returns>
+        public IActionResult Privacy()
+        {
             GetViewData();
             return View();
         }
 
+        /// <summary>
+        /// view с информацией об ошибке
+        /// атрибут для кеширования(максимальное время кэширования в секундах=0,ответ нигде не кэшируется)
+        /// </summary>
+        /// <returns>возвращает view Error</returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error() {
+        public IActionResult Error()
+        {
             GetViewData();
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        private void GetViewData() {
+        /// <summary>
+        /// инициализирует viewdata передает локазизацию на интерфейс
+        /// </summary>
+        private void GetViewData()
+        {
             ViewData["CharityMakers"] = _localizer["CharityMakers"];
             ViewData["Children"] = _localizer["Children"];
             ViewData["Orphanages"] = _localizer["Orphanages"];
