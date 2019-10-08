@@ -29,6 +29,12 @@ namespace FamilyNet.Controllers
         #region Methods
 
         // GET: Representatives
+        /// <summary>
+        /// Method provides list of Representatives
+        /// </summary>
+        /// <param name="id">Representative's identifier</param>
+        /// <param name="searchModel">parameters for filter</param>
+        /// <returns>view with list of Representatives</returns>
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id,
             PersonSearchModel searchModel)
@@ -47,6 +53,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Representatives/Details/5
+        /// <summary>
+        /// Method provides information about Representative by id
+        /// </summary>
+        /// <param name="id">Representative's identifier</param>
+        /// <returns>view with details about Representatives or returns NotFound page</returns>
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -61,8 +72,12 @@ namespace FamilyNet.Controllers
             return View(representative);
         }
 
-        [Authorize(Roles = "Admin, Representative")]
         // GET: Representatives/Create
+        /// <summary>
+        /// Method provides view for add new Representative into database
+        /// </summary>
+        /// <returns>view with empty form</returns>
+        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Create()
         {
             await Check();
@@ -75,11 +90,18 @@ namespace FamilyNet.Controllers
             return View();
         }
 
-        
+
 
         // POST: Representatives/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Method validates and adds new Representative into database
+        /// </summary>
+        /// <param name="representative">Representative's adding model</param>
+        /// <param name="id">Representative's identifier</param>
+        /// <param name="file">Representative's photo</param>
+        /// <returns>Redirect to Index if model is valid or return to Create page</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Representative")]
@@ -107,6 +129,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Representatives/Edit/5
+        /// <summary>
+        ///  Method provides view for edit Representative
+        /// </summary>
+        /// <param name="id">Representative's identifier</param>
+        /// <returns>view with editing form for Representative</returns>
         [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -139,6 +166,14 @@ namespace FamilyNet.Controllers
         // POST: Representatives/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Method validates and updates Representative in database
+        /// </summary>
+        /// <param name="id">Representative's identifier</param>
+        /// <param name="representative">Representative's details by id</param>
+        /// <param name="orphanageId">identifier of Orphanage</param>
+        /// <param name="file">Representative's photo</param>
+        /// <returns>Redirect to index if model is valid or return to Edit page</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Representative")]
@@ -184,6 +219,11 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Representatives/Delete/5
+        /// <summary>
+        /// Method provides page for deletes Representative by id from database
+        /// </summary>
+        /// <param name="id">Representative's identifier</param>
+        /// <returns>view delete if model is valid or redirect to NotFound page</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -199,6 +239,11 @@ namespace FamilyNet.Controllers
         }
 
         // POST: Representatives/Delete/5
+        /// <summary>
+        /// Method deletes Representative by id from database
+        /// </summary>
+        /// <param name="id">Representative's identifier</param>
+        /// <returns>Redirect to Index page</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
