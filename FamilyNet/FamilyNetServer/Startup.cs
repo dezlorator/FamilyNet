@@ -37,9 +37,9 @@ namespace FamilyNetServer
             //services.AddTransient<FamilyNetServerPhoneValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration["Data:FamilyNetServer:ConnectionString"]));
+                    Configuration["Data:FamilyNet:ConnectionString"]));
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
-                options.UseSqlServer(Configuration["Data:FamilyNetServerIdentity:ConnectionString"]));
+                options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
             services.AddIdentity<ApplicationUser, IdentityRole>(opts => {
                 opts.User.RequireUniqueEmail = true;
                 opts.Password.RequiredLength = 6;
@@ -67,7 +67,16 @@ namespace FamilyNetServer
             //    opts => { opts.ResourcesPath = "Resources"; })
                 .AddDataAnnotationsLocalization();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            .ConfigureApiBehaviorOptions(options =>
+             {
+                 options.SuppressConsumesConstraintForFormFileParameters = true;
+                 options.SuppressInferBindingSourcesForParameters = true;
+                 options.SuppressModelStateInvalidFilter = true;
+                 options.SuppressMapClientErrors = true;
+                 options.ClientErrorMapping[404].Link =
+                     "https://httpstatuses.com/404";
+             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -117,9 +126,9 @@ namespace FamilyNetServer
                     
             });
 
-            ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
-                    Configuration).Wait();
-            ApplicationIdentityDbContext.InitializeRolesAsync(app.ApplicationServices).Wait();
+            //ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
+            //        Configuration).Wait();
+            //ApplicationIdentityDbContext.InitializeRolesAsync(app.ApplicationServices).Wait();
 
 
 
