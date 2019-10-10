@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Infrastructure;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using FamilyNetServer.FileUploaders;
+using FamilyNetServer.Validators;
+using FamilyNetServer.Filters;
 
 namespace FamilyNetServer
 {
@@ -40,7 +43,8 @@ namespace FamilyNetServer
                     Configuration["Data:FamilyNet:ConnectionString"]));
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
-            services.AddIdentity<ApplicationUser, IdentityRole>(opts => {
+            services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
+            {
                 opts.User.RequireUniqueEmail = true;
                 opts.Password.RequiredLength = 6;
                 opts.Password.RequireNonAlphanumeric = false;
@@ -60,6 +64,13 @@ namespace FamilyNetServer
             });
 
             services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
+            services.AddTransient<IFileUploader, FileUploader>();
+            services.AddTransient<IChildValidator, ChildValidator>();
+            services.AddTransient<IVolunteerValidator, VolunteerValidator>();
+            services.AddTransient<IRepresentativeValidator, RepresentativeValidator>();
+            services.AddTransient<IFilterConditionsChildren, FilterConditionsChildren>();
+            services.AddTransient<IFilterConditionsVolunteers, FilterConditionsVolunteers>();
+            services.AddTransient<IFilterConditionsRepresentatives, FilterConditionsRepresentatives>();
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
                 .AddViewLocalization(
@@ -82,7 +93,7 @@ namespace FamilyNetServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-           
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -112,7 +123,7 @@ namespace FamilyNetServer
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
-           
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -122,8 +133,8 @@ namespace FamilyNetServer
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-                
-                    
+
+
             });
 
             //ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,

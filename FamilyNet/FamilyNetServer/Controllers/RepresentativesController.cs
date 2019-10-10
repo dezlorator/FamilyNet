@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,16 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Infrastructure;
-using FamilyNetServer.DTO;
+using FamilyNetServer.Controllers;
 
-namespace FamilyNetServer.Controllers
+namespace FamilyNet.Controllers
 {
-    [Route("/api/v1/[controller]")]
-    [ApiController]
     [Authorize]
     public class RepresentativesController : BaseController
     {
@@ -31,29 +27,25 @@ namespace FamilyNetServer.Controllers
 
         #region Methods
 
-        [HttpGet]
-        [HttpGet("{id}")]
+        // GET: Representatives
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Index(int id, 
-            string name, int rating, int age, int rows, int page)
+        public async Task<IActionResult> Index(int id,
+            PersonSearchModel searchModel)
         {
             IEnumerable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
 
-            //representatives = RepresentativeFilter.GetFiltered(representatives, searchModel);
+            representatives = RepresentativeFilter.GetFiltered(representatives, searchModel);
+
             if (id == 0)
-                return Ok(representatives);
+                return View(representatives);
 
             if (id > 0)
                 representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
 
-            return Ok(representatives);
+            return View(representatives);
         }
 
         // GET: Representatives/Details/5
-        [HttpGet("details")]
-        [HttpGet("details/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -65,11 +57,9 @@ namespace FamilyNetServer.Controllers
             if (representative == null)
                 return NotFound();
 
-            //return View(representative);
-            return Ok(representative);
+            return View(representative);
         }
 
-        [HttpGet("create")]
         [Authorize(Roles = "Admin, Representative")]
         // GET: Representatives/Create
         public async Task<IActionResult> Create()
@@ -84,7 +74,7 @@ namespace FamilyNetServer.Controllers
             return View();
         }
 
-        
+
 
         // POST: Representatives/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -92,16 +82,14 @@ namespace FamilyNetServer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Representative")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]RepresentativeDTO rep)
+        public async Task<IActionResult> Create([Bind("FullName,Birthday,Rating,Avatar,Orphanage")]
+        Representative representative, int id, IFormFile file)
         {
-            var representative = new Representative();
-            await ImageHelper.SetAvatar(representative, rep.Avatar, "wwwroot\\representatives");
+            await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
 
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid)
             {
-                var orphanage = await _unitOfWorkAsync.Orphanages.GetById(rep.ID);
+                var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
                 representative.Orphanage = orphanage;
 
                 await _unitOfWorkAsync.Representatives.Create(representative);
@@ -109,7 +97,7 @@ namespace FamilyNetServer.Controllers
 
                 var user = await GetCurrentUserAsync();
                 user.PersonID = representative.ID;
-                user.PersonType = Models.Identity.PersonType.Representative;
+                user.PersonType = FamilyNetServer.Models.Identity.PersonType.Representative;
                 await _unitOfWorkAsync.UserManager.UpdateAsync(user);
 
                 return RedirectToAction(nameof(Index));
@@ -118,8 +106,6 @@ namespace FamilyNetServer.Controllers
         }
 
         // GET: Representatives/Edit/5
-        [HttpGet("edit")]
-        [HttpGet("edit/{id}")]
         [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -139,7 +125,7 @@ namespace FamilyNetServer.Controllers
                 return check;
             }
 
-           
+
 
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
 
@@ -197,8 +183,6 @@ namespace FamilyNetServer.Controllers
         }
 
         // GET: Representatives/Delete/5
-        [HttpGet("delete")]
-        [HttpGet("delete/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
