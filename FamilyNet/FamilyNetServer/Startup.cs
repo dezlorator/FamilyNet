@@ -66,7 +66,9 @@ namespace FamilyNetServer
             services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
+            services.AddTransient<IVolunteerValidator, VolunteerValidator>();
             services.AddTransient<IFilterConditionsChildren, FilterConditionsChildren>();
+            services.AddTransient<IFilterConditionsVolunteers, FilterConditionsVolunteers>();
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
                 .AddViewLocalization(
