@@ -12,9 +12,12 @@ using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Infrastructure;
+using FamilyNetServer.DTO;
 
 namespace FamilyNetServer.Controllers
 {
+    [Route("/api/v1/[controller]")]
+    [ApiController]
     [Authorize]
     public class RepresentativesController : BaseController
     {
@@ -28,25 +31,29 @@ namespace FamilyNetServer.Controllers
 
         #region Methods
 
-        // GET: Representatives
+        [HttpGet]
+        [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id,
-            PersonSearchModel searchModel)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Index(int id, 
+            string name, int rating, int age, int rows, int page)
         {
             IEnumerable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
 
-            representatives = RepresentativeFilter.GetFiltered(representatives, searchModel);
-
+            //representatives = RepresentativeFilter.GetFiltered(representatives, searchModel);
             if (id == 0)
-                return View(representatives);
+                return Ok(representatives);
 
             if (id > 0)
                 representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
 
-            return View(representatives);
+            return Ok(representatives);
         }
 
         // GET: Representatives/Details/5
+        [HttpGet("details")]
+        [HttpGet("details/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -58,9 +65,11 @@ namespace FamilyNetServer.Controllers
             if (representative == null)
                 return NotFound();
 
-            return View(representative);
+            //return View(representative);
+            return Ok(representative);
         }
 
+        [HttpGet("create")]
         [Authorize(Roles = "Admin, Representative")]
         // GET: Representatives/Create
         public async Task<IActionResult> Create()
@@ -83,14 +92,16 @@ namespace FamilyNetServer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Representative")]
-        public async Task<IActionResult> Create([Bind("FullName,Birthday,Rating,Avatar,Orphanage")] 
-        Representative representative, int id, IFormFile file)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Create([FromForm]RepresentativeDTO rep)
         {
-            await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
+            var representative = new Representative();
+            await ImageHelper.SetAvatar(representative, rep.Avatar, "wwwroot\\representatives");
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) 
             {
-                var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
+                var orphanage = await _unitOfWorkAsync.Orphanages.GetById(rep.ID);
                 representative.Orphanage = orphanage;
 
                 await _unitOfWorkAsync.Representatives.Create(representative);
@@ -107,6 +118,8 @@ namespace FamilyNetServer.Controllers
         }
 
         // GET: Representatives/Edit/5
+        [HttpGet("edit")]
+        [HttpGet("edit/{id}")]
         [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -184,6 +197,8 @@ namespace FamilyNetServer.Controllers
         }
 
         // GET: Representatives/Delete/5
+        [HttpGet("delete")]
+        [HttpGet("delete/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {

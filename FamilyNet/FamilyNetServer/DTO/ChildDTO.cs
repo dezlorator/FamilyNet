@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using FamilyNetServer.Models;
 
 namespace FamilyNetServer.DTO
 {
-    public class ChildDTO
+    public class ChildDTO : Person
     {
         public int ID { get; set; }
 
