@@ -3,10 +3,7 @@ using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace FamilyNetServer.Models.EntityFramework
 {
@@ -20,9 +17,13 @@ namespace FamilyNetServer.Models.EntityFramework
 
         #region Constructors
 
-        public EFUnitOfWorkAsync(ApplicationDbContext cont, IUserValidator<ApplicationUser> userValid, IPasswordValidator<ApplicationUser> passValid, 
-            IPasswordHasher<ApplicationUser> passwordHash, ApplicationUserManager userManager,
-            SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
+        public EFUnitOfWorkAsync(ApplicationDbContext cont,
+                                 IUserValidator<ApplicationUser> userValid, 
+                                 IPasswordValidator<ApplicationUser> passValid, 
+                                 IPasswordHasher<ApplicationUser> passwordHash, 
+                                 ApplicationUserManager userManager,
+                                 SignInManager<ApplicationUser> signInManager, 
+                                 RoleManager<IdentityRole> roleManager)
         {
             _context = cont;
             CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
@@ -41,8 +42,6 @@ namespace FamilyNetServer.Models.EntityFramework
             BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
             TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
         }
-
-
 
         #endregion
 
@@ -78,11 +77,11 @@ namespace FamilyNetServer.Models.EntityFramework
 
         public IAsyncRepository<BaseItemType> BaseItemTypes { get; set; }
 
+        #endregion
+
         public void SaveChangesAsync()
         {
             _context.SaveChanges();
         }
-
-        #endregion
     }
 }
