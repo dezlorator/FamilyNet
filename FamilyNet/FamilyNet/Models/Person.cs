@@ -30,7 +30,6 @@ namespace FamilyNet.Models
 
         public int EmailID { get; set; }
 
-
         [BindNever]
         public bool IsDeleted { get; set; } = false;
 
