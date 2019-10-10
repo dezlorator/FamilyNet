@@ -3,6 +3,7 @@
     public enum DirectoryUploadName
     {
         Children,
-        Volunteer
+        Volunteer,
+        CharityMaker
     }
 }
