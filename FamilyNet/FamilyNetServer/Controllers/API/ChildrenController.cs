@@ -77,7 +77,7 @@ namespace FamilyNetServer.Controllers.API
                     Name = c.FullName.Name,
                     Patronymic = c.FullName.Patronymic,
                     Surname = c.FullName.Surname,
-                    OrphanageID = c.OrphanageID ?? 0,
+                    ChildrenHouseID = c.OrphanageID ?? 0,
                     Rating = c.Rating
                 };
 
@@ -104,7 +104,7 @@ namespace FamilyNetServer.Controllers.API
                 Birthday = child.Birthday,
                 ID = child.ID,
                 Name = child.FullName.Name,
-                OrphanageID = child.OrphanageID ?? 0,
+                ChildrenHouseID = child.OrphanageID ?? 0,
                 Patronymic = child.FullName.Patronymic,
                 Rating = child.Rating,
                 Surname = child.FullName.Surname,
@@ -147,7 +147,7 @@ namespace FamilyNetServer.Controllers.API
                     Patronymic = childDTO.Patronymic
                 },
 
-                OrphanageID = childDTO.OrphanageID,
+                OrphanageID = childDTO.ChildrenHouseID,
                 Avatar = pathPhoto,
                 EmailID = childDTO.EmailID,
             };
@@ -184,7 +184,7 @@ namespace FamilyNetServer.Controllers.API
             child.FullName.Surname = childDTO.Surname;
             child.Birthday = childDTO.Birthday;
             child.Rating = childDTO.Rating;
-            child.OrphanageID = childDTO.OrphanageID;
+            child.OrphanageID = childDTO.ChildrenHouseID;
             child.EmailID = childDTO.EmailID;
 
             if (childDTO.Avatar != null)
