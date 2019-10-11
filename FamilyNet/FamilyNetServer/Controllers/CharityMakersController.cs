@@ -30,7 +30,7 @@ namespace FamilyNetServer.Controllers
 
             charityMakers = CharityMakerFilter.GetFiltered(charityMakers, searchModel);
 
-            return View(charityMakers); 
+            return View(charityMakers);
         }
 
         // GET: CharityMakers/Details/5

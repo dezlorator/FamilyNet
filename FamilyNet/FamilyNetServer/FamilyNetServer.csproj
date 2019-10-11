@@ -7,9 +7,13 @@
 
   <ItemGroup>
     <Compile Remove="Content\**" />
+    <Compile Remove="Resources\OrphanagesController\**" />
     <Content Remove="Content\**" />
+    <Content Remove="Resources\OrphanagesController\**" />
     <EmbeddedResource Remove="Content\**" />
+    <EmbeddedResource Remove="Resources\OrphanagesController\**" />
     <None Remove="Content\**" />
+    <None Remove="Resources\OrphanagesController\**" />
   </ItemGroup>
 
 
@@ -26,7 +30,6 @@
 
 
   <ItemGroup>
-    <Folder Include="Resources\OrphanagesController\" />
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\charitymaker\" />
     <Folder Include="wwwroot\representatives\" />

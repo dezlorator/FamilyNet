@@ -4,6 +4,7 @@
     {
         Children,
         Volunteer,
-        CharityMaker
+        CharityMaker,
+        Representatives
     }
 }

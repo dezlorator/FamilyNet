@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FamilyNetServer.Models;
+using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FamilyNetServer.DTO
 {
-    public class ChildDTO
+    public class RepresentativeDTO
     {
         public int ID { get; set; }
         public string Name { get; set; }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Infrastructure;
+using FamilyNetServer.Controllers;
 
-namespace FamilyNetServer.Controllers
+namespace FamilyNet.Controllers
 {
     [Authorize]
     public class RepresentativesController : BaseController
@@ -75,7 +74,7 @@ namespace FamilyNetServer.Controllers
             return View();
         }
 
-        
+
 
         // POST: Representatives/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -83,7 +82,7 @@ namespace FamilyNetServer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Representative")]
-        public async Task<IActionResult> Create([Bind("FullName,Birthday,Rating,Avatar,Orphanage")] 
+        public async Task<IActionResult> Create([Bind("FullName,Birthday,Rating,Avatar,Orphanage")]
         Representative representative, int id, IFormFile file)
         {
             await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
@@ -98,7 +97,7 @@ namespace FamilyNetServer.Controllers
 
                 var user = await GetCurrentUserAsync();
                 user.PersonID = representative.ID;
-                user.PersonType = Models.Identity.PersonType.Representative;
+                user.PersonType = FamilyNetServer.Models.Identity.PersonType.Representative;
                 await _unitOfWorkAsync.UserManager.UpdateAsync(user);
 
                 return RedirectToAction(nameof(Index));
@@ -126,7 +125,7 @@ namespace FamilyNetServer.Controllers
                 return check;
             }
 
-           
+
 
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
 
