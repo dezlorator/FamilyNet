@@ -10,7 +10,7 @@ namespace FamilyNetServer.Validators
             if (representativeDTO.Birthday == null ||
                 String.IsNullOrEmpty(representativeDTO.Name) ||
                 String.IsNullOrEmpty(representativeDTO.Surname) ||
-                representativeDTO.OrphanageID < 0)
+                representativeDTO.ChildrenHouseID < 0)
             {
                 return false;
             }
