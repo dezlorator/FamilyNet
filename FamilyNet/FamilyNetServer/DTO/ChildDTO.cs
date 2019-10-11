@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using FamilyNetServer.Models;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 
 namespace FamilyNetServer.DTO
 {
-    public class ChildDTO : Person
+    public class ChildDTO
     {
         public int ID { get; set; }
-
-        public virtual FullName FullName { get; set; }
-        public virtual DateTime Birthday { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Patronymic { get; set; }
+        public DateTime Birthday { get; set; }
         public float Rating { get; set; }
         public IFormFile Avatar { get; set; }
-        public int MyProperty { get; set; }
         public int OrphanageID { get; set; }
+        public int EmailID { get; set; }
+        public string PhotoPath { get; set; }
     }
 }
