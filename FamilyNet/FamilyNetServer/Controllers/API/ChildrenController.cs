@@ -155,7 +155,11 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Orphans.Create(child);
             _unitOfWork.SaveChangesAsync();
 
-            return Created("api/v1/children/" + child.ID, child);
+            childDTO.ID = child.ID;
+            childDTO.PhotoPath = child.Avatar;
+            childDTO.Avatar = null;
+
+            return Created("api/v1/children/" + child.ID, childDTO);
         }
 
         [HttpPut("{id}")]
