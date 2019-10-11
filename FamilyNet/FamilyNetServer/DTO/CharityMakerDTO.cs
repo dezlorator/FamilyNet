@@ -15,7 +15,7 @@ namespace FamilyNetServer.DTO
         public DateTime Birthday { get; set; }
         public float Rating { get; set; }
         public IFormFile Avatar { get; set; }
-        public int CharityMakerID { get; set; }
+        public int AdressID { get; set; }
         public int EmailID { get; set; }
         public string PhotoPath { get; set; }
     }

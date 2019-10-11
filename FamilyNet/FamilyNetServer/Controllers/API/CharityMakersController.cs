@@ -69,7 +69,7 @@ namespace FamilyNetServer.Controllers.API
                     Name = charityMaker.FullName.Name,
                     Patronymic = charityMaker.FullName.Patronymic,
                     Surname = charityMaker.FullName.Surname,
-                    CharityMakerID = charityMaker.ID,
+                    AdressID = charityMaker.AddressID ?? 0,
                     Rating = charityMaker.Rating
                 });
 
@@ -95,7 +95,7 @@ namespace FamilyNetServer.Controllers.API
                 Birthday = charityMaker.Birthday,
                 ID = charityMaker.ID,
                 Name = charityMaker.FullName.Name,
-                CharityMakerID = charityMaker.ID,
+                AdressID = charityMaker.AddressID ?? 0,
                 Patronymic = charityMaker.FullName.Patronymic,
                 Rating = charityMaker.Rating,
                 Surname = charityMaker.FullName.Surname,
@@ -138,7 +138,7 @@ namespace FamilyNetServer.Controllers.API
                     Patronymic = charityMakerDTO.Patronymic
                 },
 
-                ID = charityMakerDTO.CharityMakerID,
+                AddressID = charityMakerDTO.AdressID,
                 Avatar = pathPhoto,
                 EmailID = charityMakerDTO.EmailID,
             };
@@ -171,7 +171,7 @@ namespace FamilyNetServer.Controllers.API
             charityMaker.FullName.Surname = charityMakerDTO.Surname;
             charityMaker.Birthday = charityMakerDTO.Birthday;
             charityMaker.Rating = charityMakerDTO.Rating;
-            charityMaker.ID = charityMakerDTO.CharityMakerID;
+            charityMaker.AddressID = charityMakerDTO.AdressID;
             charityMaker.EmailID = charityMakerDTO.EmailID;
 
             if (charityMakerDTO.Avatar != null)
