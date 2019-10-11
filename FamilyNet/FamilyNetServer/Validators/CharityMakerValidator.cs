@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using FamilyNetServer.DTO;
 using FamilyNetServer.Models.Interfaces;
 
-namespace FamilyNetServer.Models
+namespace FamilyNetServer.Validators
 {
-    public class CharityMakerValidator : ICharityMakeValidator
+    public class CharityMakerValidator : ICharityMakerValidator
     {
         public bool IsValid(CharityMakerDTO charityMakerDTO)
         {

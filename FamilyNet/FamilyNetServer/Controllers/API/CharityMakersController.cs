@@ -9,6 +9,8 @@ using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
 using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Enums;
+using FamilyNetServer.Filters;
+using FamilyNetServer.Validators;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -19,13 +21,13 @@ namespace FamilyNetServer.Controllers.API
         #region private
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly ICharityMakersSelection _selection;
-        private readonly ICharityMakeValidator _validator;
+        private readonly ICharityMakerValidator _validator;
         private readonly IFileUploader _fileUploader;
         #endregion
 
         #region ctro
         public CharityMakersController(IUnitOfWorkAsync unitOfWork,
-             ICharityMakersSelection selection, ICharityMakeValidator validator,
+             ICharityMakersSelection selection, ICharityMakerValidator validator,
              IFileUploader fileUploader)
         {
             _unitOfWork = unitOfWork;
