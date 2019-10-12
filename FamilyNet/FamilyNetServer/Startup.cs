@@ -73,6 +73,8 @@ namespace FamilyNetServer
             services.AddTransient<IFilterConditionsChildren, FilterConditionsChildren>();
             services.AddTransient<IRepresentativeValidator, RepresentativeValidator>();
             services.AddTransient<IFilterConditionsRepresentatives, FilterConditionsRepresentatives>();
+            services.AddTransient<IFilterConditionsChildrenHouse, FilterConditionChildrenHouse>();
+            services.AddTransient<IChildrenHouseValidator, ChildrenHouseValidator>();
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
                 .AddViewLocalization(
