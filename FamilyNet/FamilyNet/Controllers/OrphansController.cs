@@ -1,50 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
-using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Infrastructure;
-
 using Microsoft.Extensions.Localization;
+using System.Net.Http;
+using Newtonsoft.Json;
+using DataTransferObjects;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
     public class OrphansController : BaseController
     {
+        #region private fields
+
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IStringLocalizer<OrphansController> _localizer;
 
-        public OrphansController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphansController> localizer) : base(unitOfWork)
+        #endregion
+
+        #region ctor
+
+        public OrphansController(IUnitOfWorkAsync unitOfWork,
+                                 IHostingEnvironment environment,
+                                 IStringLocalizer<OrphansController> localizer)
+            : base(unitOfWork)
         {
             _hostingEnvironment = environment;
             _localizer = localizer;
         }
 
+        #endregion
+
         // GET: Orphans
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
-            IEnumerable<Orphan> orphans = _unitOfWorkAsync.Orphans.GetAll();
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync("http://localhost:53605/api/v1/children");
+            //var response = await httpClient.GetAsync("https://familynetserver.azurewebsites.net/api/v1/children");
 
-            orphans = OrphanFilter.GetFiltered(orphans, searchModel);
+            var json = await response.Content.ReadAsStringAsync();
 
-            if (id == 0)
-                return View(orphans);
+            var children = JsonConvert.DeserializeObject<List<ChildDTO>>(json);
 
-            if (id > 0)
-                orphans = orphans.Where(x => x.Orphanage.ID.Equals(id)).ToList();
-            GetViewData();
+            var orphans = new List<Orphan>();
+            children.ForEach(child =>
+            {
+                orphans.Add(new Orphan()
+                {
+                    Birthday = child.Birthday,
+                    FullName = new FullName()
+                    {
+                        Name = child.Name,
+                        Patronymic = child.Patronymic,
+                        Surname = child.Surname
+                    },
+                    ID = child.ID,
+                    Avatar = child.PhotoPath,
+                    OrphanageID = child.ChildrenHouseID,
+                    EmailID = child.EmailID,
+                    Rating = child.Rating,
+                });
+            });
 
             return View(orphans);
         }
@@ -70,7 +96,8 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Create
-        [Authorize(Roles ="Admin, Orphan")]
+        [Authorize(Roles = "Admin, Orphan")]
+        [Authorize(Roles = "Admin, Orphan")]
         public IActionResult Create()
         {
             Check();
@@ -105,9 +132,9 @@ namespace FamilyNet.Controllers
                 user.PersonID = orphan.ID;
                 user.PersonType = Models.Identity.PersonType.Orphan;
                 await _unitOfWorkAsync.UserManager.UpdateAsync(user);
-                
 
-               
+
+
                 return RedirectToAction(nameof(Index));
             }
             GetViewData();
@@ -197,7 +224,7 @@ namespace FamilyNet.Controllers
 
             return View(orphan);
         }
-       
+
         // GET: Orphans/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
