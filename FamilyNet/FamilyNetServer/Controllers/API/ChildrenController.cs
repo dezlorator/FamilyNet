@@ -2,6 +2,7 @@
 using FamilyNetServer.Enums;
 using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
+using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
@@ -45,19 +46,10 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]string name,
-                                    [FromQuery]float rating,
-                                    [FromQuery]int age,
-                                    [FromQuery]int rows,
-                                    [FromQuery]int page)
+        public IActionResult GetAll([FromQuery]FilterParemetersChildren filter)
         {
             var children = _unitOfWork.Orphans.GetAll().Where(c => !c.IsDeleted);
-            children = _filterConditions.GetOrphans(children, name, rating, age);
-
-            if (rows != 0 && page != 0)
-            {
-                children = children.Skip(rows * page).Take(rows);
-            }
+            children = _filterConditions.GetOrphans(children, filter);
 
             if (children == null)
             {
@@ -155,11 +147,7 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Orphans.Create(child);
             _unitOfWork.SaveChangesAsync();
 
-            childDTO.ID = child.ID;
-            childDTO.PhotoPath = child.Avatar;
-            childDTO.Avatar = null;
-
-            return Created("api/v1/children/" + child.ID, childDTO);
+            return Created("api/v1/children/" + child.ID, new ChildDTO());
         }
 
         [HttpPut("{id}")]
@@ -201,7 +189,6 @@ namespace FamilyNetServer.Controllers.API
 
             return NoContent();
         }
-
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
