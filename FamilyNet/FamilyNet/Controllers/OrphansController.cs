@@ -10,10 +10,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Infrastructure;
+using DataTransferObjects;
+using FamilyNet.Downloader;
 using Microsoft.Extensions.Localization;
+using System;
 using System.Net.Http;
 using Newtonsoft.Json;
-using DataTransferObjects;
 
 namespace FamilyNet.Controllers
 {
@@ -24,6 +26,9 @@ namespace FamilyNet.Controllers
 
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IStringLocalizer<OrphansController> _localizer;
+        private readonly IServerDataDownLoader<ChildDTO> _downLoader;
+        private readonly URLChildrenBuilder _URLChildrenBuilder;
+        private readonly string _apiPath = "api/v1/children";
 
         #endregion
 
@@ -31,11 +36,15 @@ namespace FamilyNet.Controllers
 
         public OrphansController(IUnitOfWorkAsync unitOfWork,
                                  IHostingEnvironment environment,
-                                 IStringLocalizer<OrphansController> localizer)
+                                 IStringLocalizer<OrphansController> localizer,
+                                 IServerDataDownLoader<ChildDTO> downLoader,
+                                 URLChildrenBuilder URLChildrenBuilder)
             : base(unitOfWork)
         {
             _hostingEnvironment = environment;
             _localizer = localizer;
+            _downLoader = downLoader;
+            _URLChildrenBuilder = URLChildrenBuilder;
         }
 
         #endregion
@@ -44,32 +53,43 @@ namespace FamilyNet.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
-            var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync("http://localhost:53605/api/v1/children");
-            //var response = await httpClient.GetAsync("https://familynetserver.azurewebsites.net/api/v1/children");
+            var url = _URLChildrenBuilder.GetAllWithFilter(_apiPath,
+                                                           searchModel,
+                                                           id);
+            List<ChildDTO> children = null;
 
-            var json = await response.Content.ReadAsStringAsync();
-
-            var children = JsonConvert.DeserializeObject<List<ChildDTO>>(json);
-
-            var orphans = new List<Orphan>();
-            children.ForEach(child =>
+            try
             {
-                orphans.Add(new Orphan()
+                children = await _downLoader.GetAll(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            var orphans = children.Select(child => new Orphan()
+            {
+                Birthday = child.Birthday,
+                FullName = new FullName()
                 {
-                    Birthday = child.Birthday,
-                    FullName = new FullName()
-                    {
-                        Name = child.Name,
-                        Patronymic = child.Patronymic,
-                        Surname = child.Surname
-                    },
-                    ID = child.ID,
-                    Avatar = child.PhotoPath,
-                    OrphanageID = child.ChildrenHouseID,
-                    EmailID = child.EmailID,
-                    Rating = child.Rating,
-                });
+                    Name = child.Name,
+                    Patronymic = child.Patronymic,
+                    Surname = child.Surname
+                },
+                ID = child.ID,
+                Avatar = child.PhotoPath,
+                OrphanageID = child.ChildrenHouseID,
+                EmailID = child.EmailID,
+                Rating = child.Rating
+
             });
 
             return View(orphans);
@@ -85,18 +105,53 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
-            if (orphan == null)
+            var url = _URLChildrenBuilder.GetById(_apiPath, id.Value);
+            ChildDTO childDTO = null;
+
+            try
+            {
+                childDTO = await _downLoader.GetById(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (childDTO == null)
             {
                 return NotFound();
             }
+
+            var orphan = new Orphan()
+            {
+                Birthday = childDTO.Birthday,
+                FullName = new FullName()
+                {
+                    Name = childDTO.Name,
+                    Patronymic = childDTO.Patronymic,
+                    Surname = childDTO.Surname
+                },
+                ID = childDTO.ID,
+                Avatar = childDTO.PhotoPath,
+                OrphanageID = childDTO.ChildrenHouseID,
+                EmailID = childDTO.EmailID,
+                Rating = childDTO.Rating,
+            };
+
             GetViewData();
 
             return View(orphan);
         }
 
         // GET: Orphans/Create
-        [Authorize(Roles = "Admin, Orphan")]
         [Authorize(Roles = "Admin, Orphan")]
         public IActionResult Create()
         {

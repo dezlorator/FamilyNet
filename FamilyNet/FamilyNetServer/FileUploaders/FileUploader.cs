@@ -28,7 +28,7 @@ namespace FamilyNetServer.FileUploaders
                 }
             }
 
-            return Path.Combine(directory, fileName) + extension;
+            return Path.Combine(directory, fileName).Replace("\\", "/") + extension;
         }
     }
 }

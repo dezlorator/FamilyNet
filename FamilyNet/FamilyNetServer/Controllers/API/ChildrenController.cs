@@ -1,5 +1,5 @@
 ﻿using DataTransferObjects;
-using FamilyNetServer.DTO;
+using FamilyNetServer.Configuration;
 using FamilyNetServer.Enums;
 using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
@@ -9,6 +9,7 @@ using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IFileUploader _fileUploader;
         private readonly IChildValidator _childValidator;
         private readonly IFilterConditionsChildren _filterConditions;
+        private readonly IOptionsSnapshot<ServerURLSettings> _settings;
 
         #endregion
 
@@ -34,12 +36,14 @@ namespace FamilyNetServer.Controllers.API
         public ChildrenController(IFileUploader fileUploader,
                                   IUnitOfWorkAsync unitOfWork,
                                   IChildValidator childValidator,
-                                  IFilterConditionsChildren filterConditions)
+                                  IFilterConditionsChildren filterConditions,
+                                  IOptionsSnapshot<ServerURLSettings> setings)
         {
             _fileUploader = fileUploader;
             _unitOfWork = unitOfWork;
             _childValidator = childValidator;
             _filterConditions = filterConditions;
+            _settings = setings;
         }
 
         #endregion
@@ -63,7 +67,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 var childDTO = new ChildDTO()
                 {
-                    PhotoPath = c.Avatar,
+                    PhotoPath = _settings.Value.ServerURL + c.Avatar,
                     Birthday = c.Birthday,
                     EmailID = c.EmailID,
                     ID = c.ID,
@@ -102,7 +106,7 @@ namespace FamilyNetServer.Controllers.API
                 Rating = child.Rating,
                 Surname = child.FullName.Surname,
                 EmailID = child.EmailID,
-                PhotoPath = child.Avatar
+                PhotoPath = _settings.Value.ServerURL + child.Avatar
             };
 
             return Ok(childDTO);

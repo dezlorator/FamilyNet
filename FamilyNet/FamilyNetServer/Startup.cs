@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FamilyNetServer.Models;
+﻿using FamilyNetServer.Models;
 using FamilyNetServer.Models.EntityFramework;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Models.Identity;
@@ -20,6 +16,7 @@ using Microsoft.AspNetCore.Localization;
 using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
+using FamilyNetServer.Configuration;
 
 namespace FamilyNetServer
 {
@@ -62,6 +59,8 @@ namespace FamilyNetServer
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
 
             services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
             services.AddTransient<IFileUploader, FileUploader>();
