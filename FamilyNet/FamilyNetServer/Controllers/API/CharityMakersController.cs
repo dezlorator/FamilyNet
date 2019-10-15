@@ -72,7 +72,6 @@ namespace FamilyNetServer.Controllers.API
                     AdressID = charityMaker.AddressID ?? 0,
                     Rating = charityMaker.Rating
                 });
-
             }
 
             return Ok(charityMakerDTO);
