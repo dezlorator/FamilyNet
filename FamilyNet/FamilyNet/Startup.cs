@@ -14,6 +14,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using FamilyNet.Configuration;
 using FamilyNet.Downloader;
+using Uploader;
 
 namespace FamilyNet
 {
@@ -29,6 +30,7 @@ namespace FamilyNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
             //services.AddTransient<FamilyNetPhoneValidator>();

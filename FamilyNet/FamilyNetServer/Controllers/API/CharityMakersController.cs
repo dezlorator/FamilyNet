@@ -7,10 +7,10 @@ using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Validators;
+using Uploader;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -19,10 +19,12 @@ namespace FamilyNetServer.Controllers.API
     public class CharityMakersController : ControllerBase
     {
         #region private
+
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly ICharityMakersSelection _selection;
         private readonly ICharityMakerValidator _validator;
         private readonly IFileUploader _fileUploader;
+
         #endregion
 
         #region ctro
@@ -123,7 +125,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = charityMakerDTO.Name + charityMakerDTO.Surname
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
-                pathPhoto = _fileUploader.CopyFile(fileName,
+                pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.CharityMaker), charityMakerDTO.Avatar);
             }
 
@@ -179,7 +181,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = charityMakerDTO.Name + charityMakerDTO.Surname
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
-                charityMaker.Avatar = _fileUploader.CopyFile(fileName,
+                charityMaker.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Children), charityMakerDTO.Avatar);
             }
 

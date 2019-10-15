@@ -1,7 +1,6 @@
 ﻿using DataTransferObjects;
 using FamilyNetServer.Configuration;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;
@@ -11,9 +10,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Uploader;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -61,25 +60,19 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            var childrenDTO = new List<ChildDTO>();
-
-            foreach (var c in children)
+            var childrenDTO = children.Select(c =>
+            new ChildDTO()
             {
-                var childDTO = new ChildDTO()
-                {
-                    PhotoPath = _settings.Value.ServerURL + c.Avatar,
-                    Birthday = c.Birthday,
-                    EmailID = c.EmailID,
-                    ID = c.ID,
-                    Name = c.FullName.Name,
-                    Patronymic = c.FullName.Patronymic,
-                    Surname = c.FullName.Surname,
-                    ChildrenHouseID = c.OrphanageID ?? 0,
-                    Rating = c.Rating
-                };
-
-                childrenDTO.Add(childDTO);
-            }
+                PhotoPath = _settings.Value.ServerURL + c.Avatar,
+                Birthday = c.Birthday,
+                EmailID = c.EmailID,
+                ID = c.ID,
+                Name = c.FullName.Name,
+                Patronymic = c.FullName.Patronymic,
+                Surname = c.FullName.Surname,
+                ChildrenHouseID = c.OrphanageID ?? 0,
+                Rating = c.Rating
+            });
 
             return Ok(childrenDTO);
         }
@@ -129,7 +122,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = childDTO.Name + childDTO.Surname
                         + childDTO.Patronymic + DateTime.Now.Ticks;
 
-                pathPhoto = _fileUploader.CopyFile(fileName,
+                pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Children), childDTO.Avatar);
             }
 
@@ -185,7 +178,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = childDTO.Name + childDTO.Surname
                         + childDTO.Patronymic + DateTime.Now.Ticks;
 
-                child.Avatar = _fileUploader.CopyFile(fileName,
+                child.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Children), childDTO.Avatar);
             }
 

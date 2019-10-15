@@ -1,6 +1,5 @@
 ﻿using FamilyNetServer.DTO;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
@@ -11,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Uploader;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -132,7 +132,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = volunteerDTO.Name + volunteerDTO.Surname
                         + volunteerDTO.Patronymic + DateTime.Now.Ticks;
 
-                pathPhoto = _fileUploader.CopyFile(fileName,
+                pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
             }
 
@@ -188,7 +188,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = volunteerDTO.Name + volunteerDTO.Surname
                         + volunteerDTO.Patronymic + DateTime.Now.Ticks;
 
-                volunteer.Avatar = _fileUploader.CopyFile(fileName,
+                volunteer.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
             }
 

@@ -23,7 +23,7 @@ namespace FamilyNet.Downloader
 
         #endregion
 
-        public string GetAllWithFilter(string api, 
+        public string GetAllWithFilter(string api,
                                        PersonSearchModel searchModel,
                                        int orphanageId)
         {
@@ -57,6 +57,11 @@ namespace FamilyNet.Downloader
         public string GetById(string api, int id)
         {
             return _options.Value.ServerURL + api + "/" + id;
+        }
+
+        public string CreatePost(string api)
+        {
+            return _options.Value.ServerURL + api;
         }
     }
 }

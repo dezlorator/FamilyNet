@@ -13,10 +13,10 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Infrastructure;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Configuration;
+using Uploader;
 
 namespace FamilyNetServer
 {

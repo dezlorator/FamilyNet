@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
@@ -16,6 +15,8 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Uploader;
+using System.Net;
 
 namespace FamilyNet.Controllers
 {
@@ -24,27 +25,27 @@ namespace FamilyNet.Controllers
     {
         #region private fields
 
-        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IStringLocalizer<OrphansController> _localizer;
         private readonly IServerDataDownLoader<ChildDTO> _downLoader;
         private readonly URLChildrenBuilder _URLChildrenBuilder;
         private readonly string _apiPath = "api/v1/children";
+        private readonly IFileUploader _uploader;
 
         #endregion
 
         #region ctor
 
         public OrphansController(IUnitOfWorkAsync unitOfWork,
-                                 IHostingEnvironment environment,
                                  IStringLocalizer<OrphansController> localizer,
                                  IServerDataDownLoader<ChildDTO> downLoader,
-                                 URLChildrenBuilder URLChildrenBuilder)
+                                 URLChildrenBuilder URLChildrenBuilder,
+                                 IFileUploader uploader)
             : base(unitOfWork)
         {
-            _hostingEnvironment = environment;
             _localizer = localizer;
             _downLoader = downLoader;
             _URLChildrenBuilder = URLChildrenBuilder;
+            _uploader = uploader;
         }
 
         #endregion
@@ -60,7 +61,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                children = await _downLoader.GetAll(url);
+                children = await _downLoader.GetAllAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -110,7 +111,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childDTO = await _downLoader.GetById(url);
+                childDTO = await _downLoader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -152,7 +153,7 @@ namespace FamilyNet.Controllers
         }
 
         // GET: Orphans/Create
-        [Authorize(Roles = "Admin, Orphan")]
+        //[Authorize(Roles = "Admin, Orphan")]
         public IActionResult Create()
         {
             Check();
@@ -170,31 +171,41 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Orphan")]
+        //[Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create([Bind("FullName,Address,Birthday,Orphanage,Avatar")] Orphan orphan, int id, IFormFile file)
         {
-            await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
-                orphan.Orphanage = orphanage;
-
-                await _unitOfWorkAsync.Orphans.Create(orphan);
-                await _unitOfWorkAsync.Orphans.SaveChangesAsync();
-
-                var user = await GetCurrentUserAsync();
-                user.PersonID = orphan.ID;
-                user.PersonType = Models.Identity.PersonType.Orphan;
-                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
-
-
-
-                return RedirectToAction(nameof(Index));
+                return View(orphan);
             }
-            GetViewData();
 
-            return View(orphan);
+            var childDTO = new ChildDTO()
+            {
+                Birthday = orphan.Birthday,
+                Surname = orphan.FullName.Surname,
+                Name = orphan.FullName.Name,
+                Patronymic = orphan.FullName.Patronymic,
+                Rating = orphan.Rating,
+                EmailID = orphan.EmailID,
+                ChildrenHouseID = orphan.OrphanageID ?? 0,
+            };
+
+            if (file != null)
+            {
+                childDTO.PhotoPath = _uploader.CopyFileToClient(orphan.FullName.Surname
+                    + DateTime.Now.Ticks, "Children", file);
+            }
+
+            var url = _URLChildrenBuilder.CreatePost(_apiPath);
+            var status = await _downLoader.СreatetePostAsync(url, childDTO);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Orphans/Edit/5
@@ -346,7 +357,5 @@ namespace FamilyNet.Controllers
         {
             return _unitOfWorkAsync.Orphans.GetById(id) != null;
         }
-
-
     }
 }
