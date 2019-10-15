@@ -145,7 +145,11 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.CharityMakers.Create(charityMaker);
             _unitOfWork.SaveChangesAsync();
 
-            return Created("api/v1/charityMakers/" + charityMaker.ID, charityMaker);
+            charityMakerDTO.ID = charityMaker.ID;
+            charityMakerDTO.PhotoPath = charityMaker.Avatar;
+            charityMakerDTO.Avatar = null;
+
+            return Created("api/v1/charityMakers/" + charityMaker.ID, charityMakerDTO);
         }
 
         [HttpPut("{id}")]
@@ -179,7 +183,7 @@ namespace FamilyNetServer.Controllers.API
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
                 charityMaker.Avatar = _fileUploader.CopyFile(fileName,
-                        nameof(DirectoryUploadName.Children), charityMakerDTO.Avatar);
+                        nameof(DirectoryUploadName.CharityMaker), charityMakerDTO.Avatar);
             }
 
             _unitOfWork.CharityMakers.Update(charityMaker);
