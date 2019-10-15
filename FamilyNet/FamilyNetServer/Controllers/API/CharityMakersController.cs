@@ -174,7 +174,6 @@ namespace FamilyNetServer.Controllers.API
             charityMaker.FullName.Surname = charityMakerDTO.Surname;
             charityMaker.Birthday = charityMakerDTO.Birthday;
             charityMaker.Rating = charityMakerDTO.Rating;
-            charityMaker.AddressID = charityMakerDTO.AdressID;
             charityMaker.EmailID = charityMakerDTO.EmailID;
 
             if (charityMakerDTO.Avatar != null)
