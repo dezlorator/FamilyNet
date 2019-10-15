@@ -56,7 +56,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (rows != 0 && page != 0)
             {
-                volunteer = volunteer.Skip(rows * page).Take(rows);
+                volunteer = volunteer.Skip((page - 1) * rows).Take(rows);
             }
 
             if (volunteer == null)
@@ -155,7 +155,11 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Volunteers.Create(volunteer);
             _unitOfWork.SaveChangesAsync();
 
-            return Created("api/v1/volunteers/" + volunteer.ID, volunteer);
+            volunteerDTO.ID = volunteer.ID;
+            volunteerDTO.PhotoPath = volunteer.Avatar;
+            volunteerDTO.Avatar = null;
+
+            return Created("api/v1/volunteers/" + volunteer.ID, volunteerDTO);
         }
 
         [HttpPut("{id}")]
