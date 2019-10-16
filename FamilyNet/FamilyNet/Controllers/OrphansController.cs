@@ -18,7 +18,6 @@ using Newtonsoft.Json;
 using System.Net;
 using System.IO;
 using FamilyNet.StreamCreater;
-using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
@@ -178,23 +177,8 @@ namespace FamilyNet.Controllers
                 return View(orphan);
             }
 
-            var childDTO = new ChildDTO()
-            {
-                Birthday = orphan.Birthday,
-                Surname = orphan.FullName.Surname,
-                Name = orphan.FullName.Name,
-                Patronymic = orphan.FullName.Patronymic,
-                Rating = orphan.Rating,
-                EmailID = orphan.EmailID,
-                ChildrenHouseID = id,
-            };
-
             Stream stream = null;
-
-            if (file != null)
-            {
-                stream = _streamCreater.CopyFileToStream(file);
-            }
+            var childDTO = CreateDTO(orphan, id, file, ref stream);
 
             var url = _URLChildrenBuilder.CreatePost(_apiPath);
             var status = await _downLoader.СreatetePostAsync(url, childDTO,
@@ -208,7 +192,6 @@ namespace FamilyNet.Controllers
 
             return Redirect("/Orphans/Index");
         }
-
 
         [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
@@ -226,68 +209,69 @@ namespace FamilyNet.Controllers
                 return check;
             }
 
-            List<Orphanage> orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            var url = _URLChildrenBuilder.GetById(_apiPath, id.Value);
+            ChildDTO childDTO = null;
+
+            try
+            {
+                childDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            //TODO: ChildrenHouseAPI
+            var orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
 
-            var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
-
-            if (orphan == null)
-            {
-                return NotFound();
-            }
             GetViewData();
 
-            return View(orphan);
+            return View(childDTO);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,FullName,Birthday,Orphanage,Avatar")] Orphan orphan, int idOrphanage, IFormFile file)
+        public async Task<IActionResult> Edit(int id, ChildDTO childDTO)
         {
-            if (id != orphan.ID)
+            if (id != childDTO.ID)
             {
                 return NotFound();
             }
 
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
+            if (!ModelState.IsValid)
             {
-                return check;
+                return View(childDTO);
             }
 
-            await ImageHelper.SetAvatar(orphan, file, "wwwroot\\children");
+            Stream stream = null;
 
-
-            if (ModelState.IsValid)
+            if (childDTO.Avatar != null)
             {
-                try
-                {
-                    var orphanage = await _unitOfWorkAsync.Orphanages.GetById(idOrphanage);
-                    orphan.Orphanage = orphanage;
-                    var orphanToEdit = await _unitOfWorkAsync.Orphans.GetById(orphan.ID);
-                    orphanToEdit.CopyState(orphan);
-                    _unitOfWorkAsync.Orphans.Update(orphanToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_unitOfWorkAsync.Orphans.Any(orphan.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                stream = _streamCreater.CopyFileToStream(childDTO.Avatar);
             }
-            GetViewData();
 
-            return View(orphan);
+            var url = _URLChildrenBuilder.GetById(_apiPath, id);
+            var status = await _downLoader.СreatetePutAsync(url, childDTO,
+                                                            stream, childDTO.Avatar?.FileName);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            return Redirect("/Orphans/Index");
         }
 
 
@@ -357,5 +341,34 @@ namespace FamilyNet.Controllers
         {
             return _unitOfWorkAsync.Orphans.GetById(id) != null;
         }
+
+        private ChildDTO CreateDTO(Orphan orphan, int id,
+                                  IFormFile file,
+                                  ref Stream stream)
+        {
+            var childDTO = new ChildDTO()
+            {
+                Birthday = orphan.Birthday,
+                Surname = orphan.FullName.Surname,
+                Name = orphan.FullName.Name,
+                Patronymic = orphan.FullName.Patronymic,
+                Rating = orphan.Rating,
+                EmailID = orphan.EmailID,
+                ChildrenHouseID = id,
+            };
+
+            if (id > 0)
+            {
+                childDTO.ChildrenHouseID = id;
+            }
+
+            if (file != null)
+            {
+                stream = _streamCreater.CopyFileToStream(file);
+            }
+
+            return childDTO;
+        }
+
     }
 }

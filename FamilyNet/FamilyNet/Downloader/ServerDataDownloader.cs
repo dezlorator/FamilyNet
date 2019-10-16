@@ -77,6 +77,11 @@ namespace FamilyNet.Downloader
         public abstract Task<HttpStatusCode> СreatetePostAsync(string url,
                                                                T dto, 
                                                                Stream file,
-                                                               string fieNmae);
+                                                               string fieName);
+
+        public abstract Task<HttpStatusCode> СreatetePutAsync(string url,
+                                                               T dto,
+                                                               Stream file,
+                                                               string fieName);
     }
 }
