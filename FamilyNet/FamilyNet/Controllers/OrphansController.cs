@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
-using FamilyNet.Infrastructure;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using Microsoft.Extensions.Localization;
-using System;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
@@ -50,7 +48,6 @@ namespace FamilyNet.Controllers
         }
 
         #endregion
-
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
@@ -91,13 +88,13 @@ namespace FamilyNet.Controllers
                 OrphanageID = child.ChildrenHouseID,
                 EmailID = child.EmailID,
                 Rating = child.Rating
-
             });
+
+            GetViewData();
 
             return View(orphans);
         }
-
-
+        
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -153,36 +150,39 @@ namespace FamilyNet.Controllers
         }
 
         [Authorize(Roles = "Admin, Orphan")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            Check();
+            await Check();
 
-            List<Orphanage> orphanagesList = new List<Orphanage>();
+            var orphanagesList = new List<Orphanage>();
             orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
             GetViewData();
 
             return View();
         }
-
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
-        public async Task<IActionResult> Create([Bind("FullName,Address,Birthday,Orphanage,Avatar")]
-                                                Orphan orphan, int id, IFormFile file)
+        public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,ChildrenHouseID,Avatar")]
+                                                ChildDTO childDTO)
         {
             if (!ModelState.IsValid)
             {
-                return View(orphan);
+                return View(childDTO);
             }
 
             Stream stream = null;
-            var childDTO = CreateDTO(orphan, id, file, ref stream);
+
+            if (childDTO.Avatar != null)
+            {
+                stream = _streamCreater.CopyFileToStream(childDTO.Avatar);
+            }
 
             var url = _URLChildrenBuilder.CreatePost(_apiPath);
             var status = await _downLoader.СreatetePostAsync(url, childDTO,
-                                                             stream, file.FileName);
+                                                             stream, childDTO.Avatar.FileName);
 
             if (status != HttpStatusCode.Created)
             {
@@ -196,7 +196,6 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
         {
-
             if (id == null)
             {
                 return NotFound();
@@ -237,8 +236,7 @@ namespace FamilyNet.Controllers
 
             return View(childDTO);
         }
-
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
@@ -273,8 +271,7 @@ namespace FamilyNet.Controllers
 
             return Redirect("/Orphans/Index");
         }
-
-
+        
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -283,92 +280,109 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
-            if (orphan == null)
+            var url = _URLChildrenBuilder.GetById(_apiPath, id.Value);
+            ChildDTO childDTO = null;
+
+            try
+            {
+                childDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (childDTO == null)
             {
                 return NotFound();
             }
+
             GetViewData();
 
-            return View(orphan);
+            return View(id.Value);
         }
-
-
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var orphan = await _unitOfWorkAsync.Orphans.GetById((int)id);
-            if (orphan == null)
+            if (id <= 0)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            await _unitOfWorkAsync.Orphans.Delete((int)id);
-            _unitOfWorkAsync.SaveChangesAsync();
+
+            var url = _URLChildrenBuilder.GetById(_apiPath, id);
+            var status = await _downLoader.DeleteAsync(url);
+
+            if (status != HttpStatusCode.OK)
+            {
+                return Redirect("/Home/Error");
+            }
+
             GetViewData();
 
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Orphans/Index");
         }
-
-
+        
         [AllowAnonymous]
-        public IActionResult OrphansTable(int id, PersonSearchModel searchModel)
+        public async Task<IActionResult> OrphansTable(int id, PersonSearchModel searchModel)
         {
-            IEnumerable<Orphan> orphans = _unitOfWorkAsync.Orphans.GetAll();
+            var url = _URLChildrenBuilder.GetAllWithFilter(_apiPath,
+                                                           searchModel,
+                                                           id);
+            IEnumerable<ChildDTO> children = null;
 
-            orphans = OrphanFilter.GetFiltered(orphans, searchModel);
+            try
+            {
+                children = await _downLoader.GetAllAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
 
-            if (id == 0)
-                return View(orphans);
+            var orphans = children.Select(child => new Orphan()
+            {
+                Birthday = child.Birthday,
+                FullName = new FullName()
+                {
+                    Name = child.Name,
+                    Patronymic = child.Patronymic,
+                    Surname = child.Surname
+                },
+                ID = child.ID,
+                Avatar = child.PhotoPath,
+                OrphanageID = child.ChildrenHouseID,
+                EmailID = child.EmailID,
+                Rating = child.Rating
 
-            if (id > 0)
-                orphans = orphans.Where(x => x.Orphanage.ID.Equals(id)).ToList();
+            });
 
             GetViewData();
 
             return View(orphans);
         }
 
-
         private void GetViewData()
         {
             ViewData["OrphansList"] = _localizer["OrphansList"];
         }
-
-
-        private bool OrphanExists(int id)
-        {
-            return _unitOfWorkAsync.Orphans.GetById(id) != null;
-        }
-
-        private ChildDTO CreateDTO(Orphan orphan, int id,
-                                  IFormFile file,
-                                  ref Stream stream)
-        {
-            var childDTO = new ChildDTO()
-            {
-                Birthday = orphan.Birthday,
-                Surname = orphan.FullName.Surname,
-                Name = orphan.FullName.Name,
-                Patronymic = orphan.FullName.Patronymic,
-                Rating = orphan.Rating,
-                EmailID = orphan.EmailID,
-                ChildrenHouseID = id,
-            };
-
-            if (id > 0)
-            {
-                childDTO.ChildrenHouseID = id;
-            }
-
-            if (file != null)
-            {
-                stream = _streamCreater.CopyFileToStream(file);
-            }
-
-            return childDTO;
-        }
-
     }
 }

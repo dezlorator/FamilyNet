@@ -75,7 +75,7 @@ namespace FamilyNet.Downloader
         }
 
         public abstract Task<HttpStatusCode> СreatetePostAsync(string url,
-                                                               T dto, 
+                                                               T dto,
                                                                Stream file,
                                                                string fieName);
 
@@ -83,5 +83,32 @@ namespace FamilyNet.Downloader
                                                                T dto,
                                                                Stream file,
                                                                string fieName);
+
+        public async Task<HttpStatusCode> DeleteAsync(string url)
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    response = await httpClient.DeleteAsync(url);
+                }
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            return response.StatusCode;
+        }
     }
 }
