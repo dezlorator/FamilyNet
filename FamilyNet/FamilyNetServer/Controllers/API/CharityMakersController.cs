@@ -71,7 +71,6 @@ namespace FamilyNetServer.Controllers.API
                     Name = charityMaker.FullName.Name,
                     Patronymic = charityMaker.FullName.Patronymic,
                     Surname = charityMaker.FullName.Surname,
-                    CharityMakerID = charityMaker.ID,
                     Rating = charityMaker.Rating
                 });
 
@@ -97,7 +96,6 @@ namespace FamilyNetServer.Controllers.API
                 Birthday = charityMaker.Birthday,
                 ID = charityMaker.ID,
                 Name = charityMaker.FullName.Name,
-                CharityMakerID = charityMaker.ID,
                 Patronymic = charityMaker.FullName.Patronymic,
                 Rating = charityMaker.Rating,
                 Surname = charityMaker.FullName.Surname,
@@ -140,7 +138,7 @@ namespace FamilyNetServer.Controllers.API
                     Patronymic = charityMakerDTO.Patronymic
                 },
 
-                ID = charityMakerDTO.CharityMakerID,
+                ID = charityMakerDTO.ID,
                 Avatar = pathPhoto,
                 EmailID = charityMakerDTO.EmailID,
             };
@@ -173,7 +171,7 @@ namespace FamilyNetServer.Controllers.API
             charityMaker.FullName.Surname = charityMakerDTO.Surname;
             charityMaker.Birthday = charityMakerDTO.Birthday;
             charityMaker.Rating = charityMakerDTO.Rating;
-            charityMaker.ID = charityMakerDTO.CharityMakerID;
+            charityMaker.ID = charityMakerDTO.ID;
             charityMaker.EmailID = charityMakerDTO.EmailID;
 
             if (charityMakerDTO.Avatar != null)
@@ -190,8 +188,7 @@ namespace FamilyNetServer.Controllers.API
 
             return NoContent();
         }
-
-
+        
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

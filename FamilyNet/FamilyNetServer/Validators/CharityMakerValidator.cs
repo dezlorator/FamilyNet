@@ -15,7 +15,7 @@ namespace FamilyNetServer.Validators
                 String.IsNullOrEmpty(charityMakerDTO.Name) ||
                 String.IsNullOrEmpty(charityMakerDTO.Surname) ||
                 String.IsNullOrEmpty(charityMakerDTO.Patronymic) ||
-                charityMakerDTO.CharityMakerID < 0)
+                charityMakerDTO.AdressID < 0)
             {
                 return false;
             }
