@@ -14,7 +14,8 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using FamilyNet.Configuration;
 using FamilyNet.Downloader;
-using Uploader;
+using DataTransferObjects;
+using FamilyNet.StreamCreater;
 
 namespace FamilyNet
 {
@@ -30,7 +31,7 @@ namespace FamilyNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IFileUploader, FileUploader>();
+            services.AddTransient<IFileStreamCreater, FileStreamCreater>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
             //services.AddTransient<FamilyNetPhoneValidator>();
@@ -53,10 +54,8 @@ namespace FamilyNet
             .AddDefaultTokenProviders();
 
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
-            services.AddTransient(typeof(IServerDataDownLoader<>),
-                                  typeof(ServerDataDownloader<>));
-
-            services.AddTransient<URLChildrenBuilder>();
+            services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
+            services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

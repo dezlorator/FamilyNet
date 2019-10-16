@@ -10,7 +10,7 @@ using FamilyNetServer.Models;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Validators;
-using Uploader;
+using FamilyNetServer.Uploaders;
 
 namespace FamilyNetServer.Controllers.API
 {

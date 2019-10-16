@@ -1,12 +1,14 @@
 ﻿using FamilyNet.Configuration;
 using FamilyNet.Models.ViewModels;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using System;
-using System.Text;
+using System.Collections.Generic;
+
 
 namespace FamilyNet.Downloader
 {
-    public class URLChildrenBuilder
+    public class URLChildrenBuilder : IURLChildrenBuilder
     {
         #region private fields
 
@@ -27,31 +29,30 @@ namespace FamilyNet.Downloader
                                        PersonSearchModel searchModel,
                                        int orphanageId)
         {
-            var url = new StringBuilder(_options.Value.ServerURL);
-            url.Append(api);
-            url.Append("?");
+            var queryParams = new Dictionary<string, string>();
+
+            if (!String.IsNullOrEmpty(searchModel.FullNameString))
+            {
+                queryParams.Add("name", searchModel.FullNameString);
+            }
 
             if (searchModel.AgeNumber > 0)
             {
-                url.AppendFormat("age={0}&", searchModel.AgeNumber);
+                queryParams.Add("age", searchModel.AgeNumber.ToString());
             }
 
             if (searchModel.RatingNumber > 0)
             {
-                url.AppendFormat("rating={0}&", searchModel.RatingNumber);
-            }
-
-            if (!String.IsNullOrEmpty(searchModel.FullNameString))
-            {
-                url.AppendFormat("name={0}&", searchModel.FullNameString);
+                queryParams.Add("rating", searchModel.RatingNumber.ToString());
             }
 
             if (orphanageId > 0)
             {
-                url.AppendFormat("childrenHouseId={0}&", orphanageId);
+                queryParams.Add("childrenHouseId", orphanageId.ToString());
             }
 
-            return url.ToString();
+            return QueryHelpers.AddQueryString(_options.Value.ServerURL + api,
+                                                queryParams);
         }
 
         public string GetById(string api, int id)

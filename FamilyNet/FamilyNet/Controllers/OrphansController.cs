@@ -15,8 +15,10 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Net.Http;
 using Newtonsoft.Json;
-using Uploader;
 using System.Net;
+using System.IO;
+using FamilyNet.StreamCreater;
+using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
@@ -26,10 +28,10 @@ namespace FamilyNet.Controllers
         #region private fields
 
         private readonly IStringLocalizer<OrphansController> _localizer;
-        private readonly IServerDataDownLoader<ChildDTO> _downLoader;
-        private readonly URLChildrenBuilder _URLChildrenBuilder;
+        private readonly ServerDataDownLoader<ChildDTO> _downLoader;
+        private readonly IURLChildrenBuilder _URLChildrenBuilder;
         private readonly string _apiPath = "api/v1/children";
-        private readonly IFileUploader _uploader;
+        private readonly IFileStreamCreater _streamCreater;
 
         #endregion
 
@@ -37,27 +39,27 @@ namespace FamilyNet.Controllers
 
         public OrphansController(IUnitOfWorkAsync unitOfWork,
                                  IStringLocalizer<OrphansController> localizer,
-                                 IServerDataDownLoader<ChildDTO> downLoader,
-                                 URLChildrenBuilder URLChildrenBuilder,
-                                 IFileUploader uploader)
+                                 ServerDataDownLoader<ChildDTO> downLoader,
+                                 IURLChildrenBuilder URLChildrenBuilder,
+                                 IFileStreamCreater streamCreater)
             : base(unitOfWork)
         {
             _localizer = localizer;
             _downLoader = downLoader;
             _URLChildrenBuilder = URLChildrenBuilder;
-            _uploader = uploader;
+            _streamCreater = streamCreater;
         }
 
         #endregion
 
-        // GET: Orphans
+
         [AllowAnonymous]
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
             var url = _URLChildrenBuilder.GetAllWithFilter(_apiPath,
                                                            searchModel,
                                                            id);
-            List<ChildDTO> children = null;
+            IEnumerable<ChildDTO> children = null;
 
             try
             {
@@ -96,8 +98,7 @@ namespace FamilyNet.Controllers
             return View(orphans);
         }
 
-        // GET: Orphans/Details/5
-        //[HttpGet("[controller]/[action]/{id}")]
+
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -152,8 +153,7 @@ namespace FamilyNet.Controllers
             return View(orphan);
         }
 
-        // GET: Orphans/Create
-        //[Authorize(Roles = "Admin, Orphan")]
+        [Authorize(Roles = "Admin, Orphan")]
         public IActionResult Create()
         {
             Check();
@@ -166,13 +166,12 @@ namespace FamilyNet.Controllers
             return View();
         }
 
-        // POST: Orphans/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Admin, Orphan")]
-        public async Task<IActionResult> Create([Bind("FullName,Address,Birthday,Orphanage,Avatar")] Orphan orphan, int id, IFormFile file)
+        [Authorize(Roles = "Admin, Orphan")]
+        public async Task<IActionResult> Create([Bind("FullName,Address,Birthday,Orphanage,Avatar")]
+                                                Orphan orphan, int id, IFormFile file)
         {
             if (!ModelState.IsValid)
             {
@@ -187,28 +186,30 @@ namespace FamilyNet.Controllers
                 Patronymic = orphan.FullName.Patronymic,
                 Rating = orphan.Rating,
                 EmailID = orphan.EmailID,
-                ChildrenHouseID = orphan.OrphanageID ?? 0,
+                ChildrenHouseID = id,
             };
+
+            Stream stream = null;
 
             if (file != null)
             {
-                childDTO.PhotoPath = _uploader.CopyFileToClient(orphan.FullName.Surname
-                    + DateTime.Now.Ticks, "Children", file);
+                stream = _streamCreater.CopyFileToStream(file);
             }
 
             var url = _URLChildrenBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.СreatetePostAsync(url, childDTO);
+            var status = await _downLoader.СreatetePostAsync(url, childDTO,
+                                                             stream, file.FileName);
 
-            if (status != HttpStatusCode.NoContent)
+            if (status != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
                 //TODO: log
             }
 
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Orphans/Index");
         }
 
-        // GET: Orphans/Edit/5
+
         [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -239,9 +240,7 @@ namespace FamilyNet.Controllers
             return View(orphan);
         }
 
-        // POST: Orphans/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
@@ -291,7 +290,7 @@ namespace FamilyNet.Controllers
             return View(orphan);
         }
 
-        // GET: Orphans/Delete/5
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -310,7 +309,7 @@ namespace FamilyNet.Controllers
             return View(orphan);
         }
 
-        // POST: Orphans/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -328,7 +327,6 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Orphans/OrphansTable
 
         [AllowAnonymous]
         public IActionResult OrphansTable(int id, PersonSearchModel searchModel)
@@ -348,10 +346,12 @@ namespace FamilyNet.Controllers
             return View(orphans);
         }
 
+
         private void GetViewData()
         {
             ViewData["OrphansList"] = _localizer["OrphansList"];
         }
+
 
         private bool OrphanExists(int id)
         {

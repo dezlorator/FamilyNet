@@ -30,7 +30,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
-    <ProjectReference Include="..\Uploader\Uploader.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,15 +1,16 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerDataDownloader<T> : IServerDataDownLoader<T> where T : class, new()
+    public abstract class ServerDataDownLoader<T> where T : class, new()
     {
-        public async Task<List<T>> GetAllAsync(string url)
+        public async Task<IEnumerable<T>> GetAllAsync(string url)
         {
             List<T> objs = null;
 
@@ -73,24 +74,9 @@ namespace FamilyNet.Downloader
             return obj;
         }
 
-        public async Task<HttpStatusCode> СreatetePostAsync(string url, T dto)
-        {
-            var content = new MultipartContent();
-            //TODO: add content
-
-            HttpResponseMessage msg = null;
-
-            using (var httpClient = new HttpClient())
-            {
-                msg = await httpClient.PostAsync(url, content);
-            }
-
-            if (!msg.IsSuccessStatusCode)
-            {
-                return HttpStatusCode.BadRequest;
-            }
-
-            return HttpStatusCode.OK;
-        }
+        public abstract Task<HttpStatusCode> СreatetePostAsync(string url,
+                                                               T dto, 
+                                                               Stream file,
+                                                               string fieNmae);
     }
 }

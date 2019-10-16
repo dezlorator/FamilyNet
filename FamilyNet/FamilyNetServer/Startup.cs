@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Localization;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Configuration;
-using Uploader;
+using FamilyNetServer.Uploaders;
 
 namespace FamilyNetServer
 {
