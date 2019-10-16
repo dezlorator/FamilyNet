@@ -162,7 +162,7 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            var charityMaker = await _unitOfWork.CharityMakers.GetById(charityMakerDTO.ID);
+            var charityMaker = await _unitOfWork.CharityMakers.GetById(id);
 
             if (charityMaker == null)
             {
