@@ -8,6 +8,7 @@ using FamilyNetServer.DTO;
 using FamilyNetServer.Enums;
 using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
+using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
@@ -45,44 +46,29 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]string name,
-                                    [FromQuery]float rating,
-                                    [FromQuery]int age,
-                                    [FromQuery]int rows,
-                                    [FromQuery]int page)
+        public IActionResult GetAll([FromQuery] FilterParametersPerson filter)
         {
             var representatives = _unitOfWork.Representatives.GetAll().Where(r => !r.IsDeleted);
-            representatives = _filterConditions.GetRepresentatives(representatives, name, rating, age);
-
-            if (rows != 0 && page != 0)
-            {
-                representatives = representatives.Skip(rows * page).Take(rows);
-            }
+            representatives = _filterConditions.GetRepresentatives(representatives, filter);
 
             if (representatives == null)
             {
                 return BadRequest();
             }
 
-            var representativesDTO = new List<RepresentativeDTO>();
-
-            foreach (var r in representatives)
+            var representativesDTO = representatives.Select(r =>
+            new RepresentativeDTO()
             {
-                var representativeDTO = new RepresentativeDTO()
-                {
-                    PhotoPath = r.Avatar,
-                    Birthday = r.Birthday,
-                    EmailID = r.EmailID,
-                    ID = r.ID,
-                    Name = r.FullName.Name,
-                    Patronymic = r.FullName.Patronymic,
-                    Surname = r.FullName.Surname,
-                    OrphanageID = r.OrphanageID,
-                    Rating = r.Rating
-                };
-
-                representativesDTO.Add(representativeDTO);
-            }
+                PhotoPath = r.Avatar,
+                Birthday = r.Birthday,
+                EmailID = r.EmailID,
+                ID = r.ID,
+                Name = r.FullName.Name,
+                Patronymic = r.FullName.Patronymic,
+                Surname = r.FullName.Surname,
+                ChildrenHouseID = r.OrphanageID,
+                Rating = r.Rating
+            });
 
             return Ok(representativesDTO);
         }
@@ -104,7 +90,7 @@ namespace FamilyNetServer.Controllers.API
                 Birthday = represenntative.Birthday,
                 ID = represenntative.ID,
                 Name = represenntative.FullName.Name,
-                OrphanageID = represenntative.OrphanageID,
+                ChildrenHouseID = represenntative.OrphanageID,
                 Patronymic = represenntative.FullName.Patronymic,
                 Rating = represenntative.Rating,
                 Surname = represenntative.FullName.Surname,
@@ -147,7 +133,7 @@ namespace FamilyNetServer.Controllers.API
                     Patronymic = representativeDTO.Patronymic
                 },
 
-                OrphanageID = representativeDTO.OrphanageID,
+                OrphanageID = representativeDTO.ChildrenHouseID,
                 Avatar = pathPhoto,
                 EmailID = representativeDTO.EmailID,
             };
@@ -155,7 +141,10 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Representatives.Create(representative);
             _unitOfWork.SaveChangesAsync();
 
-            return Created("api/v1/{controller}/" + representative.ID, representative);
+            representativeDTO.ID = representative.ID;
+            representativeDTO.PhotoPath = representative.Avatar;
+
+            return Created("api/v1/{controller}/" + representative.ID, representativeDTO);
         }
 
         [HttpPut("{id}")]
@@ -180,7 +169,7 @@ namespace FamilyNetServer.Controllers.API
             representative.FullName.Surname = representativeDTO.Surname;
             representative.Birthday = representativeDTO.Birthday;
             representative.Rating = representativeDTO.Rating;
-            representative.OrphanageID = representativeDTO.OrphanageID;
+            representative.OrphanageID = representativeDTO.ChildrenHouseID;
             representative.EmailID = representativeDTO.EmailID;
 
             if (representativeDTO.Avatar != null)

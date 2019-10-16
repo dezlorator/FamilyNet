@@ -1,29 +1,44 @@
 ﻿using System;
 using System.Linq;
 using FamilyNetServer.Models;
+using FamilyNetServer.Filters.FilterParameters;
 
 namespace FamilyNetServer.Filters
 {
     public class FilterConditionsRepresentatives : IFilterConditionsRepresentatives
     {
         public IQueryable<Representative> GetRepresentatives(IQueryable<Representative> representatives,
-                                             string name, float rating,
-                                             int age)
+                                             FilterParametersPerson filter)
         {
-            if (!String.IsNullOrEmpty(name))
+            if (filter.ChildrenHouseID > 0)
             {
-                representatives = representatives.Where(c => c.FullName.ToString().Contains(name));
+                representatives = representatives
+                    .Where(c => c.OrphanageID == filter.ChildrenHouseID);
             }
 
-            if (rating > 0.001)
+            if (!String.IsNullOrEmpty(filter.Name))
             {
-                representatives = representatives.Where(c => c.Rating > rating);
+                representatives = representatives
+                    .Where(c => c.FullName.ToString().Contains(filter.Name));
             }
 
-            if (age > 0)
+            if (filter.Rating > 0.001)
+            {
+                representatives = representatives
+                    .Where(c => c.Rating > filter.Rating);
+            }
+
+            if (filter.Age > 0)
             {
                 var dayPerYear = 366;
-                representatives = representatives.Where(c => (DateTime.Now - c.Birthday).Days >= age * dayPerYear);
+                representatives = representatives.Where(c => (DateTime.Now - c.Birthday).Days >= filter.Age * dayPerYear);
+            }
+
+            if (filter.Rows != 0 && filter.Page != 0)
+            {
+                representatives = representatives
+                    .Skip(filter.Rows * (filter.Page - 1))
+                    .Take(filter.Rows);
             }
 
             return representatives;
