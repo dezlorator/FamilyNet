@@ -37,6 +37,30 @@ namespace FamilyNetServer.Controllers.API
 
             return Ok(users);
         }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAsync(string id)
+        {
+            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
+            var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
+            var allRoles = _unitOfWork.RoleManager.Roles.ToArray();
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var userDTO = new UserDTO()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Roles = userRoles.ToArray()
+            };
+            return Ok(userDTO);
+        }
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,17 +73,18 @@ namespace FamilyNetServer.Controllers.API
             var user = new ApplicationUser
             {
                 Email = userDTO.Email,
-                UserName = userDTO.UserName,
+                UserName = userDTO.Email,
                 PhoneNumber = userDTO.PhoneNumber
             };
+            IdentityResult result
+                       = await _unitOfWork.UserManager.CreateAsync(user, userDTO.Password);
+            if (result.Succeeded)
+            {
+                _unitOfWork.SaveChangesAsync();
+                return Created("api/v1/users/", userDTO);
+            }
 
-            await _unitOfWork.UserManager.CreateAsync(user, userDTO.Password);
-
-            _unitOfWork.SaveChangesAsync();
-
-
-            return Created("api/v1/users/", userDTO);
-
+            return BadRequest();
         }
 
         [HttpDelete("{id}")]
@@ -74,7 +99,8 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            await _unitOfWork.UserManager.DeleteAsync(user);
+            IdentityResult result
+                       = await _unitOfWork.UserManager.DeleteAsync(user);
 
             _unitOfWork.SaveChangesAsync();
 
@@ -84,42 +110,80 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> EditAsync(UserDTO userDTO)
+        public async Task<IActionResult> EditAsync(string id, UserDTO us)
         {
-            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(userDTO.Id);
-
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(us.Id);
             if (user == null)
             {
                 return BadRequest();
             }
 
-            //IdentityResult validEmail
-            //      = await _unitOfWork.UserValidator.ValidateAsync(_unitOfWork.UserManager, user);
-            //IdentityResult validPhone
-            // = await _unitOfWork.PhoneValidator.ValidateAsync(_unitOfWork.UserManager, user);
-            //IdentityResult validPass = await _unitOfWork.PasswordValidator.ValidateAsync(_unitOfWork.UserManager,
-            //           user, userDTO.Password);
-            //if (!validEmail.Succeeded || !validPhone.Succeeded /*|| !validPass.Succeeded*/)
-            //{
-            //    return BadRequest();
-            //}
+            //validate email
+            user.Email = us.Email;
+            user.UserName = us.Email;
+            IdentityResult validEmail
+                = await _unitOfWork.UserValidator.ValidateAsync(_unitOfWork.UserManager, user);
+            if (!validEmail.Succeeded)
+            {
+                return BadRequest();
+            }
 
-            user.UserName = userDTO.UserName;
-            user.Email = userDTO.Email;
-            user.PhoneNumber = userDTO.PhoneNumber;
+            //validate phone
+            user.PhoneNumber = us.PhoneNumber;
+            IdentityResult validPhone
+                = await _unitOfWork.PhoneValidator.ValidateAsync(_unitOfWork.UserManager, user);
+            if (!validPhone.Succeeded)
+            {
+                return BadRequest();
+            }
 
+            //validate password
+            IdentityResult validPass = null;
+            if (!string.IsNullOrEmpty(us.Password))
+            {
+                validPass = await _unitOfWork.PasswordValidator.ValidateAsync(_unitOfWork.UserManager,
+                    user, us.Password);
+                if (validPass.Succeeded)
+                {
+                    user.PasswordHash = _unitOfWork.PasswordHasher.HashPassword(user,
+                        us.Password);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+
+            // получем список ролей пользователя
             var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
-            var addedRoles = userDTO.Roles.Except(userRoles);
-            var removedRoles = userRoles.Except(userDTO.Roles);
+            // получаем все роли
+            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
+            // получаем список ролей, которые были добавлены
+            var addedRoles = us.Roles.Except(userRoles);
+            // получаем роли, которые были удалены
+            var removedRoles = userRoles.Except(us.Roles);
 
             await _unitOfWork.UserManager.AddToRolesAsync(user, addedRoles);
 
             await _unitOfWork.UserManager.RemoveFromRolesAsync(user, removedRoles);
 
-            await _unitOfWork.UserManager.UpdateAsync(user);
-            //_unitOfWork.SaveChangesAsync();
+            IdentityResult result = await _unitOfWork.UserManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
 
-            return NoContent();
+        private void AddErrorsFromResult(IdentityResult result)
+        {
+            foreach (IdentityError error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
         }
     }
 }
