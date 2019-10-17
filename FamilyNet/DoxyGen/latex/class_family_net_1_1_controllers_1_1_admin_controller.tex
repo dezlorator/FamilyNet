@@ -1,5 +1,10 @@
 \hypertarget{class_family_net_1_1_controllers_1_1_admin_controller}{}\doxysection{Family\+Net.\+Controllers.\+Admin\+Controller Class Reference}
 \label{class_family_net_1_1_controllers_1_1_admin_controller}\index{FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}}
+
+
+Controller for managing users. For Admin only  
+
+
 Inheritance diagram for Family\+Net.\+Controllers.\+Admin\+Controller\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -9,33 +14,160 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Admin\+Controller\+:\begin{f
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a987dc76a943c86034024579a9869ce4a}\label{class_family_net_1_1_controllers_1_1_admin_controller_a987dc76a943c86034024579a9869ce4a}} 
-{\bfseries Admin\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a3a450f469bf2184acc9603dbb4f676fc}\label{class_family_net_1_1_controllers_1_1_admin_controller_a3a450f469bf2184acc9603dbb4f676fc}} 
-View\+Result {\bfseries Index} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a49588786080d2f0e8d87a2e4d55116fa}\label{class_family_net_1_1_controllers_1_1_admin_controller_a49588786080d2f0e8d87a2e4d55116fa}} 
-View\+Result {\bfseries Create} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_ad69595408fd86f3595386be0d1788d98}\label{class_family_net_1_1_controllers_1_1_admin_controller_ad69595408fd86f3595386be0d1788d98}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_create_user_view_model}{Create\+User\+View\+Model}} model)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_ad735148b5b5ca60e0fe3e0937ba0dfdf}\label{class_family_net_1_1_controllers_1_1_admin_controller_ad735148b5b5ca60e0fe3e0937ba0dfdf}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete} (string id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a3cb9a0bdd8a434ea4386a1f1613fbec5}\label{class_family_net_1_1_controllers_1_1_admin_controller_a3cb9a0bdd8a434ea4386a1f1613fbec5}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (string id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_aab944ba12fb70f9061b91b7cf0e21e48}\label{class_family_net_1_1_controllers_1_1_admin_controller_aab944ba12fb70f9061b91b7cf0e21e48}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_edit_view_model}{Edit\+View\+Model}} us, string password)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a1cf8baf5741a10528f3cf1d5a8dbf420}\label{class_family_net_1_1_controllers_1_1_admin_controller_a1cf8baf5741a10528f3cf1d5a8dbf420}} 
-I\+Action\+Result {\bfseries Seed\+Data} ()
-\end{DoxyCompactItemize}
+\mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller_a987dc76a943c86034024579a9869ce4a}{Admin\+Controller}} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work)
+\begin{DoxyCompactList}\small\item\em Construtor \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller}{Admin\+Controller}} \end{DoxyCompactList}\item 
+View\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller_a3a450f469bf2184acc9603dbb4f676fc}{Index}} ()
+\begin{DoxyCompactList}\small\item\em View Index page \end{DoxyCompactList}\item 
+View\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller_a49588786080d2f0e8d87a2e4d55116fa}{Create}} ()
+\begin{DoxyCompactList}\small\item\em View Create Page \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller_ad69595408fd86f3595386be0d1788d98}{Create}} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_create_user_view_model}{Create\+User\+View\+Model}} model)
+\begin{DoxyCompactList}\small\item\em Validates form for adding users, saves user to database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller_ad735148b5b5ca60e0fe3e0937ba0dfdf}{Delete}} (string id)
+\begin{DoxyCompactList}\small\item\em Deletes user \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller_a3cb9a0bdd8a434ea4386a1f1613fbec5}{Edit}} (string id)
+\begin{DoxyCompactList}\small\item\em View edit page \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller_aab944ba12fb70f9061b91b7cf0e21e48}{Edit}} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_edit_view_model}{Edit\+View\+Model}} us, string password)
+\begin{DoxyCompactList}\small\item\em Validates form and edit user info \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller_a1cf8baf5741a10528f3cf1d5a8dbf420}{Seed\+Data}} ()
+\begin{DoxyCompactList}\small\item\em Filles databade with info \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+Controller for managing users. For Admin only 
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a987dc76a943c86034024579a9869ce4a}\label{class_family_net_1_1_controllers_1_1_admin_controller_a987dc76a943c86034024579a9869ce4a}} 
+\index{FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}!AdminController@{AdminController}}
+\index{AdminController@{AdminController}!FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}}
+\doxysubsubsection{\texorpdfstring{AdminController()}{AdminController()}}
+{\footnotesize\ttfamily Family\+Net.\+Controllers.\+Admin\+Controller.\+Admin\+Controller (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}}}]{unit\+Of\+Work }\end{DoxyParamCaption})}
+
+
+
+Construtor \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_admin_controller}{Admin\+Controller}} 
+
+~\newline
+ 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a49588786080d2f0e8d87a2e4d55116fa}\label{class_family_net_1_1_controllers_1_1_admin_controller_a49588786080d2f0e8d87a2e4d55116fa}} 
+\index{FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily View\+Result Family\+Net.\+Controllers.\+Admin\+Controller.\+Create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+View Create Page 
+
+\begin{DoxyReturn}{Returns}
+Create Page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_ad69595408fd86f3595386be0d1788d98}\label{class_family_net_1_1_controllers_1_1_admin_controller_ad69595408fd86f3595386be0d1788d98}} 
+\index{FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Admin\+Controller.\+Create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_create_user_view_model}{Create\+User\+View\+Model}}}]{model }\end{DoxyParamCaption})}
+
+
+
+Validates form for adding users, saves user to database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em model} & user model\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_ad735148b5b5ca60e0fe3e0937ba0dfdf}\label{class_family_net_1_1_controllers_1_1_admin_controller_ad735148b5b5ca60e0fe3e0937ba0dfdf}} 
+\index{FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}!Delete@{Delete}}
+\index{Delete@{Delete}!FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}}
+\doxysubsubsection{\texorpdfstring{Delete()}{Delete()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Admin\+Controller.\+Delete (\begin{DoxyParamCaption}\item[{string}]{id }\end{DoxyParamCaption})}
+
+
+
+Deletes user 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & user id\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_aab944ba12fb70f9061b91b7cf0e21e48}\label{class_family_net_1_1_controllers_1_1_admin_controller_aab944ba12fb70f9061b91b7cf0e21e48}} 
+\index{FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Admin\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_edit_view_model}{Edit\+View\+Model}}}]{us,  }\item[{string}]{password }\end{DoxyParamCaption})}
+
+
+
+Validates form and edit user info 
+
+
+\begin{DoxyParams}{Parameters}
+{\em us} & user model\\
+\hline
+{\em password} & password\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a3cb9a0bdd8a434ea4386a1f1613fbec5}\label{class_family_net_1_1_controllers_1_1_admin_controller_a3cb9a0bdd8a434ea4386a1f1613fbec5}} 
+\index{FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Admin\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{string}]{id }\end{DoxyParamCaption})}
+
+
+
+View edit page 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & user id\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view edit page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a3a450f469bf2184acc9603dbb4f676fc}\label{class_family_net_1_1_controllers_1_1_admin_controller_a3a450f469bf2184acc9603dbb4f676fc}} 
+\index{FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}!Index@{Index}}
+\index{Index@{Index}!FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}}
+\doxysubsubsection{\texorpdfstring{Index()}{Index()}}
+{\footnotesize\ttfamily View\+Result Family\+Net.\+Controllers.\+Admin\+Controller.\+Index (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+View Index page 
+
+\begin{DoxyReturn}{Returns}
+View Index
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_admin_controller_a1cf8baf5741a10528f3cf1d5a8dbf420}\label{class_family_net_1_1_controllers_1_1_admin_controller_a1cf8baf5741a10528f3cf1d5a8dbf420}} 
+\index{FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}!SeedData@{SeedData}}
+\index{SeedData@{SeedData}!FamilyNet.Controllers.AdminController@{FamilyNet.Controllers.AdminController}}
+\doxysubsubsection{\texorpdfstring{SeedData()}{SeedData()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Admin\+Controller.\+Seed\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Filles databade with info 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Admin\+Controller.\+cs\end{DoxyCompactItemize}
+C\+:/\+Users/alter/\+One\+Drive/Рабочий стол/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Admin\+Controller.\+cs\end{DoxyCompactItemize}

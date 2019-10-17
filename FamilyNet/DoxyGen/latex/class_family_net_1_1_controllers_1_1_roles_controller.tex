@@ -1,5 +1,10 @@
 \hypertarget{class_family_net_1_1_controllers_1_1_roles_controller}{}\doxysection{Family\+Net.\+Controllers.\+Roles\+Controller Class Reference}
 \label{class_family_net_1_1_controllers_1_1_roles_controller}\index{FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}}
+
+
+Controller for managing roles. For Admin only  
+
+
 Inheritance diagram for Family\+Net.\+Controllers.\+Roles\+Controller\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -9,33 +14,164 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Roles\+Controller\+:\begin{f
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a8e6738ec4de457e875360b3ea0b67c56}\label{class_family_net_1_1_controllers_1_1_roles_controller_a8e6738ec4de457e875360b3ea0b67c56}} 
-{\bfseries Roles\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_af45d199f164521c8520bc87263508fdb}\label{class_family_net_1_1_controllers_1_1_roles_controller_af45d199f164521c8520bc87263508fdb}} 
-I\+Action\+Result {\bfseries Index} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a751f52ad648d1c5bb3053aa1e3542d2c}\label{class_family_net_1_1_controllers_1_1_roles_controller_a751f52ad648d1c5bb3053aa1e3542d2c}} 
-I\+Action\+Result {\bfseries Create} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a4d4eb7bb66a4ef7ad623e4ac7457069c}\label{class_family_net_1_1_controllers_1_1_roles_controller_a4d4eb7bb66a4ef7ad623e4ac7457069c}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create} (string name)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_ad5210354b8ff383a2bec6fa6286a0082}\label{class_family_net_1_1_controllers_1_1_roles_controller_ad5210354b8ff383a2bec6fa6286a0082}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete} (string id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a73b86b5f700b12e8ca592cee1e512cc3}\label{class_family_net_1_1_controllers_1_1_roles_controller_a73b86b5f700b12e8ca592cee1e512cc3}} 
-I\+Action\+Result {\bfseries User\+List} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_ac26b8cd970f2a32fea575a397d8ba1cd}\label{class_family_net_1_1_controllers_1_1_roles_controller_ac26b8cd970f2a32fea575a397d8ba1cd}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (string user\+Id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a36f97b5638453ed2c7599b47135c84dd}\label{class_family_net_1_1_controllers_1_1_roles_controller_a36f97b5638453ed2c7599b47135c84dd}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (string user\+Id, List$<$ string $>$ roles)
-\end{DoxyCompactItemize}
+\mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller_a8e6738ec4de457e875360b3ea0b67c56}{Roles\+Controller}} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work)
+\begin{DoxyCompactList}\small\item\em Construtor \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller}{Roles\+Controller}} \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller_af45d199f164521c8520bc87263508fdb}{Index}} ()
+\begin{DoxyCompactList}\small\item\em Creates view index page \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller_a751f52ad648d1c5bb3053aa1e3542d2c}{Create}} ()
+\begin{DoxyCompactList}\small\item\em Creates View Create Role Page \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller_a4d4eb7bb66a4ef7ad623e4ac7457069c}{Create}} (string name)
+\begin{DoxyCompactList}\small\item\em Create new role and add to database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller_ad5210354b8ff383a2bec6fa6286a0082}{Delete}} (string id)
+\begin{DoxyCompactList}\small\item\em Delete role frome database \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller_a73b86b5f700b12e8ca592cee1e512cc3}{User\+List}} ()
+\begin{DoxyCompactList}\small\item\em Creates View for Users \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller_ac26b8cd970f2a32fea575a397d8ba1cd}{Edit}} (string user\+Id)
+\begin{DoxyCompactList}\small\item\em Creates page for editing user roles \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller_a36f97b5638453ed2c7599b47135c84dd}{Edit}} (string user\+Id, List$<$ string $>$ roles)
+\begin{DoxyCompactList}\small\item\em Saves edited changes to database \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+Controller for managing roles. For Admin only 
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a8e6738ec4de457e875360b3ea0b67c56}\label{class_family_net_1_1_controllers_1_1_roles_controller_a8e6738ec4de457e875360b3ea0b67c56}} 
+\index{FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}!RolesController@{RolesController}}
+\index{RolesController@{RolesController}!FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}}
+\doxysubsubsection{\texorpdfstring{RolesController()}{RolesController()}}
+{\footnotesize\ttfamily Family\+Net.\+Controllers.\+Roles\+Controller.\+Roles\+Controller (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}}}]{unit\+Of\+Work }\end{DoxyParamCaption})}
+
+
+
+Construtor \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_roles_controller}{Roles\+Controller}} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em unit\+Of\+Work} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a751f52ad648d1c5bb3053aa1e3542d2c}\label{class_family_net_1_1_controllers_1_1_roles_controller_a751f52ad648d1c5bb3053aa1e3542d2c}} 
+\index{FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Roles\+Controller.\+Create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Creates View Create Role Page 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a4d4eb7bb66a4ef7ad623e4ac7457069c}\label{class_family_net_1_1_controllers_1_1_roles_controller_a4d4eb7bb66a4ef7ad623e4ac7457069c}} 
+\index{FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Roles\+Controller.\+Create (\begin{DoxyParamCaption}\item[{string}]{name }\end{DoxyParamCaption})}
+
+
+
+Create new role and add to database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & role name\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_ad5210354b8ff383a2bec6fa6286a0082}\label{class_family_net_1_1_controllers_1_1_roles_controller_ad5210354b8ff383a2bec6fa6286a0082}} 
+\index{FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}!Delete@{Delete}}
+\index{Delete@{Delete}!FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}}
+\doxysubsubsection{\texorpdfstring{Delete()}{Delete()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Roles\+Controller.\+Delete (\begin{DoxyParamCaption}\item[{string}]{id }\end{DoxyParamCaption})}
+
+
+
+Delete role frome database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & role id\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_ac26b8cd970f2a32fea575a397d8ba1cd}\label{class_family_net_1_1_controllers_1_1_roles_controller_ac26b8cd970f2a32fea575a397d8ba1cd}} 
+\index{FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Roles\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{string}]{user\+Id }\end{DoxyParamCaption})}
+
+
+
+Creates page for editing user roles 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+Id} & user id\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a36f97b5638453ed2c7599b47135c84dd}\label{class_family_net_1_1_controllers_1_1_roles_controller_a36f97b5638453ed2c7599b47135c84dd}} 
+\index{FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Roles\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{string}]{user\+Id,  }\item[{List$<$ string $>$}]{roles }\end{DoxyParamCaption})}
+
+
+
+Saves edited changes to database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+Id} & user id\\
+\hline
+{\em roles} & list of roles\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_af45d199f164521c8520bc87263508fdb}\label{class_family_net_1_1_controllers_1_1_roles_controller_af45d199f164521c8520bc87263508fdb}} 
+\index{FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}!Index@{Index}}
+\index{Index@{Index}!FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}}
+\doxysubsubsection{\texorpdfstring{Index()}{Index()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Roles\+Controller.\+Index (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Creates view index page 
+
+\begin{DoxyReturn}{Returns}
+view index page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_roles_controller_a73b86b5f700b12e8ca592cee1e512cc3}\label{class_family_net_1_1_controllers_1_1_roles_controller_a73b86b5f700b12e8ca592cee1e512cc3}} 
+\index{FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}!UserList@{UserList}}
+\index{UserList@{UserList}!FamilyNet.Controllers.RolesController@{FamilyNet.Controllers.RolesController}}
+\doxysubsubsection{\texorpdfstring{UserList()}{UserList()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Roles\+Controller.\+User\+List (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Creates View for Users 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Roles\+Controller.\+cs\end{DoxyCompactItemize}
+C\+:/\+Users/alter/\+One\+Drive/Рабочий стол/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Roles\+Controller.\+cs\end{DoxyCompactItemize}

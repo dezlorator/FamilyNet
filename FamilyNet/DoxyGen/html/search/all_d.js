@@ -6,5 +6,5 @@ var searchData=
   ['representative_115',['Representative',['../class_family_net_1_1_models_1_1_representative.html',1,'FamilyNet::Models']]],
   ['representativescontroller_116',['RepresentativesController',['../class_family_net_1_1_controllers_1_1_representatives_controller.html',1,'FamilyNet::Controllers']]],
   ['representativeviewmodel_117',['RepresentativeViewModel',['../class_family_net_1_1_models_1_1_view_models_1_1_representative_view_model.html',1,'FamilyNet::Models::ViewModels']]],
-  ['rolescontroller_118',['RolesController',['../class_family_net_1_1_controllers_1_1_roles_controller.html',1,'FamilyNet::Controllers']]]
+  ['rolescontroller_118',['RolesController',['../class_family_net_1_1_controllers_1_1_roles_controller.html',1,'FamilyNet.Controllers.RolesController'],['../class_family_net_1_1_controllers_1_1_roles_controller.html#a8e6738ec4de457e875360b3ea0b67c56',1,'FamilyNet.Controllers.RolesController.RolesController()']]]
 ];

@@ -6,7 +6,7 @@ var searchData=
   ['addedboolpropertyforsoftdelete_3',['addedboolpropertyforsoftdelete',['../class_family_net_1_1_migrations_1_1addedboolpropertyforsoftdelete.html',1,'FamilyNet::Migrations']]],
   ['address_4',['Address',['../class_family_net_1_1_models_1_1_address.html',1,'FamilyNet::Models']]],
   ['addressgetter_5',['AddressGetter',['../class_family_net_1_1_models_1_1_address_getter.html',1,'FamilyNet::Models']]],
-  ['admincontroller_6',['AdminController',['../class_family_net_1_1_controllers_1_1_admin_controller.html',1,'FamilyNet::Controllers']]],
+  ['admincontroller_6',['AdminController',['../class_family_net_1_1_controllers_1_1_admin_controller.html',1,'FamilyNet.Controllers.AdminController'],['../class_family_net_1_1_controllers_1_1_admin_controller.html#a987dc76a943c86034024579a9869ce4a',1,'FamilyNet.Controllers.AdminController.AdminController()']]],
   ['applicationdbcontext_7',['ApplicationDbContext',['../class_family_net_1_1_models_1_1_entity_framework_1_1_application_db_context.html',1,'FamilyNet::Models::EntityFramework']]],
   ['applicationdbcontextfactory_8',['ApplicationDbContextFactory',['../class_family_net_1_1_models_1_1_entity_framework_1_1_application_db_context_factory.html',1,'FamilyNet::Models::EntityFramework']]],
   ['applicationdbcontextmodelsnapshot_9',['ApplicationDbContextModelSnapshot',['../class_family_net_1_1_migrations_1_1_application_db_context_model_snapshot.html',1,'FamilyNet::Migrations']]],
