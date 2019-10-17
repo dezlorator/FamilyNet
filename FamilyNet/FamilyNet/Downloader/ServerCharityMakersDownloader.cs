@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerChildrenDownloader : ServerDataDownLoader<ChildDTO>
+    public class ServerCharityMakersDownloader : ServerDataDownLoader<CharityMakerDTO>
     {
-
-        public override async Task<HttpStatusCode> СreatePostAsync(string url,
-                                                            ChildDTO dto,
-                                                            Stream streamFile,
-                                                            string fileName)
+        public override async Task<HttpStatusCode> СreatePostAsync(string url, CharityMakerDTO dto, 
+            Stream streamFile, string fileName)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -34,10 +31,8 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        public override async Task<HttpStatusCode> СreatePutAsync(string url,
-                                                              ChildDTO dto,
-                                                              Stream streamFile,
-                                                              string fileName)
+        public override async Task<HttpStatusCode> СreatePutAsync(string url, 
+            CharityMakerDTO dto, Stream streamFile, string fileName)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -58,10 +53,10 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        private static void BuildMultipartFprmData(ChildDTO dto, 
-                                                   Stream streamFile, 
-                                                   string fileName, 
-                                                   MultipartFormDataContent formDataContent)
+        private static void BuildMultipartFprmData(CharityMakerDTO dto,
+                                           Stream streamFile,
+                                           string fileName,
+                                           MultipartFormDataContent formDataContent)
         {
             if (streamFile != null && streamFile.Length > 0)
             {
@@ -78,7 +73,7 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.Patronymic), "Patronymic");
             formDataContent.Add(new StringContent(dto.Surname), "Surname");
             formDataContent.Add(new StringContent(dto.Birthday.ToString()), "Birthday");
-            formDataContent.Add(new StringContent(dto.ChildrenHouseID.ToString()),
+            formDataContent.Add(new StringContent(dto.AdressID.ToString()),
                                                   "ChildrenHouseID");
         }
     }
