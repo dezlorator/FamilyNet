@@ -19,6 +19,5 @@ namespace FamilyNetServer.DTO
 
         public string House { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
     }
 }

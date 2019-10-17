@@ -1,0 +1,121 @@
+﻿@model IEnumerable<FamilyNet.Models.CharityMaker>
+
+@{
+    ViewData["Title"] = "Список";
+}
+
+<h1>Список всех филантропов</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Создать</a>
+</p>
+
+<form asp-action="Filter">
+    <table class="table">
+        <th>
+            @Html.Label(@Html.DisplayNameFor(model => model.FullName) + ":")
+            @Html.TextBox("FullNameString", "", new { @class = "form-control" })
+        </th>
+        <th width="11%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " от:")
+            @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+            </button>
+            @Html.ActionLink("", "Index", "CharityMakers", null, new { @class = "fas fa-ban" })
+        </th>
+
+    </table>
+</form>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Birthday)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Surname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Patronymic)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address.Country)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address.Region)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address.Street)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address.House)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rating)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Birthday)
+                </td>
+                <th>
+                    @Html.DisplayFor(modelItem => item.FullName.Name)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.FullName.Surname)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.FullName.Patronymic)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Address.Country)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Address.Region)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Address.City)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Address.Street)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Address.House)
+                </th>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rating)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning">Редактировать</a>
+                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">Детали</a>
+                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

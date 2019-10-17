@@ -10,11 +10,7 @@ namespace FamilyNetServer.Validators
     {
         public bool IsValid(ChildrenHouseDTO childrenHouseDTO)
         {
-            return !(String.IsNullOrEmpty(childrenHouseDTO.Country) ||
-                String.IsNullOrEmpty(childrenHouseDTO.Region) ||
-                String.IsNullOrEmpty(childrenHouseDTO.City) ||
-                String.IsNullOrEmpty(childrenHouseDTO.Street) ||
-                String.IsNullOrEmpty(childrenHouseDTO.House) ||
+            return !(String.IsNullOrEmpty(childrenHouseDTO.Name) ||
                 childrenHouseDTO.Rating <= 0.0);
         }
     }

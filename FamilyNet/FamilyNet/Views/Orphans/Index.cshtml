@@ -1,0 +1,91 @@
+﻿@model IEnumerable<FamilyNet.Models.Orphan>
+
+@{
+    ViewData["Title"] = "Дети";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>
+    Список детей
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="OrphansTable" class="btn btn-primary float-right">Таблица</a>
+    }
+</h1>
+
+
+<form asp-action="Filter">
+    <table class="table">
+        <th>
+            @Html.Label(@Html.DisplayNameFor(model => model.FullName) + ":")
+            @Html.TextBox("FullNameString", "", new { @class = "form-control" })
+        </th>
+        <th width="12%">
+            @Html.Label("Вiк вiд:")
+            @Html.TextBox("AgeNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th width="12%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " вiд:")
+            @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+            </button>
+            @Html.ActionLink("", "Index", "Orphans", null, new { @class = "fas fa-ban" })
+        </th>
+
+    </table>
+</form>
+
+
+<div class="box">
+    <div class="container">
+        <div class="row">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4">
+
+                    <div class="card mb-4 box-shadow text-center">
+                        <a asp-action="Details" asp-route-id="@item.ID" style="text-decoration:none;">
+                            @if (item.Avatar != null && item.Avatar != "")
+                            {
+                                <img class="img-responsive" src="@Url.Content(@item.Avatar)" alt="Card image cap" width="100%" height="300px">
+                            }
+                            else
+                            {
+                                <img class="img-responsive" src="@Url.Content("~/images/anonimusjpg.jpg")" alt="Card image cap" width="100%" height="300px">
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    @Html.DisplayFor(modelItem => item.FullName.Name)
+                                    @Html.DisplayFor(modelItem => item.FullName.Surname)
+                                </h5>
+                                <p class="card-text">
+                                    @Html.DisplayFor(modelItem => item.Birthday)
+                                </p>
+                                <p class="card-text">
+                                    @Html.DisplayFor(modelItem => item.Orphanage.Name)
+                                    @Html.DisplayFor(modelItem => item.Orphanage.Adress.City)
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+

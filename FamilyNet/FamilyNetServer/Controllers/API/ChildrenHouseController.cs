@@ -75,18 +75,10 @@ namespace FamilyNetServer.Controllers.API
                     ID = c.ID,
                     Name = c.Name,
                     AdressID = c.AdressID,
+                    LocationID = c.LocationID,
                     Rating = c.Rating,
                     PhotoPath = c.Avatar                    
                 };
-
-                if(c.Adress != null)
-                {
-                    childrenHouseDTO.Country = c.Adress.Country;
-                    childrenHouseDTO.Region = c.Adress.Region;
-                    childrenHouseDTO.City = c.Adress.City;
-                    childrenHouseDTO.Street = c.Adress.Street;
-                    childrenHouseDTO.House = c.Adress.House;
-                }
 
                 childrenDTO.Add(childrenHouseDTO);
             }
@@ -116,15 +108,6 @@ namespace FamilyNetServer.Controllers.API
                 PhotoPath = childrenHouses.Avatar,
             };
 
-            if (childrenHouses.Adress != null)
-            {
-                childrenHouseDTO.Country = childrenHouses.Adress.Country;
-                childrenHouseDTO.Region = childrenHouses.Adress.Region;
-                childrenHouseDTO.City = childrenHouses.Adress.City;
-                childrenHouseDTO.Street = childrenHouses.Adress.Street;
-                childrenHouseDTO.House = childrenHouses.Adress.House;
-            }
-
             return Ok(childrenHouseDTO);
         }
 
@@ -137,16 +120,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 return BadRequest();
             }
-
-            var address = new Address()
-            {
-                Country = childrenHousesDTO.Country,
-                Region = childrenHousesDTO.Region,
-                City = childrenHousesDTO.City,
-                House = childrenHousesDTO.House,
-                Street = childrenHousesDTO.Street
-            };
-
+            
             var pathPhoto = String.Empty;
 
             if (childrenHousesDTO.Avatar != null)
@@ -161,30 +135,29 @@ namespace FamilyNetServer.Controllers.API
             {
                 Name = childrenHousesDTO.Name,
                 AdressID = childrenHousesDTO.AdressID,
+                LocationID = childrenHousesDTO.LocationID,
                 Rating = childrenHousesDTO.Rating,
                 Avatar = pathPhoto,
-                Adress = address
+                //Adress = address
             };
 
-            bool IsLocationNotNull = GetCoordProp(address, out var Location);
-            if (IsLocationNotNull)
-            {
-                childrenHouse.Location = new Location()
-                {
-                    MapCoordX = Location.Item1,
-                    MapCoordY = Location.Item2
-                };
+            //bool IsLocationNotNull = GetCoordProp(address, out var Location);
+            //if (IsLocationNotNull)
+            //{
+            //    childrenHouse.Location = new Location()
+            //    {
+            //        MapCoordX = Location.Item1,
+            //        MapCoordY = Location.Item2
+            //    };
                 
-            }
-            else
-                childrenHouse.LocationID = null;
+            //}
+            //else
+            //    childrenHouse.LocationID = null;
 
             await _repository.Orphanages.Create(childrenHouse);
             _repository.SaveChangesAsync();
 
             childrenHousesDTO.ID = childrenHouse.ID;
-            childrenHousesDTO.LocationID = childrenHouse.LocationID;
-            childrenHousesDTO.AdressID = childrenHouse.AdressID;
             childrenHousesDTO.PhotoPath = childrenHouse.Avatar;
             childrenHousesDTO.Avatar = null;
 
@@ -208,24 +181,18 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            childrenHouse.Adress.Country = childrenHouseDTO.Country;
-            childrenHouse.Adress.Region = childrenHouseDTO.Region;
-            childrenHouse.Adress.City = childrenHouseDTO.City;
-            childrenHouse.Adress.Street = childrenHouseDTO.Street;
-            childrenHouse.Adress.House = childrenHouseDTO.House;
+            //bool IsLocationNotNull = GetCoordProp(childrenHouse.Adress, out var Location);
+            //if (IsLocationNotNull)
+            //{
+            //    childrenHouse.Location = new Location()
+            //    {
+            //        MapCoordX = Location.Item1,
+            //        MapCoordY = Location.Item2
+            //    };
 
-            bool IsLocationNotNull = GetCoordProp(childrenHouse.Adress, out var Location);
-            if (IsLocationNotNull)
-            {
-                childrenHouse.Location = new Location()
-                {
-                    MapCoordX = Location.Item1,
-                    MapCoordY = Location.Item2
-                };
-
-            }
-            else
-                childrenHouse.LocationID = null;
+            //}
+            //else
+            //    childrenHouse.LocationID = null;
 
             childrenHouse.Name = childrenHouseDTO.Name;
             childrenHouse.Rating = childrenHouseDTO.Rating;
@@ -262,8 +229,6 @@ namespace FamilyNetServer.Controllers.API
             }
 
             childrenHouse.IsDeleted = true;
-            childrenHouse.Adress.IsDeleted = true;
-            childrenHouse.Location.IsDeleted = true;
 
             _repository.Orphanages.Update(childrenHouse);
             _repository.SaveChangesAsync();

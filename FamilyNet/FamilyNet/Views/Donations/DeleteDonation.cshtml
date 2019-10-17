@@ -1,0 +1,16 @@
+﻿@model FamilyNet.Models.Donation
+
+@{
+    ViewData["Title"] = "Удаление";
+
+}
+
+<h3>Вы уверены что хотите удалить потребность?</h3>
+<div>
+
+    <form asp-action="DeleteDonation">
+        <input type="hidden" asp-for="ID" />
+        <input type="submit" value="Удалить" class="btn btn-danger" />
+        <a class="btn btn-danger" asp-action=" DonationsTable">Назад</a>
+    </form>
+</div>

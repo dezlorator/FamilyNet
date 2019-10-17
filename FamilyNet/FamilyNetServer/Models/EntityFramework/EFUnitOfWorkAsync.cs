@@ -26,6 +26,8 @@ namespace FamilyNetServer.Models.EntityFramework
                                  RoleManager<IdentityRole> roleManager)
         {
             _context = cont;
+            Address = new EFRepositoryAsync<Address>(cont);
+            Location = new EFRepositoryAsync<Location>(cont);
             CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
             Donations = new EFRepositoryAsync<Donation>(cont);
             Orphanages = new OrphanageRepositoryAsync(cont);
@@ -48,6 +50,9 @@ namespace FamilyNetServer.Models.EntityFramework
         #region Property
 
         public IOrphanageAsyncRepository Orphanages { get; set; }
+
+        public IAsyncRepository<Address> Address { get; set; }
+        public IAsyncRepository<Location> Location { get; set; }
 
         public IAsyncRepository<CharityMaker> CharityMakers { get; set; }
 

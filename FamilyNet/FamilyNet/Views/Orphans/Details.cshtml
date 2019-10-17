@@ -1,0 +1,59 @@
+﻿@model FamilyNet.Models.Orphan
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row my-2">
+        <div class="col-lg-8 order-lg-2">
+            <div class="tab-content py-4">
+                <div class="tab-pane active" id="profile">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>@Html.DisplayNameFor(model => model.FullName)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.FullName.Surname)
+                                @Html.DisplayFor(model => model.FullName.Name)
+                                @Html.DisplayFor(model => model.FullName.Patronymic)
+                            </p>
+                            <h6>@Html.DisplayNameFor(model => model.Birthday)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.Birthday)
+                            </p>
+
+                            <h6>@Html.DisplayNameFor(model => model.Orphanage)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.Orphanage.Name)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.Country)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.Region)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.City)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.Street)
+                                @Html.DisplayFor(model => model.Orphanage.Adress.House)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 order-lg-1 text-center">
+            @if (!String.IsNullOrEmpty(Model.Avatar))
+            {
+                <img class="img-responsive" src="@Url.Content(Model.Avatar)" alt="Card image cap" style="height: 300px; width: 100%; display: block;" alt="avatar">
+            }
+            else
+            {
+                <img class="img-responsive" src="@Url.Content("~/images/anonimusjpg.jpg")" alt="Card image cap" style="height: 300px; width: 100%; display: block;" alt="avatar">
+            }
+            <label class="custom-file">
+                <input type="file" id="file" class="custom-file-input">
+            </label>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-primary"> <i class="fas fa-edit"></i>Редактировать</a>
+    <a asp-action="Index" type="submit" class="btn btn-primary">Вернуться к списку</a>
+</div>

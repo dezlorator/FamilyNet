@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.DTO
 {
-    public class ChildrenHouseDTO: AddressDTO
+    public class ChildrenHouseDTO
     {
         public int ID { get; set; }
 

@@ -16,6 +16,8 @@ namespace FamilyNetServer.Models.EntityFramework
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
+        public DbSet<Address> Address { get; set; }
+        public DbSet<Location> Location { get; set; }
         public DbSet<Orphan> Orphans { get; set; }
         public DbSet<CharityMaker> CharityMakers { get; set; }
         public DbSet<Representative> Representatives { get; set; }

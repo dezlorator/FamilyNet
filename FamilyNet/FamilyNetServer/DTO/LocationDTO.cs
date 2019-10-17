@@ -13,6 +13,5 @@ namespace FamilyNetServer.DTO
 
         public float? MapCoordY { get; set; }
 
-        public string ChildrenHouseName { get; set; }
     }
 }

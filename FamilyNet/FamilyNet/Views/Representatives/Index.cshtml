@@ -1,0 +1,125 @@
+﻿@model IEnumerable<FamilyNet.Models.Representative>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-6">
+        <h2>Представители детодомов</h2>
+    </div>
+    <div class="col-sm-6 text-right">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+        }
+    </div>
+</div>
+
+@*TODO: Generic partial filter*@
+@*@await Html.PartialAsync("Filter", Model.FilterModel)*@@*, FamilyNet.Infrastructure.FilterUtility.FilterParams)*@
+
+@*@{var representativeColumn = Model.Representatives.FirstOrDefault(); }*@
+
+<form asp-action="Filter">
+    <table class="table">
+        <th>
+            @Html.Label(@Html.DisplayNameFor(model => model.FullName) + ":")
+            @Html.TextBox("FullNameString", "", new { @class = "form-control" })
+        </th>
+        <th width="11%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " от:")
+            @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+            </button>
+            @Html.ActionLink("", "Index", "Representatives", null, new { @class = "fas fa-ban" })
+        </th>
+
+    </table>
+</form>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Patronymic)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName.Surname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Birthday)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rating)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Avatar)
+            </th>
+            @*<th> TODO: Add email from Identity
+                @Html.DisplayNameFor(model => model.Email)
+                </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.Orphanage)
+            </th>
+            <th>
+                Действия
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <th>
+                    @Html.DisplayFor(modelItem => item.FullName.Name)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.FullName.Patronymic)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.FullName.Surname)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Birthday)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Rating)
+                </th>
+                <td>
+                    <img class="img-responsive" src="@Url.Content("~/representatives/" + @item.Avatar)" alt="" width="50" height="50">
+                </td>
+                <th>
+                    <a asp-action="Index" asp-controller="Orphanages" asp-route-id="@item.ID"
+                       class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-home"></i>
+                        @Html.DisplayFor(modelItem => item.Orphanage.Name)
+                    </a>
+                </th>
+                <td>
+                    <a asp-action="Details" class="btn btn-primary" asp-route-id="@item.ID"><i class="fas fa-info-circle"></i></a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" class="btn btn-primary" asp-route-id="@item.ID"><i class="fa fa-marker fa-lg"></i></a>
+                        <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.ID"><i class="fa fa-trash-alt fa-lg"></i></a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
