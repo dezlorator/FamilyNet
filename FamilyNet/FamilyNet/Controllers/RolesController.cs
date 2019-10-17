@@ -13,17 +13,38 @@ using FamilyNet.Models.Interfaces;
 
 namespace FamilyNet.Controllers
 {
+    /// <summary>
+    /// Controller for managing roles. For Admin only
+    /// </summary>
     [Authorize(Roles = "Admin")]
     public class RolesController : BaseController
     {
-
+        /// <summary>
+        /// Construtor  RolesController
+        /// </summary>
+        /// <param name="unitOfWork"></param>
         public RolesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
         {
 
         }
+
+        /// <summary>
+        ///Creates view index page
+        /// </summary>
+        /// <returns>view index page</returns>
         public IActionResult Index() => View(_unitOfWorkAsync.RoleManager.Roles);
 
+        /// <summary>
+        /// Creates View Create Role Page
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Create() => View();
+
+        /// <summary>
+        /// Create new role and add to database
+        /// </summary>
+        /// <param name="name">role name</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Create(string name)
         {
@@ -44,7 +65,11 @@ namespace FamilyNet.Controllers
             }
             return View(name);
         }
-
+        /// <summary>
+        /// Delete role frome database
+        /// </summary>
+        /// <param name="id">role id</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
@@ -55,9 +80,17 @@ namespace FamilyNet.Controllers
             }
             return RedirectToAction("Index");
         }
-
+        /// <summary>
+        /// Creates View for Users
+        /// </summary>
+        /// <returns></returns>
         public IActionResult UserList() => View(_unitOfWorkAsync.UserManager.Users);
 
+        /// <summary>
+        /// Creates page for editing user roles 
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <returns></returns>
         public async Task<IActionResult> Edit(string userId)
         {
             // получаем пользователя
@@ -79,6 +112,12 @@ namespace FamilyNet.Controllers
 
             return NotFound();
         }
+        /// <summary>
+        /// Saves edited changes to database
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <param name="roles">list of roles</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {

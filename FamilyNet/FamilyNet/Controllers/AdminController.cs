@@ -11,17 +11,35 @@ using FamilyNet.Models.Interfaces;
 
 namespace FamilyNet.Controllers
 {
+
+    /// <summary>
+    /// Controller for managing users. For Admin only
+    /// </summary>
     [Authorize(Roles = "Admin")]
     public class AdminController : BaseController
     {
-                
+        /// <summary>
+        /// Construtor  AdminController
+        /// </summary>        
         public AdminController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
         {
 
         }
+        /// <summary>
+        /// View Index page
+        /// </summary>
+        /// <returns>View Index</returns>
         public ViewResult Index() => View(_unitOfWorkAsync.UserManager.Users);
+        /// <summary>
+        /// View Create Page
+        /// </summary>
+        /// <returns>Create Page</returns>
         public ViewResult Create() => View();
-
+        /// <summary>
+        /// Validates form for adding users, saves user to database
+        /// </summary>
+        /// <param name="model">user model</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserViewModel model)
         {
@@ -54,7 +72,11 @@ namespace FamilyNet.Controllers
             }
             return View(model);
         }
-
+        /// <summary>
+        /// Deletes user 
+        /// </summary>
+        /// <param name="id">user id</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
@@ -77,7 +99,11 @@ namespace FamilyNet.Controllers
             }
             return View("Index", _unitOfWorkAsync.UserManager.Users);
         }
-
+        /// <summary>
+        /// View edit page
+        /// </summary>
+        /// <param name="id">user id</param>
+        /// <returns>view edit page</returns>
         public async Task<IActionResult> Edit(string id)
         {
             ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(id);
@@ -91,7 +117,13 @@ namespace FamilyNet.Controllers
                 return RedirectToAction("Index");
             }
         }
-        
+
+        /// <summary>
+        /// Validates form and edit user info 
+        /// </summary>
+        /// <param name="us">user model</param>
+        /// <param name="password">password</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel us, string password)
         {
@@ -171,6 +203,10 @@ namespace FamilyNet.Controllers
             return View(us);
         }
 
+        /// <summary>
+        /// Check and show errors 
+        /// </summary>
+        /// <param name="result"></param>
         private void AddErrorsFromResult(IdentityResult result)
         {
             foreach (IdentityError error in result.Errors)
@@ -178,7 +214,10 @@ namespace FamilyNet.Controllers
                 ModelState.AddModelError("", error.Description);
             }
         }
-
+        /// <summary>
+        /// Filles databade with info
+        /// </summary>
+        /// <returns></returns>
         public IActionResult SeedData()
         {
             SeedData seedData = new SeedData(_unitOfWorkAsync);
