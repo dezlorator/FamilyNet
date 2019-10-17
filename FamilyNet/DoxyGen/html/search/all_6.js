@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['getall_68',['GetAll',['../class_family_net_1_1_models_1_1_entity_framework_1_1_e_f_repository_async.html#a084ad6b1d5c728143ff6df1fdbe5df62',1,'FamilyNet::Models::EntityFramework::EFRepositoryAsync']]],
-  ['getcurrentuserasync_69',['GetCurrentUserAsync',['../class_family_net_1_1_controllers_1_1_base_controller.html#a2c519af4d39b44a884e624e9af6330ae',1,'FamilyNet::Controllers::BaseController']]],
-  ['getfiltereddata_70',['GetFilteredData',['../class_family_net_1_1_infrastructure_1_1_filter_generic.html#a3e19fd4ef8e14e53c026489aa20c1171',1,'FamilyNet::Infrastructure::FilterGeneric']]],
-  ['groupingdata_71',['GroupingData',['../class_family_net_1_1_infrastructure_1_1_sorting_utility_1_1_sorting.html#a47cc04b6af3d44d547610a6dd2bbf082',1,'FamilyNet::Infrastructure::SortingUtility::Sorting']]]
+  ['getall_72',['GetAll',['../class_family_net_1_1_models_1_1_entity_framework_1_1_e_f_repository_async.html#a084ad6b1d5c728143ff6df1fdbe5df62',1,'FamilyNet::Models::EntityFramework::EFRepositoryAsync']]],
+  ['getcurrentuserasync_73',['GetCurrentUserAsync',['../class_family_net_1_1_controllers_1_1_base_controller.html#a2c519af4d39b44a884e624e9af6330ae',1,'FamilyNet::Controllers::BaseController']]],
+  ['getdetails_74',['GetDetails',['../class_family_net_1_1_controllers_1_1_account_controller.html#a3791e35916940cc58c32ca189e680d0e',1,'FamilyNet::Controllers::AccountController']]],
+  ['getfiltereddata_75',['GetFilteredData',['../class_family_net_1_1_infrastructure_1_1_filter_generic.html#a3e19fd4ef8e14e53c026489aa20c1171',1,'FamilyNet::Infrastructure::FilterGeneric']]],
+  ['groupingdata_76',['GroupingData',['../class_family_net_1_1_infrastructure_1_1_sorting_utility_1_1_sorting.html#a47cc04b6af3d44d547610a6dd2bbf082',1,'FamilyNet::Infrastructure::SortingUtility::Sorting']]]
 ];

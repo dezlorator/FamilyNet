@@ -15,16 +15,25 @@ using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
-    
+    /// <summary>
+    /// The controller provides the ability to manage users
+    /// </summary>
     public class AccountController : BaseController
     {
         private readonly IStringLocalizer<HomeController> _localizer;
 
-        public AccountController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        public AccountController(IUnitOfWorkAsync unitOfWork, 
+                                 IStringLocalizer<HomeController> localizer, 
+                                 IStringLocalizer<SharedResource> sharedLocalizer) 
+            : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;
         }
 
+        /// <summary>
+        /// Method provides view for registration
+        /// </summary>
+        /// <returns>view for registration</returns>
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
@@ -44,6 +53,11 @@ namespace FamilyNet.Controllers
             return View(viewModel);
         }
 
+        /// <summary>
+        /// Method validates input data and registers new user
+        /// </summary>
+        /// <param name="model">model contains information about user</param>
+        /// <returns>view if data is invalid or mesage</returns>
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -102,6 +116,12 @@ namespace FamilyNet.Controllers
             
         }
 
+        /// <summary>
+        /// Method confirms email
+        /// </summary>
+        /// <param name="userId">user's identifier</param>
+        /// <param name="code">confirm code</param>
+        /// <returns>redirect to "/Home/Index" if success or "/Home/Error"</returns>
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
@@ -126,8 +146,12 @@ namespace FamilyNet.Controllers
                 return View("Error");
             }
         }
-       
 
+        /// <summary>
+        /// Method provides view for login
+        /// </summary>
+        /// <param name="returnUrl">login url</param>
+        /// <returns>view for input credentials</returns>
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
@@ -136,6 +160,11 @@ namespace FamilyNet.Controllers
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
 
+        /// <summary>
+        /// Method validates credentials and authorizes user
+        /// </summary>
+        /// <param name="model">model that contains credentials</param>
+        /// <returns>redirect to "/Home/Index" if model is valid or "/Home/Error"</returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -180,6 +209,10 @@ namespace FamilyNet.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Methods deletes authentication cookie
+        /// </summary>
+        /// <returns>redirect to "/Home/Index"</returns>
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -191,6 +224,10 @@ namespace FamilyNet.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// Method shows inform message "Access Denied"
+        /// </summary>
+        /// <returns>view that contains message</returns>
         [AllowAnonymous]
         public IActionResult AccessDenied()
         {
@@ -198,18 +235,30 @@ namespace FamilyNet.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Method provides information about user
+        /// </summary>
+        /// <returns>view that contains information about user</returns>
         public IActionResult GetDetails()
         {
             var url = Url.Action("Details", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
             return Redirect(url);            
         }
 
+        /// <summary>
+        /// Methods provides view for edit profile
+        /// </summary>
+        /// <returns>view that contains user's data</returns>
         public IActionResult AccountEdits()
         {
             var url = Url.Action("Edit", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
             return Redirect(url);
         }
 
+        /// <summary>
+        /// Method redirects to main page that depends on role
+        /// </summary>
+        /// <returns>main view</returns>
         public IActionResult PersonalRoom()
         {
             if(GetCurrentUserAsync().Result.PersonType == PersonType.User)
@@ -239,8 +288,7 @@ namespace FamilyNet.Controllers
                     return RedirectToAction(action, "Index");
             }
         }
-
-
+        
         private static PersonType GetPersonType(string role)
         {
             switch (role)

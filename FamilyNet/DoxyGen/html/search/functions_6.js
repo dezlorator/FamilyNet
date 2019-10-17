@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['searchbytypehelp_248',['SearchByTypeHelp',['../class_family_net_1_1_controllers_1_1_orphanages_controller.html#a8db2fdec5c7600543dadf892cfc0f4e4',1,'FamilyNet::Controllers::OrphanagesController']]],
-  ['searchorphanageonmap_249',['SearchOrphanageOnMap',['../class_family_net_1_1_controllers_1_1_orphanages_controller.html#a7b60dea8439398dff9c5a6c7c62d3700',1,'FamilyNet::Controllers::OrphanagesController']]],
-  ['searchresult_250',['SearchResult',['../class_family_net_1_1_controllers_1_1_orphanages_controller.html#ae7e84ac1ac3190a03fbb30027048ac8f',1,'FamilyNet::Controllers::OrphanagesController']]]
+  ['login_382',['Login',['../class_family_net_1_1_controllers_1_1_account_controller.html#a18914124cedca0308e1d55d000d880bf',1,'FamilyNet.Controllers.AccountController.Login(string returnUrl=null)'],['../class_family_net_1_1_controllers_1_1_account_controller.html#a86c5435ec5ca51aa4605af3f74fe553a',1,'FamilyNet.Controllers.AccountController.Login(LoginViewModel model)']]],
+  ['logout_383',['Logout',['../class_family_net_1_1_controllers_1_1_account_controller.html#a3cf1ffb4d95f37a8f7255c9cf4cb9783',1,'FamilyNet::Controllers::AccountController']]]
 ];

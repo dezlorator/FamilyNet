@@ -12,33 +12,179 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Representatives\+Controller\
 \mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_ae0c41e92f740eb157734129f86545d51}\label{class_family_net_1_1_controllers_1_1_representatives_controller_ae0c41e92f740eb157734129f86545d51}} 
 {\bfseries Representatives\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work)
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_abbe7618293fc7686e075c9ce6d6e22d1}\label{class_family_net_1_1_controllers_1_1_representatives_controller_abbe7618293fc7686e075c9ce6d6e22d1}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Index} (int id, \mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a2441ab108a5d31bc1ccfeba5c9b1ddc3}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a2441ab108a5d31bc1ccfeba5c9b1ddc3}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Details} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a3a568d560ee0a52c91861367dfd712fe}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a3a568d560ee0a52c91861367dfd712fe}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_ac8c6b49fdd9624166a2b4df74ed0c88a}\label{class_family_net_1_1_controllers_1_1_representatives_controller_ac8c6b49fdd9624166a2b4df74ed0c88a}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Create} (\mbox{[}Bind(\char`\"{}Full\+Name,Birthday,Rating,Avatar,\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}}\char`\"{})\mbox{]} Representative representative, int id, I\+Form\+File file)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a98b3f57b84fbb878aae6ae25a5ea014e}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a98b3f57b84fbb878aae6ae25a5ea014e}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a3879d66bbe9685e190dc9707b393146a}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a3879d66bbe9685e190dc9707b393146a}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Edit} (int id, \mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}},Birthday,Rating,Avatar,\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}}\char`\"{})\mbox{]} Representative representative, int orphanage\+Id, I\+Form\+File file)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a6702870cb4cf147a76be6d5970336269}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a6702870cb4cf147a76be6d5970336269}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete} (int? id)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_ad2c782128a27a02c02fff457f2f8b051}\label{class_family_net_1_1_controllers_1_1_representatives_controller_ad2c782128a27a02c02fff457f2f8b051}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Delete\+Confirmed} (int id)
-\end{DoxyCompactItemize}
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_representatives_controller_abbe7618293fc7686e075c9ce6d6e22d1}{Index}} (int id, \mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}} search\+Model)
+\begin{DoxyCompactList}\small\item\em Method provides list of Representatives \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_representatives_controller_a2441ab108a5d31bc1ccfeba5c9b1ddc3}{Details}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides information about Representative by id \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_representatives_controller_a3a568d560ee0a52c91861367dfd712fe}{Create}} ()
+\begin{DoxyCompactList}\small\item\em Method provides view for add new Representative into database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_representatives_controller_ac8c6b49fdd9624166a2b4df74ed0c88a}{Create}} (\mbox{[}Bind(\char`\"{}Full\+Name,Birthday,Rating,Avatar,\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}}\char`\"{})\mbox{]} Representative representative, int id, I\+Form\+File file)
+\begin{DoxyCompactList}\small\item\em Method validates and adds new Representative into database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_representatives_controller_a98b3f57b84fbb878aae6ae25a5ea014e}{Edit}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides view for edit Representative \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_representatives_controller_a3879d66bbe9685e190dc9707b393146a}{Edit}} (int id, \mbox{[}Bind(\char`\"{}ID,\mbox{\hyperlink{class_family_net_1_1_models_1_1_full_name}{Full\+Name}},Birthday,Rating,Avatar,\mbox{\hyperlink{class_family_net_1_1_models_1_1_orphanage}{Orphanage}}\char`\"{})\mbox{]} Representative representative, int orphanage\+Id, I\+Form\+File file)
+\begin{DoxyCompactList}\small\item\em Method validates and updates Representative in database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_representatives_controller_a6702870cb4cf147a76be6d5970336269}{Delete}} (int? id)
+\begin{DoxyCompactList}\small\item\em Method provides page for deletes Representative by id from database \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_representatives_controller_ad2c782128a27a02c02fff457f2f8b051}{Delete\+Confirmed}} (int id)
+\begin{DoxyCompactList}\small\item\em Method deletes Representative by id from database \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a3a568d560ee0a52c91861367dfd712fe}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a3a568d560ee0a52c91861367dfd712fe}} 
+\index{FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Representatives\+Controller.\+Create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Method provides view for add new Representative into database 
+
+\begin{DoxyReturn}{Returns}
+view with empty form
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_ac8c6b49fdd9624166a2b4df74ed0c88a}\label{class_family_net_1_1_controllers_1_1_representatives_controller_ac8c6b49fdd9624166a2b4df74ed0c88a}} 
+\index{FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}!Create@{Create}}
+\index{Create@{Create}!FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}}
+\doxysubsubsection{\texorpdfstring{Create()}{Create()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Representatives\+Controller.\+Create (\begin{DoxyParamCaption}\item[{\mbox{[}\+Bind(\char`\"{}\+Full\+Name,\+Birthday,\+Rating,\+Avatar,\+Orphanage\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_representative}{Representative}}}]{representative,  }\item[{int}]{id,  }\item[{I\+Form\+File}]{file }\end{DoxyParamCaption})}
+
+
+
+Method validates and adds new Representative into database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em representative} & Representative\textquotesingle{}s adding model\\
+\hline
+{\em id} & Representative\textquotesingle{}s identifier\\
+\hline
+{\em file} & Representative\textquotesingle{}s photo\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to Index if model is valid or return to Create page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a6702870cb4cf147a76be6d5970336269}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a6702870cb4cf147a76be6d5970336269}} 
+\index{FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}!Delete@{Delete}}
+\index{Delete@{Delete}!FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}}
+\doxysubsubsection{\texorpdfstring{Delete()}{Delete()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Representatives\+Controller.\+Delete (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})}
+
+
+
+Method provides page for deletes Representative by id from database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Representative\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view delete if model is valid or redirect to Not\+Found page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_ad2c782128a27a02c02fff457f2f8b051}\label{class_family_net_1_1_controllers_1_1_representatives_controller_ad2c782128a27a02c02fff457f2f8b051}} 
+\index{FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}!DeleteConfirmed@{DeleteConfirmed}}
+\index{DeleteConfirmed@{DeleteConfirmed}!FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}}
+\doxysubsubsection{\texorpdfstring{DeleteConfirmed()}{DeleteConfirmed()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Representatives\+Controller.\+Delete\+Confirmed (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})}
+
+
+
+Method deletes Representative by id from database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Representative\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to Index page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a2441ab108a5d31bc1ccfeba5c9b1ddc3}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a2441ab108a5d31bc1ccfeba5c9b1ddc3}} 
+\index{FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}!Details@{Details}}
+\index{Details@{Details}!FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}}
+\doxysubsubsection{\texorpdfstring{Details()}{Details()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Representatives\+Controller.\+Details (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})}
+
+
+
+Method provides information about Representative by id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Representative\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with details about Representatives or returns Not\+Found page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a3879d66bbe9685e190dc9707b393146a}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a3879d66bbe9685e190dc9707b393146a}} 
+\index{FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Representatives\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{[}\+Bind(\char`\"{}\+I\+D,\+Full\+Name,\+Birthday,\+Rating,\+Avatar,\+Orphanage\char`\"{})\mbox{]} \mbox{\hyperlink{class_family_net_1_1_models_1_1_representative}{Representative}}}]{representative,  }\item[{int}]{orphanage\+Id,  }\item[{I\+Form\+File}]{file }\end{DoxyParamCaption})}
+
+
+
+Method validates and updates Representative in database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Representative\textquotesingle{}s identifier\\
+\hline
+{\em representative} & Representative\textquotesingle{}s details by id\\
+\hline
+{\em orphanage\+Id} & identifier of Orphanage\\
+\hline
+{\em file} & Representative\textquotesingle{}s photo\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Redirect to index if model is valid or return to Edit page
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_a98b3f57b84fbb878aae6ae25a5ea014e}\label{class_family_net_1_1_controllers_1_1_representatives_controller_a98b3f57b84fbb878aae6ae25a5ea014e}} 
+\index{FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}!Edit@{Edit}}
+\index{Edit@{Edit}!FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}}
+\doxysubsubsection{\texorpdfstring{Edit()}{Edit()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Representatives\+Controller.\+Edit (\begin{DoxyParamCaption}\item[{int?}]{id }\end{DoxyParamCaption})}
+
+
+
+Method provides view for edit Representative 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Representative\textquotesingle{}s identifier\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with editing form for Representative
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_representatives_controller_abbe7618293fc7686e075c9ce6d6e22d1}\label{class_family_net_1_1_controllers_1_1_representatives_controller_abbe7618293fc7686e075c9ce6d6e22d1}} 
+\index{FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}!Index@{Index}}
+\index{Index@{Index}!FamilyNet.Controllers.RepresentativesController@{FamilyNet.Controllers.RepresentativesController}}
+\doxysubsubsection{\texorpdfstring{Index()}{Index()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Representatives\+Controller.\+Index (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_person_search_model}{Person\+Search\+Model}}}]{search\+Model }\end{DoxyParamCaption})}
+
+
+
+Method provides list of Representatives 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Representative\textquotesingle{}s identifier\\
+\hline
+{\em search\+Model} & parameters for filter\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view with list of Representatives
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-Controllers/Representatives\+Controller.\+cs\end{DoxyCompactItemize}
+D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Representatives\+Controller.\+cs\end{DoxyCompactItemize}

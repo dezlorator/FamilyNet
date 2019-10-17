@@ -1,5 +1,10 @@
 \hypertarget{class_family_net_1_1_controllers_1_1_account_controller}{}\doxysection{Family\+Net.\+Controllers.\+Account\+Controller Class Reference}
 \label{class_family_net_1_1_controllers_1_1_account_controller}\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+
+
+The controller provides the ability to manage users  
+
+
 Inheritance diagram for Family\+Net.\+Controllers.\+Account\+Controller\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -12,39 +17,189 @@ Inheritance diagram for Family\+Net.\+Controllers.\+Account\+Controller\+:\begin
 \mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a6d91d1cd3ce598163057a252288e98cc}\label{class_family_net_1_1_controllers_1_1_account_controller_a6d91d1cd3ce598163057a252288e98cc}} 
 {\bfseries Account\+Controller} (\mbox{\hyperlink{interface_family_net_1_1_models_1_1_interfaces_1_1_i_unit_of_work_async}{I\+Unit\+Of\+Work\+Async}} unit\+Of\+Work, I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_home_controller}{Home\+Controller}} $>$ localizer, I\+String\+Localizer$<$ \mbox{\hyperlink{class_family_net_1_1_shared_resource}{Shared\+Resource}} $>$ shared\+Localizer)
 \item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a59a5b64032c1b2773c72515f48f0eb94}\label{class_family_net_1_1_controllers_1_1_account_controller_a59a5b64032c1b2773c72515f48f0eb94}} 
-I\+Action\+Result {\bfseries Register} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_acf616d85e04ce746bfe1fea4d47fe39e}\label{class_family_net_1_1_controllers_1_1_account_controller_acf616d85e04ce746bfe1fea4d47fe39e}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Register} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_register_view_model}{Register\+View\+Model}} model)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a55f2d2eb5d91163373f0bb0487d4aaec}\label{class_family_net_1_1_controllers_1_1_account_controller_a55f2d2eb5d91163373f0bb0487d4aaec}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Confirm\+Email} (string user\+Id, string code)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a18914124cedca0308e1d55d000d880bf}\label{class_family_net_1_1_controllers_1_1_account_controller_a18914124cedca0308e1d55d000d880bf}} 
-I\+Action\+Result {\bfseries Login} (string return\+Url=null)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a86c5435ec5ca51aa4605af3f74fe553a}\label{class_family_net_1_1_controllers_1_1_account_controller_a86c5435ec5ca51aa4605af3f74fe553a}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Login} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_login_view_model}{Login\+View\+Model}} model)
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a3cf1ffb4d95f37a8f7255c9cf4cb9783}\label{class_family_net_1_1_controllers_1_1_account_controller_a3cf1ffb4d95f37a8f7255c9cf4cb9783}} 
-async Task$<$ I\+Action\+Result $>$ {\bfseries Logout} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a126f9b9eef7f12d23e30524137b94a51}\label{class_family_net_1_1_controllers_1_1_account_controller_a126f9b9eef7f12d23e30524137b94a51}} 
-I\+Action\+Result {\bfseries Access\+Denied} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a3791e35916940cc58c32ca189e680d0e}\label{class_family_net_1_1_controllers_1_1_account_controller_a3791e35916940cc58c32ca189e680d0e}} 
-I\+Action\+Result {\bfseries Get\+Details} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_ad83ef8e5675b9dc4e10d1cf8784ea6d3}\label{class_family_net_1_1_controllers_1_1_account_controller_ad83ef8e5675b9dc4e10d1cf8784ea6d3}} 
-I\+Action\+Result {\bfseries Account\+Edits} ()
-\item 
-\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a7358f442900b38a5603f1b1de6d1f00d}\label{class_family_net_1_1_controllers_1_1_account_controller_a7358f442900b38a5603f1b1de6d1f00d}} 
-I\+Action\+Result {\bfseries Personal\+Room} ()
-\end{DoxyCompactItemize}
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_a59a5b64032c1b2773c72515f48f0eb94}{Register}} ()
+\begin{DoxyCompactList}\small\item\em Method provides view for registration \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_acf616d85e04ce746bfe1fea4d47fe39e}{Register}} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_register_view_model}{Register\+View\+Model}} model)
+\begin{DoxyCompactList}\small\item\em Method validates input data and registers new user \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_a55f2d2eb5d91163373f0bb0487d4aaec}{Confirm\+Email}} (string user\+Id, string code)
+\begin{DoxyCompactList}\small\item\em Method confirms email \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_a18914124cedca0308e1d55d000d880bf}{Login}} (string return\+Url=null)
+\begin{DoxyCompactList}\small\item\em Method provides view for login \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_a86c5435ec5ca51aa4605af3f74fe553a}{Login}} (\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_login_view_model}{Login\+View\+Model}} model)
+\begin{DoxyCompactList}\small\item\em Method validates credentials and authorizes user \end{DoxyCompactList}\item 
+async Task$<$ I\+Action\+Result $>$ \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_a3cf1ffb4d95f37a8f7255c9cf4cb9783}{Logout}} ()
+\begin{DoxyCompactList}\small\item\em Methods deletes authentication cookie \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_a126f9b9eef7f12d23e30524137b94a51}{Access\+Denied}} ()
+\begin{DoxyCompactList}\small\item\em Method shows inform message \char`\"{}\+Access Denied\char`\"{} \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_a3791e35916940cc58c32ca189e680d0e}{Get\+Details}} ()
+\begin{DoxyCompactList}\small\item\em Method provides information about user \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_ad83ef8e5675b9dc4e10d1cf8784ea6d3}{Account\+Edits}} ()
+\begin{DoxyCompactList}\small\item\em Methods provides view for edit profile \end{DoxyCompactList}\item 
+I\+Action\+Result \mbox{\hyperlink{class_family_net_1_1_controllers_1_1_account_controller_a7358f442900b38a5603f1b1de6d1f00d}{Personal\+Room}} ()
+\begin{DoxyCompactList}\small\item\em Method redirects to main page that depends on role \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+The controller provides the ability to manage users 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a126f9b9eef7f12d23e30524137b94a51}\label{class_family_net_1_1_controllers_1_1_account_controller_a126f9b9eef7f12d23e30524137b94a51}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!AccessDenied@{AccessDenied}}
+\index{AccessDenied@{AccessDenied}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{AccessDenied()}{AccessDenied()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Account\+Controller.\+Access\+Denied (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Method shows inform message \char`\"{}\+Access Denied\char`\"{} 
+
+\begin{DoxyReturn}{Returns}
+view that contains message
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_ad83ef8e5675b9dc4e10d1cf8784ea6d3}\label{class_family_net_1_1_controllers_1_1_account_controller_ad83ef8e5675b9dc4e10d1cf8784ea6d3}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!AccountEdits@{AccountEdits}}
+\index{AccountEdits@{AccountEdits}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{AccountEdits()}{AccountEdits()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Account\+Controller.\+Account\+Edits (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Methods provides view for edit profile 
+
+\begin{DoxyReturn}{Returns}
+view that contains user\textquotesingle{}s data
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a55f2d2eb5d91163373f0bb0487d4aaec}\label{class_family_net_1_1_controllers_1_1_account_controller_a55f2d2eb5d91163373f0bb0487d4aaec}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!ConfirmEmail@{ConfirmEmail}}
+\index{ConfirmEmail@{ConfirmEmail}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{ConfirmEmail()}{ConfirmEmail()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Account\+Controller.\+Confirm\+Email (\begin{DoxyParamCaption}\item[{string}]{user\+Id,  }\item[{string}]{code }\end{DoxyParamCaption})}
+
+
+
+Method confirms email 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+Id} & user\textquotesingle{}s identifier\\
+\hline
+{\em code} & confirm code\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+redirect to \char`\"{}/\+Home/\+Index\char`\"{} if success or \char`\"{}/\+Home/\+Error\char`\"{}
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a3791e35916940cc58c32ca189e680d0e}\label{class_family_net_1_1_controllers_1_1_account_controller_a3791e35916940cc58c32ca189e680d0e}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!GetDetails@{GetDetails}}
+\index{GetDetails@{GetDetails}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{GetDetails()}{GetDetails()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Account\+Controller.\+Get\+Details (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Method provides information about user 
+
+\begin{DoxyReturn}{Returns}
+view that contains information about user
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a86c5435ec5ca51aa4605af3f74fe553a}\label{class_family_net_1_1_controllers_1_1_account_controller_a86c5435ec5ca51aa4605af3f74fe553a}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!Login@{Login}}
+\index{Login@{Login}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{Login()}{Login()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Account\+Controller.\+Login (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_login_view_model}{Login\+View\+Model}}}]{model }\end{DoxyParamCaption})}
+
+
+
+Method validates credentials and authorizes user 
+
+
+\begin{DoxyParams}{Parameters}
+{\em model} & model that contains credentials\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+redirect to \char`\"{}/\+Home/\+Index\char`\"{} if model is valid or \char`\"{}/\+Home/\+Error\char`\"{}
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a18914124cedca0308e1d55d000d880bf}\label{class_family_net_1_1_controllers_1_1_account_controller_a18914124cedca0308e1d55d000d880bf}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!Login@{Login}}
+\index{Login@{Login}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{Login()}{Login()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Account\+Controller.\+Login (\begin{DoxyParamCaption}\item[{string}]{return\+Url = {\ttfamily null} }\end{DoxyParamCaption})}
+
+
+
+Method provides view for login 
+
+
+\begin{DoxyParams}{Parameters}
+{\em return\+Url} & login url\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view for input credentials
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a3cf1ffb4d95f37a8f7255c9cf4cb9783}\label{class_family_net_1_1_controllers_1_1_account_controller_a3cf1ffb4d95f37a8f7255c9cf4cb9783}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!Logout@{Logout}}
+\index{Logout@{Logout}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{Logout()}{Logout()}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Account\+Controller.\+Logout (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Methods deletes authentication cookie 
+
+\begin{DoxyReturn}{Returns}
+redirect to \char`\"{}/\+Home/\+Index\char`\"{}
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a7358f442900b38a5603f1b1de6d1f00d}\label{class_family_net_1_1_controllers_1_1_account_controller_a7358f442900b38a5603f1b1de6d1f00d}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!PersonalRoom@{PersonalRoom}}
+\index{PersonalRoom@{PersonalRoom}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{PersonalRoom()}{PersonalRoom()}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Account\+Controller.\+Personal\+Room (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Method redirects to main page that depends on role 
+
+\begin{DoxyReturn}{Returns}
+main view
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_a59a5b64032c1b2773c72515f48f0eb94}\label{class_family_net_1_1_controllers_1_1_account_controller_a59a5b64032c1b2773c72515f48f0eb94}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!Register@{Register}}
+\index{Register@{Register}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{Register()}{Register()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily I\+Action\+Result Family\+Net.\+Controllers.\+Account\+Controller.\+Register (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Method provides view for registration 
+
+\begin{DoxyReturn}{Returns}
+view for registration
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_family_net_1_1_controllers_1_1_account_controller_acf616d85e04ce746bfe1fea4d47fe39e}\label{class_family_net_1_1_controllers_1_1_account_controller_acf616d85e04ce746bfe1fea4d47fe39e}} 
+\index{FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}!Register@{Register}}
+\index{Register@{Register}!FamilyNet.Controllers.AccountController@{FamilyNet.Controllers.AccountController}}
+\doxysubsubsection{\texorpdfstring{Register()}{Register()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily async Task$<$I\+Action\+Result$>$ Family\+Net.\+Controllers.\+Account\+Controller.\+Register (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_family_net_1_1_models_1_1_view_models_1_1_register_view_model}{Register\+View\+Model}}}]{model }\end{DoxyParamCaption})}
+
+
+
+Method validates input data and registers new user 
+
+
+\begin{DoxyParams}{Parameters}
+{\em model} & model contains information about user\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+view if data is invalid or mesage
+\end{DoxyReturn}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-Controllers/Account\+Controller.\+cs\end{DoxyCompactItemize}
+D\+:/ss/\+Family\+Net2/\+Family\+Net/\+Family\+Net/\+Family\+Net/\+Controllers/Account\+Controller.\+cs\end{DoxyCompactItemize}

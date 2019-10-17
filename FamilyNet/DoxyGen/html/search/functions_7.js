@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['table_251',['Table',['../class_family_net_1_1_controllers_1_1_charity_makers_controller.html#a7c9c8c407b065d5bc302103c10d53aeb',1,'FamilyNet::Controllers::CharityMakersController']]]
+  ['orphanstable_384',['OrphansTable',['../class_family_net_1_1_controllers_1_1_orphans_controller.html#aa5ba193013e5b37aaccbe313388f63f7',1,'FamilyNet::Controllers::OrphansController']]]
 ];
