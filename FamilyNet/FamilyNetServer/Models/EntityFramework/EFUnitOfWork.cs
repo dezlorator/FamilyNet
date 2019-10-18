@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FamilyNetServer.Models.EntityFramework
 {
-    public class EFUnitOfWorkAsync : IUnitOfWorkAsync
+    public class EFUnitOfWork : IUnitOfWork
     {
         #region Private fields
 
@@ -17,7 +17,7 @@ namespace FamilyNetServer.Models.EntityFramework
 
         #region Constructors
 
-        public EFUnitOfWorkAsync(ApplicationDbContext cont,
+        public EFUnitOfWork(ApplicationDbContext cont,
                                  IUserValidator<ApplicationUser> userValid, 
                                  IPasswordValidator<ApplicationUser> passValid, 
                                  IPasswordHasher<ApplicationUser> passwordHash, 

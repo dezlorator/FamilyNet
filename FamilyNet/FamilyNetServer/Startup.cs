@@ -4,7 +4,6 @@ using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +16,9 @@ using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Configuration;
 using FamilyNetServer.Uploaders;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FamilyNetServer
 {
@@ -34,7 +36,6 @@ namespace FamilyNetServer
         {
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetServerPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetServerUserValidator>();
-            //services.AddTransient<FamilyNetServerPhoneValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration["Data:FamilyNet:ConnectionString"]));
@@ -53,16 +54,7 @@ namespace FamilyNetServer
             .AddUserManager<ApplicationUserManager>()
             .AddDefaultTokenProviders();
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
-            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
-
-            services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
+            services.AddTransient<IUnitOfWork, EFUnitOfWork>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
             services.AddTransient<IVolunteerValidator, VolunteerValidator>();
@@ -95,6 +87,30 @@ namespace FamilyNetServer
                  options.ClientErrorMapping[404].Link =
                      "https://httpstatuses.com/404";
              });
+
+            var JWTConfigurationSection = Configuration.GetSection("JWT");
+            services.Configure<JWTCofiguration>(JWTConfigurationSection);
+
+            var JWTConfiguration = JWTConfigurationSection.Get<JWTCofiguration>();
+            var key = Encoding.ASCII.GetBytes(JWTConfiguration.Secret);
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -128,28 +144,13 @@ namespace FamilyNetServer
             });
 
             app.UseStaticFiles();
-            app.UseCookiePolicy();
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default2",
-                    template: "{controller}/{action}/{id?}"
-                    );
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-
-
-            });
+            app.UseMvc();
 
             //ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
             //        Configuration).Wait();
             //ApplicationIdentityDbContext.InitializeRolesAsync(app.ApplicationServices).Wait();
-
-
-
         }
     }
 }

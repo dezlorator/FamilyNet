@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.Models.Interfaces
 {
-    public interface IUnitOfWorkAsync : IIdentityAsync
+    public interface IUnitOfWork : IIdentityAsync
     {
         IOrphanageAsyncRepository Orphanages { get; }
         IAsyncRepository<CharityMaker> CharityMakers { get; }

@@ -17,7 +17,7 @@ namespace FamilyNetServer.Controllers
     [Authorize]
     public class CharityMakersController : BaseController
     {
-        public CharityMakersController(IUnitOfWorkAsync unitOfWork) : base (unitOfWork)
+        public CharityMakersController(IUnitOfWork unitOfWork) : base (unitOfWork)
         {
 
         }
@@ -26,7 +26,7 @@ namespace FamilyNetServer.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index(PersonSearchModel searchModel)
         {
-            IEnumerable<CharityMaker> charityMakers =  _unitOfWorkAsync.CharityMakers.GetAll();
+            IEnumerable<CharityMaker> charityMakers =  _unitOfWork.CharityMakers.GetAll();
 
             charityMakers = CharityMakerFilter.GetFiltered(charityMakers, searchModel);
 
@@ -42,7 +42,7 @@ namespace FamilyNetServer.Controllers
                 return NotFound();
             }
 
-            var charityMaker = await _unitOfWorkAsync.CharityMakers.GetById((int)id);
+            var charityMaker = await _unitOfWork.CharityMakers.GetById((int)id);
 
             if (charityMaker == null)
             {
@@ -70,13 +70,13 @@ namespace FamilyNetServer.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWorkAsync.CharityMakers.Create(charityMaker);
-                await _unitOfWorkAsync.CharityMakers.SaveChangesAsync();
+                await _unitOfWork.CharityMakers.Create(charityMaker);
+                await _unitOfWork.CharityMakers.SaveChangesAsync();
 
                 var user = await GetCurrentUserAsync();
                 user.PersonID = charityMaker.ID;
                 user.PersonType = Models.Identity.PersonType.CharityMaker;
-                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                await _unitOfWork.UserManager.UpdateAsync(user);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -99,7 +99,7 @@ namespace FamilyNetServer.Controllers
                 return check;
             }
 
-            var charityMaker = await _unitOfWorkAsync.CharityMakers.GetById((int)id);
+            var charityMaker = await _unitOfWork.CharityMakers.GetById((int)id);
 
             if (charityMaker == null)
             {
@@ -134,14 +134,14 @@ namespace FamilyNetServer.Controllers
             {
                 try
                 {
-                    CharityMaker charityMakerToEdit = await _unitOfWorkAsync.CharityMakers.GetById(id);
+                    CharityMaker charityMakerToEdit = await _unitOfWork.CharityMakers.GetById(id);
                     charityMakerToEdit.CopyState(charityMaker);
-                    _unitOfWorkAsync.CharityMakers.Update(charityMakerToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
+                    _unitOfWork.CharityMakers.Update(charityMakerToEdit);
+                    _unitOfWork.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_unitOfWorkAsync.CharityMakers.Any(charityMaker.ID))
+                    if (!_unitOfWork.CharityMakers.Any(charityMaker.ID))
                     {
                         return NotFound();
                     }
@@ -164,7 +164,7 @@ namespace FamilyNetServer.Controllers
                 return NotFound();
             }
 
-            CharityMaker charityMaker = await _unitOfWorkAsync.CharityMakers
+            CharityMaker charityMaker = await _unitOfWork.CharityMakers
                 .GetById((int)id);
 
             if (charityMaker == null)
@@ -181,10 +181,10 @@ namespace FamilyNetServer.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!_unitOfWorkAsync.CharityMakers.Any(id))
+            if (!_unitOfWork.CharityMakers.Any(id))
             {
-                await _unitOfWorkAsync.CharityMakers.Delete(id);
-                _unitOfWorkAsync.SaveChangesAsync();
+                await _unitOfWork.CharityMakers.Delete(id);
+                _unitOfWork.SaveChangesAsync();
             }          
 
             return RedirectToAction(nameof(Index));
@@ -192,14 +192,14 @@ namespace FamilyNetServer.Controllers
 
         private bool HasCharityMaker(int id)
         {
-            return _unitOfWorkAsync.CharityMakers.GetById(id) != null;
+            return _unitOfWork.CharityMakers.GetById(id) != null;
         }
 
         // GET: CharityMakers/Table
         [Authorize(Roles = "Admin")]
         public IActionResult Table()
         {
-            var list = _unitOfWorkAsync.CharityMakers.GetAll().ToList();
+            var list = _unitOfWork.CharityMakers.GetAll().ToList();
             return View(list);
         }
 
