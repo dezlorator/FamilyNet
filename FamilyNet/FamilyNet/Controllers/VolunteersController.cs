@@ -181,7 +181,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLVolunteersBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.СreatetePostAsync(url, volunteerDTO,
+            var status = await _downLoader.СreatePostAsync(url, volunteerDTO,
                                                              stream, volunteerDTO.Avatar.FileName);
 
             if (status != HttpStatusCode.Created)
@@ -256,7 +256,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatetePutAsync(url, volunteerDTO,
+            var status = await _downLoader.СreatePutAsync(url, volunteerDTO,
                                                             stream, volunteerDTO.Avatar?.FileName);
 
             if (status != HttpStatusCode.NoContent)
@@ -330,7 +330,7 @@ namespace FamilyNet.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> OrphansTable(int id, PersonSearchModel searchModel)
+        public async Task<IActionResult> VolunteersTable(int id, PersonSearchModel searchModel)
         {
             var url = _URLVolunteersBuilder.GetAllWithFilter(_apiPath,
                                                            searchModel,
