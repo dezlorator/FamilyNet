@@ -1,6 +1,5 @@
 ﻿using FamilyNetServer.DTO;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
@@ -21,7 +20,7 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWorkAsync _repository;
-        private readonly IFileUploader _fileUploader;
+        private readonly Uploaders.IFileUploader _fileUploader;
         private readonly IChildrenHouseValidator _childrenHouseValidator;
         private readonly IFilterConditionsChildrenHouse _filterConditions;
 
@@ -29,7 +28,7 @@ namespace FamilyNetServer.Controllers.API
 
         #region ctor
 
-        public ChildrenHouseController(IFileUploader fileUploader,
+        public ChildrenHouseController(Uploaders.IFileUploader fileUploader,
                                   IUnitOfWorkAsync repo,
                                   IChildrenHouseValidator childrenHouseValidator,
                                   IFilterConditionsChildrenHouse filterConditions)
@@ -127,7 +126,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 var fileName = childrenHousesDTO.Name + DateTime.Now.Ticks;
 
-                pathPhoto = _fileUploader.CopyFile(fileName,
+                pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.ChildrenHouses), childrenHousesDTO.Avatar);
             }
 
@@ -201,7 +200,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 var fileName = childrenHouseDTO.Name + DateTime.Now.Ticks;
 
-                childrenHouse.Avatar = _fileUploader.CopyFile(fileName,
+                childrenHouse.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.ChildrenHouses), childrenHouseDTO.Avatar);
             }
 
