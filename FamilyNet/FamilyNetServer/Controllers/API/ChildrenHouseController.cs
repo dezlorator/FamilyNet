@@ -114,7 +114,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]ChildrenHouseDTO childrenHousesDTO)
+        public async Task<IActionResult> Create([FromForm]ChildrenHouseDTO childrenHousesDTO)
         {
             if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
             {

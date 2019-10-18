@@ -77,7 +77,7 @@ namespace FamilyNet.Downloader
 
             formDataContent.Add(new StringContent(dto.Name), "Name");
             formDataContent.Add(new StringContent(dto.Rating.ToString()), "Rating");
-            formDataContent.Add(new StringContent(dto.PhotoPath), "PhotoPath");
+            //formDataContent.Add(new StringContent(dto.PhotoPath), "PhotoPath");
             formDataContent.Add(new StringContent(dto.LocationID.ToString()), "LocationID");
             formDataContent.Add(new StringContent(dto.AdressID.ToString()), "AdressID");
         }

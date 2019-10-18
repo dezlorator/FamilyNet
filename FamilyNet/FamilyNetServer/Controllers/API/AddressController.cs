@@ -90,7 +90,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]AddressDTO addressDTO)
+        public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
         {
             //if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
             //{
@@ -112,7 +112,7 @@ namespace FamilyNetServer.Controllers.API
 
             addressDTO.ID = address.ID;
 
-            return Created("api/v1/childrenHouse/" + addressDTO.ID, addressDTO);
+            return Created(addressDTO.ID.ToString(), addressDTO);
         }
 
         [HttpPut("{id}")]

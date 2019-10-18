@@ -19,6 +19,7 @@ using DataTransferObjects;
 using FamilyNet.StreamCreater;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace FamilyNet.Controllers
 {
@@ -92,9 +93,9 @@ namespace FamilyNet.Controllers
                 Rating = house.Rating,
                 Avatar = house.PhotoPath,
                 Adress = GetAddress(house.AdressID.Value).Result
-            }); 
-           
-            
+            });
+
+
             GetViewData();
 
             return View(orphanages);
@@ -104,12 +105,12 @@ namespace FamilyNet.Controllers
         {
             var url = _URLAddressBuilder.GetById(_apiAddressPath, id);
 
-            var address =  await _addressDownLoader.GetByIdAsync(url);
+            var address = await _addressDownLoader.GetByIdAsync(url);
 
             var newAddress = new Address()
             {
                 ID = address.ID,
-                Country =  address.Country,
+                Country = address.Country,
                 Region = address.Region,
                 City = address.City,
                 Street = address.Street,
@@ -119,21 +120,57 @@ namespace FamilyNet.Controllers
             return newAddress;
         }
 
-        // GET: Orphanages/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
+            }
 
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+            var url = _URLChildrenHouseBuilder.GetById(_apiPath, id.Value);
+            ChildrenHouseDTO childrenHouseDTO = null;
 
-            if (orphanage == null)
+            try
+            {
+                childrenHouseDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (childrenHouseDTO == null)
+            {
                 return NotFound();
+            }
+
+            var orphan = new Orphanage()
+            {
+
+                ID = childrenHouseDTO.ID,
+                Name = childrenHouseDTO.Name,
+                AdressID = childrenHouseDTO.AdressID,
+                LocationID = childrenHouseDTO.LocationID,
+                Rating = childrenHouseDTO.Rating,
+                Avatar = childrenHouseDTO.PhotoPath,
+                Adress = GetAddress(childrenHouseDTO.AdressID.Value).Result
+            };
+
             GetViewData();
 
-            return View(orphanage);
+            return View(orphan);
         }
+
+
 
         // GET: Orphanages/Create
         [Authorize(Roles = "Admin")]
@@ -143,34 +180,62 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage,
-            IFormFile file) //TODO: AlPa -> Research Bind To Annotations
+        public async Task<IActionResult> Create(ChildrenHouseCreateViewModel model)
         {
-            await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\avatars");
 
-            //part to add location when obj creating
-            bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
-            if (IsLocationNotNull)
+            var url = _URLAddressBuilder.CreatePost(_apiAddressPath);
+            var status = await _addressDownLoader.ÑreatetePostAsync(url, model.Address,
+                                                             null, string.Empty);
+            
+            if (status != HttpStatusCode.Created)
             {
-                orphanage.Location = new Location()
-                {
-                    MapCoordX = Location.Item1,
-                    MapCoordY = Location.Item2
-                };
+                return Redirect("/Home/Error");
+                //TODO: log
             }
-            else
-                orphanage.LocationID = null;
 
-            if (ModelState.IsValid)
+            Stream stream = null;
+
+            if (model.ChildrenHouse.Avatar != null)
             {
-                await _unitOfWorkAsync.Orphanages.Create(orphanage);
-                await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                stream = _streamCreater.CopyFileToStream(model.ChildrenHouse.Avatar);
             }
-            GetViewData();
 
-            return View(orphanage);
+            model.ChildrenHouse.AdressID = model.Address.ID;
+            url = _URLChildrenHouseBuilder.CreatePost(_apiPath);
+            status = await _downLoader.ÑreatetePostAsync(url, model.ChildrenHouse,
+                                                             stream, model.ChildrenHouse.Avatar.FileName);
+
+            if (status != HttpStatusCode.Created)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            //await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\avatars");
+
+            ////part to add location when obj creating
+            //bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
+            //if (IsLocationNotNull)
+            //{
+            //    orphanage.Location = new Location()
+            //    {
+            //        MapCoordX = Location.Item1,
+            //        MapCoordY = Location.Item2
+            //    };
+            //}
+            //else
+            //    orphanage.LocationID = null;
+
+            //if (ModelState.IsValid)
+            //{
+            //    await _unitOfWorkAsync.Orphanages.Create(orphanage);
+            //    await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
+
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //GetViewData();
+
+            return Redirect("/Orphanages/Index");
         }
 
         // GET: Orphanages/Edit/5
