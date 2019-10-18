@@ -5,6 +5,7 @@
         Children,
         Volunteer,
         CharityMaker,
-        Representatives
+        Representatives,
+        ChildrenHouses
     }
 }
