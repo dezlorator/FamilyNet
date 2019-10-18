@@ -64,6 +64,8 @@ namespace FamilyNet
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
+            services.AddTransient<ServerDataDownLoader<VolunteerDTO>, ServerVolunteersDownloader>();
+            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<ServerDataDownLoader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
 
