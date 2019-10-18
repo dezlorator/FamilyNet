@@ -20,7 +20,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IFileUploader _fileUploader;
         private readonly IRepresentativeValidator _representativeValidator;
         private readonly IFilterConditionsRepresentatives _filterConditions;
@@ -30,7 +30,7 @@ namespace FamilyNetServer.Controllers.API
         #region ctor
 
         public RepresentativesController(IFileUploader fileUploader,
-                                  IUnitOfWorkAsync unitOfWork,
+                                  IUnitOfWork unitOfWork,
                                   IRepresentativeValidator representativeValidator,
                                   IFilterConditionsRepresentatives filterConditions)
         {
