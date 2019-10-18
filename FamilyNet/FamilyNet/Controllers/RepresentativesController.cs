@@ -12,16 +12,36 @@ using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Infrastructure;
+using FamilyNet.Downloader;
+using DataTransferObjects;
+using System.Net.Http;
+using Newtonsoft.Json;
+using FamilyNet.StreamCreater;
+using System.Net;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
     public class RepresentativesController : BaseController
     {
+        #region private fields
+
+        private readonly ServerDataDownloader<RepresentativeDTO> _downLoader;
+        private readonly IURLRepresentativeBuilder _URLRepresentativeBuilder;
+        private readonly string _apiPath = "api/v1/representatives";
+        private readonly IFileStreamCreater _streamCreater;
+
+        #endregion
         #region Ctor
 
-        public RepresentativesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        public RepresentativesController(IUnitOfWorkAsync unitOfWork,
+            IURLRepresentativeBuilder urlRepresentativeBuilder,
+            ServerDataDownloader<RepresentativeDTO> downloader,
+            IFileStreamCreater streamCreater) : base(unitOfWork)
         {
+            _URLRepresentativeBuilder = urlRepresentativeBuilder;
+            _downLoader = downloader;
+            _streamCreater = streamCreater;
         }
 
         #endregion
@@ -33,15 +53,43 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Index(int id,
             PersonSearchModel searchModel)
         {
-            IEnumerable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
+            var url = _URLRepresentativeBuilder
+                .GetAllWithFilter(_apiPath, searchModel, id);
 
-            representatives = RepresentativeFilter.GetFiltered(representatives, searchModel);
+            IEnumerable<RepresentativeDTO> representativesDTO = null;
 
-            if (id == 0)
-                return View(representatives);
+            try
+            {
+                representativesDTO = await _downLoader.GetAllAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
 
-            if (id > 0)
-                representatives = representatives.Where(x => x.Orphanage.ID.Equals(id));
+            var representatives = representativesDTO.Select(r => new Representative()
+            {
+                Birthday = r.Birthday,
+                FullName = new FullName()
+                {
+                    Name = r.Name,
+                    Patronymic = r.Patronymic,
+                    Surname = r.Surname
+                },
+                ID = r.ID,
+                Avatar = r.PhotoPath,
+                OrphanageID = r.ChildrenHouseID,
+                EmailID = r.EmailID,
+                Rating = r.Rating
+            });
 
             return View(representatives);
         }
@@ -51,12 +99,50 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
+            }
 
-            var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
+            var url = _URLRepresentativeBuilder.GetById(_apiPath, id.Value);
+            RepresentativeDTO representativeDTO = null;
 
-            if (representative == null)
+            try
+            {
+                representativeDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (representativeDTO == null)
+            {
                 return NotFound();
+            }
+
+            var representative = new Representative()
+            {
+                Birthday = representativeDTO.Birthday,
+                FullName = new FullName()
+                {
+                    Name = representativeDTO.Name,
+                    Patronymic = representativeDTO.Patronymic,
+                    Surname = representativeDTO.Surname
+                },
+                ID = representativeDTO.ID,
+                Avatar = representativeDTO.PhotoPath,
+                OrphanageID = representativeDTO.ChildrenHouseID,
+                EmailID = representativeDTO.EmailID,
+                Rating = representativeDTO.Rating,
+            };
 
             return View(representative);
         }
@@ -75,7 +161,7 @@ namespace FamilyNet.Controllers
             return View();
         }
 
-        
+
 
         // POST: Representatives/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -83,27 +169,33 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Representative")]
-        public async Task<IActionResult> Create([Bind("FullName,Birthday,Rating,Avatar,Orphanage")] 
-        Representative representative, int id, IFormFile file)
+        public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,Rating,Avatar,ChildrenHouseID")]
+        RepresentativeDTO representativeDTO)
         {
-            await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
-                representative.Orphanage = orphanage;
+                return View(representativeDTO);
+            }
 
-                await _unitOfWorkAsync.Representatives.Create(representative);
-                await _unitOfWorkAsync.Representatives.SaveChangesAsync();
+            Stream stream = null;
 
-                var user = await GetCurrentUserAsync();
-                user.PersonID = representative.ID;
-                user.PersonType = Models.Identity.PersonType.Representative;
-                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+            if (representativeDTO.Avatar != null)
+            {
+                stream = _streamCreater.CopyFileToStream(representativeDTO.Avatar);
+            }
+
+            var url = _URLRepresentativeBuilder.CreatePost(_apiPath);
+            var status =
+                await _downLoader.CretePostAsync(url, representativeDTO,
+                                                 stream,
+                                                 representativeDTO.Avatar.FileName);
+
+            if (status != HttpStatusCode.Created)
+            {
+                return Redirect("/Home/Error");
+            }
 
                 return RedirectToAction(nameof(Index));
-            }
-            return View(representative);
         }
 
         // GET: Representatives/Edit/5
@@ -126,7 +218,7 @@ namespace FamilyNet.Controllers
                 return check;
             }
 
-           
+
 
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
 

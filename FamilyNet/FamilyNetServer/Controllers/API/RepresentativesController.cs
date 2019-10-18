@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using FamilyNetServer.DTO;
+using DataTransferObjects;
 using FamilyNetServer.Enums;
 using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;

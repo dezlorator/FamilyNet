@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FamilyNet.Models;
-using FamilyNet.Models.EntityFramework;
+﻿using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +12,10 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNet.Infrastructure;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using FamilyNet.Configuration;
+using FamilyNet.Downloader;
+using DataTransferObjects;
+using FamilyNet.StreamCreater;
 
 namespace FamilyNet
 {
@@ -32,6 +31,7 @@ namespace FamilyNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IFileStreamCreater, FileStreamCreater>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
             //services.AddTransient<FamilyNetPhoneValidator>();
@@ -40,7 +40,8 @@ namespace FamilyNet
                     Configuration["Data:FamilyNet:ConnectionString"]));
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
-            services.AddIdentity<ApplicationUser, IdentityRole>(opts => {
+            services.AddIdentity<ApplicationUser, IdentityRole>(opts => 
+            {
                 opts.User.RequireUniqueEmail = true;
                 opts.Password.RequiredLength = 6;
                 opts.Password.RequireNonAlphanumeric = false;
@@ -51,6 +52,10 @@ namespace FamilyNet
             }).AddEntityFrameworkStores<ApplicationIdentityDbContext>()
             .AddUserManager<ApplicationUserManager>()
             .AddDefaultTokenProviders();
+
+            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
+            services.AddTransient<ServerDataDownloader<RepresentativeDTO>, ServerRepresentativesDownloader>();
+            services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
