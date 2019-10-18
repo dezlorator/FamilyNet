@@ -16,9 +16,9 @@ namespace FamilyNetServer.FileUploaders
         public string CopyFile(string fileName, string directory, IFormFile file)
         {
             var webRoot = _environment.WebRootPath;
-            var extention = Path.GetExtension(file.FileName);
+            var extension = Path.GetExtension(file.FileName);
 
-            var filePath = Path.Combine(webRoot, directory, fileName) + extention;
+            var filePath = Path.Combine(webRoot, directory, fileName) + extension;
 
             if (file.Length > 0)
             {
@@ -28,7 +28,7 @@ namespace FamilyNetServer.FileUploaders
                 }
             }
 
-            return Path.Combine(directory, fileName) + extention;
+            return Path.Combine(directory, fileName) + extension;
         }
     }
 }
