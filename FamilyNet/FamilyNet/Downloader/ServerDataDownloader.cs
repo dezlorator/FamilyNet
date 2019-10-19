@@ -84,5 +84,32 @@ namespace FamilyNet.Downloader
                                                                T dto,
                                                                Stream streamFile,
                                                                string fileName);
+
+        public async Task<HttpStatusCode> DeleteAsync(string url)
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    response = await httpClient.DeleteAsync(url);
+                }
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            return response.StatusCode;
+        }
     }
 }

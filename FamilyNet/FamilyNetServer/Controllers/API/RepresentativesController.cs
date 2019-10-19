@@ -11,6 +11,7 @@ using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
+using Microsoft.Extensions.Options;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -24,8 +25,15 @@ namespace FamilyNetServer.Controllers.API
         private readonly IFileUploader _fileUploader;
         private readonly IRepresentativeValidator _representativeValidator;
         private readonly IFilterConditionsRepresentatives _filterConditions;
-
-        #endregion
+        private string _url 
+        {
+            get 
+            { 
+                return string.Format($"{Request.Scheme}://{Request.Host.Value}/"); 
+            } 
+        }
+        
+            #endregion
 
         #region ctor
 
@@ -54,11 +62,10 @@ namespace FamilyNetServer.Controllers.API
             {
                 return BadRequest();
             }
-
             var representativesDTO = representatives.Select(r =>
             new RepresentativeDTO()
             {
-                PhotoPath = r.Avatar,
+                PhotoPath = _url + r.Avatar,
                 Birthday = r.Birthday,
                 EmailID = r.EmailID,
                 ID = r.ID,
@@ -94,7 +101,7 @@ namespace FamilyNetServer.Controllers.API
                 Rating = represenntative.Rating,
                 Surname = represenntative.FullName.Surname,
                 EmailID = represenntative.EmailID,
-                PhotoPath = represenntative.Avatar
+                PhotoPath = _url + represenntative.Avatar
             };
 
             return Ok(representativeDTO);

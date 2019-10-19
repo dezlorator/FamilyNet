@@ -32,7 +32,7 @@ namespace FamilyNet.Controllers
         private readonly IURLRepresentativeBuilder _URLRepresentativeBuilder;
         private readonly string _apiPath = "api/v1/representatives";
         private readonly IFileStreamCreater _streamCreater;
-        
+
 
 
         #endregion
@@ -198,7 +198,7 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-                return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Representatives/Edit/5
@@ -254,7 +254,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Edit(int id, RepresentativeDTO representativeDTO)
         {
             if (id != representativeDTO.ID)
-            { 
+            {
                 return NotFound();
             }
 
@@ -287,12 +287,32 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
+            var url = _URLRepresentativeBuilder.GetById(_apiPath, id.Value);
+            RepresentativeDTO representativeDTO = null;
 
-            if (representative == null)
+            try
+            {
+                representativeDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (representativeDTO == null)
+            {
                 return NotFound();
+            }
 
-            return View(representative);
+            return View(representativeDTO);
         }
 
         // POST: Representatives/Delete/5
@@ -301,11 +321,19 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
-            await _unitOfWorkAsync.Representatives.Delete(representative.ID);
-            _unitOfWorkAsync.SaveChangesAsync();
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+            var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
+            var status = await _downLoader.DeleteAsync(url);
 
-            return RedirectToAction(nameof(Index));
+            if (status != HttpStatusCode.OK)
+            {
+                return Redirect("Home/Error");
+            }
+
+                return RedirectToAction(nameof(Index));
         }
 
         #endregion
