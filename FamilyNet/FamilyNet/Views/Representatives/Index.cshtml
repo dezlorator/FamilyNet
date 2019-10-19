@@ -102,7 +102,7 @@
                     @Html.DisplayFor(modelItem => item.Rating)
                 </th>
                 <td>
-                    <img class="img-responsive" src="@Url.Content("~/representatives/" + @item.Avatar)" alt="" width="50" height="50">
+                    <img class="img-responsive" src="@Url.Content(@item.Avatar)" alt="" width="50" height="50">
                 </td>
                 <th>
                     <a asp-action="Index" asp-controller="Orphanages" asp-route-id="@item.ID"
