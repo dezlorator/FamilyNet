@@ -189,8 +189,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.CreatePost(_apiPath);
-            var status =
-                await _downLoader.CretePostAsync(url, representativeDTO,
+            var status = await _downLoader.CretePostAsync(url, representativeDTO,
                                                  stream,
                                                  representativeDTO.Avatar.FileName);
 
@@ -213,8 +212,9 @@ namespace FamilyNet.Controllers
 
 
             if (id == null)
+            {
                 return NotFound();
-
+            }
             var check = CheckById((int)id).Result;
             var checkResult = check != null;
             if (checkResult)
@@ -222,14 +222,27 @@ namespace FamilyNet.Controllers
                 return check;
             }
 
+            var url = _URLRepresentativeBuilder.GetById(_apiPath, id.Value);
+            RepresentativeDTO representativeDTO = null;
 
+            try
+            {
+                representativeDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
 
-            var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
-
-            if (representative == null)
-                return NotFound();
-
-            return View(representative);
+            return View(representativeDTO);
         }
 
         // POST: Representatives/Edit/5
@@ -238,45 +251,31 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Representative")]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,FullName,Birthday,Rating,Avatar,Orphanage")]
-         Representative representative, int orphanageId, IFormFile file)
+        public async Task<IActionResult> Edit(int id, RepresentativeDTO representativeDTO)
         {
-            if (id != representative.ID)
+            if (id != representativeDTO.ID)
+            { 
                 return NotFound();
-
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
             }
 
-            await ImageHelper.SetAvatar(representative, file, "wwwroot\\representatives");
+            Stream stream = null;
 
-            if (ModelState.IsValid)
+            if (representativeDTO.Avatar != null)
             {
-                try
-                {
-                    var orphanage = await _unitOfWorkAsync.Orphanages.GetById(orphanageId);
-                    representative.Orphanage = orphanage;
-
-                    var representativeToEdit = await _unitOfWorkAsync.Representatives.GetById(representative.ID);
-                    representativeToEdit.CopyState(representative);
-                    _unitOfWorkAsync.Representatives.Update(representativeToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_unitOfWorkAsync.Representatives.Any(representative.ID))
-                        return NotFound();
-                    else
-                        throw; //TODO: Loging
-                }
-
-                return RedirectToAction(nameof(Index));
+                stream = _streamCreater.CopyFileToStream(representativeDTO.Avatar);
             }
 
-            return View(representative);
+            var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
+            var status = await _downLoader.СreatetePutAsync(url, representativeDTO,
+                                                            stream, representativeDTO.Avatar?.FileName);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Representatives/Delete/5
@@ -284,7 +283,9 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
+            }
 
             var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
 
