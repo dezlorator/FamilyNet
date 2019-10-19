@@ -5,7 +5,6 @@ using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
@@ -14,11 +13,8 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
-using FamilyNetServer.Configuration;
 using FamilyNetServer.Uploaders;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using FamilyNetServer.ConfigurationServices;
 
 namespace FamilyNetServer
 {
@@ -36,24 +32,9 @@ namespace FamilyNetServer
         {
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetServerPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetServerUserValidator>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration["Data:FamilyNet:ConnectionString"]));
-            services.AddDbContext<ApplicationIdentityDbContext>(options =>
-                options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
-            services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
-            {
-                opts.User.RequireUniqueEmail = true;
-                opts.Password.RequiredLength = 6;
-                opts.Password.RequireNonAlphanumeric = false;
-                opts.Password.RequireLowercase = true;
-                opts.Password.RequireUppercase = true;
-                opts.Password.RequireDigit = true;
-
-            }).AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-            .AddUserManager<ApplicationUserManager>()
-            .AddDefaultTokenProviders();
-
+            services.AddDBContextService(Configuration);
+            services.AddIdentityService();
+            services.AddAuthorizationService(Configuration);
             services.AddTransient<IUnitOfWork, EFUnitOfWork>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
@@ -74,9 +55,7 @@ namespace FamilyNetServer
             services.AddMvc()
                 .AddViewLocalization(
                 Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
-            //    opts => { opts.ResourcesPath = "Resources"; })
                 .AddDataAnnotationsLocalization();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
             .ConfigureApiBehaviorOptions(options =>
              {
@@ -87,30 +66,6 @@ namespace FamilyNetServer
                  options.ClientErrorMapping[404].Link =
                      "https://httpstatuses.com/404";
              });
-
-            var JWTConfigurationSection = Configuration.GetSection("JWT");
-            services.Configure<JWTCofiguration>(JWTConfigurationSection);
-
-            var JWTConfiguration = JWTConfigurationSection.Get<JWTCofiguration>();
-            var key = Encoding.ASCII.GetBytes(JWTConfiguration.Secret);
-
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -145,7 +100,6 @@ namespace FamilyNetServer
 
             app.UseStaticFiles();
             app.UseAuthentication();
-
             app.UseMvc();
 
             //ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
