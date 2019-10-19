@@ -1,251 +1,90 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
-using System.Collections.Generic;
+using FamilyNet.Models.ViewModels;
+using DataTransferObjects;
+using FamilyNet.Downloader;
+using Microsoft.Extensions.Localization;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Net;
+using System.IO;
+using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
     public class DonationsController : BaseController
     {
-        public DonationsController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
-        {
+        #region private fields
 
+        private readonly IStringLocalizer<DonationsController> _localizer;
+        private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downLoader;
+        private readonly IURLDonationsBuilder _URLDonationsBuilder;
+        private readonly string _apiPath = "api/v1/donations";
+        private readonly IFileStreamCreater _streamCreater;
+
+        #endregion
+
+        #region ctor
+
+        public DonationsController(IUnitOfWorkAsync unitOfWork,
+                                 IStringLocalizer<DonationsController> localizer,
+                                 ServerSimpleDataDownloader<DonationDetailDTO> downLoader,
+                                 IURLDonationsBuilder uRLDonationsBuilder,
+                                 IFileStreamCreater streamCreater)
+            : base(unitOfWork)
+        {
+            _localizer = localizer;
+            _downLoader = downLoader;
+            _URLDonationsBuilder = uRLDonationsBuilder;
+            _streamCreater = streamCreater;
         }
 
-        // GET: DonationsTable
+        #endregion
+
         [AllowAnonymous]
-        public IActionResult DonationsTable()
+        public async Task<IActionResult> Index(int orphanageId)
         {
-            return View(_unitOfWorkAsync.Donations.GetAll());
-        }
+            var url = _URLDonationsBuilder.GetAllWithFilter(_apiPath,
+                                                            orphanageId);
+            IEnumerable<DonationDTO> donationDTO = null;
 
-        // GET: CategoriesTable
-        [AllowAnonymous]
-        public IActionResult CategoriesTable()
-        {
-            return View(_unitOfWorkAsync.BaseItemTypes.GetAll());
-        }
-
-        #region CreateCategory
-
-        // GET: DonationsTable/CreateCategory
-        [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
-        public IActionResult CreateCategory()
-        {
-            return View();
-        }
-
-        // POST: Donations/CreateCategory
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
-        public async Task<IActionResult> CreateCategory([Bind("ID,Name")] DonationItemType request)
-        {
-            if (ModelState.IsValid)
+            try
             {
-                await _unitOfWorkAsync.BaseItemTypes.Create(request);
-                await _unitOfWorkAsync.BaseItemTypes.SaveChangesAsync();
-                return RedirectToAction(nameof(CategoriesTable));
+                donationDTO = await _downLoader.GetAllAsync(url);
             }
-            return View(request);
-        }
-
-        #endregion
-
-        #region DeleteCategory
-
-        // GET: CategoriesTable/Delete/5
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteCategory(int? id)
-        {
-            if (id == null)
+            catch (ArgumentNullException)
             {
-                return NotFound();
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
             }
 
-            BaseItemType category = await _unitOfWorkAsync.BaseItemTypes
-                .GetById((int)id);
-
-            if (category == null)
+            var donations = donationDTO.Select(donation => new Donation()
             {
-                return NotFound();
-            }
+                CharityMakerID = donation.CharityMakerID,
+                DonationItemID = donation.DonationItemID,
+                OrphanageID = donation.OrphanageID
+            });
 
-            return View(category);
+            GetViewData();
+
+            return View(donations);
         }
 
-        // POST: CategoriesTable/Delete/5
-        [HttpPost, ActionName("DeleteCategory")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteCategoryConfirmed(int id)
-        {
-            var category = await _unitOfWorkAsync.BaseItemTypes.GetById((int)id);
-            if (category == null)
-            {
-                return RedirectToAction(nameof(CategoriesTable));
-            }
-            await _unitOfWorkAsync.BaseItemTypes.Delete((int)id);
-            _unitOfWorkAsync.SaveChangesAsync();
-
-            return RedirectToAction(nameof(CategoriesTable));
-        }
-
-        #endregion
-
-        #region CreateDonation
-
-        // GET: DonationsTable/CreateRequest
-        [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
-        public IActionResult CreateDonation()
-        {
-            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
-            ViewBag.ListOfBaseItemTypes = _unitOfWorkAsync.BaseItemTypes.GetAll();
-            return View();
-        }
-
-        // POST: DonationsTable/CreateRequest
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,CharityMaker,Volunteer")]
-        public async Task<IActionResult> CreateDonation([Bind("ID,DonationItem,Orphanage")] Donation request, int idOrphanage, int idDonationItem)
-        {
-            if (ModelState.IsValid)
-            {
-                request.OrphanageID = idOrphanage;
-                
-                request.IsRequest = true;
-
-                await _unitOfWorkAsync.Donations.Create(request);
-                await _unitOfWorkAsync.Donations.SaveChangesAsync();
-
-                _unitOfWorkAsync.TypeBaseItems.Add(new TypeBaseItem() { ItemID = request.DonationItem.ID, TypeID = idDonationItem  });
-
-                _unitOfWorkAsync.SaveChangesAsync();
-
-                return RedirectToAction(nameof(DonationsTable));
-            }
-            return View(request);
-        }
-
-        #endregion      
-
-        #region EditDonation
-
-        // GET: Donations/Edit/5
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> EditDonation(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
-            ViewBag.ListOfBaseItemTypes = _unitOfWorkAsync.BaseItemTypes.GetAll();
-            var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
-
-            if (donation == null)
-            {
-                return NotFound();
-            }
-
-            return View(donation);
-        }
-
-        // POST: Donations/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> EditDonation(int id,
-            [Bind("ID,DonationItem")] Donation donation)
-        {
-            if (id != donation.ID)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    Donation donationToEdit = await _unitOfWorkAsync.Donations.GetById(id);
-                    donationToEdit.CopyState(donation);
-                    _unitOfWorkAsync.Donations.Update(donationToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DonationExists(donation.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw; // TODO : logging
-                    }
-                }
-                return RedirectToAction(nameof(DonationsTable));
-            }
-            return View(donation);
-        }
-
-        #endregion
-
-        #region DeleteDonation
-
-        // GET: DonationsTable/Delete/5
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteDonation(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Donation donation = await _unitOfWorkAsync.Donations
-                .GetById((int)id);
-
-            if (donation == null)
-            {
-                return NotFound();
-            }
-
-            return View(donation);
-        }
-
-        // POST: DonationsTable/Delete/5
-        [HttpPost, ActionName("DeleteDonation")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteDonationConfirmed(int id)
-        {
-            var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
-            if (donation == null)
-            {
-                return RedirectToAction(nameof(DonationsTable));
-            }
-            await _unitOfWorkAsync.Donations.Delete((int)id);
-            _unitOfWorkAsync.SaveChangesAsync();
-
-            return RedirectToAction(nameof(DonationsTable));
-        }
-
-        #endregion
-
-        #region DetailsDonation
-
-        // GET: Donations/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -254,45 +93,296 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
-            if (donation == null)
+            var url = _URLDonationsBuilder.GetById(_apiPath, id.Value);
+            DonationDetailDTO donationDetailDTO = null;
+
+            try
+            {
+                donationDetailDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (donationDetailDTO == null)
             {
                 return NotFound();
             }
 
+            var donation = new Donation()
+            {
+                Orphanage = new Orphanage()
+                {
+                    Name = donationDetailDTO.OrphanageName,
+                    Rating = donationDetailDTO.OrphanageRating,
+
+                    Adress = new Address()
+                    {
+                        City = donationDetailDTO.OrphanageCity,
+                        Street = donationDetailDTO.OrphanageStreet,
+                        House = donationDetailDTO.OrphanageHouse
+                    }
+                },
+
+                DonationItem = new DonationItem()
+                {
+                    Name = donationDetailDTO.ItemName,
+                    Description = donationDetailDTO.ItemDescription
+                }
+            };
+
+            GetViewData();
+
             return View(donation);
         }
 
-        #endregion
+        [Authorize(Roles = "Admin, Orphan")]
+        public async Task<IActionResult> Create()
+        {
+            await Check();
 
-        #region DetailsCategory
-        public async Task<IActionResult> DetailsCategory(int? id)
+            var donationsList = new List<Donation>();
+            donationsList = _unitOfWorkAsync.Donations.GetAll().ToList();
+            ViewBag.ListOfDonations = donationsList;
+            GetViewData();
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Orphan")]
+        public async Task<IActionResult> Create([Bind("DonationItemID, CharityMakerID, OrphanageID")]
+                                                DonationDetailDTO donationDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(donationDTO);
+            }
+
+            var url = _URLDonationsBuilder.CreatePost(_apiPath);
+            var status = await _downLoader.СreatetePostAsync(url, donationDTO);
+
+            if (status != HttpStatusCode.Created)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            return Redirect("/Donations/Index");
+        }
+
+        [Authorize(Roles = "Admin, Orphan")]
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var category = await _unitOfWorkAsync.BaseItemTypes.GetById((int)id);
-            if (category == null)
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
+            }
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, id.Value);
+            DonationDTO donationDTO;
+
+            try
+            {
+                donationDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            var donationsList = _unitOfWorkAsync.Donations.GetAll().ToList();
+            ViewBag.ListOfDonations = donationsList;
+
+            GetViewData();
+
+            return View(donationDTO);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Orphan")]
+        public async Task<IActionResult> Edit(int id, DonationDetailDTO donationDTO)
+        {
+            if (id != donationDTO.ID)
             {
                 return NotFound();
             }
 
-            return View(category);
+            if (!ModelState.IsValid)
+            {
+                return View(donationDTO.Status);
+            }
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, id);
+            var status = await _downLoader.СreatePutAsync(url, donationDTO);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            return Redirect("/Donations/Index");
         }
 
-        #endregion
-
-        private bool DonationExists(int id)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditStatus(int? id)
         {
-            return _unitOfWorkAsync.Donations.GetById(id) != null;
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+
+            if (checkResult)
+            {
+                return check;
+            }
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, id.Value);
+            DonationDTO donationDTO;
+
+            try
+            {
+                donationDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            var donationsList = _unitOfWorkAsync.Donations.GetAll().ToList();
+            ViewBag.ListOfDonations = donationsList;
+
+            GetViewData();
+
+            return View(donationDTO);
         }
 
-        private bool CategoryExists(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditStatus(int id, DonationDetailDTO donationDTO)
         {
-            return _unitOfWorkAsync.BaseItemTypes.GetById(id) != null;
+            if (id != donationDTO.ID)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(donationDTO);
+            }
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, id);
+            var status = await _downLoader.СreatePutAsync(url, donationDTO);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            return Redirect("/Donations/Index");
         }
 
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, id.Value);
+            DonationDTO donationDTO;
+
+            try
+            {
+                donationDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (donationDTO == null)
+            {
+                return NotFound();
+            }
+
+            GetViewData();
+
+            return View(id.Value);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, id);
+            var status = await _downLoader.DeleteAsync(url);
+
+            if (status != HttpStatusCode.OK)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return Redirect("/ODonations/Index");
+        }
+
+        private void GetViewData()
+        {
+            ViewData["DonationsList"] = _localizer["DonationsList"];
+        }
     }
 }

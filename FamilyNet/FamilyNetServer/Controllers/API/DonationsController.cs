@@ -1,6 +1,6 @@
-﻿using FamilyNetServer.DTO;
+﻿using DataTransferObjects;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
+using FamilyNetServer.Uploaders;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
@@ -38,9 +38,9 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]int rows,
-                                    [FromQuery]int page,
-                                    [FromQuery]int? orphanageID)
+        public IActionResult GetAll([FromForm]int rows,
+                                    [FromForm]int page,
+                                    [FromForm]int? orphanageID)
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
 
@@ -61,6 +61,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 donationsDTO.Add(new DonationDTO
                 {
+                    ID = d.ID,
                     City = d.Orphanage.Adress.City,
                     PathToAvatar = d.Orphanage.Avatar,
                     Status = d.Status.ToString(),
@@ -68,7 +69,7 @@ namespace FamilyNetServer.Controllers.API
                     ItemName = d.DonationItem.Name,
                     ItemDescription = d.DonationItem.Description,
                     Types = d.DonationItem.TypeBaseItem
-                             .Select(t => t.Type.Name)
+                             .Select(t => t.TypeID)
                 }
                 );
             }
@@ -132,7 +133,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit(int id, [FromBody]DonationDTO donationDTO)
+        public async Task<IActionResult> Edit(int id, [FromForm]DonationDTO donationDTO)
         {
             if (!_donationValidator.IsValid(donationDTO))
             {
