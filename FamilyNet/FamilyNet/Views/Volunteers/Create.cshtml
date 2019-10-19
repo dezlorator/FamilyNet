@@ -42,6 +42,11 @@
                                     <input asp-for="AddressID" class="form-control">
                                 </div>
                                 <div class="form-group">
+                                    <label asp-for="Rating" class="control-label"></label>
+                                    <input asp-for="Rating" type="number" step="any" min="0" max="10" class="form-control">
+                                    @*<span asp-validation-for="Rating" class="text-danger"></span>*@
+                                </div>
+                                <div class="form-group">
                                     <label asp-for="Avatar" class="control-label">Фото</label>
                                     <input asp-for="Avatar" type="file" name="Avatar" class="form-control" />
                                     <span asp-validation-for="Avatar" class="text-danger"></span>

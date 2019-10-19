@@ -25,9 +25,12 @@ namespace FamilyNet.Controllers
         #region private fields
 
         private readonly IStringLocalizer<VolunteersController> _localizer;
-        private readonly ServerDataDownLoader<VolunteerDTO> _downLoader;
+        private readonly ServerDataDownLoader<VolunteerDTO> _downloader;
+        private readonly ServerDataDownLoader<AddressDTO> _addressDownloader;
         private readonly IURLVolunteersBuilder _URLVolunteersBuilder;
+        private readonly IURLAddressBuilder _URLAddressBuilder;
         private readonly string _apiPath = "api/v1/volunteers";
+        private readonly string _apiAddressPath = "api/v1/address";
         private readonly IFileStreamCreater _streamCreater;
 
         #endregion
@@ -37,13 +40,17 @@ namespace FamilyNet.Controllers
         public VolunteersController(IUnitOfWorkAsync unitOfWork,
                                  IStringLocalizer<VolunteersController> localizer,
                                  ServerDataDownLoader<VolunteerDTO> downLoader,
-                                 IURLVolunteersBuilder URLChildrenBuilder,
+                                 ServerDataDownLoader<AddressDTO> addressDownloader,
+                                 IURLVolunteersBuilder URLVolunteersBuilder,
+                                 IURLAddressBuilder URLAddressBuilder,
                                  IFileStreamCreater streamCreater)
             : base(unitOfWork)
         {
             _localizer = localizer;
-            _downLoader = downLoader;
-            _URLVolunteersBuilder = URLChildrenBuilder;
+            _downloader = downLoader;
+            _addressDownloader = addressDownloader;
+            _URLVolunteersBuilder = URLVolunteersBuilder;
+            _URLAddressBuilder = URLAddressBuilder;
             _streamCreater = streamCreater;
         }
 
@@ -59,7 +66,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteers = await _downLoader.GetAllAsync(url);
+                volunteers = await _downloader.GetAllAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -108,7 +115,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteerDTO = await _downLoader.GetByIdAsync(url);
+                volunteerDTO = await _downloader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -181,7 +188,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLVolunteersBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.СreatePostAsync(url, volunteerDTO,
+            var status = await _downloader.СreatePostAsync(url, volunteerDTO,
                                                              stream, volunteerDTO.Avatar.FileName);
 
             if (status != HttpStatusCode.Created)
@@ -213,7 +220,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteerDTO = await _downLoader.GetByIdAsync(url);
+                volunteerDTO = await _downloader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -228,9 +235,69 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            var volunteer = new Volunteer()
+            {
+                Birthday = volunteerDTO.Birthday,
+                FullName = new FullName()
+                {
+                    Name = volunteerDTO.Name,
+                    Patronymic = volunteerDTO.Patronymic,
+                    Surname = volunteerDTO.Surname
+                },
+                ID = volunteerDTO.ID,
+                Avatar = volunteerDTO.PhotoPath,
+                AddressID = volunteerDTO.AddressID,
+                EmailID = volunteerDTO.EmailID,
+                Rating = volunteerDTO.Rating,
+            };
+
+            if (volunteerDTO.AddressID == null)
+            {
+                GetViewData();
+
+                return View(volunteer);
+            }
+
+            var addressURL = _URLAddressBuilder.GetById(_apiAddressPath, 
+                                                (int)volunteerDTO.AddressID);
+            AddressDTO addressDTO = null;
+
+            try
+            {
+                addressDTO = await _addressDownloader.GetByIdAsync(addressURL);
+            }
+            catch (ArgumentNullException)
+            {
+                GetViewData();
+
+                return View(volunteer);
+            }
+            catch (HttpRequestException)
+            {
+                GetViewData();
+
+                return View(volunteer);
+            }
+            catch (JsonException)
+            {
+                GetViewData();
+
+                return View(volunteer);
+            }
+
+            volunteer.Address = new Address
+            {
+                ID = addressDTO.ID,
+                Country = addressDTO.Country,
+                City = addressDTO.City,
+                Region = addressDTO.Region,
+                Street = addressDTO.Street,
+                House = addressDTO.House
+            };
+
             GetViewData();
 
-            return View(volunteerDTO);
+            return View(volunteer);
         }
 
         [HttpPost]
@@ -256,7 +323,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatePutAsync(url, volunteerDTO,
+            var status = await _downloader.СreatePutAsync(url, volunteerDTO,
                                                             stream, volunteerDTO.Avatar?.FileName);
 
             if (status != HttpStatusCode.NoContent)
@@ -281,7 +348,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteerDTO = await _downLoader.GetByIdAsync(url);
+                volunteerDTO = await _downloader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -317,7 +384,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.DeleteAsync(url);
+            var status = await _downloader.DeleteAsync(url);
 
             if (status != HttpStatusCode.OK)
             {
@@ -339,7 +406,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteers = await _downLoader.GetAllAsync(url);
+                volunteers = await _downloader.GetAllAsync(url);
             }
             catch (ArgumentNullException)
             {
