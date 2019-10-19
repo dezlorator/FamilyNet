@@ -2,18 +2,26 @@
 using Microsoft.AspNetCore.Http;
 using System.IO;
 
-namespace FamilyNetServer.FileUploaders
+namespace FamilyNetServer.Uploaders
 {
     public class FileUploader : IFileUploader
     {
+        #region private fields
+
         private readonly IHostingEnvironment _environment;
+
+        #endregion
+
+        #region ctor
 
         public FileUploader(IHostingEnvironment environment)
         {
             _environment = environment;
         }
 
-        public string CopyFile(string fileName, string directory, IFormFile file)
+        #endregion
+
+        public string CopyFileToServer(string fileName, string directory, IFormFile file)
         {
             var webRoot = _environment.WebRootPath;
             var extension = Path.GetExtension(file.FileName);
@@ -28,7 +36,7 @@ namespace FamilyNetServer.FileUploaders
                 }
             }
 
-            return Path.Combine(directory, fileName) + extension;
+            return Path.Combine(directory, fileName).Replace("\\", "/") + extension;
         }
     }
 }
