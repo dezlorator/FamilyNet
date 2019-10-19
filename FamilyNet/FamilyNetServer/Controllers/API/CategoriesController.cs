@@ -1,7 +1,4 @@
 ﻿using FamilyNetServer.DTO;
-using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
-using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
@@ -20,12 +17,12 @@ namespace FamilyNetServer.Controllers.API
     {
         #region fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ICategoryValidator _categoryValidator;
 
         #endregion
 
-        public CategoriesController(IUnitOfWorkAsync unitOfWork,
+        public CategoriesController(IUnitOfWork unitOfWork,
                                     ICategoryValidator categoryValidator)
         {
             _unitOfWork = unitOfWork;

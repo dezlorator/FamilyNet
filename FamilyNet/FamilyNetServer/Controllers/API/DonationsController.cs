@@ -1,6 +1,5 @@
 ﻿using FamilyNetServer.DTO;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
@@ -20,13 +19,13 @@ namespace FamilyNetServer.Controllers.API
     {
         #region fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IDonationValidator _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
 
         #endregion
 
-        public DonationsController(IUnitOfWorkAsync unitOfWork,
+        public DonationsController(IUnitOfWork unitOfWork,
                                    IDonationValidator donationValidator,
                                    IDonationsFilter donationsFilter)
         {
