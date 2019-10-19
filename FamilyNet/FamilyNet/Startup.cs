@@ -16,6 +16,7 @@ using FamilyNet.Configuration;
 using FamilyNet.Downloader;
 using DataTransferObjects;
 using FamilyNet.StreamCreater;
+using FamilyNet.HttpHandlers;
 
 namespace FamilyNet
 {
@@ -54,6 +55,8 @@ namespace FamilyNet
             .AddDefaultTokenProviders();
 
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
+            services.Configure<JWTCofiguration>(Configuration.GetSection("JWT"));
+
             services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
 
@@ -65,11 +68,12 @@ namespace FamilyNet
             });
 
             services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
+            services.AddTransient<IHttpAuthorizationHandler, FakeHttpAuthorizationHandler>();
+
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
                 .AddViewLocalization(
                 Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
-            //    opts => { opts.ResourcesPath = "Resources"; })
                 .AddDataAnnotationsLocalization();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

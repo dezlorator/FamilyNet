@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +12,23 @@ namespace FamilyNet.Downloader
 {
     public abstract class ServerDataDownLoader<T> where T : class, new()
     {
-        public async Task<IEnumerable<T>> GetAllAsync(string url)
+        #region private fields
+
+        protected readonly IHttpAuthorizationHandler _authorizationHandler;
+
+        #endregion
+
+        #region ctor
+
+        public ServerDataDownLoader(IHttpAuthorizationHandler authorizationHandler)
+        {
+            _authorizationHandler = authorizationHandler;
+        }
+
+        #endregion
+
+        public async Task<IEnumerable<T>> GetAllAsync(string url,
+                                                      HttpRequest Request)
         {
             List<T> objs = null;
 
@@ -42,7 +60,7 @@ namespace FamilyNet.Downloader
             return objs;
         }
 
-        public async Task<T> GetByIdAsync(string url)
+        public async Task<T> GetByIdAsync(string url, HttpRequest Request)
         {
             T obj = null;
 
@@ -77,14 +95,17 @@ namespace FamilyNet.Downloader
         public abstract Task<HttpStatusCode> СreatetePostAsync(string url,
                                                                T dto,
                                                                Stream file,
-                                                               string fieName);
+                                                               string fieName,
+                                                               HttpRequest Request);
 
         public abstract Task<HttpStatusCode> СreatetePutAsync(string url,
                                                                T dto,
                                                                Stream file,
-                                                               string fieName);
+                                                               string fieName,
+                                                               HttpRequest Request);
 
-        public async Task<HttpStatusCode> DeleteAsync(string url)
+        public async Task<HttpStatusCode> DeleteAsync(string url,
+                                                      HttpRequest Request)
         {
             HttpResponseMessage response;
 
