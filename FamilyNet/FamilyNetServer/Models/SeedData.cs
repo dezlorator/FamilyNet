@@ -43,7 +43,7 @@ namespace FamilyNetServer.Models
                 #region Volunteer2
 
                 volunteer = new Volunteer();
-                volunteer.FullName = new FullName(){ Name = "Иван", Surname = "Новиков", Patronymic = "Русланович" };
+                volunteer.FullName = new FullName() { Name = "Иван", Surname = "Новиков", Patronymic = "Русланович" };
                 volunteer.Birthday = new DateTime(1991, 4, 10);
                 volunteer.Rating = 3;
                 volunteer.Avatar = "";
@@ -63,11 +63,11 @@ namespace FamilyNetServer.Models
                 #region Volunteer3
 
                 volunteer = new Volunteer();
-                
-                   volunteer.FullName = new FullName() { Name = "Михаил", Surname = "Иванов", Patronymic = "Сергеевич" };
-                   volunteer.Birthday = new DateTime(1993, 12, 25);
-                   volunteer.Rating = 4;
-                   volunteer.Avatar = "";
+
+                volunteer.FullName = new FullName() { Name = "Михаил", Surname = "Иванов", Patronymic = "Сергеевич" };
+                volunteer.Birthday = new DateTime(1993, 12, 25);
+                volunteer.Rating = 4;
+                volunteer.Avatar = "";
                 volunteer.Address = new Address()
                 {
                     Country = "Украина",
@@ -84,10 +84,10 @@ namespace FamilyNetServer.Models
                 #region Volunteer4
 
                 volunteer = new Volunteer();
-                    volunteer.FullName = new FullName() { Name = "Марина", Surname = "Романчук", Patronymic = "Сергеевна" };
-                    volunteer.Birthday = new DateTime(1999, 1, 20);
-                    volunteer.Rating = 7;
-                    volunteer.Avatar = "";
+                volunteer.FullName = new FullName() { Name = "Марина", Surname = "Романчук", Patronymic = "Сергеевна" };
+                volunteer.Birthday = new DateTime(1999, 1, 20);
+                volunteer.Rating = 7;
+                volunteer.Avatar = "";
                 volunteer.Address = new Address()
                 {
                     Country = "Украина",
@@ -148,12 +148,12 @@ namespace FamilyNetServer.Models
                 List<Representative> representatives = new List<Representative>();
 
                 Representative representative = new Representative();
-                
+
                 representative.FullName = new FullName() { Name = "Олег", Surname = "Петренко", Patronymic = "Дмитреевич" };
                 representative.Birthday = new DateTime(1954, 12, 30);
                 representative.Rating = 5;
                 representative.Avatar = "";
-                
+
                 representatives.Add(representative);
                 orphanage.Representatives = representatives;
 
@@ -167,7 +167,7 @@ namespace FamilyNetServer.Models
                 orphan.Avatar = "";
                 orphan.ChildInOrphanage = true;
                 orphan.Confirmation = true;
-            
+
                 orphans.Add(orphan);
 
                 orphan = new Orphan();
@@ -216,7 +216,7 @@ namespace FamilyNetServer.Models
                 orphans = new List<Orphan>();
                 orphan = new Orphan();
 
-                orphan.FullName = new FullName(){Name = "Анастасия", Surname = "Горб", Patronymic = "Андреевна" };
+                orphan.FullName = new FullName() { Name = "Анастасия", Surname = "Горб", Patronymic = "Андреевна" };
                 orphan.Birthday = new DateTime(2004, 5, 14);
                 orphan.Rating = 8;
                 orphan.Avatar = "";
@@ -273,8 +273,8 @@ namespace FamilyNetServer.Models
                 orphans = new List<Orphan>();
                 orphan = new Orphan();
 
-                
-                orphan.FullName= new FullName(){Name = "Арен", Surname = "Зурабян", Patronymic = "Кирилович" };
+
+                orphan.FullName = new FullName() { Name = "Арен", Surname = "Зурабян", Patronymic = "Кирилович" };
                 orphan.Birthday = new DateTime(2004, 5, 14);
                 orphan.Rating = 8;
                 orphan.Avatar = "";
@@ -473,6 +473,65 @@ namespace FamilyNetServer.Models
                 baseItemTypes.Add(baseItemType);
 
                 _unitOfWorkAsync.BaseItemTypes.AddRange(baseItemTypes);
+                _unitOfWorkAsync.SaveChangesAsync();
+            }
+
+            AddOrphans();
+        }
+
+        public void AddOrphans()
+        {
+            if (_unitOfWorkAsync.Orphans.Get(o => o.ID == o.ID) != null)
+            {
+                #region orphan1
+
+                var orphan1 = new Orphan();
+                orphan1.FullName = new FullName() { Name = "Игорь", Surname = "Литвиненко", Patronymic = "Сергеевич" };
+                orphan1.Birthday = new DateTime(2009, 5, 18);
+                orphan1.Rating = 2.6F;
+                orphan1.Avatar = "";
+                orphan1.OrphanageID = 1;
+                orphan1.Avatar = "Children/ИгорьЛитвиненкоСер637063178278846348.jpg";
+
+                #endregion
+
+                #region orphan2
+
+                var orphan2 = new Orphan();
+                orphan2.FullName = new FullName() { Name = "Виталий", Surname = "Титов", Patronymic = "Анатольевич" };
+                orphan2.Birthday = new DateTime(2009, 3, 6);
+                orphan2.Rating = 3.4F;
+                orphan2.Avatar = "";
+                orphan2.OrphanageID = 1;
+                orphan2.Avatar = "Children/ВиталийТитовАнатольевич637063188603739335.jpg";
+
+                #endregion
+
+                #region orphan3
+
+                var orphan3 = new Orphan();
+                orphan3.FullName = new FullName() { Name = "Елена", Surname = "Титова", Patronymic = "Павловна" };
+                orphan3.Birthday = new DateTime(2011, 9, 8);
+                orphan3.Rating = 5.5F;
+                orphan3.Avatar = "";
+                orphan3.OrphanageID = 1;
+                orphan3.Avatar = "Children/ЕленаТитоваПавловна637066549987669498.png";
+
+                #endregion
+
+                #region orphan4
+
+                var orphan4 = new Orphan();
+                orphan4.FullName = new FullName() { Name = "Светлана", Surname = "Петрова", Patronymic = "Викторовна" };
+                orphan4.Birthday = new DateTime(2013, 12, 13);
+                orphan4.Rating = 6.8F;
+                orphan4.Avatar = "";
+                orphan4.OrphanageID = 1;
+                orphan4.Avatar = "Children/СветланаПетроваВикторовна637066556028402470.png";
+
+                #endregion
+
+                _unitOfWorkAsync.Orphans.AddRange(new List<Orphan>() { orphan1, orphan2, orphan3, orphan4 });
                 _unitOfWorkAsync.SaveChangesAsync();
             }
         }

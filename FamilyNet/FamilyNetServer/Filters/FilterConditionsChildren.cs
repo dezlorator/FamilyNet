@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;
 
 namespace FamilyNetServer.Filters
@@ -7,23 +8,34 @@ namespace FamilyNetServer.Filters
     public class FilterConditionsChildren : IFilterConditionsChildren
     {
         public IQueryable<Orphan> GetOrphans(IQueryable<Orphan> children,
-                                             string name, float rating,
-                                             int age)
+                                             FilterParemetersChildren filter)
         {
-            if (!String.IsNullOrEmpty(name))
+            if (filter.ChildrenHouseID > 0)
             {
-                children = children.Where(c => c.FullName.ToString().Contains(name));
+                children = children.Where(c => c.OrphanageID == filter.ChildrenHouseID);
             }
 
-            if (rating > 0.001)
+            if (!String.IsNullOrEmpty(filter.Name))
             {
-                children = children.Where(c => c.Rating > rating);
+                children = children.Where(c => c.FullName.ToString().Contains(filter.Name));
             }
 
-            if (age > 0)
+            if (filter.Rating > 0.001)
             {
-                var dayPerYear = 366;
-                children = children.Where(c => (DateTime.Now - c.Birthday).Days >= age * dayPerYear);
+                children = children.Where(c => c.Rating > filter.Rating);
+            }
+
+            if (filter.Age > 0)
+            {
+                var daysPerYear = 366;
+                children = children.Where(c => (DateTime.Now - c.Birthday).Days
+                                                >= filter.Age * daysPerYear);
+            }
+
+            if (filter.Rows != 0 && filter.Page != 0)
+            {
+                children = children.Skip(filter.Rows * (filter.Page - 1))
+                    .Take(filter.Rows);
             }
 
             return children;

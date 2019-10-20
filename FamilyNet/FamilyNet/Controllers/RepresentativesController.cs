@@ -28,7 +28,7 @@ namespace FamilyNet.Controllers
     {
         #region private fields
 
-        private readonly ServerDataDownloader<RepresentativeDTO> _downLoader;
+        private readonly ServerDataDownLoader<RepresentativeDTO> _downLoader;
         private readonly IURLRepresentativeBuilder _URLRepresentativeBuilder;
         private readonly string _apiPath = "api/v1/representatives";
         private readonly IFileStreamCreater _streamCreater;
@@ -40,7 +40,7 @@ namespace FamilyNet.Controllers
 
         public RepresentativesController(IUnitOfWorkAsync unitOfWork,
             IURLRepresentativeBuilder urlRepresentativeBuilder,
-            ServerDataDownloader<RepresentativeDTO> downloader,
+            ServerDataDownLoader<RepresentativeDTO> downloader,
             IFileStreamCreater streamCreater) : base(unitOfWork)
         {
             _URLRepresentativeBuilder = urlRepresentativeBuilder;
@@ -189,7 +189,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.CretePostAsync(url, representativeDTO,
+            var status = await _downLoader.CreatePostAsync(url, representativeDTO,
                                                  stream,
                                                  representativeDTO.Avatar.FileName);
 
@@ -266,7 +266,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatetePutAsync(url, representativeDTO,
+            var status = await _downLoader.CreatePutAsync(url, representativeDTO,
                                                             stream, representativeDTO.Avatar?.FileName);
 
             if (status != HttpStatusCode.NoContent)

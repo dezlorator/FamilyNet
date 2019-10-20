@@ -40,9 +40,7 @@ namespace FamilyNet
                     Configuration["Data:FamilyNet:ConnectionString"]));
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
-            services.AddIdentity<ApplicationUser, IdentityRole>(opts => 
-            {
-                opts.User.RequireUniqueEmail = true;
+            services.AddIdentity<ApplicationUser, IdentityRole>(opts => {                opts.User.RequireUniqueEmail = true;
                 opts.Password.RequiredLength = 6;
                 opts.Password.RequireNonAlphanumeric = false;
                 opts.Password.RequireLowercase = true;
@@ -54,7 +52,9 @@ namespace FamilyNet
             .AddDefaultTokenProviders();
 
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
-            services.AddTransient<ServerDataDownloader<RepresentativeDTO>, ServerRepresentativesDownloader>();
+            services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
+            services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
+            services.AddTransient<ServerDataDownLoader<RepresentativeDTO>, ServerRepresentativesDownloader>();
             services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -78,7 +78,7 @@ namespace FamilyNet
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-           
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -108,7 +108,7 @@ namespace FamilyNet
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
-           
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -118,16 +118,7 @@ namespace FamilyNet
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-                
-                    
             });
-
-            ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
-                    Configuration).Wait();
-            ApplicationIdentityDbContext.InitializeRolesAsync(app.ApplicationServices).Wait();
-
-
-
         }
     }
 }

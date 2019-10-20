@@ -2,14 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public abstract class ServerDataDownloader<T> where T : class, new()
+    public abstract class ServerDataDownLoader<T> where T : class, new()
     {
         public async Task<IEnumerable<T>> GetAllAsync(string url)
         {
@@ -75,15 +74,15 @@ namespace FamilyNet.Downloader
             return obj;
         }
 
-        public abstract Task<HttpStatusCode> CretePostAsync(string url,
-                                                            T dto,
-                                                            Stream streamFile,
-                                                            string fileName);
-
-        public abstract Task<HttpStatusCode> СreatetePutAsync(string url,
+        public abstract Task<HttpStatusCode> CreatePostAsync(string url,
                                                                T dto,
-                                                               Stream streamFile,
-                                                               string fileName);
+                                                               Stream file,
+                                                               string fieName);
+
+        public abstract Task<HttpStatusCode> CreatePutAsync(string url,
+                                                               T dto,
+                                                               Stream file,
+                                                               string fieName);
 
         public async Task<HttpStatusCode> DeleteAsync(string url)
         {

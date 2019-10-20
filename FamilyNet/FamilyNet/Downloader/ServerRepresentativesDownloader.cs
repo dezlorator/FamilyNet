@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerRepresentativesDownloader : ServerDataDownloader<RepresentativeDTO>
+    public class ServerRepresentativesDownloader : ServerDataDownLoader<RepresentativeDTO>
     {
-        public override async Task<HttpStatusCode> CretePostAsync(string url, RepresentativeDTO dto, Stream streamFile, string fileName)
+        public override async Task<HttpStatusCode> CreatePostAsync(string url, RepresentativeDTO dto, Stream streamFile, string fileName)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -32,7 +32,7 @@ namespace FamilyNet.Downloader
             }
         }
 
-        public override async Task<HttpStatusCode> СreatetePutAsync(string url, RepresentativeDTO dto, Stream streamFile, string fileName)
+        public override async Task<HttpStatusCode> CreatePutAsync(string url, RepresentativeDTO dto, Stream streamFile, string fileName)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
