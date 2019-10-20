@@ -15,5 +15,6 @@ namespace DataTransferObjects
         public int AdressID { get; set; }
         public int EmailID { get; set; }
         public string PhotoPath { get; set; }
+        public AddressDTO AddressDTO { get; set; }
     }
 }

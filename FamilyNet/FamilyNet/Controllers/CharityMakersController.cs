@@ -31,18 +31,24 @@ namespace FamilyNet.Controllers
         private readonly string _apiPath = "api/v1/charityMakers";
         private readonly IFileStreamCreater _streamCreator;
         private readonly string _pathToErrorView = "/Home/Error";
-
+        private readonly string _pathToAdressApi = "api/v1/address";
+        private readonly IURLAddressBuilder _urlAdressBuilder;
+        private readonly IServerAddressDownloader _serverAddressDownloader;
 
         #endregion
 
         public CharityMakersController(IUnitOfWorkAsync unitOfWork,
-                IURLCharityMakerBuilder urlBuilder,
+                IURLCharityMakerBuilder urlCharityMakerBuilder,
                 ServerDataDownLoader<CharityMakerDTO> downloader,
-                IFileStreamCreater streamCreator) : base (unitOfWork)
+                IFileStreamCreater streamCreator,
+                IURLAddressBuilder urlAdressBuilder,
+                IServerAddressDownloader addressDownloader) : base (unitOfWork)
         {
-            _urlBilder = urlBuilder;
+            _urlBilder = urlCharityMakerBuilder;
             _serverDownloader = downloader;
             _streamCreator = streamCreator;
+            _urlAdressBuilder = urlAdressBuilder;
+            _serverAddressDownloader = addressDownloader;
         }
 
         // GET: CharityMakers
@@ -101,10 +107,14 @@ namespace FamilyNet.Controllers
 
             var url = _urlBilder.GetById(_apiPath, id.Value);
             CharityMakerDTO charityMakerDTO = null;
+            var addressUrl = _urlAdressBuilder.GetById(_pathToAdressApi, id.Value);
+            AddressDTO adderessDTO = null;
 
             try
             {
                 charityMakerDTO = await _serverDownloader.GetByIdAsync(url);
+                adderessDTO = await _serverAddressDownloader.GetByIdAsync(addressUrl);
+
             }
             catch (ArgumentNullException)
             {
@@ -135,7 +145,14 @@ namespace FamilyNet.Controllers
                 },
                 ID = charityMakerDTO.ID,
                 Avatar = charityMakerDTO.PhotoPath,
-                AddressID = charityMakerDTO.AdressID,
+                Address = new Address()
+                {
+                    Country = adderessDTO.Country,
+                    Region = adderessDTO.Region,
+                    City = adderessDTO.City,
+                    Street = adderessDTO.Street,
+                    House = adderessDTO.House
+                },
                 EmailID = charityMakerDTO.EmailID,
                 Rating = charityMakerDTO.Rating,
             };
@@ -157,14 +174,12 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, CharityMaker")]
-        public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,AdressID,Avatar")]
-        CharityMakerDTO charityMakerDTO)
+        public async Task<IActionResult> Create(CharityMakerDTO charityMakerDTO)
         {
             if (!ModelState.IsValid)
             {
                 return View(charityMakerDTO);
             }
-
             Stream stream = null;
 
             if (charityMakerDTO.Avatar != null)
@@ -175,6 +190,9 @@ namespace FamilyNet.Controllers
             var url = _urlBilder.CreatePost(_apiPath);
             var status = await _serverDownloader.СreatePostAsync(url, charityMakerDTO,
                                                              stream, charityMakerDTO.Avatar.FileName);
+            var addressUrl = _urlAdressBuilder.CreatePost(_pathToAdressApi);
+            var status1 = await _serverAddressDownloader.СreatePostAsync(addressUrl,
+                                                            charityMakerDTO.AddressDTO);
 
             if (status != HttpStatusCode.Created)
             {
@@ -202,11 +220,11 @@ namespace FamilyNet.Controllers
             }
 
             var url = _urlBilder.GetById(_apiPath, id.Value);
-            CharityMakerDTO CharityMakerDTO = null;
+            CharityMakerDTO charityMakerDTO = null;
 
             try
             {
-                CharityMakerDTO = await _serverDownloader.GetByIdAsync(url);
+                charityMakerDTO = await _serverDownloader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -221,7 +239,35 @@ namespace FamilyNet.Controllers
                 return Redirect(_pathToErrorView);
             }
 
-            return View(CharityMakerDTO);
+            var adressUrl = _urlAdressBuilder.GetById(_pathToAdressApi, charityMakerDTO.AdressID);
+            AddressDTO addressDTO = null;
+
+            try
+            {
+                addressDTO = await _serverAddressDownloader.GetByIdAsync(adressUrl);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect(_pathToErrorView);
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect(_pathToErrorView);
+            }
+            catch (JsonException)
+            {
+                return Redirect(_pathToErrorView);
+            }
+
+            charityMakerDTO.AddressDTO = new AddressDTO();
+            charityMakerDTO.AddressDTO.ID = addressDTO.ID;
+            charityMakerDTO.AddressDTO.Country = addressDTO.Country;
+            charityMakerDTO.AddressDTO.Region = addressDTO.Region;
+            charityMakerDTO.AddressDTO.City = addressDTO.City;
+            charityMakerDTO.AddressDTO.Street = addressDTO.Street;
+            charityMakerDTO.AddressDTO.House = addressDTO.House;
+
+            return View(charityMakerDTO);
         }
 
         // POST: CharityMakers/Edit/5
@@ -236,7 +282,7 @@ namespace FamilyNet.Controllers
             {
                 return NotFound();
             }
-
+            charityMakerDTO.AddressDTO.ID = charityMakerDTO.AdressID;
             if (!ModelState.IsValid)
             {
                 return View(charityMakerDTO);
@@ -252,6 +298,10 @@ namespace FamilyNet.Controllers
             var url = _urlBilder.GetById(_apiPath, id);
             var status = await _serverDownloader.СreatePutAsync(url, charityMakerDTO,
                                                             stream, charityMakerDTO.Avatar?.FileName);
+
+            var addressUrl = _urlAdressBuilder.GetById(_pathToAdressApi, charityMakerDTO.AdressID);
+            var status1 = await _serverAddressDownloader.СreatePutAsync(addressUrl, 
+                                                            charityMakerDTO.AddressDTO);
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -328,9 +378,13 @@ namespace FamilyNet.Controllers
             var url = _urlBilder.CreatePost(_apiPath);
             IEnumerable<CharityMakerDTO> charityMakerContainer = null;
 
+            var adderssUrl = _urlAdressBuilder.CreatePost(_pathToAdressApi);
+            IEnumerable<AddressDTO> addressDTOContainer = null;
+
             try
             {
                 charityMakerContainer = await _serverDownloader.GetAllAsync(url);
+                addressDTOContainer = await _serverAddressDownloader.GetAllAsync(adderssUrl);
             }
             catch (ArgumentNullException)
             {
@@ -354,12 +408,18 @@ namespace FamilyNet.Controllers
                     Patronymic = charityMaker.Patronymic,
                     Surname = charityMaker.Surname
                 },
+                Address = new Address()
+                {
+                    Country = addressDTOContainer.FirstOrDefault(p => p.ID == charityMaker.AdressID).Country,
+                    Region = addressDTOContainer.FirstOrDefault(p => p.ID == charityMaker.AdressID).Region,
+                    City = addressDTOContainer.FirstOrDefault(p => p.ID == charityMaker.AdressID).City,
+                    Street = addressDTOContainer.FirstOrDefault(p => p.ID == charityMaker.AdressID).Street,
+                    House = addressDTOContainer.FirstOrDefault(p => p.ID == charityMaker.AdressID).House
+                },
                 ID = charityMaker.ID,
                 Avatar = charityMaker.PhotoPath,
-                AddressID = charityMaker.AdressID,
                 EmailID = charityMaker.EmailID,
-                Rating = charityMaker.Rating
-
+                Rating = charityMaker.Rating,
             });
 
             return View(charityMakers);
