@@ -1,9 +1,9 @@
 ﻿using FamilyNetServer.DTO;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
+using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -56,7 +56,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (rows != 0 && page != 0)
             {
-                volunteer = volunteer.Skip(rows * page).Take(rows);
+                volunteer = volunteer.Skip((page - 1) * rows).Take(rows);
             }
 
             if (volunteer == null)
@@ -132,7 +132,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = volunteerDTO.Name + volunteerDTO.Surname
                         + volunteerDTO.Patronymic + DateTime.Now.Ticks;
 
-                pathPhoto = _fileUploader.CopyFile(fileName,
+                pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
             }
 
@@ -155,7 +155,11 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Volunteers.Create(volunteer);
             _unitOfWork.SaveChangesAsync();
 
-            return Created("api/v1/volunteers/" + volunteer.ID, volunteer);
+            volunteerDTO.ID = volunteer.ID;
+            volunteerDTO.PhotoPath = volunteer.Avatar;
+            volunteerDTO.Avatar = null;
+
+            return Created("api/v1/volunteers/" + volunteer.ID, volunteerDTO);
         }
 
         [HttpPut("{id}")]
@@ -188,7 +192,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = volunteerDTO.Name + volunteerDTO.Surname
                         + volunteerDTO.Patronymic + DateTime.Now.Ticks;
 
-                volunteer.Avatar = _fileUploader.CopyFile(fileName,
+                volunteer.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
             }
 

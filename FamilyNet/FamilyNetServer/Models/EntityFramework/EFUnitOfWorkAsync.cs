@@ -30,10 +30,12 @@ namespace FamilyNetServer.Models.EntityFramework
             Location = new EFRepositoryAsync<Location>(cont);
             CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
             Donations = new EFRepositoryAsync<Donation>(cont);
+            DonationItems = new EFRepositoryAsync<DonationItem>(cont);
             Orphanages = new OrphanageRepositoryAsync(cont);
             Orphans = new EFRepositoryAsync<Orphan>(cont);
             Representatives = new EFRepositoryAsync<Representative>(cont);
             Volunteers = new EFRepositoryAsync<Volunteer>(cont);
+            BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
             PasswordHasher = passwordHash;
             UserValidator = userValid;
             PasswordValidator = passValid;
@@ -41,7 +43,6 @@ namespace FamilyNetServer.Models.EntityFramework
             UserManager = userManager;
             SignInManager = signInManager;
             RoleManager = roleManager;
-            BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
             TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
         }
 
@@ -61,6 +62,8 @@ namespace FamilyNetServer.Models.EntityFramework
         public IAsyncRepository<Volunteer> Volunteers { get; set; }
 
         public IAsyncRepository<Donation> Donations { get; set; }
+
+        public IAsyncRepository<DonationItem> DonationItems { get; set; }
 
         public DbSet<TypeBaseItem> TypeBaseItems { get; set; } // TODO : rewrite this
 

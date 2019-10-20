@@ -7,10 +7,10 @@ using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Validators;
+using FamilyNetServer.Uploaders;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -19,10 +19,12 @@ namespace FamilyNetServer.Controllers.API
     public class CharityMakersController : ControllerBase
     {
         #region private
+
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly ICharityMakersSelection _selection;
         private readonly ICharityMakerValidator _validator;
         private readonly IFileUploader _fileUploader;
+
         #endregion
 
         #region ctro
@@ -69,7 +71,6 @@ namespace FamilyNetServer.Controllers.API
                     Name = charityMaker.FullName.Name,
                     Patronymic = charityMaker.FullName.Patronymic,
                     Surname = charityMaker.FullName.Surname,
-                    AdressID = charityMaker.AddressID ?? 0,
                     Rating = charityMaker.Rating
                 });
 
@@ -95,7 +96,6 @@ namespace FamilyNetServer.Controllers.API
                 Birthday = charityMaker.Birthday,
                 ID = charityMaker.ID,
                 Name = charityMaker.FullName.Name,
-                AdressID = charityMaker.AddressID ?? 0,
                 Patronymic = charityMaker.FullName.Patronymic,
                 Rating = charityMaker.Rating,
                 Surname = charityMaker.FullName.Surname,
@@ -123,7 +123,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = charityMakerDTO.Name + charityMakerDTO.Surname
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
-                pathPhoto = _fileUploader.CopyFile(fileName,
+                pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.CharityMaker), charityMakerDTO.Avatar);
             }
 
@@ -138,7 +138,7 @@ namespace FamilyNetServer.Controllers.API
                     Patronymic = charityMakerDTO.Patronymic
                 },
 
-                AddressID = charityMakerDTO.AdressID,
+                ID = charityMakerDTO.ID,
                 Avatar = pathPhoto,
                 EmailID = charityMakerDTO.EmailID,
             };
@@ -171,7 +171,7 @@ namespace FamilyNetServer.Controllers.API
             charityMaker.FullName.Surname = charityMakerDTO.Surname;
             charityMaker.Birthday = charityMakerDTO.Birthday;
             charityMaker.Rating = charityMakerDTO.Rating;
-            charityMaker.AddressID = charityMakerDTO.AdressID;
+            charityMaker.ID = charityMakerDTO.ID;
             charityMaker.EmailID = charityMakerDTO.EmailID;
 
             if (charityMakerDTO.Avatar != null)
@@ -179,7 +179,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = charityMakerDTO.Name + charityMakerDTO.Surname
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
-                charityMaker.Avatar = _fileUploader.CopyFile(fileName,
+                charityMaker.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Children), charityMakerDTO.Avatar);
             }
 
@@ -188,8 +188,7 @@ namespace FamilyNetServer.Controllers.API
 
             return NoContent();
         }
-
-
+        
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
