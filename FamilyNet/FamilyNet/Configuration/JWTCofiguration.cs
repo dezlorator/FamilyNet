@@ -1,6 +1,6 @@
 ﻿namespace FamilyNet.Configuration
 {
-    public class JWTConfiguration
+    public class JWTCofiguration
     {
         public string TestToken { get; set; }
     }
