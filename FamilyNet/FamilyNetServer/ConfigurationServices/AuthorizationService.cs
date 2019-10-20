@@ -15,9 +15,9 @@ namespace FamilyNetServer.ConfigurationServices
                                                    IConfiguration configuration)
         {
             var JWTConfigurationSection = configuration.GetSection("JWT");
-            services.Configure<JWTCofiguration>(JWTConfigurationSection);
+            services.Configure<JWTConfiguration>(JWTConfigurationSection);
 
-            var JWTConfiguration = JWTConfigurationSection.Get<JWTCofiguration>();
+            var JWTConfiguration = JWTConfigurationSection.Get<JWTConfiguration>();
             var key = Encoding.ASCII.GetBytes(JWTConfiguration.Secret);
 
             services.AddAuthentication(x =>

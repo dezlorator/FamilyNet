@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Factories\" />
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\charitymaker\" />
     <Folder Include="wwwroot\representatives\" />

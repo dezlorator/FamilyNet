@@ -15,6 +15,8 @@ using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.ConfigurationServices;
+using FamilyNetServer.Configuration;
+using FamilyNetServer.Factories;
 
 namespace FamilyNetServer
 {
@@ -34,7 +36,9 @@ namespace FamilyNetServer
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetServerUserValidator>();
             services.AddDBContextService(Configuration);
             services.AddIdentityService();
+            services.AddTransient<ITokenFactory, TokenFactory>();
             services.AddAuthorizationService(Configuration);
+            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IUnitOfWork, EFUnitOfWork>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();

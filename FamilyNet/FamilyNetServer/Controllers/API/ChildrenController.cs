@@ -49,6 +49,7 @@ namespace FamilyNetServer.Controllers.API
         #endregion
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll([FromQuery]FilterParemetersChildren filter)
@@ -79,6 +80,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
@@ -106,8 +108,8 @@ namespace FamilyNetServer.Controllers.API
             return Ok(childDTO);
         }
 
-        [Authorize]
         [HttpPost]
+        [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]ChildDTO childDTO)
@@ -150,8 +152,8 @@ namespace FamilyNetServer.Controllers.API
             return Created("api/v1/children/" + child.ID, new ChildDTO());
         }
 
-        [Authorize]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]ChildDTO childDTO)
@@ -191,8 +193,8 @@ namespace FamilyNetServer.Controllers.API
             return NoContent();
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)

@@ -38,6 +38,7 @@ namespace FamilyNet.Downloader
 
                 using (var httpClient = new HttpClient())
                 {
+                    _authorizationHandler.AddTokenBearer(Request, httpClient);
                     response = await httpClient.GetAsync(url);
                 }
 
@@ -70,6 +71,7 @@ namespace FamilyNet.Downloader
 
                 using (var httpClient = new HttpClient())
                 {
+                    _authorizationHandler.AddTokenBearer(Request, httpClient);
                     response = await httpClient.GetAsync(url);
                 }
 
@@ -113,6 +115,7 @@ namespace FamilyNet.Downloader
             {
                 using (var httpClient = new HttpClient())
                 {
+                    _authorizationHandler.AddTokenBearer(Request, httpClient);
                     response = await httpClient.DeleteAsync(url);
                 }
             }

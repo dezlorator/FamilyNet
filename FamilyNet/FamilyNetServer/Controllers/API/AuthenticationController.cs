@@ -1,15 +1,9 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
-using FamilyNetServer.Configuration;
 using FamilyNetServer.DTO;
+using FamilyNetServer.Factories;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using FromBodyAttribute = Microsoft.AspNetCore.Mvc.FromBodyAttribute;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
@@ -21,17 +15,17 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private JWTCofiguration _JWTCofiguration { get; set; }
+        private readonly ITokenFactory _tokenFactory;
 
         #endregion
 
         #region ctor
 
         public AuthenticationController(IUnitOfWork unitOfWork,
-                                        IOptions<JWTCofiguration> JWTConfiguration)
+                                        ITokenFactory tokenFactory)
             : base(unitOfWork)
         {
-            _JWTCofiguration = JWTConfiguration.Value;
+            _tokenFactory = tokenFactory;
         }
 
         #endregion
@@ -42,27 +36,9 @@ namespace FamilyNetServer.Controllers.API
         public async Task<TokenDTO> Authentication([FromBody]CredentialsDTO credentialsDTO)
         {
             var user = await _unitOfWork.UserManager.FindByEmailAsync(credentialsDTO.Email);
+            var roles = await _unitOfWork.UserManager.GetRolesAsync(user).ConfigureAwait(false);
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_JWTCofiguration.Secret);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Id),
-                }),
-                Expires = DateTime.UtcNow.AddDays(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                                         SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return new TokenDTO()
-            {
-                Token = tokenHandler.WriteToken(token)
-            };
+            return new TokenDTO() { Token = _tokenFactory.Create(user, roles) };
         }
     }
 }

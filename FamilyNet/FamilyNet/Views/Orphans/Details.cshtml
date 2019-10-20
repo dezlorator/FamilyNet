@@ -1,4 +1,4 @@
-﻿@model FamilyNet.Models.Orphan
+﻿@model DataTransferObjects.ChildDTO
 
 @{
     ViewData["Title"] = "Details";
@@ -12,18 +12,18 @@
                 <div class="tab-pane active" id="profile">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6>@Html.DisplayNameFor(model => model.FullName)</h6>
+                            <h6>Name</h6>
                             <p>
-                                @Html.DisplayFor(model => model.FullName.Surname)
-                                @Html.DisplayFor(model => model.FullName.Name)
-                                @Html.DisplayFor(model => model.FullName.Patronymic)
+                                @Html.DisplayFor(model => model.Surname)
+                                @Html.DisplayFor(model => model.Name)
+                                @Html.DisplayFor(model => model.Patronymic)
                             </p>
                             <h6>@Html.DisplayNameFor(model => model.Birthday)</h6>
                             <p>
                                 @Html.DisplayFor(model => model.Birthday)
                             </p>
 
-                            <h6>@Html.DisplayNameFor(model => model.Orphanage)</h6>
+                            @*<h6>@Html.DisplayNameFor(model => model.Orphanage)</h6>
                             <p>
                                 @Html.DisplayFor(model => model.Orphanage.Name)
                                 @Html.DisplayFor(model => model.Orphanage.Adress.Country)
@@ -31,16 +31,16 @@
                                 @Html.DisplayFor(model => model.Orphanage.Adress.City)
                                 @Html.DisplayFor(model => model.Orphanage.Adress.Street)
                                 @Html.DisplayFor(model => model.Orphanage.Adress.House)
-                            </p>
+                            </p>*@
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-lg-4 order-lg-1 text-center">
-            @if (!String.IsNullOrEmpty(Model.Avatar))
+            @if (!String.IsNullOrEmpty(Model.PhotoPath))
             {
-                <img class="img-responsive" src="@Url.Content(Model.Avatar)" alt="Card image cap" style="height: 300px; width: 100%; display: block;" alt="avatar">
+                <img class="img-responsive" src="@Url.Content(Model.PhotoPath)" alt="Card image cap" style="height: 300px; width: 100%; display: block;" alt="avatar">
             }
             else
             {

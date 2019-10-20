@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
@@ -19,7 +18,6 @@ using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
     public class OrphansController : BaseController
     {
         #region private fields
@@ -49,7 +47,6 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        [AllowAnonymous]
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
             var url = _URLChildrenBuilder.GetAllWithFilter(_apiPath,
@@ -74,28 +71,11 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var orphans = children.Select(child => new Orphan()
-            {
-                Birthday = child.Birthday,
-                FullName = new FullName()
-                {
-                    Name = child.Name,
-                    Patronymic = child.Patronymic,
-                    Surname = child.Surname
-                },
-                ID = child.ID,
-                Avatar = child.PhotoPath,
-                OrphanageID = child.ChildrenHouseID,
-                EmailID = child.EmailID,
-                Rating = child.Rating
-            });
-
             GetViewData();
 
-            return View(orphans);
+            return View(children);
         }
         
-        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -128,32 +108,13 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var orphan = new Orphan()
-            {
-                Birthday = childDTO.Birthday,
-                FullName = new FullName()
-                {
-                    Name = childDTO.Name,
-                    Patronymic = childDTO.Patronymic,
-                    Surname = childDTO.Surname
-                },
-                ID = childDTO.ID,
-                Avatar = childDTO.PhotoPath,
-                OrphanageID = childDTO.ChildrenHouseID,
-                EmailID = childDTO.EmailID,
-                Rating = childDTO.Rating,
-            };
-
             GetViewData();
 
-            return View(orphan);
+            return View(childDTO);
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            await Check();
-
             var orphanagesList = new List<Orphanage>();
             orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
@@ -164,7 +125,6 @@ namespace FamilyNet.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,ChildrenHouseID,Avatar")]
                                                 ChildDTO childDTO)
         {
@@ -195,21 +155,13 @@ namespace FamilyNet.Controllers
             return Redirect("/Orphans/Index");
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
-            }
-
+            
             var url = _URLChildrenBuilder.GetById(_apiPath, id.Value);
             ChildDTO childDTO = null;
 
@@ -241,7 +193,6 @@ namespace FamilyNet.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int id, ChildDTO childDTO)
         {
             if (id != childDTO.ID)
@@ -266,6 +217,12 @@ namespace FamilyNet.Controllers
                                                             stream, childDTO.Avatar?.FileName,
                                                             Request);
 
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+                //TODO: log
+            }
+
             if (status != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
@@ -275,7 +232,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Orphans/Index");
         }
         
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -315,7 +271,6 @@ namespace FamilyNet.Controllers
         
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
@@ -336,7 +291,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Orphans/Index");
         }
         
-        [AllowAnonymous]
         public async Task<IActionResult> OrphansTable(int id, PersonSearchModel searchModel)
         {
             var url = _URLChildrenBuilder.GetAllWithFilter(_apiPath,
