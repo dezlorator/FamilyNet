@@ -74,13 +74,13 @@ namespace FamilyNet.Downloader
             return obj;
         }
 
-        public abstract Task<HttpStatusCode> СreatetePostAsync(string url,
+        public abstract Task<HttpResponseMessage> СreatePostAsync(string url,
                                                                T dto);
 
-        public abstract Task<HttpStatusCode> СreatePutAsync(string url,
+        public abstract Task<HttpResponseMessage> СreatePutAsync(string url,
                                                                T dto);
 
-        public async Task<HttpStatusCode> DeleteAsync(string url)
+        public async Task<HttpResponseMessage> DeleteAsync(string url)
         {
             HttpResponseMessage response;
 
@@ -104,7 +104,7 @@ namespace FamilyNet.Downloader
                 throw;
             }
 
-            return response.StatusCode;
+            return response;
         }
     }
 }

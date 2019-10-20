@@ -36,7 +36,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAll([FromQuery]int rows,
+        public IActionResult GetAll([FromQuery]int rows,
                                           [FromQuery]int page,
                                           [FromQuery]string name,
                                           [FromQuery]float minPrice,
@@ -64,23 +64,12 @@ namespace FamilyNetServer.Controllers.API
             {
                 var item = new DonationItemDTO
                 {
+                    ID = d.ID,
                     Name = d.Name,
                     Description = d.Description,
                     Price = d.Price,
                     CategoriesID = d.TypeBaseItem.Select(t => t.TypeID)
                 };
-
-                item.Categories = new List<string>();
-
-                foreach (TypeBaseItem t in d.TypeBaseItem)
-                {
-                    var type = await _unitOfWork.BaseItemTypes.GetById(t.TypeID);
-
-                    if (type != null)
-                    {
-                        item.Categories.Add(type.Name);
-                    }
-                }
 
                 donationItemsDTO.Add(item);
             }
@@ -91,7 +80,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]DonationItemDTO donationItemDTO)
+        public async Task<IActionResult> Create([FromForm]DonationItemDTO donationItemDTO)
         {
             if (!_donationItemValidator.IsValid(donationItemDTO))
             {
@@ -109,21 +98,21 @@ namespace FamilyNetServer.Controllers.API
 
             donationItem.TypeBaseItem = new List<TypeBaseItem>();
 
-            foreach (int c in donationItemDTO.CategoriesID)
-            {
-                var itemType = new TypeBaseItem
-                {
-                    ItemID = ID,
-                    TypeID = c
-                };
+            //foreach (int c in donationItemDTO.CategoriesID)
+            //{
+            //    var itemType = new TypeBaseItem
+            //    {
+            //        ItemID = ID,
+            //        TypeID = c
+            //    };
 
-                donationItem.TypeBaseItem.Add(itemType);
-            }
+            //    donationItem.TypeBaseItem.Add(itemType);
+            //}
 
             await _unitOfWork.DonationItems.Create(donationItem);
             _unitOfWork.SaveChangesAsync();
 
-            return Created("api/v1/donations/" + donationItem.ID, donationItemDTO);
+            return Created("api/v1/donationItems/" + donationItem.ID, donationItemDTO);
         }
 
         [HttpPut("{id}")]

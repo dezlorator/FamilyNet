@@ -9,40 +9,36 @@ namespace FamilyNet.Downloader
 {
     public class ServerDonationsDownloader : ServerSimpleDataDownloader<DonationDetailDTO>
     {
-        public override async Task<HttpStatusCode> СreatetePostAsync(string url,
+        public override async Task<HttpResponseMessage> СreatePostAsync(string url,
                                                                DonationDetailDTO dto)
         {
-            var statusCode = HttpStatusCode.BadRequest;
+            HttpResponseMessage msg = null;
 
             using (var httpClient = new HttpClient())
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
 
-                var msg = await httpClient.PostAsync(url, formDataContent);
-                statusCode = msg.StatusCode;
+                msg = await httpClient.PostAsync(url, formDataContent);
             }
 
-            return statusCode;
+            return msg;
         }
 
-        public override async Task<HttpStatusCode> СreatePutAsync(string url,
+        public override async Task<HttpResponseMessage> СreatePutAsync(string url,
                                                                   DonationDetailDTO donationDTO)
         {
+            HttpResponseMessage msg = null;
+
+            using (var httpClient = new HttpClient())
+            using (var formDataContent = new MultipartFormDataContent())
             {
-                var statusCode = HttpStatusCode.BadRequest;
+                BuildMultipartFormData(donationDTO, formDataContent);
 
-                using (var httpClient = new HttpClient())
-                using (var formDataContent = new MultipartFormDataContent())
-                {
-                    BuildMultipartFormData(donationDTO, formDataContent);
-
-                    var msg = await httpClient.PutAsync(url, formDataContent);
-                    statusCode = msg.StatusCode;
-                }
-
-                return statusCode;
+                msg = await httpClient.PutAsync(url, formDataContent);
             }
+
+            return msg;
         }
 
         private static void BuildMultipartFormData(DonationDTO dto,
@@ -53,10 +49,25 @@ namespace FamilyNet.Downloader
                 formDataContent.Add(new StringContent(dto.ID.ToString()), "ID");
             }
 
-            formDataContent.Add(new StringContent(dto.OrphanageID.ToString()), "OrphanageID");
-            formDataContent.Add(new StringContent(dto.Status.ToString()), "Status");
-            formDataContent.Add(new StringContent(dto.DonationItemID.ToString()), "DonationItemID");
-            formDataContent.Add(new StringContent(dto.CharityMakerID.ToString()), "CharityMakerID");
+            if (dto.OrphanageID != null)
+            {
+                formDataContent.Add(new StringContent(dto.OrphanageID.ToString()), "OrphanageID");
+            }
+
+            if (!string.IsNullOrEmpty(dto.Status))
+            {
+                formDataContent.Add(new StringContent(dto.Status.ToString()), "Status");
+            }
+
+            if (dto.DonationItemID != null)
+            {
+                formDataContent.Add(new StringContent(dto.DonationItemID.ToString()), "DonationItemID");
+            }
+
+            if (dto.CharityMakerID != null)
+            {
+                formDataContent.Add(new StringContent(dto.CharityMakerID.ToString()), "CharityMakerID");
+            }
         }
     }
 }

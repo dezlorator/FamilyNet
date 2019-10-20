@@ -1,31 +1,24 @@
-﻿@model FamilyNet.Models.Donation
+﻿@model FamilyNet.Models.ViewModels.DonationCreateViewModel
 
 @{
-    ViewData["Title"] = "Изменение";
+    ViewData["Title"] = "CreateRequest";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Изменить потребность</h1>
+<h1>Создать потребность</h1>
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditDonation">
+        <form enctype="multipart/form-data" asp-action="Create">
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <div class="form-group">
-                <label asp-for="idDonationItem" class="control-label"></label>
-                <select asp-for="idDonationItem" name="idDonationItem"
+                <label asp-for="Donation.OrphanageName" class="control-label"></label>
+                <select asp-for="Donation.OrphanageID" 
                         class="form-control"
-                        asp-items="@(new SelectList(@ViewBag.ListOfBaseItemTypes,"ID", "Name"))"></select>
+                        asp-items="@(new SelectList(@ViewBag.ListOfOrphanages, "ID", "Name"))"></select>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Orphanage.Name" class="control-label"></label>
-                <select asp-for="Orphanage.ID" name="idOrphanage"
-                        class="form-control"
-                        asp-items="@(new SelectList(@ViewBag.ListOfOrphanages,"ID", "Name"))"></select>
-            </div>
-           
             <div class="form-group">
                 <label asp-for="DonationItem.Name" class="control-label"></label>
                 <input asp-for="DonationItem.Name" class="form-control" />
@@ -39,7 +32,13 @@
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Изменить" class="btn btn-success" />
+                <label asp-for="DonationItem.Price" class="control-label"></label>
+                <input asp-for="DonationItem.Price" class="form-control" />
+                <span asp-validation-for="DonationItem.Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Создать" class="btn btn-success" />
             </div>
         </form>
     </div>

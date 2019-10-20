@@ -53,12 +53,34 @@ namespace FamilyNetServer.Controllers.API
             {
                 categoriesDTO.Add(new CategoryDTO
                 {
+                    ID = c.ID,
                     Name = c.Name
                 }
                 );
             }
 
             return Ok(categoriesDTO);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get(int id)
+        {
+            var category = await _unitOfWork.BaseItemTypes.GetById(id);
+
+            if (category == null)
+            {
+                return BadRequest();
+            }
+
+            var categoryDTO = new CategoryDTO()
+            {
+                ID = category.ID,
+                Name = category.Name
+            };
+
+            return Ok(categoryDTO);
         }
 
         [HttpPost]

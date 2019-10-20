@@ -11,10 +11,9 @@ namespace DataTransferObjects
         public int? OrphanageID { get; set; }
         public int? CharityMakerID { get; set; }
         public int? DonationItemID { get; set; }
-        public IFormFile OrphanageAvatar { get; set; }
-        public string PathToAvatar { get; set; }
         public string Status { get; set; }
         public DateTime LastDateWhenStatusChanged { get; set; }
+        public string OrphanageName { get; set; }
         public string ItemName { get; set; }
         public string ItemDescription { get; set; }
         public IEnumerable<int> Types { get; set; }

@@ -10,9 +10,9 @@ namespace FamilyNetServer.Validators
     {
         public bool IsValid(DonationDTO donationDTO)
         {
-            return (donationDTO.OrphanageID > 0 &&
-                    donationDTO.CharityMakerID > 0 &&
-                    donationDTO.DonationItemID > 0);
+            return (donationDTO.OrphanageID == null || donationDTO.OrphanageID > 0 &&
+                    donationDTO.CharityMakerID == null || donationDTO.CharityMakerID > 0 &&
+                    donationDTO.DonationItemID == null || donationDTO.DonationItemID > 0);
         }
     }
 }

@@ -25,10 +25,15 @@ namespace FamilyNet.Controllers
         #region private fields
 
         private readonly IStringLocalizer<DonationsController> _localizer;
-        private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downLoader;
+        private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloader;
+        private readonly ServerSimpleDataDownloader<CategoryDTO> _downloaderCategories;
+        private readonly ServerSimpleDataDownloader<DonationItemDTO> _downloaderItems;
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
+        private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
         private readonly string _apiPath = "api/v1/donations";
         private readonly IFileStreamCreater _streamCreater;
+        private readonly string _apiCategoriesPath = "api/v1/categories";
+        private readonly string _apiDonationItemsPath = "api/v1/donationItems/";
 
         #endregion
 
@@ -36,14 +41,20 @@ namespace FamilyNet.Controllers
 
         public DonationsController(IUnitOfWorkAsync unitOfWork,
                                  IStringLocalizer<DonationsController> localizer,
-                                 ServerSimpleDataDownloader<DonationDetailDTO> downLoader,
+                                 ServerSimpleDataDownloader<DonationDetailDTO> downloader,
+                                 ServerSimpleDataDownloader<CategoryDTO> downloaderCategories,
+                                 ServerSimpleDataDownloader<DonationItemDTO> downloaderItems,
                                  IURLDonationsBuilder uRLDonationsBuilder,
+                                 IURLDonationItemsBuilder uRLDonationItemsBuilder,
                                  IFileStreamCreater streamCreater)
             : base(unitOfWork)
         {
             _localizer = localizer;
-            _downLoader = downLoader;
+            _downloader = downloader;
+            _downloaderCategories = downloaderCategories;
+            _downloaderItems = downloaderItems;
             _URLDonationsBuilder = uRLDonationsBuilder;
+            _URLDonationItemsBuilder = uRLDonationItemsBuilder;
             _streamCreater = streamCreater;
         }
 
@@ -58,7 +69,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donationDTO = await _downLoader.GetAllAsync(url);
+                donationDTO = await _downloader.GetAllAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -75,14 +86,61 @@ namespace FamilyNet.Controllers
 
             var donations = donationDTO.Select(donation => new Donation()
             {
-                CharityMakerID = donation.CharityMakerID,
-                DonationItemID = donation.DonationItemID,
-                OrphanageID = donation.OrphanageID
+                ID = donation.ID,
+
+                Orphanage = new Orphanage()
+                {
+                    Name = donation.OrphanageName,
+
+                    Adress = new Address()
+                    {
+                        City = donation.City,
+                    }
+                },
+
+                DonationItem = new DonationItem()
+                {
+                    Name = donation.ItemName,
+                    Description = donation.ItemDescription,
+                    TypeBaseItem = donation.Types.Select(async t => await GetTypeBaseItemsAsync(t))
+                                                                          .Select(t => t.Result)
+                                                                          .Where(i => i != null)
+                                                                          .ToList()
+                },
+
+                LastDateWhenStatusChanged = donation.LastDateWhenStatusChanged,
+
+                Status = (DonationStatus)Enum.Parse(typeof(DonationStatus), donation.Status, true)
             });
 
             GetViewData();
 
             return View(donations);
+        }
+
+        private async Task<TypeBaseItem> GetTypeBaseItemsAsync(int typeId)
+        {
+            var typeBaseItem = new TypeBaseItem()
+            {
+                Type = await GetTypeByIdAsync(typeId)
+            };
+
+            return typeBaseItem;
+        }
+
+        private async Task<BaseItemType> GetTypeByIdAsync(int id)
+        {
+            var url = _URLDonationsBuilder.GetById(_apiCategoriesPath, id);
+
+            var category = await _downloaderCategories.GetByIdAsync(url);
+
+            var newCategory = new BaseItemType()
+            {
+                ID = category.ID,
+                Name = category.Name,
+            };
+
+            return newCategory;
         }
 
         [AllowAnonymous]
@@ -98,7 +156,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donationDetailDTO = await _downLoader.GetByIdAsync(url);
+                donationDetailDTO = await _downloader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -127,7 +185,7 @@ namespace FamilyNet.Controllers
 
                     Adress = new Address()
                     {
-                        City = donationDetailDTO.OrphanageCity,
+                        City = donationDetailDTO.City,
                         Street = donationDetailDTO.OrphanageStreet,
                         House = donationDetailDTO.OrphanageHouse
                     }
@@ -136,7 +194,11 @@ namespace FamilyNet.Controllers
                 DonationItem = new DonationItem()
                 {
                     Name = donationDetailDTO.ItemName,
-                    Description = donationDetailDTO.ItemDescription
+                    Description = donationDetailDTO.ItemDescription,
+                    TypeBaseItem = donationDetailDTO.Types.Select(async t => await GetTypeBaseItemsAsync(t))
+                                                                          .Select(t => t.Result)
+                                                                          .Where(i => i != null)
+                                                                          .ToList()
                 }
             };
 
@@ -150,32 +212,43 @@ namespace FamilyNet.Controllers
         {
             await Check();
 
-            var donationsList = new List<Donation>();
-            donationsList = _unitOfWorkAsync.Donations.GetAll().ToList();
-            ViewBag.ListOfDonations = donationsList;
-            GetViewData();
+            var donationItemsList = _unitOfWorkAsync.DonationItems.GetAll().ToList();
+            ViewBag.ListOfDonationItems = donationItemsList;
 
+            var orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            ViewBag.ListOfOrphanages = orphanagesList;
+
+            GetViewData();
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
-        public async Task<IActionResult> Create([Bind("DonationItemID, CharityMakerID, OrphanageID")]
-                                                DonationDetailDTO donationDTO)
+        public async Task<IActionResult> Create(DonationCreateViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(donationDTO);
-            }
+            var url = _URLDonationItemsBuilder.CreatePost(_apiDonationItemsPath);
+            var msg = await _downloaderItems.СreatePostAsync(url, model.DonationItem);
 
-            var url = _URLDonationsBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.СreatetePostAsync(url, donationDTO);
-
-            if (status != HttpStatusCode.Created)
+            if (msg.StatusCode != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
+                //TODO: log
             }
+
+            var itemDTO = msg.Content.ReadAsAsync<DonationItemDTO>().Result;
+            model.Donation.DonationItemID = itemDTO.ID;
+
+            url = _URLDonationsBuilder.CreatePost(_apiPath);
+            msg = await _downloader.СreatePostAsync(url, model.Donation);
+
+            if (msg.StatusCode != HttpStatusCode.Created)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            GetViewData();
 
             return Redirect("/Donations/Index");
         }
@@ -200,7 +273,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donationDTO = await _downLoader.GetByIdAsync(url);
+                donationDTO = await _downloader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -215,8 +288,14 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var donationsList = _unitOfWorkAsync.Donations.GetAll().ToList();
-            ViewBag.ListOfDonations = donationsList;
+            var baseItemsList = _unitOfWorkAsync.DonationItems.GetAll().ToList();
+            ViewBag.ListOfBaseItems = baseItemsList;
+
+            var orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            ViewBag.ListOfOrphanages = orphanagesList;
+
+            var categoriesList = _unitOfWorkAsync.BaseItemTypes.GetAll().ToList();
+            ViewBag.ListOfCategories = categoriesList;
 
             GetViewData();
 
@@ -235,13 +314,13 @@ namespace FamilyNet.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(donationDTO.Status);
+                return View(donationDTO);
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatePutAsync(url, donationDTO);
+            var msg = await _downloader.СreatePutAsync(url, donationDTO);
 
-            if (status != HttpStatusCode.NoContent)
+            if (msg.StatusCode != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
             }
@@ -270,7 +349,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donationDTO = await _downLoader.GetByIdAsync(url);
+                donationDTO = await _downloader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -305,13 +384,13 @@ namespace FamilyNet.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(donationDTO);
+                return View(donationDTO.Status);
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatePutAsync(url, donationDTO);
+            var msg = await _downloader.СreatePutAsync(url, donationDTO);
 
-            if (status != HttpStatusCode.NoContent)
+            if (msg.StatusCode != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
             }
@@ -332,7 +411,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donationDTO = await _downLoader.GetByIdAsync(url);
+                donationDTO = await _downloader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -368,9 +447,9 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.DeleteAsync(url);
+            var msg = await _downloader.DeleteAsync(url);
 
-            if (status != HttpStatusCode.OK)
+            if (msg.StatusCode != HttpStatusCode.OK)
             {
                 return Redirect("/Home/Error");
             }
