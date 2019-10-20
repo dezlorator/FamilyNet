@@ -11,17 +11,16 @@ namespace FamilyNet.Downloader
 {
     public class ServerChildrenHouseDownloader : ServerDataDownLoader<ChildrenHouseDTO>
     {
-        public override async Task<HttpStatusCode> СreatetePostAsync(string url,
+        public async Task<HttpStatusCode> CreatePostAsync(string url,
                                                             ChildrenHouseDTO dto,
-                                                            Stream streamFile,
-                                                            string fileName)
+                                                            Stream streamFile)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
             using (var httpClient = new HttpClient())
             using (var formDataContent = new MultipartFormDataContent())
             {
-                BuildMultipartFprmData(dto, streamFile, fileName, formDataContent);
+                BuildMultipartFprmData(dto, streamFile, formDataContent);
 
                 var msg = await httpClient.PostAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
@@ -45,7 +44,7 @@ namespace FamilyNet.Downloader
             using (var httpClient = new HttpClient())
             using (var formDataContent = new MultipartFormDataContent())
             {
-                BuildMultipartFprmData(dto, streamFile, fileName, formDataContent);
+                BuildMultipartFprmData(dto, streamFile, formDataContent);
 
                 var msg = await httpClient.PutAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
@@ -61,13 +60,12 @@ namespace FamilyNet.Downloader
 
         private static void BuildMultipartFprmData(ChildrenHouseDTO dto,
                                                    Stream streamFile,
-                                                   string fileName,
                                                    MultipartFormDataContent formDataContent)
         {
             if (streamFile != null && streamFile.Length > 0)
             {
                 var image = new StreamContent(streamFile, (int)streamFile.Length);
-                formDataContent.Add(image, "Avatar", fileName);
+                formDataContent.Add(image, "Avatar", dto.Avatar.FileName);
             }
 
             if (dto.ID > 0)
@@ -80,6 +78,11 @@ namespace FamilyNet.Downloader
             //formDataContent.Add(new StringContent(dto.PhotoPath), "PhotoPath");
             formDataContent.Add(new StringContent(dto.LocationID.ToString()), "LocationID");
             formDataContent.Add(new StringContent(dto.AdressID.ToString()), "AdressID");
+        }
+
+        public override Task<HttpStatusCode> СreatetePostAsync(string url, ChildrenHouseDTO dto, Stream file, string fieName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
+using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -17,14 +18,16 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWorkAsync _repository;
+        private readonly IValidator<AddressDTO> _addressValidator;
 
         #endregion
 
         #region ctor
 
-        public AddressController(IUnitOfWorkAsync repo)
+        public AddressController(IUnitOfWorkAsync repo, IValidator<AddressDTO> addressValidator)
         {            
             _repository = repo;
+            _addressValidator = addressValidator;
         }
 
         #endregion
@@ -92,10 +95,10 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
         {
-            //if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
-            //{
-            //    return BadRequest();
-            //}
+            if (!_addressValidator.IsValid(addressDTO))
+            {
+                return BadRequest();
+            }
 
             var address = new Address()
             {
@@ -118,12 +121,12 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]AddressDTO addressDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AddressDTO addressDTO)
         {
-            //if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
-            //{
-            //    return BadRequest();
-            //}
+            if (!_addressValidator.IsValid(addressDTO))
+            {
+                return BadRequest();
+            }
 
             var address = await _repository.Address.GetById(id);
 

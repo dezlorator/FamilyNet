@@ -1,4 +1,5 @@
 ﻿using DataTransferObjects;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,66 +10,44 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerAddressDownloader : ServerDataDownLoader<AddressDTO>
+    public class ServerAddressDownloader
     {
-        public override async Task<HttpStatusCode> СreatetePostAsync(string url,
-                                                           AddressDTO dto,
-                                                           Stream streamFile,
-                                                           string fileName)
+        public async Task<HttpResponseMessage> СreatePostAsync(string url,
+                                                           AddressDTO dto)
         {
-            var statusCode = HttpStatusCode.BadRequest;
-
+            HttpResponseMessage msg = null;
+            
             using (var httpClient = new HttpClient())
             using (var formDataContent = new MultipartFormDataContent())
             {
-                BuildMultipartFprmData(dto, streamFile, fileName, formDataContent);
+                BuildMultipartFprmData(dto, formDataContent);
 
-                var msg = await httpClient.PostAsync(url, formDataContent);
-                statusCode = msg.StatusCode;
-
-                if (streamFile != null)
-                {
-                    streamFile.Close();
-                }
+                msg = await httpClient.PostAsync(url, formDataContent);
             }
 
-            return statusCode;
+            return msg;
         }
 
-        public override async Task<HttpStatusCode> СreatetePutAsync(string url,
-                                                              AddressDTO dto,
-                                                              Stream streamFile,
-                                                              string fileName)
+        public async Task<HttpResponseMessage> СreatePutAsync(string url,
+                                                              AddressDTO dto)
         {
-            var statusCode = HttpStatusCode.BadRequest;
+            HttpResponseMessage msg = null;
 
             using (var httpClient = new HttpClient())
             using (var formDataContent = new MultipartFormDataContent())
             {
-                BuildMultipartFprmData(dto, streamFile, fileName, formDataContent);
+                BuildMultipartFprmData(dto, formDataContent);
 
-                var msg = await httpClient.PutAsync(url, formDataContent);
-                statusCode = msg.StatusCode;
+                msg = await httpClient.PutAsync(url, formDataContent);
 
-                if (streamFile != null)
-                {
-                    streamFile.Close();
-                }
             }
 
-            return statusCode;
+            return msg;
         }
 
         private static void BuildMultipartFprmData(AddressDTO dto,
-                                                   Stream streamFile,
-                                                   string fileName,
                                                    MultipartFormDataContent formDataContent)
-        {
-            if (streamFile != null && streamFile.Length > 0)
-            {
-                var image = new StreamContent(streamFile, (int)streamFile.Length);
-                formDataContent.Add(image, "Avatar", fileName);
-            }
+        {           
 
             if (dto.ID > 0)
             {
@@ -80,6 +59,66 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.City), "City");
             formDataContent.Add(new StringContent(dto.Street), "Street");
             formDataContent.Add(new StringContent(dto.House), "House");
+        }
+
+
+        public async Task<AddressDTO> GetByIdAsync(string url)
+        {
+            AddressDTO obj = null;
+
+            try
+            {
+                HttpResponseMessage response = null;
+
+                using (var httpClient = new HttpClient())
+                {
+                    response = await httpClient.GetAsync(url);
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                obj = JsonConvert.DeserializeObject<AddressDTO>(json);
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            return obj;
+        }
+
+        public async Task<HttpStatusCode> DeleteAsync(string url)
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    response = await httpClient.DeleteAsync(url);
+                }
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            return response.StatusCode;
         }
     }
 }

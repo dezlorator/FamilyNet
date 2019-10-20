@@ -22,7 +22,7 @@ namespace FamilyNetServer.Controllers.API
 
         private readonly IUnitOfWorkAsync _repository;
         private readonly IFileUploader _fileUploader;
-        private readonly IChildrenHouseValidator _childrenHouseValidator;
+        private readonly IValidator<ChildrenHouseDTO> _childrenHouseValidator;
         private readonly IFilterConditionsChildrenHouse _filterConditions;
 
         #endregion
@@ -31,7 +31,7 @@ namespace FamilyNetServer.Controllers.API
 
         public ChildrenHouseController(IFileUploader fileUploader,
                                   IUnitOfWorkAsync repo,
-                                  IChildrenHouseValidator childrenHouseValidator,
+                                   IValidator<ChildrenHouseDTO> childrenHouseValidator,
                                   IFilterConditionsChildrenHouse filterConditions)
         {
             _fileUploader = fileUploader;
@@ -138,21 +138,8 @@ namespace FamilyNetServer.Controllers.API
                 LocationID = childrenHousesDTO.LocationID,
                 Rating = childrenHousesDTO.Rating,
                 Avatar = pathPhoto,
-                //Adress = address
             };
 
-            //bool IsLocationNotNull = GetCoordProp(address, out var Location);
-            //if (IsLocationNotNull)
-            //{
-            //    childrenHouse.Location = new Location()
-            //    {
-            //        MapCoordX = Location.Item1,
-            //        MapCoordY = Location.Item2
-            //    };
-                
-            //}
-            //else
-            //    childrenHouse.LocationID = null;
 
             await _repository.Orphanages.Create(childrenHouse);
             _repository.SaveChangesAsync();
@@ -167,7 +154,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]ChildrenHouseDTO childrenHouseDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]ChildrenHouseDTO childrenHouseDTO)
         {
             if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
             {
@@ -181,21 +168,9 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            //bool IsLocationNotNull = GetCoordProp(childrenHouse.Adress, out var Location);
-            //if (IsLocationNotNull)
-            //{
-            //    childrenHouse.Location = new Location()
-            //    {
-            //        MapCoordX = Location.Item1,
-            //        MapCoordY = Location.Item2
-            //    };
-
-            //}
-            //else
-            //    childrenHouse.LocationID = null;
-
             childrenHouse.Name = childrenHouseDTO.Name;
             childrenHouse.Rating = childrenHouseDTO.Rating;
+            childrenHouse.LocationID = childrenHouseDTO.LocationID;
 
             if (childrenHouseDTO.Avatar != null)
             {
@@ -236,31 +211,5 @@ namespace FamilyNetServer.Controllers.API
             return Ok();
         }
 
-        private bool GetCoordProp(Address address, out Tuple<float?, float?> result)
-        {
-            result = null;
-            bool forOut = false;
-
-            var nominatim = new Nominatim.API.Geocoders.ForwardGeocoder();
-            var d = nominatim.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest()
-            {
-                Country = address.Country,
-                State = address.Region,
-                City = address.City,
-                StreetAddress = String.Concat(address.Street, " ", address.House)
-            });
-
-            //TODO:some validation for search
-            if (d.Result.Count() != 0)
-            {
-                float? X = (float)d.Result[0].Latitude;
-                float? Y = (float)d.Result[0].Longitude;
-
-                result = new Tuple<float?, float?>(X, Y);
-                forOut = true;
-            }
-
-            return forOut;
-        }
     }
 }

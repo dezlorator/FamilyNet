@@ -21,14 +21,16 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWorkAsync _repository;
+        private readonly IValidator<AddressDTO> _addressValidator;
 
         #endregion
 
         #region ctor
 
-        public LocationController(IUnitOfWorkAsync repository)
+        public LocationController(IUnitOfWorkAsync repo, IValidator<AddressDTO> addressValidator)
         {
-            _repository = repository;
+            _repository = repo;
+            _addressValidator = addressValidator;
         }
 
         #endregion
@@ -89,8 +91,13 @@ namespace FamilyNetServer.Controllers.API
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]AddressDTO addressDTO)
+        public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
         {
+            if (!_addressValidator.IsValid(addressDTO))
+            {
+                return BadRequest();
+            }
+
             bool IsLocationNotNull = GetCoordProp(addressDTO, out var coord);
             Location location = null;
             if (IsLocationNotNull)
@@ -114,23 +121,29 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]LocationDTO locationDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AddressDTO addressDTO)
         {
-            //if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
-            //{
-            //    return BadRequest();
-            //}
-
-            var location = await _repository.Location.GetById(id);
-
-            if (location == null)
+            if (!_addressValidator.IsValid(addressDTO))
             {
                 return BadRequest();
             }
 
-            location.MapCoordX = locationDTO.MapCoordX;
-            location.MapCoordY = locationDTO.MapCoordY;
+            var location = await _repository.Location.GetById(id);
+            if (location == null)
+            {
+                  return BadRequest();
+            }
 
+            bool IsLocationNotNull = GetCoordProp(addressDTO, out var coord);
+            if (IsLocationNotNull)
+            {
+                location.MapCoordX = coord.Item1;
+                location.MapCoordY = coord.Item2;
+            }
+            else
+            {
+                location.IsDeleted = true;
+            }
             _repository.Location.Update(location);
             _repository.SaveChangesAsync();
 
@@ -177,15 +190,17 @@ namespace FamilyNetServer.Controllers.API
             });
 
             //TODO:some validation for search
-            if (d.Result.Count() != 0)
+            if (d != null)
             {
-                float? X = (float)d.Result[0].Latitude;
-                float? Y = (float)d.Result[0].Longitude;
+                if (d.Result.Count() != 0)
+                {
+                    float? X = (float)d.Result[0].Latitude;
+                    float? Y = (float)d.Result[0].Longitude;
 
-                result = new Tuple<float?, float?>(X, Y);
-                forOut = true;
+                    result = new Tuple<float?, float?>(X, Y);
+                    forOut = true;
+                }
             }
-
             return forOut;
         }
     }

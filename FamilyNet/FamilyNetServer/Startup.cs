@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Localization;
 using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
+using FamilyNetServer.DTO;
 
 namespace FamilyNetServer
 {
@@ -73,8 +74,10 @@ namespace FamilyNetServer
             services.AddTransient<IFilterConditionsChildren, FilterConditionsChildren>();
             services.AddTransient<IRepresentativeValidator, RepresentativeValidator>();
             services.AddTransient<IFilterConditionsRepresentatives, FilterConditionsRepresentatives>();
+
             services.AddTransient<IFilterConditionsChildrenHouse, FilterConditionChildrenHouse>();
-            services.AddTransient<IChildrenHouseValidator, ChildrenHouseValidator>();
+            services.AddTransient<IValidator<ChildrenHouseDTO>, ChildrenHouseValidator>();
+            services.AddTransient<IValidator<AddressDTO>, AddressValidator>();
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
                 .AddViewLocalization(
