@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using DataTransferObjects;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Filters.FilterParameters;
@@ -11,6 +10,7 @@ using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Uploaders;
+using DataTransferObjects;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -52,7 +52,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery] FilterParametersPerson filter)
+        public IActionResult GetAll([FromQuery] FilterParametersRepresentatives filter)
         {
             var representatives = _unitOfWork.Representatives.GetAll().Where(r => !r.IsDeleted);
             representatives = _filterConditions.GetRepresentatives(representatives, filter);

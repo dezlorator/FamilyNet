@@ -1,25 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
-using FamilyNet.Infrastructure;
 using FamilyNet.Downloader;
-using DataTransferObjects;
-using System.Net.Http;
-using Newtonsoft.Json;
 using FamilyNet.StreamCreater;
-using System.Net;
-using Microsoft.Extensions.Options;
-using FamilyNet.Configuration;
+using DataTransferObjects;
 
 namespace FamilyNet.Controllers
 {

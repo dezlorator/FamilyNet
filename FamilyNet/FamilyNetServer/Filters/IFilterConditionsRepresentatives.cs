@@ -7,6 +7,6 @@ namespace FamilyNetServer.Filters
     public interface IFilterConditionsRepresentatives
     {
         IQueryable<Representative> GetRepresentatives(IQueryable<Representative> representatives,
-                                      FilterParametersPerson filter);
+                                      FilterParametersRepresentatives filter);
     }
 }

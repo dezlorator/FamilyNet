@@ -8,7 +8,7 @@ namespace FamilyNetServer.Filters
     public class FilterConditionsRepresentatives : IFilterConditionsRepresentatives
     {
         public IQueryable<Representative> GetRepresentatives(IQueryable<Representative> representatives,
-                                             FilterParametersPerson filter)
+                                             FilterParametersRepresentatives filter)
         {
             if (filter.ChildrenHouseID > 0)
             {
