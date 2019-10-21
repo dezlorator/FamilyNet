@@ -34,7 +34,7 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        public override async Task<HttpStatusCode> СreatetePutAsync(string url,
+        public override async Task<HttpStatusCode> СreatePutAsync(string url,
                                                               ChildrenHouseDTO dto,
                                                               Stream streamFile,
                                                               string fileName)
@@ -80,7 +80,7 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.AdressID.ToString()), "AdressID");
         }
 
-        public override Task<HttpStatusCode> СreatetePostAsync(string url, ChildrenHouseDTO dto, Stream file, string fieName)
+        public override Task<HttpStatusCode> СreatePostAsync(string url, ChildrenHouseDTO dto, Stream file, string fieName)
         {
             throw new NotImplementedException();
         }

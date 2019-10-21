@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FamilyNetServer.Models;
+﻿using FamilyNetServer.Models;
 using FamilyNetServer.Models.EntityFramework;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Models.Identity;
@@ -17,10 +13,12 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Infrastructure;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
 using FamilyNetServer.DTO;
+using FamilyNetServer.Uploaders;
+using Microsoft.Extensions.Options;
+using FamilyNetServer.Configuration;
 
 namespace FamilyNetServer
 {
@@ -76,6 +74,7 @@ namespace FamilyNetServer
             services.AddTransient<IFilterConditionsRepresentatives, FilterConditionsRepresentatives>();
 
             services.AddTransient<IFilterConditionsChildrenHouse, FilterConditionChildrenHouse>();
+            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IValidator<ChildrenHouseDTO>, ChildrenHouseValidator>();
             services.AddTransient<IValidator<AddressDTO>, AddressValidator>();
             services.AddLocalization(options => options.ResourcesPath = "Resources");

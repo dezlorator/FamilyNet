@@ -315,7 +315,7 @@ namespace FamilyNet.Controllers
 
 
             url = _URLChildrenHouseBuilder.GetById(_apiPath, id);
-            var status = await _childrenHouseDownloader.ÑreatetePutAsync(url, model.ChildrenHouse,
+            var status = await _childrenHouseDownloader.ÑreatePutAsync(url, model.ChildrenHouse,
                                                             stream, model.ChildrenHouse.Avatar?.FileName);
 
             if (status != HttpStatusCode.NoContent)

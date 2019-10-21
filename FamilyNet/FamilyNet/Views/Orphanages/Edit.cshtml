@@ -20,10 +20,10 @@
             <input type="hidden" asp-for="ChildrenHouse.Avatar" />
             <input type="hidden" asp-for="Address.ID" />
             <p>
-                <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content("~/avatars/" + Model.ChildrenHouse.Avatar)" width="350" height="350" alt="">
+                <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content(Model.ChildrenHouse.PhotoPath)" width="350" height="350" alt="">
             </p>
             <div class="form-group">
-                <input asp-for="ChildrenHouse.Avatar" type="file" name="file" class="form-control" />
+                <input asp-for="ChildrenHouse.Avatar" type="file" name="ChildrenHouse.Avatar" class="form-control" />
                 <span asp-validation-for="ChildrenHouse.Avatar" class="text-danger"></span>
                 <label> Поддержка только *.jpg</label>
             </div>

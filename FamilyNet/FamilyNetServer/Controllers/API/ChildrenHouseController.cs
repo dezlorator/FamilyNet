@@ -1,12 +1,14 @@
-﻿using FamilyNetServer.DTO;
+﻿using FamilyNetServer.Configuration;
+using FamilyNetServer.DTO;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
+using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IFileUploader _fileUploader;
         private readonly IValidator<ChildrenHouseDTO> _childrenHouseValidator;
         private readonly IFilterConditionsChildrenHouse _filterConditions;
+        private readonly IOptionsSnapshot<ServerURLSettings> _settings;
 
         #endregion
 
@@ -32,12 +35,14 @@ namespace FamilyNetServer.Controllers.API
         public ChildrenHouseController(IFileUploader fileUploader,
                                   IUnitOfWorkAsync repo,
                                    IValidator<ChildrenHouseDTO> childrenHouseValidator,
-                                  IFilterConditionsChildrenHouse filterConditions)
+                                  IFilterConditionsChildrenHouse filterConditions,
+                                  IOptionsSnapshot<ServerURLSettings> setings)
         {
             _fileUploader = fileUploader;
             _repository = repo;
             _childrenHouseValidator = childrenHouseValidator;
             _filterConditions = filterConditions;
+            _settings = setings;
         }
 
         #endregion
@@ -77,7 +82,7 @@ namespace FamilyNetServer.Controllers.API
                     AdressID = c.AdressID,
                     LocationID = c.LocationID,
                     Rating = c.Rating,
-                    PhotoPath = c.Avatar                    
+                    PhotoPath = _settings.Value.ServerURL + c.Avatar,
                 };
 
                 childrenDTO.Add(childrenHouseDTO);
@@ -105,7 +110,7 @@ namespace FamilyNetServer.Controllers.API
                 AdressID = childrenHouses.AdressID,
                 Rating = childrenHouses.Rating,
                 LocationID = childrenHouses.LocationID,
-                PhotoPath = childrenHouses.Avatar,
+                PhotoPath = _settings.Value.ServerURL + childrenHouses.Avatar
             };
 
             return Ok(childrenHouseDTO);
@@ -127,7 +132,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 var fileName = childrenHousesDTO.Name + DateTime.Now.Ticks;
 
-                pathPhoto = _fileUploader.CopyFile(fileName,
+                pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.ChildrenHouses), childrenHousesDTO.Avatar);
             }
 
@@ -176,7 +181,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 var fileName = childrenHouseDTO.Name + DateTime.Now.Ticks;
 
-                childrenHouse.Avatar = _fileUploader.CopyFile(fileName,
+                childrenHouse.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.ChildrenHouses), childrenHouseDTO.Avatar);
             }
 
