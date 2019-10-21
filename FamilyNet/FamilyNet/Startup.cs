@@ -17,6 +17,7 @@ using FamilyNet.Downloader;
 using DataTransferObjects;
 using FamilyNet.StreamCreater;
 using FamilyNet.HttpHandlers;
+using System;
 
 namespace FamilyNet
 {
@@ -54,6 +55,15 @@ namespace FamilyNet
             .AddUserManager<ApplicationUserManager>()
             .AddDefaultTokenProviders();
 
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.Configure<JWTCofiguration>(Configuration.GetSection("JWT"));
 
@@ -68,7 +78,7 @@ namespace FamilyNet
             });
 
             services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
-            services.AddTransient<IHttpAuthorizationHandler, FakeHttpAuthorizationHandler>();
+            services.AddTransient<IHttpAuthorizationHandler, HttpAuthorizationHandler>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
@@ -110,6 +120,7 @@ namespace FamilyNet
             });
 
             app.UseStaticFiles();
+            app.UseSession();
             app.UseCookiePolicy();
             app.UseAuthentication();
 

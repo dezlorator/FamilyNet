@@ -150,6 +150,11 @@ namespace FamilyNet.Controllers
 
                 var token = await _authorizeCreater.Login(model.Email, model.Password);
 
+                if (!String.IsNullOrEmpty(token))
+                {
+                    HttpContext.Session.Set("Bearer", System.Text.Encoding.Unicode.GetBytes(token));
+                }
+
                 //    ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
                 //    if (user != null)
                 //    {

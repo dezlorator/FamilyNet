@@ -55,7 +55,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                children = await _downLoader.GetAllAsync(url, Request);
+                children = await _downLoader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -87,7 +87,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childDTO = await _downLoader.GetByIdAsync(url, Request);
+                childDTO = await _downLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -143,7 +143,7 @@ namespace FamilyNet.Controllers
             var status = await _downLoader.СreatetePostAsync(url, childDTO,
                                                              stream,
                                                              childDTO.Avatar.FileName,
-                                                             Request);
+                                                             HttpContext.Session);
 
             if (status != HttpStatusCode.Created)
             {
@@ -166,7 +166,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childDTO = await _downLoader.GetByIdAsync(url, Request);
+                childDTO = await _downLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -214,7 +214,7 @@ namespace FamilyNet.Controllers
             var url = _URLChildrenBuilder.GetById(_apiPath, id);
             var status = await _downLoader.СreatetePutAsync(url, childDTO,
                                                             stream, childDTO.Avatar?.FileName,
-                                                            Request);
+                                                            HttpContext.Session);
 
             if (status == HttpStatusCode.Unauthorized)
             {
@@ -243,7 +243,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childDTO = await _downLoader.GetByIdAsync(url, Request);
+                childDTO = await _downLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -278,7 +278,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLChildrenBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.DeleteAsync(url, Request);
+            var status = await _downLoader.DeleteAsync(url, HttpContext.Session);
 
             if (status != HttpStatusCode.OK)
             {
@@ -299,7 +299,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                children = await _downLoader.GetAllAsync(url, Request);
+                children = await _downLoader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {

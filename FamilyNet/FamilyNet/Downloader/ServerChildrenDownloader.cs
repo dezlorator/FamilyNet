@@ -17,7 +17,7 @@ namespace FamilyNet.Downloader
                                                             ChildDTO dto,
                                                             Stream streamFile,
                                                             string fileName,
-                                                            HttpRequest Request)
+                                                            ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -25,7 +25,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, streamFile, fileName, formDataContent);
-                _authorizationHandler.AddTokenBearer(Request, httpClient);
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PostAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 
@@ -44,7 +44,7 @@ namespace FamilyNet.Downloader
                                                               ChildDTO dto,
                                                               Stream streamFile,
                                                               string fileName,
-                                                              HttpRequest Request)
+                                                              ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -52,7 +52,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, streamFile, fileName, formDataContent);
-                _authorizationHandler.AddTokenBearer(Request, httpClient);
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PutAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 

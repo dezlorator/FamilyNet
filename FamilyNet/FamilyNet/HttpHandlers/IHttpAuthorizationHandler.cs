@@ -5,6 +5,6 @@ namespace FamilyNet.HttpHandlers
 {
     public interface IHttpAuthorizationHandler
     {
-        void AddTokenBearer(HttpRequest Request, HttpClient httpClient);
+        void AddTokenBearer(ISession session, HttpClient httpClient);
     }
 }

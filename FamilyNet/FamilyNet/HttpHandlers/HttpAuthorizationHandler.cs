@@ -7,20 +7,12 @@ namespace FamilyNet.HttpHandlers
 {
     public class HttpAuthorizationHandler : IHttpAuthorizationHandler
     {        
-        public void AddTokenBearer(HttpRequest Request, HttpClient httpClient)
+        public void AddTokenBearer(ISession session, HttpClient httpClient)
         {
-            if (Request.Headers.Keys.Contains("Bearer"))
-            {
-                foreach (var header in Request.Headers)
-                {
-                    if (header.Key == "Bearer")
-                    {
-                        httpClient.DefaultRequestHeaders.Authorization =
-                            new AuthenticationHeaderValue(header.Key, header.Value);
-                        break;
-                    }
-                }
-            }
+            var token = session.GetString("Bearer");
+
+            httpClient.DefaultRequestHeaders.Authorization =
+                            new AuthenticationHeaderValue("Bearer", token);
         }
     }
 }

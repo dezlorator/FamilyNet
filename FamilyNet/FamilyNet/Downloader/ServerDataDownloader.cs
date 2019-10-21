@@ -28,7 +28,7 @@ namespace FamilyNet.Downloader
         #endregion
 
         public async Task<IEnumerable<T>> GetAllAsync(string url,
-                                                      HttpRequest Request)
+                                                      ISession session)
         {
             List<T> objs = null;
 
@@ -38,7 +38,7 @@ namespace FamilyNet.Downloader
 
                 using (var httpClient = new HttpClient())
                 {
-                    _authorizationHandler.AddTokenBearer(Request, httpClient);
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
                     response = await httpClient.GetAsync(url);
                 }
 
@@ -61,7 +61,7 @@ namespace FamilyNet.Downloader
             return objs;
         }
 
-        public async Task<T> GetByIdAsync(string url, HttpRequest Request)
+        public async Task<T> GetByIdAsync(string url, ISession session)
         {
             T obj = null;
 
@@ -71,7 +71,7 @@ namespace FamilyNet.Downloader
 
                 using (var httpClient = new HttpClient())
                 {
-                    _authorizationHandler.AddTokenBearer(Request, httpClient);
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
                     response = await httpClient.GetAsync(url);
                 }
 
@@ -98,16 +98,16 @@ namespace FamilyNet.Downloader
                                                                T dto,
                                                                Stream file,
                                                                string fieName,
-                                                               HttpRequest Request);
+                                                               ISession session);
 
         public abstract Task<HttpStatusCode> СreatetePutAsync(string url,
                                                                T dto,
                                                                Stream file,
                                                                string fieName,
-                                                               HttpRequest Request);
+                                                               ISession session);
 
         public async Task<HttpStatusCode> DeleteAsync(string url,
-                                                      HttpRequest Request)
+                                                      ISession session)
         {
             HttpResponseMessage response;
 
@@ -115,7 +115,7 @@ namespace FamilyNet.Downloader
             {
                 using (var httpClient = new HttpClient())
                 {
-                    _authorizationHandler.AddTokenBearer(Request, httpClient);
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
                     response = await httpClient.DeleteAsync(url);
                 }
             }
