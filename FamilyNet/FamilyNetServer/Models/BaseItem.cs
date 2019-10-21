@@ -27,7 +27,7 @@ namespace FamilyNetServer.Models
         [BindNever]
         public bool IsDeleted { get; set; } = false;
 
-        [Display(Name = "Категории")]
+        [Display(Name = "Категория")]
         public virtual ICollection<TypeBaseItem> TypeBaseItem { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace FamilyNet.Downloader
     public class ServerChildrenDownloader : ServerDataDownLoader<ChildDTO>
     {
 
-        public override async Task<HttpStatusCode> CreatePostAsync(string url,
+        public override async Task<HttpStatusCode> СreatePostAsync(string url,
                                                             ChildDTO dto,
                                                             Stream streamFile,
                                                             string fileName)
@@ -34,7 +34,7 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        public override async Task<HttpStatusCode> CreatePutAsync(string url,
+        public override async Task<HttpStatusCode> СreatePutAsync(string url,
                                                               ChildDTO dto,
                                                               Stream streamFile,
                                                               string fileName)

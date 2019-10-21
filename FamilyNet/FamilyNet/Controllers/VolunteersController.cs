@@ -3,114 +3,199 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
-using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
-using FamilyNet.Infrastructure;
+using DataTransferObjects;
+using FamilyNet.Downloader;
 using Microsoft.Extensions.Localization;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Net;
+using System.IO;
+using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
     public class VolunteersController : BaseController
     {
-        #region Fields
+        #region private fields
 
         private readonly IStringLocalizer<VolunteersController> _localizer;
+        private readonly ServerDataDownLoader<VolunteerDTO> _downLoader;
+        private readonly IURLVolunteersBuilder _URLVolunteersBuilder;
+        private readonly string _apiPath = "api/v1/volunteers";
+        private readonly IFileStreamCreater _streamCreater;
 
         #endregion
 
-        public VolunteersController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<VolunteersController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        #region ctor
+
+        public VolunteersController(IUnitOfWorkAsync unitOfWork,
+                                 IStringLocalizer<VolunteersController> localizer,
+                                 ServerDataDownLoader<VolunteerDTO> downLoader,
+                                 IURLVolunteersBuilder URLChildrenBuilder,
+                                 IFileStreamCreater streamCreater)
+            : base(unitOfWork)
         {
             _localizer = localizer;
+            _downLoader = downLoader;
+            _URLVolunteersBuilder = URLChildrenBuilder;
+            _streamCreater = streamCreater;
         }
 
-        // GET: Volunteers
+        #endregion
+
         [AllowAnonymous]
-        public async Task<IActionResult> Index(PersonSearchModel searchModel)
+        public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
+            var url = _URLVolunteersBuilder.GetAllWithFilter(_apiPath,
+                                                           searchModel,
+                                                           id);
+            IEnumerable<VolunteerDTO> volunteers = null;
 
-            IEnumerable<Volunteer> volunteers = _unitOfWorkAsync.Volunteers.GetAll();
+            try
+            {
+                volunteers = await _downLoader.GetAllAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
 
-            volunteers = VolunteerFilter.GetFiltered(volunteers, searchModel);
+            var selectedVolunteers = volunteers.Select(volunteer => new Volunteer()
+            {
+                Birthday = volunteer.Birthday,
+                FullName = new FullName()
+                {
+                    Name = volunteer.Name,
+                    Patronymic = volunteer.Patronymic,
+                    Surname = volunteer.Surname
+                },
+                ID = volunteer.ID,
+                Avatar = volunteer.PhotoPath,
+                AddressID = volunteer.AddressID,
+                EmailID = volunteer.EmailID,
+                Rating = volunteer.Rating
+            });
+
             GetViewData();
 
-            return View(volunteers);
+            return View(selectedVolunteers);
         }
 
-        // GET: Volunteers/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
-            GetViewData();
-
             if (id == null)
             {
                 return NotFound();
             }
 
-            var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
-            if (volunteer == null)
+            var url = _URLVolunteersBuilder.GetById(_apiPath, id.Value);
+            VolunteerDTO volunteerDTO = null;
+
+            try
+            {
+                volunteerDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (volunteerDTO == null)
             {
                 return NotFound();
             }
 
+            var volunteer = new Volunteer()
+            {
+                Birthday = volunteerDTO.Birthday,
+                FullName = new FullName()
+                {
+                    Name = volunteerDTO.Name,
+                    Patronymic = volunteerDTO.Patronymic,
+                    Surname = volunteerDTO.Surname
+                },
+                ID = volunteerDTO.ID,
+                Avatar = volunteerDTO.PhotoPath,
+                AddressID = volunteerDTO.AddressID,
+                EmailID = volunteerDTO.EmailID,
+                Rating = volunteerDTO.Rating,
+            };
+
+            GetViewData();
+
             return View(volunteer);
         }
 
-        // GET: Volunteers/Create
         [Authorize(Roles = "Admin, Volunteer")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            Check();
-            GetViewData();
+            await Check();
 
-            List<Orphanage> orphanagesList = new List<Orphanage>();
+            var orphanagesList = new List<Orphanage>();
             orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
-
             GetViewData();
+
             return View();
         }
 
-        // POST: Volunteers/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Volunteer")]
-        public async Task<IActionResult> Create([Bind("FullName, Address, Birthday, Contacts")] Volunteer volunteer)
+        public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,AddressID,Avatar")]
+                                                VolunteerDTO volunteerDTO)
         {
-
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await _unitOfWorkAsync.Volunteers.Create(volunteer);
-                await _unitOfWorkAsync.Volunteers.SaveChangesAsync();
-
-                var user = await GetCurrentUserAsync();
-                user.PersonID = volunteer.ID;
-                user.PersonType = Models.Identity.PersonType.Volunteer;
-                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
-                GetViewData();
-
-                return RedirectToAction(nameof(Index));
+                return View(volunteerDTO);
             }
-            GetViewData();
 
-            return View(volunteer);
+            Stream stream = null;
+
+            if (volunteerDTO.Avatar != null)
+            {
+                stream = _streamCreater.CopyFileToStream(volunteerDTO.Avatar);
+            }
+
+            var url = _URLVolunteersBuilder.CreatePost(_apiPath);
+            var status = await _downLoader.СreatePostAsync(url, volunteerDTO,
+                                                             stream, volunteerDTO.Avatar.FileName);
+
+            if (status != HttpStatusCode.Created)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            return Redirect("/Volunteers/Index");
         }
 
-        // GET: Volunteers/Edit/5
         [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Edit(int? id)
         {
-            GetViewData();
-
             if (id == null)
             {
                 return NotFound();
@@ -123,64 +208,66 @@ namespace FamilyNet.Controllers
                 return check;
             }
 
-            var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
-            if (volunteer == null)
+            var url = _URLVolunteersBuilder.GetById(_apiPath, id.Value);
+            VolunteerDTO volunteerDTO = null;
+
+            try
             {
-                return NotFound();
+                volunteerDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
             }
 
-            return View(volunteer);
+            GetViewData();
+
+            return View(volunteerDTO);
         }
 
-        // POST: Volunteers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Volunteer")]
-        public async Task<IActionResult> Edit(int id, [Bind("ID, FullName, Address, Birthday, Contacts, Rating")] Volunteer volunteer)
+        public async Task<IActionResult> Edit(int id, VolunteerDTO volunteerDTO)
         {
-            GetViewData();
-
-            if (id != volunteer.ID)
+            if (id != volunteerDTO.ID)
             {
                 return NotFound();
             }
 
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
+            if (!ModelState.IsValid)
             {
-                return check;
+                return View(volunteerDTO);
             }
 
-            if (ModelState.IsValid)
+            Stream stream = null;
+
+            if (volunteerDTO.Avatar != null)
             {
-                try
-                {
-                    var volunteerToEdit = await _unitOfWorkAsync.Volunteers.GetById(id);
-                    volunteerToEdit.CopyState(volunteer);
-                    _unitOfWorkAsync.Volunteers.Update(volunteerToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_unitOfWorkAsync.Volunteers.Any(volunteer.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                stream = _streamCreater.CopyFileToStream(volunteerDTO.Avatar);
             }
 
-            return View(volunteer);
+            var url = _URLVolunteersBuilder.GetById(_apiPath, id);
+            var status = await _downLoader.СreatePutAsync(url, volunteerDTO,
+                                                            stream, volunteerDTO.Avatar?.FileName);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            return Redirect("/Volunteers/Index");
         }
 
-        // GET: Volunteers/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -189,38 +276,108 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var volunteer = await _unitOfWorkAsync.Volunteers
-                .GetById((int)id);
-            if (volunteer == null)
+            var url = _URLVolunteersBuilder.GetById(_apiPath, id.Value);
+            VolunteerDTO volunteerDTO = null;
+
+            try
+            {
+                volunteerDTO = await _downLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (volunteerDTO == null)
             {
                 return NotFound();
             }
+
             GetViewData();
 
-            return View(volunteer);
+            return View(id.Value);
         }
 
-        // POST: Volunteers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var volunteer = await _unitOfWorkAsync.Volunteers.GetById(id);
-            await _unitOfWorkAsync.Volunteers.Delete(volunteer.ID);
-            _unitOfWorkAsync.SaveChangesAsync();
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+
+            var url = _URLVolunteersBuilder.GetById(_apiPath, id);
+            var status = await _downLoader.DeleteAsync(url);
+
+            if (status != HttpStatusCode.OK)
+            {
+                return Redirect("/Home/Error");
+            }
+
             GetViewData();
 
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Volunteers/Index");
         }
 
-        #region PrivateHelpers
+        [AllowAnonymous]
+        public async Task<IActionResult> VolunteersTable(int id, PersonSearchModel searchModel)
+        {
+            var url = _URLVolunteersBuilder.GetAllWithFilter(_apiPath,
+                                                           searchModel,
+                                                           id);
+            IEnumerable<VolunteerDTO> volunteers = null;
+
+            try
+            {
+                volunteers = await _downLoader.GetAllAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            var selectedVolunteers = volunteers.Select(volunteer => new Volunteer()
+            {
+                Birthday = volunteer.Birthday,
+                FullName = new FullName()
+                {
+                    Name = volunteer.Name,
+                    Patronymic = volunteer.Patronymic,
+                    Surname = volunteer.Surname
+                },
+                ID = volunteer.ID,
+                Avatar = volunteer.PhotoPath,
+                AddressID = volunteer.AddressID,
+                EmailID = volunteer.EmailID,
+                Rating = volunteer.Rating
+            });
+
+            GetViewData();
+
+            return View(selectedVolunteers);
+        }
+
         private void GetViewData()
         {
-            ViewData["CreateVolonteer"] = _localizer["CreateVolonteer"];
-            ViewData["OurVolonteers"] = _localizer["OurVolonteers"];
+            ViewData["VolunteersList"] = _localizer["VolunteersList"];
         }
-
-        #endregion
     }
 }
