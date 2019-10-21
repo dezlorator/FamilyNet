@@ -11,6 +11,8 @@ using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Uploaders;
+using FamilyNetServer.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -24,18 +26,21 @@ namespace FamilyNetServer.Controllers.API
         private readonly ICharityMakersSelection _selection;
         private readonly ICharityMakerValidator _validator;
         private readonly IFileUploader _fileUploader;
+        private readonly IOptionsSnapshot<ServerURLSettings> _settings;
 
         #endregion
 
         #region ctro
         public CharityMakersController(IUnitOfWorkAsync unitOfWork,
              ICharityMakersSelection selection, ICharityMakerValidator validator,
-             IFileUploader fileUploader)
+             IFileUploader fileUploader,
+             IOptionsSnapshot<ServerURLSettings> settings)
         {
             _unitOfWork = unitOfWork;
             _selection = selection;
             _validator = validator;
             _fileUploader = fileUploader;
+            _settings = settings;
         }
         #endregion
 
@@ -64,14 +69,15 @@ namespace FamilyNetServer.Controllers.API
             {
                 charityMakerDTO.Add(new CharityMakerDTO
                 {
-                    PhotoPath = charityMaker.Avatar,
+                    PhotoPath = _settings.Value.ServerURL + charityMaker.Avatar,
                     Birthday = charityMaker.Birthday,
                     EmailID = charityMaker.EmailID,
                     ID = charityMaker.ID,
                     Name = charityMaker.FullName.Name,
                     Patronymic = charityMaker.FullName.Patronymic,
                     Surname = charityMaker.FullName.Surname,
-                    Rating = charityMaker.Rating
+                    Rating = charityMaker.Rating,
+                    AdressID = charityMaker.AddressID?? 0
                 });
 
             }
@@ -100,7 +106,8 @@ namespace FamilyNetServer.Controllers.API
                 Rating = charityMaker.Rating,
                 Surname = charityMaker.FullName.Surname,
                 EmailID = charityMaker.EmailID,
-                PhotoPath = charityMaker.Avatar
+                PhotoPath = _settings.Value.ServerURL + charityMaker.Avatar,
+                AdressID = charityMaker.AddressID ?? 0
             };
 
             return Ok(charityMakerDTO);
@@ -141,6 +148,7 @@ namespace FamilyNetServer.Controllers.API
                 ID = charityMakerDTO.ID,
                 Avatar = pathPhoto,
                 EmailID = charityMakerDTO.EmailID,
+                AddressID = charityMakerDTO.AdressID
             };
 
             await _unitOfWork.CharityMakers.Create(charityMaker);
@@ -180,7 +188,7 @@ namespace FamilyNetServer.Controllers.API
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
                 charityMaker.Avatar = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.Children), charityMakerDTO.Avatar);
+                        nameof(DirectoryUploadName.CharityMaker), charityMakerDTO.Avatar);
             }
 
             _unitOfWork.CharityMakers.Update(charityMaker);

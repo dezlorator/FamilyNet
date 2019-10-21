@@ -12,7 +12,7 @@ namespace FamilyNet.Models
 
         public int? AddressID { get; set; }
 
-        [Display(Name="Адресс")]
+        [Display(Name="Адрес")]
         public virtual Address Address { get; set; }
 
         public override void CopyState(Person sender)

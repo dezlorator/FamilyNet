@@ -78,19 +78,21 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Birthday)
-                </td>
-                <th>
-                    @Html.DisplayFor(modelItem => item.FullName.Name)
-                </th>
-                <th>
-                    @Html.DisplayFor(modelItem => item.FullName.Surname)
-                </th>
-                <th>
-                    @Html.DisplayFor(modelItem => item.FullName.Patronymic)
-                </th>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Birthday)
+            </td>
+            <th>
+                @Html.DisplayFor(modelItem => item.FullName.Name)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.FullName.Surname)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.FullName.Patronymic)
+            </th>
+            @if (item.Address != null)
+            {
                 <th>
                     @Html.DisplayFor(modelItem => item.Address.Country)
                 </th>
@@ -106,16 +108,16 @@
                 <th>
                     @Html.DisplayFor(modelItem => item.Address.House)
                 </th>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.Rating)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning">Редактировать</a>
-                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">Детали</a>
-                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger">Удалить</a>
-                </td>
-            </tr>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.Rating)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning">Редактировать</a>
+                <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">Детали</a>
+                <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger">Удалить</a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>

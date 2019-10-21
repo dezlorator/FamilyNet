@@ -36,11 +36,11 @@
   <ItemGroup>
     <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Folder Include="Resources\OrphanagesController\" />
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\representatives\" />
-  </ItemGroup>
+  </ItemGroup>  
 
 </Project>

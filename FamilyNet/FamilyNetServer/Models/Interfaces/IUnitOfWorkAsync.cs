@@ -8,6 +8,8 @@ namespace FamilyNetServer.Models.Interfaces
 {
     public interface IUnitOfWorkAsync : IIdentityAsync
     {
+        IAsyncRepository<Address> Address { get; }
+        IAsyncRepository<Location> Location { get; }
         IOrphanageAsyncRepository Orphanages { get; }
         IAsyncRepository<CharityMaker> CharityMakers { get; }
         IAsyncRepository<Representative> Representatives { get; }
