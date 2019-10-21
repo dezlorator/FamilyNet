@@ -26,7 +26,7 @@ namespace FamilyNet.Controllers
 
         private readonly IStringLocalizer<VolunteersController> _localizer;
         private readonly ServerDataDownLoader<VolunteerDTO> _downloader;
-        private readonly ServerDataDownLoader<AddressDTO> _addressDownloader;
+        private readonly IServerAddressDownloader _addressDownloader;
         private readonly IURLVolunteersBuilder _URLVolunteersBuilder;
         private readonly IURLAddressBuilder _URLAddressBuilder;
         private readonly string _apiPath = "api/v1/volunteers";
@@ -40,7 +40,7 @@ namespace FamilyNet.Controllers
         public VolunteersController(IUnitOfWorkAsync unitOfWork,
                                  IStringLocalizer<VolunteersController> localizer,
                                  ServerDataDownLoader<VolunteerDTO> downLoader,
-                                 ServerDataDownLoader<AddressDTO> addressDownloader,
+                                 IServerAddressDownloader addressDownloader,
                                  IURLVolunteersBuilder URLVolunteersBuilder,
                                  IURLAddressBuilder URLAddressBuilder,
                                  IFileStreamCreater streamCreater)
@@ -97,8 +97,6 @@ namespace FamilyNet.Controllers
                 Rating = volunteer.Rating
             });
 
-            GetViewData();
-
             return View(selectedVolunteers);
         }
 
@@ -135,6 +133,31 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
+            var addressUrl = _URLAddressBuilder.GetById(_apiAddressPath, (int)volunteerDTO.AddressID);
+            AddressDTO adderessDTO = null;
+
+            try
+            {
+                adderessDTO = await _addressDownloader.GetByIdAsync(addressUrl);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (volunteerDTO == null)
+            {
+                return NotFound();
+            }
+
             var volunteer = new Volunteer()
             {
                 Birthday = volunteerDTO.Birthday,
@@ -147,11 +170,17 @@ namespace FamilyNet.Controllers
                 ID = volunteerDTO.ID,
                 Avatar = volunteerDTO.PhotoPath,
                 AddressID = volunteerDTO.AddressID,
+                Address = new Address()
+                {
+                    Country = adderessDTO.Country,
+                    Region = adderessDTO.Region,
+                    City = adderessDTO.City,
+                    Street = adderessDTO.Street,
+                    House = adderessDTO.House
+                },
                 EmailID = volunteerDTO.EmailID,
                 Rating = volunteerDTO.Rating,
             };
-
-            GetViewData();
 
             return View(volunteer);
         }
@@ -160,20 +189,13 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Create()
         {
             await Check();
-
-            var orphanagesList = new List<Orphanage>();
-            orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
-            ViewBag.ListOfOrphanages = orphanagesList;
-            GetViewData();
-
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Volunteer")]
-        public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,AddressID,Avatar")]
-                                                VolunteerDTO volunteerDTO)
+        public async Task<IActionResult> Create(VolunteerDTO volunteerDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -187,9 +209,15 @@ namespace FamilyNet.Controllers
                 stream = _streamCreater.CopyFileToStream(volunteerDTO.Avatar);
             }
 
+            var addressUrl = _URLAddressBuilder.CreatePost(_apiAddressPath);
+            var statusAddress = await _addressDownloader.СreatePostAsync(addressUrl,
+                                            volunteerDTO.Address);
+
+            volunteerDTO.AddressID = statusAddress.Content.ReadAsAsync<AddressDTO>().Result.ID;
             var url = _URLVolunteersBuilder.CreatePost(_apiPath);
+
             var status = await _downloader.СreatePostAsync(url, volunteerDTO,
-                                                             stream, volunteerDTO.Avatar.FileName);
+                                                             stream, volunteerDTO.Avatar?.FileName);
 
             if (status != HttpStatusCode.Created)
             {
@@ -235,27 +263,9 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var volunteer = new Volunteer()
-            {
-                Birthday = volunteerDTO.Birthday,
-                FullName = new FullName()
-                {
-                    Name = volunteerDTO.Name,
-                    Patronymic = volunteerDTO.Patronymic,
-                    Surname = volunteerDTO.Surname
-                },
-                ID = volunteerDTO.ID,
-                Avatar = volunteerDTO.PhotoPath,
-                AddressID = volunteerDTO.AddressID,
-                EmailID = volunteerDTO.EmailID,
-                Rating = volunteerDTO.Rating,
-            };
-
             if (volunteerDTO.AddressID == null)
             {
-                GetViewData();
-
-                return View(volunteer);
+                return View(volunteerDTO);
             }
 
             var addressURL = _URLAddressBuilder.GetById(_apiAddressPath, 
@@ -268,36 +278,20 @@ namespace FamilyNet.Controllers
             }
             catch (ArgumentNullException)
             {
-                GetViewData();
-
-                return View(volunteer);
+                return View(volunteerDTO);
             }
             catch (HttpRequestException)
             {
-                GetViewData();
-
-                return View(volunteer);
+                return View(volunteerDTO);
             }
             catch (JsonException)
             {
-                GetViewData();
-
-                return View(volunteer);
+                return View(volunteerDTO);
             }
 
-            volunteer.Address = new Address
-            {
-                ID = addressDTO.ID,
-                Country = addressDTO.Country,
-                City = addressDTO.City,
-                Region = addressDTO.Region,
-                Street = addressDTO.Street,
-                House = addressDTO.House
-            };
+            volunteerDTO.Address = addressDTO;
 
-            GetViewData();
-
-            return View(volunteer);
+            return View(volunteerDTO);
         }
 
         [HttpPost]
@@ -308,6 +302,11 @@ namespace FamilyNet.Controllers
             if (id != volunteerDTO.ID)
             {
                 return NotFound();
+            }
+
+            if (volunteerDTO.AddressID == null)
+            {
+                volunteerDTO.AddressID = volunteerDTO.Address.ID;
             }
 
             if (!ModelState.IsValid)
@@ -321,6 +320,10 @@ namespace FamilyNet.Controllers
             {
                 stream = _streamCreater.CopyFileToStream(volunteerDTO.Avatar);
             }
+
+            var addressUrl = _URLAddressBuilder.GetById(_apiAddressPath, (int)volunteerDTO.AddressID);
+            var statusAddress = await _addressDownloader.СreatePutAsync(addressUrl,
+                                            volunteerDTO.Address);
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);
             var status = await _downloader.СreatePutAsync(url, volunteerDTO,
@@ -368,8 +371,6 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            GetViewData();
-
             return View(id.Value);
         }
 
@@ -391,8 +392,6 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            GetViewData();
-
             return Redirect("/Volunteers/Index");
         }
 
@@ -404,9 +403,13 @@ namespace FamilyNet.Controllers
                                                            id);
             IEnumerable<VolunteerDTO> volunteers = null;
 
+            var addressUrl = _URLAddressBuilder.CreatePost("api/v1/address");
+            IEnumerable<AddressDTO> addresses = null;
+
             try
             {
                 volunteers = await _downloader.GetAllAsync(url);
+                addresses = await _addressDownloader.GetAllAsync(addressUrl);
             }
             catch (ArgumentNullException)
             {
@@ -433,18 +436,19 @@ namespace FamilyNet.Controllers
                 ID = volunteer.ID,
                 Avatar = volunteer.PhotoPath,
                 AddressID = volunteer.AddressID,
+                Address = new Address()
+                {
+                    Country = addresses.FirstOrDefault(p => p.ID == volunteer.AddressID).Country,
+                    Region = addresses.FirstOrDefault(p => p.ID == volunteer.AddressID).Region,
+                    City = addresses.FirstOrDefault(p => p.ID == volunteer.AddressID).City,
+                    Street = addresses.FirstOrDefault(p => p.ID == volunteer.AddressID).Street,
+                    House = addresses.FirstOrDefault(p => p.ID == volunteer.AddressID).House
+                },
                 EmailID = volunteer.EmailID,
                 Rating = volunteer.Rating
             });
 
-            GetViewData();
-
             return View(selectedVolunteers);
-        }
-
-        private void GetViewData()
-        {
-            ViewData["VolunteersList"] = _localizer["VolunteersList"];
         }
     }
 }

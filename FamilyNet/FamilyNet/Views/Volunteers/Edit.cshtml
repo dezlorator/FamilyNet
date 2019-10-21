@@ -1,4 +1,4 @@
-﻿@model FamilyNet.Models.Volunteer
+﻿@model DataTransferObjects.VolunteerDTO
 
 @{
     ViewData["Title"] = "Edit";
@@ -9,26 +9,28 @@
     <div class="row">
         <div class="col-md-9 register-right">
             <form asp-action="Edit" enctype="multipart/form-data">
-                <input hidden asp-for="ID" />
+                <input type="hidden" asp-for="ID" />
+                <input type="hidden" asp-for="AddressID" />
+                <input type="hidden" asp-for="Address.ID" />
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                         <h3 class="register-heading">Редактирование профиля</h3>
                         <div class="row register-form">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="FullName.Name" class="control-label"></label>
-                                    <input asp-for="FullName.Name" class="form-control" />
-                                    <span asp-validation-for="FullName.Name" class="text-danger"></span>
+                                    <label asp-for="Name" class="control-label"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="FullName.Surname" class="control-label"></label>
-                                    <input asp-for="FullName.Surname" class="form-control" />
-                                    <span asp-validation-for="FullName.Surname" class="text-danger"></span>
+                                    <label asp-for="Surname" class="control-label"></label>
+                                    <input asp-for="Surname" class="form-control" />
+                                    <span asp-validation-for="Surname" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="FullName.Patronymic" class="control-label"></label>
-                                    <input asp-for="FullName.Patronymic" class="form-control" />
-                                    <span asp-validation-for="FullName.Patronymic" class="text-danger"></span>
+                                    <label asp-for="Patronymic" class="control-label"></label>
+                                    <input asp-for="Patronymic" class="form-control" />
+                                    <span asp-validation-for="Patronymic" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Birthday" class="control-label"></label>
@@ -38,8 +40,29 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="AddressID" class="control-label"></label>
-                                    <input asp-for="AddressID" class="form-control">
+                                    <label asp-for="Address.Country" class="control-label"></label>
+                                    <input asp-for="Address.Country" class="form-control" />
+                                    <span asp-validation-for="Address.Country" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Address.City" class="control-label"></label>
+                                    <input asp-for="Address.City" class="form-control" />
+                                    <span asp-validation-for="Address.City" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Address.Region" class="control-label"></label>
+                                    <input asp-for="Address.Region" class="form-control" />
+                                    <span asp-validation-for="Address.Region" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Address.Street" class="control-label"></label>
+                                    <input asp-for="Address.Street" class="form-control" />
+                                    <span asp-validation-for="Address.Street" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Address.House" class="control-label"></label>
+                                    <input asp-for="Address.House" class="form-control" />
+                                    <span asp-validation-for="Address.House" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Rating" class="control-label"></label>
