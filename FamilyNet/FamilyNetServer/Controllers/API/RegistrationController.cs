@@ -135,7 +135,7 @@ namespace FamilyNetServer.Controllers.API
             if (result.Succeeded)
             {
                 await _unitOfWork.SignInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Home");
+                return Ok();
             }
             else
             {
