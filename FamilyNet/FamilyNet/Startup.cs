@@ -40,9 +40,7 @@ namespace FamilyNet
                     Configuration["Data:FamilyNet:ConnectionString"]));
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
-            services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
-            {
-                opts.User.RequireUniqueEmail = true;
+            services.AddIdentity<ApplicationUser, IdentityRole>(opts => {                opts.User.RequireUniqueEmail = true;
                 opts.Password.RequiredLength = 6;
                 opts.Password.RequireNonAlphanumeric = false;
                 opts.Password.RequireLowercase = true;
@@ -56,6 +54,8 @@ namespace FamilyNet
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
+            services.AddTransient<ServerDataDownLoader<RepresentativeDTO>, ServerRepresentativesDownloader>();
+            services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
