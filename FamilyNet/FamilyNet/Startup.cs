@@ -68,8 +68,22 @@ namespace FamilyNet
             services.Configure<JWTCofiguration>(Configuration.GetSection("JWT"));
 
             services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
+            services.AddTransient<ServerDataDownLoader<CharityMakerDTO>, ServerCharityMakersDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<DonationItemDTO>, ServerDonationItemsDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<CategoryDTO>, ServerCategoriesDownloader>();
+            services.AddTransient<ServerDataDownLoader<ChildrenHouseDTO>, ServerChildrenHouseDownloader>();
+            services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
-            services.AddTransient<IAuthorizeCreater, AuthorizeCreater>();
+            services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
+            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
+            services.AddTransient<IURLAddressBuilder, URLAddressBuilder>();
+
+            services.AddTransient<ServerDataDownLoader<VolunteerDTO>, ServerVolunteersDownloader>();
+            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
+            services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
+            services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.

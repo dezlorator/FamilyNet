@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.Models
 {
-    public class Address
+    public class Address : IEntity
     {
         public int ID { get; set; }
 

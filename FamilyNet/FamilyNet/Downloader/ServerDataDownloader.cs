@@ -94,13 +94,13 @@ namespace FamilyNet.Downloader
             return obj;
         }
 
-        public abstract Task<HttpStatusCode> СreatetePostAsync(string url,
+        public abstract Task<HttpStatusCode> CreatePostAsync(string url,
                                                                T dto,
                                                                Stream file,
                                                                string fieName,
                                                                ISession session);
 
-        public abstract Task<HttpStatusCode> СreatetePutAsync(string url,
+        public abstract Task<HttpStatusCode> CreatePutAsync(string url,
                                                                T dto,
                                                                Stream file,
                                                                string fieName,

@@ -26,14 +26,15 @@ namespace FamilyNetServer.Models.EntityFramework
                                  RoleManager<IdentityRole> roleManager)
         {
             _context = cont;
+            Address = new EFRepositoryAsync<Address>(cont);
+            Location = new EFRepositoryAsync<Location>(cont);
             CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
             Donations = new EFRepositoryAsync<Donation>(cont);
-            DonationItems = new EFRepositoryAsync<DonationItem>(cont);
             Orphanages = new OrphanageRepositoryAsync(cont);
             Orphans = new EFRepositoryAsync<Orphan>(cont);
+            DonationItems = new EFRepositoryAsync<DonationItem>(cont);
             Representatives = new EFRepositoryAsync<Representative>(cont);
             Volunteers = new EFRepositoryAsync<Volunteer>(cont);
-            BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
             PasswordHasher = passwordHash;
             UserValidator = userValid;
             PasswordValidator = passValid;
@@ -41,6 +42,7 @@ namespace FamilyNetServer.Models.EntityFramework
             UserManager = userManager;
             SignInManager = signInManager;
             RoleManager = roleManager;
+            BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
             TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
         }
 
@@ -50,6 +52,9 @@ namespace FamilyNetServer.Models.EntityFramework
 
         public IOrphanageAsyncRepository Orphanages { get; set; }
 
+        public IAsyncRepository<Address> Address { get; set; }
+        public IAsyncRepository<Location> Location { get; set; }
+
         public IAsyncRepository<CharityMaker> CharityMakers { get; set; }
 
         public IAsyncRepository<Representative> Representatives { get; set; }
@@ -57,8 +62,6 @@ namespace FamilyNetServer.Models.EntityFramework
         public IAsyncRepository<Volunteer> Volunteers { get; set; }
 
         public IAsyncRepository<Donation> Donations { get; set; }
-
-        public IAsyncRepository<DonationItem> DonationItems { get; set; }
 
         public DbSet<TypeBaseItem> TypeBaseItems { get; set; } // TODO : rewrite this
 
@@ -77,6 +80,7 @@ namespace FamilyNetServer.Models.EntityFramework
         public SignInManager<ApplicationUser> SignInManager { get; set; }
 
         public RoleManager<IdentityRole> RoleManager { get; set; }
+        public IAsyncRepository<DonationItem> DonationItems { get; set; }
 
         public IAsyncRepository<BaseItemType> BaseItemTypes { get; set; }
 

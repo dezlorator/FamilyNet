@@ -14,6 +14,11 @@ using System.Globalization;
 using FamilyNet.Infrastructure;
 using System;
 using System.Collections.Generic;
+using FamilyNet.Downloader;
+using DataTransferObjects;
+using FamilyNet.StreamCreater;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace FamilyNet.Controllers
 {
@@ -23,51 +28,95 @@ namespace FamilyNet.Controllers
         #region Private fields
 
         private OrphanageSearchModel _searchModel;
-        private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IStringLocalizer<OrphanagesController> _localizer;
 
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        private readonly IStringLocalizer<OrphansController> _localizer;
+        private readonly ServerDataDownLoader<ChildrenHouseDTO> _downLoader;
+        private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
+        private readonly ServerDataDownLoader<AddressDTO> _addressDownLoader;
+        private readonly IURLAddressBuilder _URLAddressBuilder;
+        private readonly string _apiPath = "api/v1/childrenHouse";
+        private readonly string _apiAddressPath = "api/v1/address";
+        private readonly IFileStreamCreater _streamCreater;
+
+        public OrphanagesController(IUnitOfWorkAsync unitOfWork,
+                                IStringLocalizer<OrphansController> localizer,
+                                ServerDataDownLoader<ChildrenHouseDTO> downLoader,
+                                IURLChildrenHouseBuilder URLChildrenHouseBuilder,
+                                IFileStreamCreater streamCreater,
+                                IURLAddressBuilder URLAddressBuilder,
+                                ServerDataDownLoader<AddressDTO> addressDownLoader)
+           : base(unitOfWork)
         {
-            _hostingEnvironment = environment;
             _localizer = localizer;
-        }
-
-        private bool IsContain(Address addr)
-        {
-            foreach (var word in _searchModel.AddressString.Split())
-            {
-                if (addr.Street.ToUpper().Contains(word.ToUpper())
-                || addr.City.ToUpper().Contains(word.ToUpper())
-                || addr.Region.ToUpper().Contains(word.ToUpper())
-                || addr.Country.ToUpper().Contains(word.ToUpper()))
-                {
-                    return true;
-                }
-            }
-            return false;
+            _downLoader = downLoader;
+            _URLChildrenHouseBuilder = URLChildrenHouseBuilder;
+            _streamCreater = streamCreater;
+            _URLAddressBuilder = URLAddressBuilder;
+            _addressDownLoader = addressDownLoader;
         }
 
         #endregion
 
         #region ActionMethods
 
-        // GET: Orphanages
+
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int id, OrphanageSearchModel searchModel,
-            SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
+        public async Task<IActionResult> Index(OrphanageSearchModel searchModel, SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
-            IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
+            var url = _URLChildrenHouseBuilder.GetAllWithFilter(_apiPath, searchModel, sortOrder);
+            IEnumerable<ChildrenHouseDTO> childrenHouse = null;
 
-            orphanages = GetFiltered(orphanages, searchModel);
-            orphanages = GetSorted(orphanages, sortOrder);
+            try
+            {
+                childrenHouse = await _downLoader.GetAllAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
 
-            if (id == 0)
-                return View(await orphanages.ToListAsync());
+            var orphanages = childrenHouse.Select(house => new Orphanage()
+            {
+                ID = house.ID,
+                Name = house.Name,
+                AdressID = house.AdressID,
+                LocationID = house.LocationID,
+                Rating = house.Rating,
+                Avatar = house.PhotoPath,
+                Adress = GetAddress(house.AdressID.Value).Result
+            }); 
+           
+            
+            GetViewData();
 
-            if (id > 0)
-                orphanages = orphanages.Where(x => x.ID.Equals(id));
+            return View(orphanages);
+        }
 
-            return View(await orphanages.ToListAsync());
+        private async Task<Address> GetAddress(int id)
+        {
+            var url = _URLAddressBuilder.GetById(_apiAddressPath, id);
+
+            var address =  await _addressDownLoader.GetByIdAsync(url, HttpContext.Session);
+
+            var newAddress = new Address()
+            {
+                ID = address.ID,
+                Country =  address.Country,
+                Region = address.Region,
+                City = address.City,
+                Street = address.Street,
+                House = address.House
+            };
+
+            return newAddress;
         }
 
         // GET: Orphanages/Details/5
@@ -264,7 +313,7 @@ namespace FamilyNet.Controllers
 
         private bool Contains(Address addr)
         {
-            foreach (var word in _searchModel.AddressString.Split())
+            foreach (var word in _searchModel.Address.Split())
             {
                 string wordUpper = word.ToUpper();
 
@@ -327,14 +376,14 @@ namespace FamilyNet.Controllers
             {
                 _searchModel = searchModel;
 
-                if (!string.IsNullOrEmpty(searchModel.NameString))
-                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
+                if (!string.IsNullOrEmpty(searchModel.Name))
+                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.Name));
 
-                if (!string.IsNullOrEmpty(searchModel.AddressString))
+                if (!string.IsNullOrEmpty(searchModel.Address))
                     orphanages = orphanages.Where(x => Contains(x.Adress));
 
-                if (searchModel.RatingNumber > 0)
-                    orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
+                if (searchModel.Rating > 0)
+                    orphanages = orphanages.Where(x => x.Rating >= searchModel.Rating);
             }
             GetViewData();
 

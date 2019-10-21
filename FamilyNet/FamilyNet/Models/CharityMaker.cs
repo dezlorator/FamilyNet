@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using DataTransferObjects;
 
 namespace FamilyNet.Models
 {
@@ -15,7 +16,7 @@ namespace FamilyNet.Models
         public int? AddressID { get; set; }
 
         [Display(Name = "Адрес")]
-        public virtual Address Address { get; set; }
+        public Address Address { get; set; }
       
         public override void CopyState(Person sender)
         {

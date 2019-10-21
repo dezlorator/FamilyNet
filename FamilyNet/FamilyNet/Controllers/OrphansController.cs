@@ -140,7 +140,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLChildrenBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.СreatetePostAsync(url, childDTO,
+            var status = await _downLoader.CreatePostAsync(url, childDTO,
                                                              stream,
                                                              childDTO.Avatar.FileName,
                                                              HttpContext.Session);
@@ -212,7 +212,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLChildrenBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatetePutAsync(url, childDTO,
+            var status = await _downLoader.CreatePutAsync(url, childDTO,
                                                             stream, childDTO.Avatar?.FileName,
                                                             HttpContext.Session);
 

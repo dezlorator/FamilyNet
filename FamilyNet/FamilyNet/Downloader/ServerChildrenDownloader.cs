@@ -13,7 +13,7 @@ namespace FamilyNet.Downloader
         public ServerChildrenDownloader(IHttpAuthorizationHandler authorizationHandler)
             : base(authorizationHandler) { }
 
-        public override async Task<HttpStatusCode> СreatetePostAsync(string url,
+        public override async Task<HttpStatusCode> CreatePostAsync(string url,
                                                             ChildDTO dto,
                                                             Stream streamFile,
                                                             string fileName,
@@ -40,7 +40,7 @@ namespace FamilyNet.Downloader
 
 
 
-        public override async Task<HttpStatusCode> СreatetePutAsync(string url,
+        public override async Task<HttpStatusCode> CreatePutAsync(string url,
                                                               ChildDTO dto,
                                                               Stream streamFile,
                                                               string fileName,

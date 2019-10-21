@@ -1,0 +1,56 @@
+﻿@model FamilyNet.Models.ViewModels.DonationViewModel
+
+@{
+    ViewData["Title"] = "Изменение";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Изменить потребность</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="Donation.ID" />
+            <input type="hidden" asp-for="Donation.DonationItemID" />
+            <input type="hidden" asp-for="DonationItem.ID" />
+
+            <div class="form-group">
+                <label asp-for="Donation.OrphanageName" class="control-label"></label>
+                <select asp-for="Donation.OrphanageID"
+                        class="form-control"
+                        asp-items="@(new SelectList(@ViewBag.ListOfOrphanages, "ID", "Name"))"></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DonationItem.Name" class="control-label"></label>
+                <input asp-for="DonationItem.Name" class="form-control" />
+                <span asp-validation-for="DonationItem.Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DonationItem.Description" class="control-label"></label>
+                <input asp-for="DonationItem.Description" class="form-control" />
+                <span asp-validation-for="DonationItem.Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DonationItem.Price" class="control-label"></label>
+                <input asp-for="DonationItem.Price" class="form-control" />
+                <span asp-validation-for="DonationItem.Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Изменить" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Donations" type="submit" class="btn btn-primary">Назад</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
