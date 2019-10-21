@@ -75,7 +75,7 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.Rating.ToString()), "Rating");
             formDataContent.Add(new StringContent(dto.Birthday.ToString()), "Birthday");
             formDataContent.Add(new StringContent(dto.AdressID.ToString()),
-                                                  "CharityMakerAdressID");
+                                                  "AdressID");
         }
     }
 }

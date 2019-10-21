@@ -181,18 +181,20 @@ namespace FamilyNet.Controllers
                 return View(charityMakerDTO);
             }
             Stream stream = null;
-
             if (charityMakerDTO.Avatar != null)
             {
                 stream = _streamCreator.CopyFileToStream(charityMakerDTO.Avatar);
             }
 
+            var addressUrl = _urlAdressBuilder.CreatePost(_pathToAdressApi);
+            var status1 = await _serverAddressDownloader.СreatePostAsync(addressUrl,
+                                                        charityMakerDTO.AddressDTO);
+
+            charityMakerDTO.AdressID = status1.Content.ReadAsAsync<AddressDTO>().Result.ID;
             var url = _urlBilder.CreatePost(_apiPath);
             var status = await _serverDownloader.СreatePostAsync(url, charityMakerDTO,
                                                              stream, charityMakerDTO.Avatar.FileName);
-            var addressUrl = _urlAdressBuilder.CreatePost(_pathToAdressApi);
-            var status1 = await _serverAddressDownloader.СreatePostAsync(addressUrl,
-                                                            charityMakerDTO.AddressDTO);
+
 
             if (status != HttpStatusCode.Created)
             {
