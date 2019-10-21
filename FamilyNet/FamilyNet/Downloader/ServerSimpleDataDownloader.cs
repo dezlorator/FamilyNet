@@ -1,18 +1,18 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace FamilyNet.Downloader
 {
-    public abstract class ServerDataDownLoader<T> where T : class, new()
+    public abstract class ServerSimpleDataDownloader<T> where T : class, new()
     {
         public async Task<IEnumerable<T>> GetAllAsync(string url)
         {
-            List<T> objs = null;
+            List<T> objs;
 
             try
             {
@@ -44,7 +44,7 @@ namespace FamilyNet.Downloader
 
         public async Task<T> GetByIdAsync(string url)
         {
-            T obj = null;
+            T obj;
 
             try
             {
@@ -74,17 +74,13 @@ namespace FamilyNet.Downloader
             return obj;
         }
 
-        public abstract Task<HttpStatusCode> CreatePostAsync(string url,
-                                                               T dto,
-                                                               Stream file,
-                                                               string fieName);
+        public abstract Task<HttpResponseMessage> CreatePostAsync(string url,
+                                                               T dto);
 
-        public abstract Task<HttpStatusCode> CreatePutAsync(string url,
-                                                               T dto,
-                                                               Stream file,
-                                                               string fieName);
+        public abstract Task<HttpResponseMessage> CreatePutAsync(string url,
+                                                               T dto);
 
-        public async Task<HttpStatusCode> DeleteAsync(string url)
+        public async Task<HttpResponseMessage> DeleteAsync(string url)
         {
             HttpResponseMessage response;
 
@@ -108,7 +104,7 @@ namespace FamilyNet.Downloader
                 throw;
             }
 
-            return response.StatusCode;
+            return response;
         }
     }
 }
