@@ -1,4 +1,4 @@
-﻿@model DataTransferObjects.RepresentativeDTO
+﻿@model FamilyNet.Models.Representative
 
 @{
     ViewData["Title"] = "Create";
@@ -17,24 +17,24 @@
                         <div class="row register-form">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="Name" class="control-label"></label>
-                                    <input asp-for="Name" class="form-control" />
-                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                    <label asp-for="FullName.Name" class="control-label"></label>
+                                    <input asp-for="FullName.Name" class="form-control" />
+                                    <span asp-validation-for="FullName.Name" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="Surname" class="control-label"></label>
-                                    <input asp-for="Surname" class="form-control" />
-                                    <span asp-validation-for="Surname" class="text-danger"></span>
+                                    <label asp-for="FullName.Surname" class="control-label"></label>
+                                    <input asp-for="FullName.Surname" class="form-control" />
+                                    <span asp-validation-for="FullName.Surname" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="Patronymic" class="control-label"></label>
-                                    <input asp-for="Patronymic" class="form-control" />
-                                    <span asp-validation-for="Patronymic" class="text-danger"></span>
+                                    <label asp-for="FullName.Patronymic" class="control-label"></label>
+                                    <input asp-for="FullName.Patronymic" class="form-control" />
+                                    <span asp-validation-for="FullName.Patronymic" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Birthday" class="control-label"></label>
-                                    <input asp-format= "{0:yyyy-MM-dd}" type="date" asp-for="Birthday" class="form-control" />
-                                    <span asp-validation-for="Birthday"  class="text-danger"></span>
+                                    <input asp-for="Birthday" class="form-control" />
+                                    <span asp-validation-for="Birthday" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Rating" class="control-label"></label>
@@ -48,15 +48,16 @@
                                     <span asp-validation-for="EmailID" class="text-danger"></span>
                                 </div>*@
                                 <div class="form-group">
-                                    <label class="control-label"></label>
-                                    <select asp-for="ChildrenHouseID"
+                                    <label asp-for="Orphanage" class="control-label"></label>
+                                    <select asp-for="Orphanage.ID"
                                             class="form-control"
-                                            name="ChildrenHouseID"
-                                             asp-items="@ViewBag.Orphanages as SelectList"></select>
+                                            name="id"
+                                            asp-items="@ViewBag.Orphanages as SelectList"></select>
+                                    <span asp-validation-for="Orphanage.Name" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Avatar" class="control-label"></label>
-                                    <input asp-for="Avatar" type="file" name="Avatar" class="form-control" />
+                                    <input asp-for="Avatar" type="file" name="file" class="form-control" />
                                     <span asp-validation-for="Avatar" class="text-danger"></span>
                                     <label> Поддержка только *.jpg</label>
                                 </div>

@@ -39,9 +39,4 @@
     <Folder Include="wwwroot\volunteer\" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
-  </ItemGroup>
-
 </Project>
