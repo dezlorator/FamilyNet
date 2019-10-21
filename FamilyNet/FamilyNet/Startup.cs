@@ -55,6 +55,7 @@ namespace FamilyNet
 
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
+            services.AddTransient<ServerDataDownLoader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationItemDTO>, ServerDonationItemsDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<CategoryDTO>, ServerCategoriesDownloader>();
@@ -62,15 +63,11 @@ namespace FamilyNet
             services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
+            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
             services.AddTransient<IURLAddressBuilder, URLAddressBuilder>();
 
-            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
-            services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
-            services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
             services.AddTransient<ServerDataDownLoader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
-            services.AddTransient<ServerDataDownLoader<CharityMakerDTO>, ServerCharityMakersDownloader>();
-            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
             services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
             services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
 

@@ -1,6 +1,5 @@
 ﻿using DataTransferObjects;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
@@ -11,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static FamilyNetServer.Models.Donation;
 
 namespace FamilyNetServer.Controllers.API
 {

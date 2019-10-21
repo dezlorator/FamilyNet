@@ -32,6 +32,7 @@ namespace FamilyNetServer.Models.EntityFramework
             Donations = new EFRepositoryAsync<Donation>(cont);
             Orphanages = new OrphanageRepositoryAsync(cont);
             Orphans = new EFRepositoryAsync<Orphan>(cont);
+            DonationItems = new EFRepositoryAsync<DonationItem>(cont);
             Representatives = new EFRepositoryAsync<Representative>(cont);
             Volunteers = new EFRepositoryAsync<Volunteer>(cont);
             PasswordHasher = passwordHash;
@@ -79,6 +80,7 @@ namespace FamilyNetServer.Models.EntityFramework
         public SignInManager<ApplicationUser> SignInManager { get; set; }
 
         public RoleManager<IdentityRole> RoleManager { get; set; }
+        public IAsyncRepository<DonationItem> DonationItems { get; set; }
 
         public IAsyncRepository<BaseItemType> BaseItemTypes { get; set; }
 
