@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace FamilyNet.Downloader
 {
@@ -74,12 +74,12 @@ namespace FamilyNet.Downloader
             return obj;
         }
 
-        public abstract Task<HttpStatusCode> CreatePostAsync(string url,
+        public abstract Task<HttpStatusCode> СreatetePostAsync(string url,
                                                                T dto,
                                                                Stream file,
                                                                string fieName);
 
-        public abstract Task<HttpStatusCode> CreatePutAsync(string url,
+        public abstract Task<HttpStatusCode> СreatetePutAsync(string url,
                                                                T dto,
                                                                Stream file,
                                                                string fieName);
