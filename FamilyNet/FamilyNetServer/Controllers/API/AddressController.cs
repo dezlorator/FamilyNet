@@ -90,7 +90,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]AddressDTO addressDTO)
+        public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
         {
             //if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
             //{
@@ -118,7 +118,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]AddressDTO addressDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AddressDTO addressDTO)
         {
             //if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
             //{

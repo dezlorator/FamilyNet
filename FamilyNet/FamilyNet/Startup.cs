@@ -56,7 +56,7 @@ namespace FamilyNet
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<ServerDataDownLoader<ChildrenHouseDTO>, ServerChildrenHouseDownloader>();
-            services.AddTransient<ServerDataDownLoader<AddressDTO>, ServerAddressDownloader>();
+            services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
             services.AddTransient<IURLAddressBuilder, URLAddressBuilder>();

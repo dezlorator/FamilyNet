@@ -72,9 +72,10 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.Name), "Name");
             formDataContent.Add(new StringContent(dto.Patronymic), "Patronymic");
             formDataContent.Add(new StringContent(dto.Surname), "Surname");
+            formDataContent.Add(new StringContent(dto.Rating.ToString()), "Rating");
             formDataContent.Add(new StringContent(dto.Birthday.ToString()), "Birthday");
             formDataContent.Add(new StringContent(dto.AdressID.ToString()),
-                                                  "ChildrenHouseID");
+                                                  "AdressID");
         }
     }
 }
