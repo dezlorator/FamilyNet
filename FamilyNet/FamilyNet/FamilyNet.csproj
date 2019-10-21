@@ -43,9 +43,4 @@
     <Folder Include="wwwroot\representatives\" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
-  </ItemGroup>
-
 </Project>
