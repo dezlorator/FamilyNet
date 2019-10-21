@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.852
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyNet", "FamilyNet\FamilyNet.csproj", "{15DDBD21-BBD3-4113-8260-18CCEAB9C5A2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyNetServer", "FamilyNetServer\FamilyNetServer.csproj", "{BC7F9E29-77D5-44F7-BC62-394C9F1A2C11}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTransferObjects", "DataTransferObjects\DataTransferObjects.csproj", "{5EAFF1CB-ED69-43BA-A008-EF692A105AAD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTransferObjects", "DataTransferObjects\DataTransferObjects.csproj", "{C28994C1-E8C1-4241-8CEA-A165517BE01A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{BC7F9E29-77D5-44F7-BC62-394C9F1A2C11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC7F9E29-77D5-44F7-BC62-394C9F1A2C11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC7F9E29-77D5-44F7-BC62-394C9F1A2C11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5EAFF1CB-ED69-43BA-A008-EF692A105AAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5EAFF1CB-ED69-43BA-A008-EF692A105AAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5EAFF1CB-ED69-43BA-A008-EF692A105AAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5EAFF1CB-ED69-43BA-A008-EF692A105AAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C28994C1-E8C1-4241-8CEA-A165517BE01A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C28994C1-E8C1-4241-8CEA-A165517BE01A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C28994C1-E8C1-4241-8CEA-A165517BE01A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C28994C1-E8C1-4241-8CEA-A165517BE01A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,11 +1,7 @@
-﻿using FamilyNetServer.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace FamilyNetServer.DTO
+namespace DataTransferObjects
 {
     public class RepresentativeDTO
     {
@@ -17,7 +13,7 @@ namespace FamilyNetServer.DTO
         public float Rating { get; set; }
         public IFormFile Avatar { get; set; }
         public int ChildrenHouseID { get; set; }
-        public int EmailID { get; set; }
+        public int EmailID { get; set; }      
         public string PhotoPath { get; set; }
     }
 }
