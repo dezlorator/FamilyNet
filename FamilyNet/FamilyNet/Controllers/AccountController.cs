@@ -3,26 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using FamilyNet.Downloader;
 
 namespace FamilyNet.Controllers
 {
-    
     public class AccountController : BaseController
     {
         private readonly IStringLocalizer<HomeController> _localizer;
+        private readonly IAuthorizeCreater _authorizeCreater;
 
-        public AccountController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        public AccountController(IUnitOfWorkAsync unitOfWork,
+                                 IStringLocalizer<HomeController> localizer,
+                                 IStringLocalizer<SharedResource> sharedLocalizer,
+                                 IAuthorizeCreater authorizeCreater)
+            : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;
+            _authorizeCreater = authorizeCreater;
         }
 
         [HttpGet]
@@ -99,19 +102,19 @@ namespace FamilyNet.Controllers
             }
 
             return View(model);
-            
+
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
-            if(userId == null || code == null)
+            if (userId == null || code == null)
             {
                 return View("Error");
             }
             var user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
-            if(user == null)
+            if (user == null)
             {
                 return View("Error");
             }
@@ -126,7 +129,6 @@ namespace FamilyNet.Controllers
                 return View("Error");
             }
         }
-       
 
         [HttpGet]
         [AllowAnonymous]
@@ -142,40 +144,44 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             GetViewData();
+
             if (ModelState.IsValid)
             {
-                ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    if(!await _unitOfWorkAsync.UserManager.IsEmailConfirmedAsync(user))
-                    {
-                        ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
-                        return View(model);
-                    }
-                    await _unitOfWorkAsync.SignInManager.SignOutAsync();
-                    Microsoft.AspNetCore.Identity.SignInResult result =
-                            await _unitOfWorkAsync.SignInManager.PasswordSignInAsync(
-                                user, model.Password, model.RememberMe, false);
-                    if (result.Succeeded)
-                    {
-                        if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                        {
-                            return Redirect(model.ReturnUrl);
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index", "Home");
-                        }
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Неправильный логин и (или) пароль");
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Такого пользователя не существует, зарегистрируйтесь, пожалуйста!");
-                }
+
+                var token = await _authorizeCreater.Login(model.Email, model.Password);
+
+                //    ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
+                //    if (user != null)
+                //    {
+                //        if (!await _unitOfWorkAsync.UserManager.IsEmailConfirmedAsync(user))
+                //        {
+                //            ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
+                //            return View(model);
+                //        }
+                //        await _unitOfWorkAsync.SignInManager.SignOutAsync();
+                //        Microsoft.AspNetCore.Identity.SignInResult result =
+                //                await _unitOfWorkAsync.SignInManager.PasswordSignInAsync(
+                //                    user, model.Password, model.RememberMe, false);
+                //        if (result.Succeeded)
+                //        {
+                //            if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                //            {
+                //                return Redirect(model.ReturnUrl);
+                //            }
+                //            else
+                //            {
+                //                return RedirectToAction("Index", "Home");
+                //            }
+                //        }
+                //        else
+                //        {
+                //            ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                //        }
+                //    }
+                //    else
+                //    {
+                //        ModelState.AddModelError("", "Такого пользователя не существует, зарегистрируйтесь, пожалуйста!");
+                //    }
             }
             return View(model);
         }
@@ -185,13 +191,11 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            // удаляем аутентификационные куки
             await _unitOfWorkAsync.SignInManager.SignOutAsync();
             GetViewData();
             return RedirectToAction("Index", "Home");
         }
 
-        [AllowAnonymous]
         public IActionResult AccessDenied()
         {
             GetViewData();
@@ -201,7 +205,7 @@ namespace FamilyNet.Controllers
         public IActionResult GetDetails()
         {
             var url = Url.Action("Details", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
-            return Redirect(url);            
+            return Redirect(url);
         }
 
         public IActionResult AccountEdits()
@@ -212,18 +216,18 @@ namespace FamilyNet.Controllers
 
         public IActionResult PersonalRoom()
         {
-            if(GetCurrentUserAsync().Result.PersonType == PersonType.User)
+            if (GetCurrentUserAsync().Result.PersonType == PersonType.User)
             {
                 RedirectToAction("Index", "Home");
             }
-            if(!GetCurrentUserAsync().Result.HasPerson)
+            if (!GetCurrentUserAsync().Result.HasPerson)
             {
                 return GetRedirect(GetCurrentUserAsync().Result.PersonType.ToString(), "Create");
             }
             return View();
         }
 
-        private IActionResult GetRedirect(string role , string action)
+        private IActionResult GetRedirect(string role, string action)
         {
             switch (role)
             {
@@ -239,7 +243,6 @@ namespace FamilyNet.Controllers
                     return RedirectToAction(action, "Index");
             }
         }
-
 
         private static PersonType GetPersonType(string role)
         {
@@ -263,7 +266,6 @@ namespace FamilyNet.Controllers
         private void GetViewData()
         {
             ViewData["CharityMakers"] = _localizer["CharityMakers"];
-            
         }
     }
 }

@@ -33,12 +33,18 @@ namespace FamilyNetServer.Controllers.API
         [System.Web.Http.HttpPost]
         [Produces("application/json")]
         [AllowAnonymous]
-        public async Task<TokenDTO> Authentication([FromBody]CredentialsDTO credentialsDTO)
+        public async Task<IActionResult> Authentication([FromBody]CredentialsDTO credentialsDTO)
         {
             var user = await _unitOfWork.UserManager.FindByEmailAsync(credentialsDTO.Email);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
             var roles = await _unitOfWork.UserManager.GetRolesAsync(user).ConfigureAwait(false);
 
-            return new TokenDTO() { Token = _tokenFactory.Create(user, roles) };
+            return Created("", new TokenDTO() { Token = _tokenFactory.Create(user, roles) });
         }
     }
 }

@@ -59,7 +59,7 @@ namespace FamilyNet
 
             services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
-
+            services.AddTransient<IAuthorizeCreater, AuthorizeCreater>();
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
