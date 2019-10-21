@@ -7,7 +7,7 @@ namespace FamilyNet.Downloader
 {
     public class ServerDonationItemsDownloader : ServerSimpleDataDownloader<DonationItemDTO>
     {
-        public override async Task<HttpResponseMessage> СreatePutAsync(string url, DonationItemDTO dto)
+        public override async Task<HttpResponseMessage> CreatePutAsync(string url, DonationItemDTO dto)
         {
             HttpResponseMessage msg = null;
 
@@ -22,7 +22,7 @@ namespace FamilyNet.Downloader
             return msg;
         }
 
-        public override async Task<HttpResponseMessage> СreatePostAsync(string url, DonationItemDTO dto)
+        public override async Task<HttpResponseMessage> CreatePostAsync(string url, DonationItemDTO dto)
         {
             HttpResponseMessage msg = null;
 

@@ -2,7 +2,7 @@
 
 namespace FamilyNet.Models.ViewModels
 {
-    public class DonationCreateViewModel
+    public class DonationViewModel
     {
         public DonationDetailDTO Donation { get; set; }
 

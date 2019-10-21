@@ -33,7 +33,7 @@ namespace FamilyNet.Controllers
         private readonly string _apiPath = "api/v1/donations";
         private readonly IFileStreamCreater _streamCreater;
         private readonly string _apiCategoriesPath = "api/v1/categories";
-        private readonly string _apiDonationItemsPath = "api/v1/donationItems/";
+        private readonly string _apiDonationItemsPath = "api/v1/donationItems";
 
         #endregion
 
@@ -225,10 +225,10 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
-        public async Task<IActionResult> Create(DonationCreateViewModel model)
+        public async Task<IActionResult> Create(DonationViewModel model)
         {
             var url = _URLDonationItemsBuilder.CreatePost(_apiDonationItemsPath);
-            var msg = await _downloaderItems.СreatePostAsync(url, model.DonationItem);
+            var msg = await _downloaderItems.CreatePostAsync(url, model.DonationItem);
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -240,7 +240,7 @@ namespace FamilyNet.Controllers
             model.Donation.DonationItemID = itemDTO.ID;
 
             url = _URLDonationsBuilder.CreatePost(_apiPath);
-            msg = await _downloader.СreatePostAsync(url, model.Donation);
+            msg = await _downloader.CreatePostAsync(url, model.Donation);
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -263,17 +263,26 @@ namespace FamilyNet.Controllers
 
             var check = CheckById((int)id).Result;
             var checkResult = check != null;
+
             if (checkResult)
             {
                 return check;
             }
 
-            var url = _URLDonationsBuilder.GetById(_apiPath, id.Value);
-            DonationDTO donationDTO;
+            var urlDonation = _URLDonationsBuilder.GetById(_apiPath, id.Value);
+
+            DonationItemDTO item = null;
+            DonationDetailDTO donation;
 
             try
             {
-                donationDTO = await _downloader.GetByIdAsync(url);
+                donation = await _downloader.GetByIdAsync(urlDonation);
+
+                if (donation.DonationItemID != null)
+                {
+                    var urlItem = _URLDonationsBuilder.GetById(_apiDonationItemsPath, donation.DonationItemID.Value);
+                    item = await _downloaderItems.GetByIdAsync(urlItem);
+                }
             }
             catch (ArgumentNullException)
             {
@@ -288,9 +297,6 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var baseItemsList = _unitOfWorkAsync.DonationItems.GetAll().ToList();
-            ViewBag.ListOfBaseItems = baseItemsList;
-
             var orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
 
@@ -299,31 +305,51 @@ namespace FamilyNet.Controllers
 
             GetViewData();
 
-            return View(donationDTO);
+            var model = new DonationViewModel
+            {
+                Donation = donation,
+                DonationItem = item
+            };
+
+            return View(model);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
-        public async Task<IActionResult> Edit(int id, DonationDetailDTO donationDTO)
+        public async Task<IActionResult> Edit(int id, DonationViewModel model)
         {
-            if (id != donationDTO.ID)
+            if (id != model.Donation.ID)
             {
                 return NotFound();
             }
 
             if (!ModelState.IsValid)
             {
-                return View(donationDTO);
+                return View(model);
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var msg = await _downloader.СreatePutAsync(url, donationDTO);
+            var msg = await _downloader.CreatePutAsync(url, model.Donation);
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
+                //TODO: log
             }
+
+            if (model.Donation.DonationItemID != null)
+            {
+                url = _URLDonationItemsBuilder.GetById(_apiDonationItemsPath, model.Donation.DonationItemID.Value);
+                msg = await _downloaderItems.CreatePutAsync(url, model.DonationItem);
+            }
+
+            if (msg.StatusCode != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            GetViewData();
 
             return Redirect("/Donations/Index");
         }
@@ -388,7 +414,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var msg = await _downloader.СreatePutAsync(url, donationDTO);
+            var msg = await _downloader.CreatePutAsync(url, donationDTO);
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
@@ -433,7 +459,7 @@ namespace FamilyNet.Controllers
 
             GetViewData();
 
-            return View(id.Value);
+            return View(donationDTO);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -456,7 +482,7 @@ namespace FamilyNet.Controllers
 
             GetViewData();
 
-            return Redirect("/ODonations/Index");
+            return Redirect("/Donations/Index");
         }
 
         private void GetViewData()

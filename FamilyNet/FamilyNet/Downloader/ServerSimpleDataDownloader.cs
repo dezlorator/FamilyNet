@@ -74,10 +74,10 @@ namespace FamilyNet.Downloader
             return obj;
         }
 
-        public abstract Task<HttpResponseMessage> СreatePostAsync(string url,
+        public abstract Task<HttpResponseMessage> CreatePostAsync(string url,
                                                                T dto);
 
-        public abstract Task<HttpResponseMessage> СreatePutAsync(string url,
+        public abstract Task<HttpResponseMessage> CreatePutAsync(string url,
                                                                T dto);
 
         public async Task<HttpResponseMessage> DeleteAsync(string url)

@@ -9,7 +9,7 @@ namespace FamilyNet.Downloader
 {
     public class ServerCategoriesDownloader : ServerSimpleDataDownloader<CategoryDTO>
     {
-        public override async Task<HttpResponseMessage> СreatePostAsync(string url, CategoryDTO dto)
+        public override async Task<HttpResponseMessage> CreatePostAsync(string url, CategoryDTO dto)
         {
             HttpResponseMessage msg = null;
 
@@ -24,7 +24,7 @@ namespace FamilyNet.Downloader
             return msg;
         }
         
-        public override Task<HttpResponseMessage> СreatePutAsync(string url, CategoryDTO dto)
+        public override Task<HttpResponseMessage> CreatePutAsync(string url, CategoryDTO dto)
         {
             throw new System.NotImplementedException();
         }

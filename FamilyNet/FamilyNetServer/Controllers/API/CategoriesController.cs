@@ -49,15 +49,12 @@ namespace FamilyNetServer.Controllers.API
 
             var categoriesDTO = new List<CategoryDTO>();
 
-            foreach (var c in categories)
-            {
-                categoriesDTO.Add(new CategoryDTO
+            categoriesDTO = categories.Select(c =>
+                new CategoryDTO
                 {
                     ID = c.ID,
                     Name = c.Name
-                }
-                );
-            }
+                }).ToList();
 
             return Ok(categoriesDTO);
         }
