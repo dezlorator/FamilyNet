@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:53605",
+      "applicationUrl": "http://localhost:53604",
       "sslPort": 0
     }
   },
@@ -16,10 +16,11 @@
     },
     "FamilyNetServer": {
       "commandName": "Project",
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:53602"
+      "applicationUrl": "http://localhost:5000"
     }
   }
 }
