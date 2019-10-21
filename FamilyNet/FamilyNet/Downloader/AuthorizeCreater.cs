@@ -1,23 +1,41 @@
-﻿using System;
+﻿using DataTransferObjects;
+using FamilyNet.Configuration;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
     public class AuthorizeCreater : IAuthorizeCreater
     {
-        public async Task<string> Login(string email, string password)
+        private readonly ServerURLSettings _serverURL;
+
+        public AuthorizeCreater(IOptionsSnapshot<ServerURLSettings> options)
         {
-            var token = String.Empty;
-            var url = String.Empty;
+            _serverURL = options.Value;
+        }
+
+        public async Task<string> Login(CredentialsDTO credentials)
+        {
+            string token = String.Empty;
+            var url = _serverURL.ServerURL + "api/v1/authentication";
 
             using (var httpClient = new HttpClient())
-            using (var formDataContent = new MultipartFormDataContent())
             {
-                formDataContent.Add(new StringContent(email), "email");
-                formDataContent.Add(new StringContent(password), "password");
-                var msg = await httpClient.PostAsync(url, formDataContent);
+                var content = new FormUrlEncodedContent(new[]
+                    {
+                        new KeyValuePair<string, string>("Email", credentials.Email),
+                        new KeyValuePair<string, string>("Password", credentials.Email)
+                    });
+
+                var result = await httpClient.PutAsync(url, content);
+                var json = await result.Content.ReadAsStringAsync();
+                token = JsonConvert.DeserializeObject<TokenDTO>(json).Token;
             }
 
             return token;

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
+using DataTransferObjects;
 using FamilyNetServer.DTO;
 using FamilyNetServer.Factories;
 using FamilyNetServer.Models.Interfaces;
@@ -11,6 +12,7 @@ namespace FamilyNetServer.Controllers.API
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class AuthenticationController : BaseController
     {
         #region private fields
@@ -31,9 +33,8 @@ namespace FamilyNetServer.Controllers.API
         #endregion
 
         [System.Web.Http.HttpPost]
-        [Produces("application/json")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Authentication([FromBody]CredentialsDTO credentialsDTO)
+        [Produces("application/json")]        
+        public async Task<IActionResult> Authentication([FromForm]CredentialsDTO credentialsDTO)
         {
             var user = await _unitOfWork.UserManager.FindByEmailAsync(credentialsDTO.Email);
 

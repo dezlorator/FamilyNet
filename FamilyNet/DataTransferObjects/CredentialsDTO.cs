@@ -1,4 +1,4 @@
-﻿namespace FamilyNetServer.DTO
+﻿namespace DataTransferObjects
 {
     public class CredentialsDTO
     {

@@ -10,6 +10,8 @@ using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using FamilyNet.Downloader;
+using DataTransferObjects;
+using Microsoft.AspNetCore.Http;
 
 namespace FamilyNet.Controllers
 {
@@ -147,46 +149,18 @@ namespace FamilyNet.Controllers
 
             if (ModelState.IsValid)
             {
-
-                var token = await _authorizeCreater.Login(model.Email, model.Password);
+                var dto = new CredentialsDTO() { Email = model.Email, Password = model.Password };
+                var token = await _authorizeCreater.Login(dto);
 
                 if (!String.IsNullOrEmpty(token))
                 {
-                    HttpContext.Session.Set("Bearer", System.Text.Encoding.Unicode.GetBytes(token));
+                    HttpContext.Session.SetString("Bearer", token);
+                    return RedirectToAction("Index", "Home");
                 }
-
-                //    ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
-                //    if (user != null)
-                //    {
-                //        if (!await _unitOfWorkAsync.UserManager.IsEmailConfirmedAsync(user))
-                //        {
-                //            ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
-                //            return View(model);
-                //        }
-                //        await _unitOfWorkAsync.SignInManager.SignOutAsync();
-                //        Microsoft.AspNetCore.Identity.SignInResult result =
-                //                await _unitOfWorkAsync.SignInManager.PasswordSignInAsync(
-                //                    user, model.Password, model.RememberMe, false);
-                //        if (result.Succeeded)
-                //        {
-                //            if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                //            {
-                //                return Redirect(model.ReturnUrl);
-                //            }
-                //            else
-                //            {
-                //                return RedirectToAction("Index", "Home");
-                //            }
-                //        }
-                //        else
-                //        {
-                //            ModelState.AddModelError("", "Неправильный логин и (или) пароль");
-                //        }
-                //    }
-                //    else
-                //    {
-                //        ModelState.AddModelError("", "Такого пользователя не существует, зарегистрируйтесь, пожалуйста!");
-                //    }
+                else
+                {
+                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                }
             }
             return View(model);
         }
