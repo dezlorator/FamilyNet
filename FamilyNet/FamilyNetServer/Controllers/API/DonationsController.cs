@@ -1,4 +1,4 @@
-﻿using FamilyNetServer.DTO;
+﻿using DataTransferObjects;
 using FamilyNetServer.Enums;
 using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
@@ -38,9 +38,9 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]int rows,
-                                    [FromQuery]int page,
-                                    [FromQuery]int? orphanageID)
+        public IActionResult GetAll([FromForm]int rows,
+                                    [FromForm]int page,
+                                    [FromForm]int? orphanageID)
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
 
@@ -57,22 +57,23 @@ namespace FamilyNetServer.Controllers.API
 
             var donationsDTO = new List<DonationDTO>();
 
-            foreach (var d in donations)
-            {
-                donationsDTO.Add(new DonationDTO
+            donationsDTO = donations.Select(d =>             
+                new DonationDTO()
                 {
-                    City = d.Orphanage.Adress.City,
-                    PathToAvatar = d.Orphanage.Avatar,
-                    Status = d.Status.ToString(),
-                    LastDateWhenStatusChanged = d.LastDateWhenStatusChanged,
-                    ItemName = d.DonationItem.Name,
-                    ItemDescription = d.DonationItem.Description,
-                    Types = d.DonationItem.TypeBaseItem
-                             .Select(t => t.Type.Name)
-                }
-                );
-            }
-
+                      ID = d.ID,
+                      City = d.Orphanage.Adress.City,
+                      OrphanageName = d.Orphanage.Name,
+                      DonationItemID = d.DonationItemID,
+                      OrphanageID = d.OrphanageID,
+                      CharityMakerID = d.CharityMakerID,
+                      Status = d.Status.ToString(),
+                      LastDateWhenStatusChanged = d.LastDateWhenStatusChanged,
+                      ItemName = d.DonationItem.Name,
+                      ItemDescription = d.DonationItem.Description,
+                      Types = d.DonationItem.TypeBaseItem
+                               .Select(t => t.TypeID)
+                }).ToList();
+               
             return Ok(donationsDTO);
         }
 
@@ -90,12 +91,16 @@ namespace FamilyNetServer.Controllers.API
 
             var donationDetailsDTO = new DonationDetailDTO()
             {
-                Categories = donation.DonationItem.TypeBaseItem
-                                     .Select(t => t.Type.Name),
+                ID = donation.ID,
+                Types = donation.DonationItem.TypeBaseItem
+                                     .Select(t => t.TypeID),
+                DonationItemID =donation.DonationItemID,
+                CharityMakerID = donation.CharityMakerID,
+                OrphanageID = donation.OrphanageID,
                 ItemName = donation.DonationItem.Name,
                 ItemDescription = donation.DonationItem.Description,
                 OrphanageName = donation.Orphanage.Name,
-                OrphanageCity = donation.Orphanage.Adress.City,
+                City = donation.Orphanage.Adress.City,
                 OrphanageHouse = donation.Orphanage.Adress.House,
                 OrphanageStreet = donation.Orphanage.Adress.Street,
                 OrphanageRating = donation.Orphanage.Rating
@@ -117,8 +122,10 @@ namespace FamilyNetServer.Controllers.API
             var donation = new Donation()
             {
                 DonationItemID = donationDTO.DonationItemID,
+                DonationItem = await _unitOfWork.DonationItems.GetById(donationDTO.DonationItemID.Value),
                 CharityMakerID = donationDTO.CharityMakerID,
                 OrphanageID = donationDTO.OrphanageID,
+                Orphanage = await _unitOfWork.Orphanages.GetById(donationDTO.OrphanageID.Value),
                 Status = DonationStatus.Sended,
                 LastDateWhenStatusChanged = DateTime.Now
             };
@@ -132,7 +139,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit(int id, [FromBody]DonationDTO donationDTO)
+        public async Task<IActionResult> Edit(int id, [FromForm]DonationDTO donationDTO)
         {
             if (!_donationValidator.IsValid(donationDTO))
             {
@@ -146,10 +153,21 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            donation.DonationItemID = donationDTO.DonationItemID;
+            if (donation.DonationItemID != null)
+            {
+                donation.DonationItemID = donationDTO.DonationItemID;
+                donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
+            } 
+
             donation.IsRequest = true;
+
             donation.CharityMakerID = donationDTO.CharityMakerID;
-            donation.OrphanageID = donationDTO.OrphanageID;
+
+            if (donationDTO.OrphanageID != null)
+            {
+                donation.OrphanageID = donationDTO.OrphanageID;
+                donation.Orphanage = await _unitOfWork.Orphanages.GetById(donation.OrphanageID.Value);
+            }
 
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
