@@ -1,4 +1,4 @@
-﻿@model DataTransferObjects.RepresentativeDTO
+﻿@model FamilyNet.Models.Representative
 
 @{
     ViewData["Title"] = "Delete";
@@ -10,29 +10,26 @@
 <div>
     <h4>Представитель детдома</h4>
     <hr />
-    <div class="col-sm-3">
-            <img src="@Url.Content(Model.PhotoPath)" style="height: 300px; width: 100%; display: block;" alt="avatar">
-    </div>
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.FullName.Name)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.FullName.Name)
         </dd>
 
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Patronymic)
+            @Html.DisplayNameFor(model => model.FullName.Patronymic)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Patronymic)
+            @Html.DisplayFor(model => model.FullName.Patronymic)
         </dd>
 
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Surname)
+            @Html.DisplayNameFor(model => model.FullName.Surname)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Surname)
+            @Html.DisplayFor(model => model.FullName.Surname)
         </dd>
 
         <dt class="col-sm-2">
@@ -50,10 +47,10 @@
         </dd>
 
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PhotoPath)
+            @Html.DisplayNameFor(model => model.Avatar)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PhotoPath)
+            @Html.DisplayFor(model => model.Avatar)
         </dd>
 
         <dt class="col-sm-2">
@@ -63,12 +60,12 @@
             @Html.DisplayFor(model => model.EmailID)
         </dd>
 
-        @*<dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ChildrenHouseID)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Orphanage.Name)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Orphanage.Name)
-        </dd>*@
+        </dd>
     </dl>
 
     <form asp-action="Delete">

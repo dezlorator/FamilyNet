@@ -1,4 +1,5 @@
-﻿using DataTransferObjects;
+﻿
+using FamilyNetServer.DTO;
 
 namespace FamilyNetServer.Validators
 {

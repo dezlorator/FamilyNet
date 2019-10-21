@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using FamilyNetServer.DTO;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
-using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Uploaders;
-using DataTransferObjects;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -24,15 +24,8 @@ namespace FamilyNetServer.Controllers.API
         private readonly IFileUploader _fileUploader;
         private readonly IRepresentativeValidator _representativeValidator;
         private readonly IFilterConditionsRepresentatives _filterConditions;
-        private string _url 
-        {
-            get 
-            { 
-                return string.Format($"{Request.Scheme}://{Request.Host.Value}/"); 
-            } 
-        }
-        
-            #endregion
+
+        #endregion
 
         #region ctor
 
@@ -52,28 +45,44 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery] FilterParametersRepresentatives filter)
+        public IActionResult GetAll([FromQuery]string name,
+                                    [FromQuery]float rating,
+                                    [FromQuery]int age,
+                                    [FromQuery]int rows,
+                                    [FromQuery]int page)
         {
             var representatives = _unitOfWork.Representatives.GetAll().Where(r => !r.IsDeleted);
-            representatives = _filterConditions.GetRepresentatives(representatives, filter);
+            representatives = _filterConditions.GetRepresentatives(representatives, name, rating, age);
+
+            if (rows != 0 && page != 0)
+            {
+                representatives = representatives.Skip(rows * page).Take(rows);
+            }
 
             if (representatives == null)
             {
                 return BadRequest();
             }
-            var representativesDTO = representatives.Select(r =>
-            new RepresentativeDTO()
+
+            var representativesDTO = new List<RepresentativeDTO>();
+
+            foreach (var r in representatives)
             {
-                PhotoPath = _url + r.Avatar,
-                Birthday = r.Birthday,
-                EmailID = r.EmailID,
-                ID = r.ID,
-                Name = r.FullName.Name,
-                Patronymic = r.FullName.Patronymic,
-                Surname = r.FullName.Surname,
-                ChildrenHouseID = r.OrphanageID,
-                Rating = r.Rating
-            });
+                var representativeDTO = new RepresentativeDTO()
+                {
+                    PhotoPath = r.Avatar,
+                    Birthday = r.Birthday,
+                    EmailID = r.EmailID,
+                    ID = r.ID,
+                    Name = r.FullName.Name,
+                    Patronymic = r.FullName.Patronymic,
+                    Surname = r.FullName.Surname,
+                    ChildrenHouseID = r.OrphanageID,
+                    Rating = r.Rating
+                };
+
+                representativesDTO.Add(representativeDTO);
+            }
 
             return Ok(representativesDTO);
         }
@@ -100,7 +109,7 @@ namespace FamilyNetServer.Controllers.API
                 Rating = represenntative.Rating,
                 Surname = represenntative.FullName.Surname,
                 EmailID = represenntative.EmailID,
-                PhotoPath = _url + represenntative.Avatar
+                PhotoPath = represenntative.Avatar
             };
 
             return Ok(representativeDTO);
@@ -146,10 +155,7 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Representatives.Create(representative);
             _unitOfWork.SaveChangesAsync();
 
-            representativeDTO.ID = representative.ID;
-            representativeDTO.PhotoPath = representative.Avatar;
-
-            return Created("api/v1/{controller}/" + representative.ID, representativeDTO);
+            return Created("api/v1/{controller}/" + representative.ID, representative);
         }
 
         [HttpPut("{id}")]
