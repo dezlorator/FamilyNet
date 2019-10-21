@@ -31,7 +31,7 @@ namespace FamilyNet.Controllers
         private readonly string _apiPath = "api/v1/charityMakers";
         private readonly IFileStreamCreater _streamCreator;
         private readonly string _pathToErrorView = "/Home/Error";
-        private readonly string _pathToAdressApi = "http://localhost:53605/api/v1/charityMakers";
+        private readonly string _pathToAdressApi = "api/v1/address";
         private readonly IURLAddressBuilder _urlAdressBuilder;
         private readonly IServerAddressDownloader _serverAddressDownloader;
 
