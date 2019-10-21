@@ -60,11 +60,13 @@ namespace FamilyNet
             services.AddTransient<ServerSimpleDataDownloader<DonationItemDTO>, ServerDonationItemsDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<CategoryDTO>, ServerCategoriesDownloader>();
             services.AddTransient<ServerDataDownLoader<ChildrenHouseDTO>, ServerChildrenHouseDownloader>();
+            services.AddTransient<ServerDataDownLoader<RepresentativeDTO>, ServerRepresentativesDownloader>();
             services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
             services.AddTransient<IURLAddressBuilder, URLAddressBuilder>();
+            services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
 
             services.AddTransient<ServerDataDownLoader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
