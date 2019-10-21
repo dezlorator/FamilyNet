@@ -1,9 +1,9 @@
 ﻿using FamilyNetServer.DTO;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
+using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -132,7 +132,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = volunteerDTO.Name + volunteerDTO.Surname
                         + volunteerDTO.Patronymic + DateTime.Now.Ticks;
 
-                pathPhoto = _fileUploader.CopyFile(fileName,
+                pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
             }
 
@@ -192,7 +192,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = volunteerDTO.Name + volunteerDTO.Surname
                         + volunteerDTO.Patronymic + DateTime.Now.Ticks;
 
-                volunteer.Avatar = _fileUploader.CopyFile(fileName,
+                volunteer.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
             }
 

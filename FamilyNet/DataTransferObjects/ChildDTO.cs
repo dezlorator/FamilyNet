@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 
-namespace FamilyNetServer.DTO
+namespace DataTransferObjects
 {
     public class ChildDTO
     {

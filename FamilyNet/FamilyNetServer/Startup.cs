@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FamilyNetServer.Models;
+﻿using FamilyNetServer.Models;
 using FamilyNetServer.Models.EntityFramework;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Models.Identity;
@@ -17,9 +13,10 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Infrastructure;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
+using FamilyNetServer.Configuration;
+using FamilyNetServer.Uploaders;
 
 namespace FamilyNetServer
 {
@@ -63,6 +60,8 @@ namespace FamilyNetServer
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
+
             services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
@@ -73,6 +72,12 @@ namespace FamilyNetServer
             services.AddTransient<IFilterConditionsChildren, FilterConditionsChildren>();
             services.AddTransient<IRepresentativeValidator, RepresentativeValidator>();
             services.AddTransient<IFilterConditionsRepresentatives, FilterConditionsRepresentatives>();
+            services.AddTransient<ICategoryValidator, CategoryValidator>();
+            services.AddTransient<IDonationItemValidator, DonationItemValidator>();
+            services.AddTransient<IDonationValidator, DonationValidator>();
+            services.AddTransient<IDonationItemsFilter, DonationItemsFilter>();
+            services.AddTransient<IDonationsFilter, DonationsFilter>();
+
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
                 .AddViewLocalization(

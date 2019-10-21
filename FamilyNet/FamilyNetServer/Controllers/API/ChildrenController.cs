@@ -1,14 +1,16 @@
-﻿using FamilyNetServer.DTO;
+﻿using DataTransferObjects;
+using FamilyNetServer.Configuration;
 using FamilyNetServer.Enums;
-using FamilyNetServer.FileUploaders;
 using FamilyNetServer.Filters;
+using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
+using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,6 +26,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IFileUploader _fileUploader;
         private readonly IChildValidator _childValidator;
         private readonly IFilterConditionsChildren _filterConditions;
+        private readonly IOptionsSnapshot<ServerURLSettings> _settings;
 
         #endregion
 
@@ -32,12 +35,14 @@ namespace FamilyNetServer.Controllers.API
         public ChildrenController(IFileUploader fileUploader,
                                   IUnitOfWorkAsync unitOfWork,
                                   IChildValidator childValidator,
-                                  IFilterConditionsChildren filterConditions)
+                                  IFilterConditionsChildren filterConditions,
+                                  IOptionsSnapshot<ServerURLSettings> setings)
         {
             _fileUploader = fileUploader;
             _unitOfWork = unitOfWork;
             _childValidator = childValidator;
             _filterConditions = filterConditions;
+            _settings = setings;
         }
 
         #endregion
@@ -45,44 +50,29 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]string name,
-                                    [FromQuery]float rating,
-                                    [FromQuery]int age,
-                                    [FromQuery]int rows,
-                                    [FromQuery]int page)
+        public IActionResult GetAll([FromQuery]FilterParemetersChildren filter)
         {
             var children = _unitOfWork.Orphans.GetAll().Where(c => !c.IsDeleted);
-            children = _filterConditions.GetOrphans(children, name, rating, age);
-
-            if (rows != 0 && page != 0)
-            {
-                children = children.Skip(rows * page).Take(rows);
-            }
+            children = _filterConditions.GetOrphans(children, filter);
 
             if (children == null)
             {
                 return BadRequest();
             }
 
-            var childrenDTO = new List<ChildDTO>();
-
-            foreach (var c in children)
+            var childrenDTO = children.Select(c =>
+            new ChildDTO()
             {
-                var childDTO = new ChildDTO()
-                {
-                    PhotoPath = c.Avatar,
-                    Birthday = c.Birthday,
-                    EmailID = c.EmailID,
-                    ID = c.ID,
-                    Name = c.FullName.Name,
-                    Patronymic = c.FullName.Patronymic,
-                    Surname = c.FullName.Surname,
-                    ChildrenHouseID = c.OrphanageID ?? 0,
-                    Rating = c.Rating
-                };
-
-                childrenDTO.Add(childDTO);
-            }
+                PhotoPath = _settings.Value.ServerURL + c.Avatar,
+                Birthday = c.Birthday,
+                EmailID = c.EmailID,
+                ID = c.ID,
+                Name = c.FullName.Name,
+                Patronymic = c.FullName.Patronymic,
+                Surname = c.FullName.Surname,
+                ChildrenHouseID = c.OrphanageID ?? 0,
+                Rating = c.Rating
+            });
 
             return Ok(childrenDTO);
         }
@@ -109,7 +99,7 @@ namespace FamilyNetServer.Controllers.API
                 Rating = child.Rating,
                 Surname = child.FullName.Surname,
                 EmailID = child.EmailID,
-                PhotoPath = child.Avatar
+                PhotoPath = _settings.Value.ServerURL + child.Avatar
             };
 
             return Ok(childDTO);
@@ -132,7 +122,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = childDTO.Name + childDTO.Surname
                         + childDTO.Patronymic + DateTime.Now.Ticks;
 
-                pathPhoto = _fileUploader.CopyFile(fileName,
+                pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Children), childDTO.Avatar);
             }
 
@@ -155,11 +145,7 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Orphans.Create(child);
             _unitOfWork.SaveChangesAsync();
 
-            childDTO.ID = child.ID;
-            childDTO.PhotoPath = child.Avatar;
-            childDTO.Avatar = null;
-
-            return Created("api/v1/children/" + child.ID, childDTO);
+            return Created("api/v1/children/" + child.ID, new ChildDTO());
         }
 
         [HttpPut("{id}")]
@@ -192,7 +178,7 @@ namespace FamilyNetServer.Controllers.API
                 var fileName = childDTO.Name + childDTO.Surname
                         + childDTO.Patronymic + DateTime.Now.Ticks;
 
-                child.Avatar = _fileUploader.CopyFile(fileName,
+                child.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.Children), childDTO.Avatar);
             }
 
@@ -201,7 +187,6 @@ namespace FamilyNetServer.Controllers.API
 
             return NoContent();
         }
-
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

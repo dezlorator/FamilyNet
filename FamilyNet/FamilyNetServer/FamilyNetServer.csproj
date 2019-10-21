@@ -28,6 +28,9 @@
     <PackageReference Include="Nominatim.API" Version="1.5.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\avatars\" />
