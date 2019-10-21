@@ -17,6 +17,7 @@ namespace FamilyNetServer.Models.Interfaces
         IAsyncRepository<Donation> Donations { get; }
         IAsyncRepository<Orphan> Orphans { get; }
         IAsyncRepository<BaseItemType> BaseItemTypes { get; }
+        IAsyncRepository<DonationItem> DonationItems { get; }
 
         DbSet<TypeBaseItem> TypeBaseItems { get; set; }// TODO : rewrite this
 
