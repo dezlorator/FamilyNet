@@ -210,7 +210,7 @@ namespace FamilyNet.Controllers
             }
 
             var addressUrl = _URLAddressBuilder.CreatePost(_apiAddressPath);
-            var statusAddress = await _addressDownloader.СreatePostAsync(addressUrl,
+            var statusAddress = await _addressDownloader.CreatePostAsync(addressUrl,
                                             volunteerDTO.Address);
 
             volunteerDTO.AddressID = statusAddress.Content.ReadAsAsync<AddressDTO>().Result.ID;
@@ -322,7 +322,7 @@ namespace FamilyNet.Controllers
             }
 
             var addressUrl = _URLAddressBuilder.GetById(_apiAddressPath, (int)volunteerDTO.AddressID);
-            var statusAddress = await _addressDownloader.СreatePutAsync(addressUrl,
+            var statusAddress = await _addressDownloader.CreatePutAsync(addressUrl,
                                             volunteerDTO.Address);
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);

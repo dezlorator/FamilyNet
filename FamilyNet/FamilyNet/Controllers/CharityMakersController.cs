@@ -202,7 +202,7 @@ namespace FamilyNet.Controllers
             }
 
             var addressUrl = _urlAdressBuilder.CreatePost(_pathToAdressApi);
-            var status1 = await _serverAddressDownloader.СreatePostAsync(addressUrl,
+            var status1 = await _serverAddressDownloader.CreatePostAsync(addressUrl,
                                                         charityMakerDTO.AddressDTO);
 
             charityMakerDTO.AdressID = status1.Content.ReadAsAsync<AddressDTO>().Result.ID;
@@ -317,7 +317,7 @@ namespace FamilyNet.Controllers
                                                             stream, charityMakerDTO.Avatar?.FileName);
 
             var addressUrl = _urlAdressBuilder.GetById(_pathToAdressApi, charityMakerDTO.AdressID);
-            var status1 = await _serverAddressDownloader.СreatePutAsync(addressUrl, 
+            var status1 = await _serverAddressDownloader.CreatePutAsync(addressUrl, 
                                                             charityMakerDTO.AddressDTO);
 
             if (status != HttpStatusCode.NoContent)
