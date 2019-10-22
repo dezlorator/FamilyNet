@@ -180,6 +180,31 @@ namespace FamilyNetServer.Controllers.API
             return NoContent();
         }
 
+        [HttpPut("StatusEdit/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> StatusEdit(int id, [FromBody]string status)
+        {
+            if(!Enum.TryParse(status, out DonationStatus donationStatus))
+            {
+                return BadRequest();
+            }
+
+            var donation = await _unitOfWork.Donations.GetById(id);
+
+            if (donation == null)
+            {
+                return BadRequest();
+            }
+
+            donation.Status = donationStatus;
+
+            _unitOfWork.Donations.Update(donation);
+            _unitOfWork.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
