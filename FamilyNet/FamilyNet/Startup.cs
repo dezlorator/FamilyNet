@@ -61,6 +61,7 @@ namespace FamilyNet
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
             services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
             services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
+            services.AddTransient<IURLCategoriesBuilder, URLCategoriesBuilder>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

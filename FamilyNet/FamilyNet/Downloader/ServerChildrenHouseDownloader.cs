@@ -1,17 +1,18 @@
 ﻿using DataTransferObjects;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerChildrenDownloader : ServerDataDownLoader<ChildDTO>
+    public class ServerChildrenHouseDownloader : ServerDataDownLoader<ChildrenHouseDTO>
     {
-
         public override async Task<HttpStatusCode> СreatePostAsync(string url,
-                                                            ChildDTO dto,
+                                                            ChildrenHouseDTO dto,
                                                             Stream streamFile,
                                                             string fileName)
         {
@@ -35,7 +36,7 @@ namespace FamilyNet.Downloader
         }
 
         public override async Task<HttpStatusCode> СreatePutAsync(string url,
-                                                              ChildDTO dto,
+                                                              ChildrenHouseDTO dto,
                                                               Stream streamFile,
                                                               string fileName)
         {
@@ -58,9 +59,9 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        private static void BuildMultipartFprmData(ChildDTO dto, 
-                                                   Stream streamFile, 
-                                                   string fileName, 
+        private static void BuildMultipartFprmData(ChildrenHouseDTO dto,
+                                                   Stream streamFile,
+                                                   string fileName,
                                                    MultipartFormDataContent formDataContent)
         {
             if (streamFile != null && streamFile.Length > 0)
@@ -75,11 +76,10 @@ namespace FamilyNet.Downloader
             }
 
             formDataContent.Add(new StringContent(dto.Name), "Name");
-            formDataContent.Add(new StringContent(dto.Patronymic), "Patronymic");
-            formDataContent.Add(new StringContent(dto.Surname), "Surname");
-            formDataContent.Add(new StringContent(dto.Birthday.ToString()), "Birthday");
-            formDataContent.Add(new StringContent(dto.ChildrenHouseID.ToString()),
-                                                  "ChildrenHouseID");
+            formDataContent.Add(new StringContent(dto.Rating.ToString()), "Rating");
+            formDataContent.Add(new StringContent(dto.PhotoPath), "PhotoPath");
+            formDataContent.Add(new StringContent(dto.LocationID.ToString()), "LocationID");
+            formDataContent.Add(new StringContent(dto.AdressID.ToString()), "AdressID");
         }
     }
 }
