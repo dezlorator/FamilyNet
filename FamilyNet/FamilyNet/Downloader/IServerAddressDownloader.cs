@@ -11,8 +11,8 @@ namespace FamilyNet.Downloader
     public interface IServerAddressDownloader
     {
         Task<IEnumerable<AddressDTO>> GetAllAsync(string url);
-        Task<HttpResponseMessage> СreatePostAsync(string url, AddressDTO dto);
-        Task<HttpResponseMessage> СreatePutAsync(string url, AddressDTO dto);
+        Task<HttpResponseMessage> CreatePostAsync(string url, AddressDTO dto);
+        Task<HttpResponseMessage> CreatePutAsync(string url, AddressDTO dto);
         Task<AddressDTO> GetByIdAsync(string url);
         Task<HttpStatusCode> DeleteAsync(string url);
     }

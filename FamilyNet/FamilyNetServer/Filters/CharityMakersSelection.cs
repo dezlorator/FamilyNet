@@ -20,7 +20,7 @@ namespace FamilyNetServer.Models
             if(rating > 0)
             {
                 charityMakersCollection = charityMakersCollection
-                    .Where(c => c.Rating > rating);
+                    .Where(c => c.Rating < rating);
             }
 
             return charityMakersCollection;

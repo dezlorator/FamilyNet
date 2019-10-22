@@ -11,6 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataTransferObjects;
+using Microsoft.Extensions.Options;
+using FamilyNetServer.Configuration;
+using FamilyNetServer.Filters.FilterParameters;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -24,6 +28,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IFileUploader _fileUploader;
         private readonly IVolunteerValidator _volunteerValidator;
         private readonly IFilterConditionsVolunteers _filterConditions;
+        private readonly IOptionsSnapshot<ServerURLSettings> _settings;
 
         #endregion
 
@@ -32,12 +37,14 @@ namespace FamilyNetServer.Controllers.API
         public VolunteersController(IFileUploader fileUploader,
                                   IUnitOfWorkAsync unitOfWork,
                                   IVolunteerValidator volunteerValidator,
-                                  IFilterConditionsVolunteers filterConditions)
+                                  IFilterConditionsVolunteers filterConditions,
+                                  IOptionsSnapshot<ServerURLSettings> setings)
         {
             _fileUploader = fileUploader;
             _unitOfWork = unitOfWork;
             _volunteerValidator = volunteerValidator;
             _filterConditions = filterConditions;
+            _settings = setings;
         }
 
         #endregion
@@ -45,44 +52,29 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]string name,
-                            [FromQuery]float rating,
-                            [FromQuery]int age,
-                            [FromQuery]int rows,
-                            [FromQuery]int page)
+        public IActionResult GetAll([FromQuery]FilterParemetersVolunteers filter)
         {
-            var volunteer = _unitOfWork.Volunteers.GetAll().Where(c => !c.IsDeleted);
-            volunteer = _filterConditions.GetVolunteers(volunteer, name, rating, age);
+            var volunteers = _unitOfWork.Volunteers.GetAll().Where(c => !c.IsDeleted);
+            volunteers = _filterConditions.GetVolunteers(volunteers, filter);
 
-            if (rows != 0 && page != 0)
-            {
-                volunteer = volunteer.Skip((page - 1) * rows).Take(rows);
-            }
-
-            if (volunteer == null)
+            if (volunteers == null)
             {
                 return BadRequest();
             }
 
-            var volunteersDTO = new List<VolunteerDTO>();
-
-            foreach (var c in volunteer)
+            var volunteersDTO = volunteers.Select(v =>
+            new VolunteerDTO()
             {
-                var volunteerDTO = new VolunteerDTO()
-                {
-                    PhotoPath = c.Avatar,
-                    Birthday = c.Birthday,
-                    EmailID = c.EmailID,
-                    ID = c.ID,
-                    Name = c.FullName.Name,
-                    Patronymic = c.FullName.Patronymic,
-                    Surname = c.FullName.Surname,
-                    Rating = c.Rating,
-                    AddressID = c.AddressID
-                };
-
-                volunteersDTO.Add(volunteerDTO);
-            }
+                ID = v.ID,
+                Name = v.FullName.Name,
+                Surname = v.FullName.Surname,
+                Patronymic = v.FullName.Patronymic,
+                Birthday = v.Birthday,
+                Rating = v.Rating,
+                EmailID = v.EmailID,
+                PhotoPath = _settings.Value.ServerURL + v.Avatar,
+                AddressID = v.AddressID
+            });
 
             return Ok(volunteersDTO);
         }
@@ -101,15 +93,15 @@ namespace FamilyNetServer.Controllers.API
 
             var volunteerDTO = new VolunteerDTO()
             {
-                Birthday = volunteer.Birthday,
                 ID = volunteer.ID,
                 Name = volunteer.FullName.Name,
-                Patronymic = volunteer.FullName.Patronymic,
-                Rating = volunteer.Rating,
                 Surname = volunteer.FullName.Surname,
+                Patronymic = volunteer.FullName.Patronymic,
+                Birthday = volunteer.Birthday,
+                Rating = volunteer.Rating,
                 EmailID = volunteer.EmailID,
-                PhotoPath = volunteer.Avatar,
-                AddressID = volunteer.AddressID,
+                PhotoPath = _settings.Value.ServerURL + volunteer.Avatar,
+                AddressID = volunteer.AddressID
             };
 
             return Ok(volunteerDTO);

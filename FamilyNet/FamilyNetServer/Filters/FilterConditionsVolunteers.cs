@@ -1,29 +1,41 @@
 ﻿using System;
 using System.Linq;
 using FamilyNetServer.Models;
+using FamilyNetServer.Filters.FilterParameters;
 
 namespace FamilyNetServer.Filters
 {
     public class FilterConditionsVolunteers : IFilterConditionsVolunteers
     {
         public IQueryable<Volunteer> GetVolunteers(IQueryable<Volunteer> volunteers,
-                                     string name, float rating,
-                                     int age)
+                                                   FilterParemetersVolunteers filter)
         {
-            if (!String.IsNullOrEmpty(name))
+            if (filter.AddressID > 0)
             {
-                volunteers = volunteers.Where(c => c.FullName.ToString().Contains(name));
+                volunteers = volunteers.Where(c => c.AddressID == filter.AddressID);
             }
 
-            if (rating > 0.001)
+            if (!String.IsNullOrEmpty(filter.Name))
             {
-                volunteers = volunteers.Where(c => c.Rating > rating);
+                volunteers = volunteers.Where(c => c.FullName.ToString().Contains(filter.Name));
             }
 
-            if (age > 0)
+            if (filter.Rating > 0.001)
             {
-                var dayPerYear = 366;
-                volunteers = volunteers.Where(c => (DateTime.Now - c.Birthday).Days >= age * dayPerYear);
+                volunteers = volunteers.Where(c => c.Rating > filter.Rating);
+            }
+
+            if (filter.Age > 0)
+            {
+                var daysPerYear = 366;
+                volunteers = volunteers.Where(c => (DateTime.Now - c.Birthday).Days
+                                                >= filter.Age * daysPerYear);
+            }
+
+            if (filter.Rows != 0 && filter.Page != 0)
+            {
+                volunteers = volunteers.Skip(filter.Rows * (filter.Page - 1))
+                    .Take(filter.Rows);
             }
 
             return volunteers;

@@ -6,7 +6,7 @@ using FamilyNetServer.Models;
 
 namespace FamilyNetServer.Filters
 {
-    public class DonationItemsFilter:IDonationItemsFilter
+    public class DonationItemsFilter : IDonationItemsFilter
     {
         public IQueryable<DonationItem> GetDonationItems(IQueryable<DonationItem> donationItems,
                                   string Name, float minPrice, float maxPrice,
@@ -17,20 +17,20 @@ namespace FamilyNetServer.Filters
                 donationItems = donationItems.Where(i => i.Name == Name);
             }
 
-            if(minPrice > 0)
+            if (minPrice > 0)
             {
                 donationItems = donationItems.Where(i => i.Price >= minPrice);
             }
 
-            if(maxPrice > 0)
+            if (maxPrice > 0)
             {
                 donationItems = donationItems.Where(i => i.Price <= maxPrice);
             }
 
-            if(category != String.Empty)
+            if (category != String.Empty)
             {
                 donationItems = donationItems.Where(i => i.TypeBaseItem
-                                                          .Select(d=>d.Type.Name)
+                                                          .Select(d => d.Type.Name)
                                                           .Contains(category)
                                                           );
             }
