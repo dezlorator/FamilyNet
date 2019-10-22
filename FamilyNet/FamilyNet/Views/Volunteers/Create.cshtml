@@ -32,14 +32,40 @@
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Birthday" class="control-label"></label>
-                                    <input asp-for="Birthday" asp-format="{0:dd-MM-yyyy}" class="form-control" />
+                                    <input asp-for="Birthday" class="form-control" />
                                     <span asp-validation-for="Birthday" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="AddressID" class="control-label"></label>
-                                    <input asp-for="AddressID" class="form-control">
+                                    <label asp-for="Address.Country" class="control-label"></label>
+                                    <input asp-for="Address.Country" class="form-control" />
+                                    <span asp-validation-for="Address.Country" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Address.City" class="control-label"></label>
+                                    <input asp-for="Address.City" class="form-control" />
+                                    <span asp-validation-for="Address.City" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Address.Region" class="control-label"></label>
+                                    <input asp-for="Address.Region" class="form-control" />
+                                    <span asp-validation-for="Address.Region" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Address.Street" class="control-label"></label>
+                                    <input asp-for="Address.Street" class="form-control" />
+                                    <span asp-validation-for="Address.Street" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Address.House" class="control-label"></label>
+                                    <input asp-for="Address.House" class="form-control" />
+                                    <span asp-validation-for="Address.House" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Rating" class="control-label"></label>
+                                    <input asp-for="Rating" type="number" step="any" min="0" max="10" class="form-control">
+                                    @*<span asp-validation-for="Rating" class="text-danger"></span>*@
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Avatar" class="control-label">Фото</label>
