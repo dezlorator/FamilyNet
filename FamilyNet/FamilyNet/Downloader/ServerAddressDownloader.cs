@@ -41,7 +41,7 @@ namespace FamilyNet.Downloader
 
             return objs;
         }
-        public async Task<HttpResponseMessage> СreatePostAsync(string url,
+        public async Task<HttpResponseMessage> CreatePostAsync(string url,
                                                    AddressDTO dto)
         {
             HttpResponseMessage msg = null;
@@ -57,7 +57,7 @@ namespace FamilyNet.Downloader
             return msg;
         }
 
-        public async Task<HttpResponseMessage> СreatePutAsync(string url,
+        public async Task<HttpResponseMessage> CreatePutAsync(string url,
                                                               AddressDTO dto)
         {
             HttpResponseMessage msg = null;

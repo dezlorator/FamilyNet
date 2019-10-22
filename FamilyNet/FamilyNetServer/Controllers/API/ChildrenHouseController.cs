@@ -1,11 +1,14 @@
-﻿using FamilyNetServer.DTO;
+﻿using FamilyNetServer.Configuration;
+using FamilyNetServer.DTO;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
+using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,23 +23,26 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWork _repository;
-        private readonly Uploaders.IFileUploader _fileUploader;
-        private readonly IChildrenHouseValidator _childrenHouseValidator;
+        private readonly IFileUploader _fileUploader;
+        private readonly IValidator<ChildrenHouseDTO> _childrenHouseValidator;
         private readonly IFilterConditionsChildrenHouse _filterConditions;
+        private readonly IOptionsSnapshot<ServerURLSettings> _settings;
 
         #endregion
 
         #region ctor
 
-        public ChildrenHouseController(Uploaders.IFileUploader fileUploader,
+        public ChildrenHouseController(IFileUploader fileUploader,
                                   IUnitOfWork repo,
-                                  IChildrenHouseValidator childrenHouseValidator,
-                                  IFilterConditionsChildrenHouse filterConditions)
+                                  IValidator<ChildrenHouseDTO> childrenHouseValidator,
+                                  IFilterConditionsChildrenHouse filterConditions,
+                                  IOptionsSnapshot<ServerURLSettings> setings)
         {
             _fileUploader = fileUploader;
             _repository = repo;
             _childrenHouseValidator = childrenHouseValidator;
             _filterConditions = filterConditions;
+            _settings = setings;
         }
 
         #endregion
@@ -76,7 +82,7 @@ namespace FamilyNetServer.Controllers.API
                     AdressID = c.AdressID,
                     LocationID = c.LocationID,
                     Rating = c.Rating,
-                    PhotoPath = c.Avatar                    
+                    PhotoPath = _settings.Value.ServerURL + c.Avatar,
                 };
 
                 childrenDTO.Add(childrenHouseDTO);
@@ -104,7 +110,7 @@ namespace FamilyNetServer.Controllers.API
                 AdressID = childrenHouses.AdressID,
                 Rating = childrenHouses.Rating,
                 LocationID = childrenHouses.LocationID,
-                PhotoPath = childrenHouses.Avatar,
+                PhotoPath = _settings.Value.ServerURL + childrenHouses.Avatar
             };
 
             return Ok(childrenHouseDTO);
@@ -113,7 +119,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]ChildrenHouseDTO childrenHousesDTO)
+        public async Task<IActionResult> Create([FromForm]ChildrenHouseDTO childrenHousesDTO)
         {
             if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
             {
@@ -137,21 +143,8 @@ namespace FamilyNetServer.Controllers.API
                 LocationID = childrenHousesDTO.LocationID,
                 Rating = childrenHousesDTO.Rating,
                 Avatar = pathPhoto,
-                //Adress = address
             };
 
-            //bool IsLocationNotNull = GetCoordProp(address, out var Location);
-            //if (IsLocationNotNull)
-            //{
-            //    childrenHouse.Location = new Location()
-            //    {
-            //        MapCoordX = Location.Item1,
-            //        MapCoordY = Location.Item2
-            //    };
-                
-            //}
-            //else
-            //    childrenHouse.LocationID = null;
 
             await _repository.Orphanages.Create(childrenHouse);
             _repository.SaveChangesAsync();
@@ -166,7 +159,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]ChildrenHouseDTO childrenHouseDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]ChildrenHouseDTO childrenHouseDTO)
         {
             if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
             {
@@ -180,21 +173,9 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            //bool IsLocationNotNull = GetCoordProp(childrenHouse.Adress, out var Location);
-            //if (IsLocationNotNull)
-            //{
-            //    childrenHouse.Location = new Location()
-            //    {
-            //        MapCoordX = Location.Item1,
-            //        MapCoordY = Location.Item2
-            //    };
-
-            //}
-            //else
-            //    childrenHouse.LocationID = null;
-
             childrenHouse.Name = childrenHouseDTO.Name;
             childrenHouse.Rating = childrenHouseDTO.Rating;
+            childrenHouse.LocationID = childrenHouseDTO.LocationID;
 
             if (childrenHouseDTO.Avatar != null)
             {
@@ -235,31 +216,5 @@ namespace FamilyNetServer.Controllers.API
             return Ok();
         }
 
-        private bool GetCoordProp(Address address, out Tuple<float?, float?> result)
-        {
-            result = null;
-            bool forOut = false;
-
-            var nominatim = new Nominatim.API.Geocoders.ForwardGeocoder();
-            var d = nominatim.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest()
-            {
-                Country = address.Country,
-                State = address.Region,
-                City = address.City,
-                StreetAddress = String.Concat(address.Street, " ", address.House)
-            });
-
-            //TODO:some validation for search
-            if (d.Result.Count() != 0)
-            {
-                float? X = (float)d.Result[0].Latitude;
-                float? Y = (float)d.Result[0].Longitude;
-
-                result = new Tuple<float?, float?>(X, Y);
-                forOut = true;
-            }
-
-            return forOut;
-        }
     }
 }

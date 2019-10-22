@@ -1,17 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
 using System.IO;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using Microsoft.Extensions.Localization;
-using System.Globalization;
-using FamilyNet.Infrastructure;
 using System;
 using System.Collections.Generic;
 using FamilyNet.Downloader;
@@ -19,6 +14,7 @@ using DataTransferObjects;
 using FamilyNet.StreamCreater;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace FamilyNet.Controllers
 {
@@ -27,32 +23,41 @@ namespace FamilyNet.Controllers
     {
         #region Private fields
 
-        private OrphanageSearchModel _searchModel;
-
         private readonly IStringLocalizer<OrphansController> _localizer;
-        private readonly ServerDataDownLoader<ChildrenHouseDTO> _downLoader;
+        private readonly ServerChildrenHouseDownloader _childrenHouseDownloader;
+        private readonly ServerAddressDownloader _addressDownLoader;
+        private readonly ServerLocationDownloader _locationDownLoader;
         private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
-        private readonly ServerDataDownLoader<AddressDTO> _addressDownLoader;
         private readonly IURLAddressBuilder _URLAddressBuilder;
+        private readonly IURLLocationBuilder _URLLocationBuilder;
         private readonly string _apiPath = "api/v1/childrenHouse";
         private readonly string _apiAddressPath = "api/v1/address";
+        private readonly string _apiLocationPath = "api/v1/location";
         private readonly IFileStreamCreater _streamCreater;
+
+        #endregion
+
+        #region Ctor
 
         public OrphanagesController(IUnitOfWorkAsync unitOfWork,
                                 IStringLocalizer<OrphansController> localizer,
-                                ServerDataDownLoader<ChildrenHouseDTO> downLoader,
+                                ServerChildrenHouseDownloader downLoader,
                                 IURLChildrenHouseBuilder URLChildrenHouseBuilder,
                                 IFileStreamCreater streamCreater,
                                 IURLAddressBuilder URLAddressBuilder,
-                                ServerDataDownLoader<AddressDTO> addressDownLoader)
+                                ServerAddressDownloader addressDownLoader,
+                                ServerLocationDownloader locationDownLoader,
+                                IURLLocationBuilder URLLocationBuilder)
            : base(unitOfWork)
         {
             _localizer = localizer;
-            _downLoader = downLoader;
-            _URLChildrenHouseBuilder = URLChildrenHouseBuilder;
             _streamCreater = streamCreater;
+            _URLChildrenHouseBuilder = URLChildrenHouseBuilder;
             _URLAddressBuilder = URLAddressBuilder;
+            _URLLocationBuilder = URLLocationBuilder;
+            _childrenHouseDownloader = downLoader;
             _addressDownLoader = addressDownLoader;
+            _locationDownLoader = locationDownLoader;
         }
 
         #endregion
@@ -68,7 +73,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childrenHouse = await _downLoader.GetAllAsync(url, HttpContext.Session);
+                childrenHouse = await _childrenHouseDownloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -92,44 +97,59 @@ namespace FamilyNet.Controllers
                 Rating = house.Rating,
                 Avatar = house.PhotoPath,
                 Adress = GetAddress(house.AdressID.Value).Result
-            }); 
-           
-            
+            });
+
+
             GetViewData();
 
             return View(orphanages);
         }
-
-        private async Task<Address> GetAddress(int id)
-        {
-            var url = _URLAddressBuilder.GetById(_apiAddressPath, id);
-
-            var address =  await _addressDownLoader.GetByIdAsync(url, HttpContext.Session);
-
-            var newAddress = new Address()
-            {
-                ID = address.ID,
-                Country =  address.Country,
-                Region = address.Region,
-                City = address.City,
-                Street = address.Street,
-                House = address.House
-            };
-
-            return newAddress;
-        }
-
-        // GET: Orphanages/Details/5
+      
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
+            }
 
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+            var url = _URLChildrenHouseBuilder.GetById(_apiPath, id.Value);
+            ChildrenHouseDTO childrenHouseDTO = null;
 
-            if (orphanage == null)
+            try
+            {
+                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (childrenHouseDTO == null)
+            {
                 return NotFound();
+            }
+
+            var orphanage = new Orphanage()
+            {
+
+                ID = childrenHouseDTO.ID,
+                Name = childrenHouseDTO.Name,
+                AdressID = childrenHouseDTO.AdressID,
+                LocationID = childrenHouseDTO.LocationID,
+                Rating = childrenHouseDTO.Rating,
+                Avatar = childrenHouseDTO.PhotoPath,
+                Adress = GetAddress(childrenHouseDTO.AdressID.Value).Result
+            };
+
             GetViewData();
 
             return View(orphanage);
@@ -143,34 +163,54 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Name,Adress,Rating,Avatar")] Orphanage orphanage,
-            IFormFile file) //TODO: AlPa -> Research Bind To Annotations
+        public async Task<IActionResult> Create(ChildrenHouseCreateViewModel model)
         {
-            await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\avatars");
 
-            //part to add location when obj creating
-            bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
-            if (IsLocationNotNull)
+            var url = _URLAddressBuilder.CreatePost(_apiAddressPath);
+            var msg = await _addressDownLoader.CreatePostAsync(url, model.Address);
+            
+            if (msg.StatusCode != HttpStatusCode.Created)
             {
-                orphanage.Location = new Location()
-                {
-                    MapCoordX = Location.Item1,
-                    MapCoordY = Location.Item2
-                };
+                return Redirect("/Home/Error");
+                //TODO: log
             }
-            else
-                orphanage.LocationID = null;
 
-            if (ModelState.IsValid)
+            Stream stream = null;
+
+            if (model.ChildrenHouse.Avatar != null)
             {
-                await _unitOfWorkAsync.Orphanages.Create(orphanage);
-                await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                stream = _streamCreater.CopyFileToStream(model.ChildrenHouse.Avatar);
             }
+
+            var addressDTO = msg.Content.ReadAsAsync<AddressDTO>().Result;
+            model.ChildrenHouse.AdressID = addressDTO.ID;
+
+
+
+            url = _URLLocationBuilder.CreatePost(_apiLocationPath);
+            msg = await _locationDownLoader.ÑreatePostAsync(url, model.Address);
+            if (msg.StatusCode == HttpStatusCode.Created)
+            {
+                var locationDTO = msg.Content.ReadAsAsync<LocationDTO>().Result;
+                model.ChildrenHouse.LocationID = locationDTO.ID;
+            }
+
+
+            url = _URLChildrenHouseBuilder.CreatePost(_apiPath);
+            var status  = await _childrenHouseDownloader.CreatePostAsync(url, model.ChildrenHouse,
+                                                                stream,
+                                                                String.Empty,
+                                                                HttpContext.Session);
+
+            if (status != HttpStatusCode.Created)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
             GetViewData();
 
-            return View(orphanage);
+            return Redirect("/Orphanages/Index");
         }
 
         // GET: Orphanages/Edit/5
@@ -178,68 +218,114 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
+            }
 
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
+            }
 
-            if (orphanage == null)
-                return NotFound();
+            var url = _URLChildrenHouseBuilder.GetById(_apiPath, id.Value);
+            ChildrenHouseDTO childrenHouseDTO = null;
+            AddressDTO addressDTO = null;
+            try
+            {
+                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url, HttpContext.Session);
+                url = _URLAddressBuilder.GetById(_apiAddressPath, childrenHouseDTO.AdressID.Value);
+                addressDTO = await _addressDownLoader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
             GetViewData();
 
-            return View(orphanage);
+            ChildrenHouseCreateViewModel model = new ChildrenHouseCreateViewModel
+            {
+                ChildrenHouse = childrenHouseDTO,
+                Address = addressDTO
+            };
+
+            return View(model);
         }
 
         // POST: Orphanages/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Representative")]
-        public async Task<IActionResult> Edit([Bind("ID,Name,Adress,Rating,Avatar")]
-            Orphanage orphanage, int id, IFormFile file) //TODO: Check change id position
+        public async Task<IActionResult> Edit(int id,ChildrenHouseCreateViewModel model) //TODO: Check change id position
         {
-            if (id != orphanage.ID)
-                return NotFound();
-
-            await ImageHelper.SetAvatar(orphanage, file, "wwwroot\\avatars");
-
-            if (ModelState.IsValid)
+            if (id != model.ChildrenHouse.ID)
             {
-                try
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            Stream stream = null;
+
+            if (model.ChildrenHouse.Avatar != null)
+            {
+                stream = _streamCreater.CopyFileToStream(model.ChildrenHouse.Avatar);
+            }
+
+            var url = _URLAddressBuilder.GetById(_apiAddressPath, model.ChildrenHouse.AdressID.Value);
+
+            if (model.ChildrenHouse.AdressID != null)
+            {
+                var msg = await _addressDownLoader.CreatePutAsync(url, model.Address);
+
+                if (msg.StatusCode == HttpStatusCode.NoContent)
                 {
-                    //in ef to change the object you need to track it out of context
-                    var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);
-
-                    //copying the state with NOT CHANGING REFERENCES
-                    orphanageToEdit.CopyState(orphanage);
-
-                    //edit location
-                    bool IsLocationNotNull = GetCoordProp(orphanage.Adress, out var Location);
-                    if (IsLocationNotNull)
+                    if (model.ChildrenHouse.LocationID != null)
                     {
-                        orphanageToEdit.Location = new Location()
-                        {
-                            MapCoordX = Location.Item1,
-                            MapCoordY = Location.Item2
-                        };
+                        url = _URLLocationBuilder.GetById(_apiLocationPath, model.ChildrenHouse.LocationID.Value);
+                        msg = await _locationDownLoader.ÑreatePutAsync(url, model.Address);
                     }
                     else
-                        orphanageToEdit.LocationID = null;
-
-                    _unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
+                    {
+                        url = _URLLocationBuilder.CreatePost(_apiLocationPath);
+                        msg = await _locationDownLoader.ÑreatePostAsync(url, model.Address);
+                        if (msg.StatusCode == HttpStatusCode.Created)
+                        {
+                            var locationDTO = msg.Content.ReadAsAsync<LocationDTO>().Result;
+                            model.ChildrenHouse.LocationID = locationDTO.ID;
+                        }
+                    }
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_unitOfWorkAsync.Orphanages.Any(orphanage.ID))
-                        return NotFound();
-                    else
-                        throw; //TODO: Loging
-                }
-
-                return RedirectToAction(nameof(Index));
             }
+
+
+            url = _URLChildrenHouseBuilder.GetById(_apiPath, id);
+            var status = await _childrenHouseDownloader.CreatePutAsync(url, model.ChildrenHouse,
+                                                            stream, model.ChildrenHouse.Avatar?.FileName,
+                                                            HttpContext.Session);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
             GetViewData();
 
-            return View(orphanage);
+            return View(model);
         }
 
         // GET: Orphanages/Delete/5
@@ -247,12 +333,47 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
+            }
 
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+            var url = _URLChildrenHouseBuilder.GetById(_apiPath, id.Value);
+            ChildrenHouseDTO childrenHouseDTO = null;
 
-            if (orphanage == null)
+            try
+            {
+                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (childrenHouseDTO == null)
+            {
                 return NotFound();
+            }
+
+            var orphanage = new Orphanage()
+            {
+
+                ID = childrenHouseDTO.ID,
+                Name = childrenHouseDTO.Name,
+                AdressID = childrenHouseDTO.AdressID,
+                LocationID = childrenHouseDTO.LocationID,
+                Rating = childrenHouseDTO.Rating,
+                Avatar = childrenHouseDTO.PhotoPath,
+                Adress = GetAddress(childrenHouseDTO.AdressID.Value).Result
+            };
+
             GetViewData();
 
             return View(orphanage);
@@ -264,9 +385,52 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
-            await _unitOfWorkAsync.Orphanages.Delete(orphanage.ID);
-            _unitOfWorkAsync.SaveChangesAsync();
+            var check = CheckById((int)id).Result;
+            var checkResult = check != null;
+            if (checkResult)
+            {
+                return check;
+            }
+
+            var url = _URLChildrenHouseBuilder.GetById(_apiPath, id);
+            ChildrenHouseDTO childrenHouseDTO = null;
+            try
+            {
+                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url, HttpContext.Session);               
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            url = _URLAddressBuilder.GetById(_apiAddressPath, childrenHouseDTO.AdressID.Value);
+            var addressStatus = await _addressDownLoader.DeleteAsync(url);
+            if (addressStatus != HttpStatusCode.OK)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (childrenHouseDTO.LocationID != null)
+            {
+                url = _URLLocationBuilder.GetById(_apiLocationPath, childrenHouseDTO.LocationID.Value);
+                var locationStatus = await _locationDownLoader.DeleteAsync(url);
+                if (locationStatus != HttpStatusCode.OK)
+                {
+                    return Redirect("/Home/Error");
+                }
+            }
+
+            url = _URLChildrenHouseBuilder.GetById(_apiPath, id);
+            var houseStatus = await _childrenHouseDownloader.DeleteAsync(url, HttpContext.Session);      
+            if (houseStatus != HttpStatusCode.OK)
+            {
+                return Redirect("/Home/Error");
+            }
+
             GetViewData();
 
             return RedirectToAction(nameof(Index));
@@ -298,12 +462,22 @@ namespace FamilyNet.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult SearchOrphanageOnMap()
+        public async Task<IActionResult> SearchOrphanageOnMap()
         {
-            var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
+            var url = _URLChildrenHouseBuilder.CreatePost(_apiPath);
+            var houses = await _childrenHouseDownloader.GetAllAsync(url, HttpContext.Session);
+            var filtredHouses = houses.Where(loc => loc.LocationID != null && loc.AdressID != null)
+                .Select( orph =>  
+                new Orphanage
+                {
+                    Adress = GetAddress(orph.AdressID.Value).Result,
+                    Name = orph.Name,
+                    Location = GetLocation(orph.LocationID.Value).Result
+                });
+          
             GetViewData();
 
-            return View(orphanages);
+            return View(filtredHouses);
         }
 
 
@@ -311,110 +485,39 @@ namespace FamilyNet.Controllers
 
         #region Private Helpers
 
-        private bool Contains(Address addr)
+        private async Task<Address> GetAddress(int id)
         {
-            foreach (var word in _searchModel.Address.Split())
+            var url = _URLAddressBuilder.GetById(_apiAddressPath, id);
+
+            var address = await _addressDownLoader.GetByIdAsync(url);
+
+            var newAddress = new Address()
             {
-                string wordUpper = word.ToUpper();
-
-                if (addr.Street.ToUpper().Contains(wordUpper)
-                        || addr.City.ToUpper().Contains(wordUpper)
-                        || addr.Region.ToUpper().Contains(wordUpper)
-                        || addr.Country.ToUpper().Contains(wordUpper))
-                    return true;
-            }
-
-            return false;
-        }
-
-        private IQueryable<Orphanage> GetSorted(IQueryable<Orphanage> orphanages, SortStateOrphanages sortOrder)
-        {
-            ViewData["NameSort"] = sortOrder == SortStateOrphanages.NameAsc
-                ? SortStateOrphanages.NameDesc : SortStateOrphanages.NameAsc;
-            ViewData["AddressSort"] = sortOrder == SortStateOrphanages.AddressAsc
-                ? SortStateOrphanages.AddressDesc : SortStateOrphanages.AddressAsc;
-            ViewData["RatingSort"] = sortOrder == SortStateOrphanages.RatingAsc
-                ? SortStateOrphanages.RatingDesc : SortStateOrphanages.RatingAsc;
-
-            switch (sortOrder)
-            {
-                case SortStateOrphanages.NameDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Name);
-                    break;
-                case SortStateOrphanages.AddressAsc:
-                    orphanages = orphanages
-                        .OrderBy(s => s.Adress.Country)
-                        .ThenBy(s => s.Adress.Region)
-                        .ThenBy(s => s.Adress.City)
-                        .ThenBy(s => s.Adress.Street);
-                    break;
-                case SortStateOrphanages.AddressDesc:
-                    orphanages = orphanages
-                        .OrderByDescending(s => s.Adress.Country)
-                        .ThenByDescending(s => s.Adress.Region)
-                        .ThenByDescending(s => s.Adress.City)
-                        .ThenByDescending(s => s.Adress.Street);
-                    break;
-                case SortStateOrphanages.RatingAsc:
-                    orphanages = orphanages.OrderBy(s => s.Rating);
-                    break;
-                case SortStateOrphanages.RatingDesc:
-                    orphanages = orphanages.OrderByDescending(s => s.Rating);
-                    break;
-                default:
-                    orphanages = orphanages.OrderBy(s => s.Name);
-                    break;
-            }
-
-            return orphanages;
-        }
-
-        private IQueryable<Orphanage> GetFiltered(IQueryable<Orphanage> orphanages,
-            OrphanageSearchModel searchModel)
-        {
-            if (searchModel != null)
-            {
-                _searchModel = searchModel;
-
-                if (!string.IsNullOrEmpty(searchModel.Name))
-                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.Name));
-
-                if (!string.IsNullOrEmpty(searchModel.Address))
-                    orphanages = orphanages.Where(x => Contains(x.Adress));
-
-                if (searchModel.Rating > 0)
-                    orphanages = orphanages.Where(x => x.Rating >= searchModel.Rating);
-            }
-            GetViewData();
-
-            return orphanages;
-        }
-
-        private bool GetCoordProp(Address address, out Tuple<float?, float?> result)
-        {
-            result = null;
-            bool forOut = false;
-
-            var nominatim = new Nominatim.API.Geocoders.ForwardGeocoder();
-            var d = nominatim.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest()
-            {
+                ID = address.ID,
                 Country = address.Country,
-                State = address.Region,
+                Region = address.Region,
                 City = address.City,
-                StreetAddress = String.Concat(address.Street, " ", address.House)
-            });
+                Street = address.Street,
+                House = address.House
+            };
 
-            //TODO:some validation for search
-            if (d.Result.Count() != 0)
+            return newAddress;
+        }
+
+        private async Task<Location> GetLocation(int id)
+        {
+            var url = _URLLocationBuilder.GetById(_apiLocationPath, id);
+
+            var location = await _locationDownLoader.GetByIdAsync(url);
+
+            var newLocation = new Location()
             {
-                float? X = (float)d.Result[0].Latitude;
-                float? Y = (float)d.Result[0].Longitude;
+                ID = location.ID,
+                MapCoordX = location.MapCoordX,
+                MapCoordY = location.MapCoordY
+            };
 
-                result = new Tuple<float?, float?>(X, Y);
-                forOut = true;
-            }
-
-            return forOut;
+            return newLocation;
         }
 
         private void GetViewData()

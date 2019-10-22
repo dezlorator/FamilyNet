@@ -5,17 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Downloader;
-using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
 using System.IO;
 using FamilyNet.StreamCreater;
-using Microsoft.EntityFrameworkCore;
 using DataTransferObjects;
 
 namespace FamilyNet.Controllers
@@ -205,7 +202,7 @@ namespace FamilyNet.Controllers
             }
 
             var addressUrl = _urlAdressBuilder.CreatePost(_pathToAdressApi);
-            var status1 = await _serverAddressDownloader.СreatePostAsync(addressUrl,
+            var status1 = await _serverAddressDownloader.CreatePostAsync(addressUrl,
                                                         charityMakerDTO.AddressDTO);
 
             charityMakerDTO.AdressID = status1.Content.ReadAsAsync<AddressDTO>().Result.ID;
@@ -322,7 +319,7 @@ namespace FamilyNet.Controllers
                                                             HttpContext.Session);
 
             var addressUrl = _urlAdressBuilder.GetById(_pathToAdressApi, charityMakerDTO.AdressID);
-            var status1 = await _serverAddressDownloader.СreatePutAsync(addressUrl, 
+            var status1 = await _serverAddressDownloader.CreatePutAsync(addressUrl, 
                                                             charityMakerDTO.AddressDTO);
 
             if (status != HttpStatusCode.NoContent)

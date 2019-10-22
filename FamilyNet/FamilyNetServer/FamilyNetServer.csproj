@@ -29,15 +29,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Factories\" />
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\charitymaker\" />
     <Folder Include="wwwroot\representatives\" />
     <Folder Include="wwwroot\volunteer\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
   </ItemGroup>
 
 </Project>

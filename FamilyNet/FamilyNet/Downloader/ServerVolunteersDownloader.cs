@@ -87,6 +87,8 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.Birthday.ToString()), "Birthday");
             formDataContent.Add(new StringContent(dto.AddressID.ToString()),
                                                   "AddressID");
+            formDataContent.Add(new StringContent(dto.Rating.ToString()),
+                                      "Rating");
         }
     }
 }
