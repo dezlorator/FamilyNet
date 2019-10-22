@@ -28,7 +28,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get()
+        public IActionResult GetAllAsync()
         {
             var allRoles = _unitOfWork.RoleManager.Roles.ToList();
            
