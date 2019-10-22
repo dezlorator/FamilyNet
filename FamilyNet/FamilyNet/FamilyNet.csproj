@@ -39,7 +39,6 @@
 
   <ItemGroup>
     <Folder Include="Resources\OrphanagesController\" />
-    <Folder Include="Views\Category\" />
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\representatives\" />
   </ItemGroup>

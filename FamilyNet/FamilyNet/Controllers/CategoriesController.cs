@@ -81,36 +81,18 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Create()
         {
             await Check();
-
-            var donationItemsList = _unitOfWorkAsync.DonationItems.GetAll().ToList();
-            ViewBag.ListOfDonationItems = donationItemsList;
-
-            var orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
-            ViewBag.ListOfOrphanages = orphanagesList;
-
             GetViewData();
+
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Orphan")]
-        public async Task<IActionResult> Create(DonationViewModel model)
+        public async Task<IActionResult> Create(CategoryDTO category)
         {
-            var url = _URLDonationItemsBuilder.CreatePost(_apiDonationItemsPath);
-            var msg = await _downloaderItems.CreatePostAsync(url, model.DonationItem);
-
-            if (msg.StatusCode != HttpStatusCode.Created)
-            {
-                return Redirect("/Home/Error");
-                //TODO: log
-            }
-
-            var itemDTO = msg.Content.ReadAsAsync<DonationItemDTO>().Result;
-            model.Donation.DonationItemID = itemDTO.ID;
-
-            url = _URLDonationsBuilder.CreatePost(_apiPath);
-            msg = await _downloader.CreatePostAsync(url, model.Donation);
+            var url = _URLBuilder.CreatePost(_apiPath);
+            var msg = await _downloader.CreatePostAsync(url, category);
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -120,7 +102,7 @@ namespace FamilyNet.Controllers
 
             GetViewData();
 
-            return Redirect("/Donations/Index");
+            return Redirect("/Categories/Index");
         }
 
         private void GetViewData()

@@ -49,7 +49,12 @@ namespace FamilyNetServer.Controllers.API
 
             var categoriesDTO = new List<CategoryDTO>();
 
-            categoriesDTO = categories.Select(c => GetDTO(c)).ToList();
+            categoriesDTO = categories.Select(c =>
+                new CategoryDTO
+                {
+                    ID = c.ID,
+                    Name = c.Name
+                }).ToList();
 
             return Ok(categoriesDTO);
         }
@@ -66,7 +71,11 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            var categoryDTO = GetDTO(category);
+            var categoryDTO = new CategoryDTO()
+            {
+                ID = category.ID,
+                Name = category.Name
+            };
 
             return Ok(categoryDTO);
         }
@@ -83,8 +92,7 @@ namespace FamilyNetServer.Controllers.API
 
             var category = new BaseItemType()
             {
-                Name = categoryDTO.Name,
-                Parent = await _unitOfWork.BaseItemTypes.GetById(categoryDTO.ParentID.Value)
+                Name = categoryDTO.Name
             };
 
             await _unitOfWork.BaseItemTypes.Create(category);
@@ -116,23 +124,6 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.SaveChangesAsync();
 
             return Ok();
-        }
-
-        private CategoryDTO GetDTO(BaseItemType t)
-        {
-            var category = new CategoryDTO
-            {
-                ID = t.ID,
-                Name = t.Name
-            };
-
-            if (t.Parent != null)
-            {
-                category.ParentName = t.Parent.Name;
-                category.ParentID = t.Parent.ID;
-            }
-
-            return category;
         }
     }
 }
