@@ -10,7 +10,7 @@
         <div class="col-md-9 register-right">
             <form asp-action="Edit" enctype="multipart/form-data">
                 <div asp-validation-summary="All" class="text-danger"></div>
-                @*<input type="hidden" asp-for="Avatar" />*@
+                <input type="hidden" asp-for="Avatar" />
                 <input hidden asp-for="PhotoPath" />
                 <input hidden asp-for="ID" />
                 <div class="tab-content" id="myTabContent">
@@ -41,7 +41,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="control-label"></label>
+                                    <label class="control-label" asp-for="ChildrenHouseName"></label>
                                     <select asp-for="ChildrenHouseID" name="ChildrenHouseID"
                                             class="form-control"
                                             asp-items="@(new SelectList(@ViewBag.ListOfOrphanages,"ID", "Name"))"></select>
@@ -50,7 +50,7 @@
                                 <div class="form-group">
                                     <label asp-for="Avatar" class="control-label">Фото</label>
                                     <input asp-for="Avatar" type="file" name="Avatar" class="form-control" />
-                                    @*<span asp-validation-for="Avatar" class="text-danger"></span>*@
+                                    <span asp-validation-for="Avatar" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-12 text-center">

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public abstract class ServerDataDownLoader<T> where T : class, new()
+    public abstract class ServerDataDownloader<T> where T : class, new()
     {
         public async Task<IEnumerable<T>> GetAllAsync(string url)
         {

@@ -6,7 +6,7 @@ using DataTransferObjects;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerRepresentativesDownloader : ServerDataDownLoader<RepresentativeDTO>
+    public class ServerRepresentativesDownloader : ServerDataDownloader<RepresentativeDTO>
     {
         public override async Task<HttpStatusCode> СreatePostAsync(string url, RepresentativeDTO dto, Stream streamFile, string fileName)
         {
