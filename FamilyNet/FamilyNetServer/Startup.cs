@@ -78,7 +78,12 @@ namespace FamilyNetServer
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IValidator<AddressDTO>, AddressValidator>();
             services.AddTransient<IValidator<ChildrenHouseDTO>, ChildrenHouseValidator>();
+            services.AddTransient<ICategoryValidator, CategoryValidator>();
+            services.AddTransient<IDonationItemValidator, DonationItemValidator>();
             services.AddTransient<IDonationValidator, DonationValidator>();
+            services.AddTransient<IDonationItemsFilter, DonationItemsFilter>();
+            services.AddTransient<IDonationsFilter, DonationsFilter>();
+
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
                 .AddViewLocalization(
