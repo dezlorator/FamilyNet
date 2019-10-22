@@ -105,6 +105,67 @@ namespace FamilyNet.Controllers
             return Redirect("/Categories/Index");
         }
 
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var url = _URLBuilder.GetById(_apiPath, id.Value);
+            CategoryDTO categoryDTO;
+
+            try
+            {
+                categoryDTO = await _downloader.GetByIdAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (categoryDTO == null)
+            {
+                return NotFound();
+            }
+
+            GetViewData();
+
+            return View(categoryDTO);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+
+            var url = _URLBuilder.GetById(_apiPath, id);
+            var msg = await _downloader.DeleteAsync(url);
+
+            if (msg.StatusCode != HttpStatusCode.OK)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return Redirect("/Categories/Index");
+        }
+
         private void GetViewData()
         {
             ViewData["CategoriesList"] = _localizer["CategoriesList"];

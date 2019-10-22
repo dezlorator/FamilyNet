@@ -34,7 +34,7 @@ namespace FamilyNet.Controllers
 
         private bool IsContain(Address addr)
         {
-            foreach (var word in _searchModel.AddressString.Split())
+            foreach (var word in _searchModel.Address.Split())
             {
                 if (addr.Street.ToUpper().Contains(word.ToUpper())
                 || addr.City.ToUpper().Contains(word.ToUpper())
@@ -264,7 +264,7 @@ namespace FamilyNet.Controllers
 
         private bool Contains(Address addr)
         {
-            foreach (var word in _searchModel.AddressString.Split())
+            foreach (var word in _searchModel.Address.Split())
             {
                 string wordUpper = word.ToUpper();
 
@@ -327,14 +327,14 @@ namespace FamilyNet.Controllers
             {
                 _searchModel = searchModel;
 
-                if (!string.IsNullOrEmpty(searchModel.NameString))
-                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.NameString));
+                if (!string.IsNullOrEmpty(searchModel.Name))
+                    orphanages = orphanages.Where(x => x.Name.Contains(searchModel.Name));
 
-                if (!string.IsNullOrEmpty(searchModel.AddressString))
+                if (!string.IsNullOrEmpty(searchModel.Address))
                     orphanages = orphanages.Where(x => Contains(x.Adress));
 
-                if (searchModel.RatingNumber > 0)
-                    orphanages = orphanages.Where(x => x.Rating >= searchModel.RatingNumber);
+                if (searchModel.Rating > 0)
+                    orphanages = orphanages.Where(x => x.Rating >= searchModel.Rating);
             }
             GetViewData();
 
