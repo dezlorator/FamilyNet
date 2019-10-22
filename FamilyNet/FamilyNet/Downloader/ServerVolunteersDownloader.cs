@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerVolunteersDownloader : ServerDataDownLoader<VolunteerDTO>
+    public class ServerVolunteersDownloader : ServerDataDownloader<VolunteerDTO>
     {
         public override async Task<HttpStatusCode> СreatePostAsync(string url,
                                                     VolunteerDTO dto,
