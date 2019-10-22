@@ -181,7 +181,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLChildrenBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.СreatetePostAsync(url, childDTO,
+            var status = await _downLoader.СreatePostAsync(url, childDTO,
                                                              stream, childDTO.Avatar.FileName);
 
             if (status != HttpStatusCode.Created)
@@ -260,7 +260,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLChildrenBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatetePutAsync(url, childDTO,
+            var status = await _downLoader.СreatePutAsync(url, childDTO,
                                                             stream, childDTO.Avatar?.FileName);
 
             if (status != HttpStatusCode.NoContent)

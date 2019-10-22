@@ -21,15 +21,15 @@
     <table class="table">
         <th>
             @Html.Label(@ViewData["Name"] + ":")
-            @Html.TextBox("NameString", "", new { @class = "form-control" })
+            @Html.TextBox("Name", "", new { @class = "form-control" })
         </th>
         <th>
             @Html.Label(@ViewData["Address"] + ":")
-            @Html.TextBox("AddressString", "", new { @class = "form-control" })
+            @Html.TextBox("Address", "", new { @class = "form-control" })
         </th>
         <th width="11%">
             @Html.Label(@ViewData["Rating"] + " " + @ViewData["From"] + ":")
-            @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
+            @Html.TextBox("Rating", "", new { @class = "form-control", type = "number" })
         </th>
         <th></th>
         <th></th>
@@ -53,17 +53,17 @@
     <thead class="thead-light">
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+                <a asp-action="Index" asp-route-sortOrder="NameAsc">
                     @ViewData["Name"]
                 </a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewBag.AddressSort">
+                <a asp-action="Index" asp-route-sortOrder="AddressAsc">
                     @SharedLocalizer["Address"]
                 </a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewBag.RatingSort">
+                <a asp-action="Index" asp-route-sortOrder="RatingAsc">
                     @ViewData["Rating"]
                 </a>
             </th>
@@ -99,7 +99,7 @@
                     @Html.DisplayFor(modelItem => item.Rating)
                 </td>
                 <td>
-                    <img class="img-responsive" src="@Url.Content("~/avatars/" + @item.Avatar)" alt="" width="50" height="50">
+                    <img class="img-responsive" src="@Url.Content(@item.Avatar)" alt="" width="50" height="50">
                 </td>
                 <td align="center">
                     <a asp-action="Index" asp-controller="Representatives" asp-route-id="@item.ID"
