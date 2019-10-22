@@ -22,12 +22,16 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
+        #region ctor
+
         public CategoriesController(IUnitOfWorkAsync unitOfWork,
                                     ICategoryValidator categoryValidator)
         {
             _unitOfWork = unitOfWork;
             _categoryValidator = categoryValidator;
         }
+
+        #endregion
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]

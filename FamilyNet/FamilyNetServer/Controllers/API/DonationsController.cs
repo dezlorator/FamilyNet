@@ -26,6 +26,8 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
+        #region ctor
+
         public DonationsController(IUnitOfWorkAsync unitOfWork,
                                    IDonationValidator donationValidator,
                                    IDonationsFilter donationsFilter)
@@ -35,6 +37,8 @@ namespace FamilyNetServer.Controllers.API
             _donationsFilter = donationsFilter;
         }
 
+        #endregion
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -43,10 +47,11 @@ namespace FamilyNetServer.Controllers.API
                                     [FromForm]int? orphanageID)
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
+            donations = _donationsFilter.GetDonations(donations, orphanageID);
 
             if (rows != 0 && page != 0)
             {
-                donations = _donationsFilter.GetDonations(donations, orphanageID)
+                donations = donations
                     .Skip((page - 1) * rows).Take(rows);
             }
 

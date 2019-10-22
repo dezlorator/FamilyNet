@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
@@ -111,31 +110,6 @@ namespace FamilyNet.Controllers
             GetViewData();
 
             return View(donations);
-        }
-
-        private async Task<TypeBaseItem> GetTypeBaseItemsAsync(int typeId)
-        {
-            var typeBaseItem = new TypeBaseItem()
-            {
-                Type = await GetTypeByIdAsync(typeId)
-            };
-
-            return typeBaseItem;
-        }
-
-        private async Task<BaseItemType> GetTypeByIdAsync(int id)
-        {
-            var url = _URLDonationsBuilder.GetById(_apiCategoriesPath, id);
-
-            var category = await _downloaderCategories.GetByIdAsync(url);
-
-            var newCategory = new BaseItemType()
-            {
-                ID = category.ID,
-                Name = category.Name,
-            };
-
-            return newCategory;
         }
 
         [AllowAnonymous]
@@ -478,6 +452,31 @@ namespace FamilyNet.Controllers
             GetViewData();
 
             return Redirect("/Donations/Index");
+        }
+
+        private async Task<TypeBaseItem> GetTypeBaseItemsAsync(int typeId)
+        {
+            var typeBaseItem = new TypeBaseItem()
+            {
+                Type = await GetTypeByIdAsync(typeId)
+            };
+
+            return typeBaseItem;
+        }
+
+        private async Task<BaseItemType> GetTypeByIdAsync(int id)
+        {
+            var url = _URLDonationsBuilder.GetById(_apiCategoriesPath, id);
+
+            var category = await _downloaderCategories.GetByIdAsync(url);
+
+            var newCategory = new BaseItemType()
+            {
+                ID = category.ID,
+                Name = category.Name,
+            };
+
+            return newCategory;
         }
 
         private void GetViewData()

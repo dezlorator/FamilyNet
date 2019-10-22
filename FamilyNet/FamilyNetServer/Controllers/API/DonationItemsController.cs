@@ -119,16 +119,19 @@ namespace FamilyNetServer.Controllers.API
 
             donationItem.TypeBaseItem = new List<TypeBaseItem>();
 
-            //foreach (int c in donationItemDTO.CategoriesID)
-            //{
-            //    var itemType = new TypeBaseItem
-            //    {
-            //        ItemID = ID,
-            //        TypeID = c
-            //    };
+            if (donationItemDTO.CategoriesID != null)
+            {
+                foreach (int c in donationItemDTO.CategoriesID)
+                {
+                    var itemType = new TypeBaseItem
+                    {
+                        ItemID = ID,
+                        TypeID = c
+                    };
 
-            //    donationItem.TypeBaseItem.Add(itemType);
-            //}
+                    donationItem.TypeBaseItem.Add(itemType);
+                }
+            }
 
             await _unitOfWork.DonationItems.Create(donationItem);
             _unitOfWork.SaveChangesAsync();

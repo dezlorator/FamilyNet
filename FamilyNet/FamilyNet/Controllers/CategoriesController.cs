@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
-using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using Microsoft.Extensions.Localization;
@@ -22,7 +20,6 @@ namespace FamilyNet.Controllers
 
         #region private fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly IStringLocalizer<CategoriesController> _localizer;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloader;
         private readonly IURLCategoriesBuilder _URLBuilder;
@@ -33,9 +30,9 @@ namespace FamilyNet.Controllers
         #region ctor
 
         public CategoriesController(IUnitOfWorkAsync unitOfWork,
-                                 IStringLocalizer<CategoriesController> localizer,
-                                 ServerSimpleDataDownloader<CategoryDTO> downloader,
-                                 IURLCategoriesBuilder uRLBuilder)
+                                    IStringLocalizer<CategoriesController> localizer,
+                                    ServerSimpleDataDownloader<CategoryDTO> downloader,
+                                    IURLCategoriesBuilder uRLBuilder)
             : base(unitOfWork)
         {
             _localizer = localizer;
