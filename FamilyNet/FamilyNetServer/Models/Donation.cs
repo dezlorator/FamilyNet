@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using FamilyNetServer.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using FamilyNetServer.Models.Interfaces;
-using FamilyNetServer.Enums;
 
 namespace FamilyNetServer.Models
 {
@@ -37,6 +36,13 @@ namespace FamilyNetServer.Models
 
         [BindNever]
         public bool IsDeleted { get; set; } = false;
+
+        public enum DonationStatus
+        {
+            Sended = 1,
+            Aproved,
+            Taken,
+        }
 
         public void CopyState(Donation sender)
         {            

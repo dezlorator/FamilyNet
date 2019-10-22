@@ -1,4 +1,5 @@
-﻿using FamilyNetServer.DTO;
+﻿using DataTransferObjects;
+using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
@@ -35,7 +36,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAll([FromQuery]int rows,
+        public IActionResult GetAll([FromQuery]int rows,
                                           [FromQuery]int page,
                                           [FromQuery]string name,
                                           [FromQuery]float minPrice,
@@ -59,38 +60,48 @@ namespace FamilyNetServer.Controllers.API
 
             var donationItemsDTO = new List<DonationItemDTO>();
 
-            foreach (var d in donationItems)
-            {
-                var item = new DonationItemDTO
+            donationItemsDTO = donationItems.Select(d =>
+                new DonationItemDTO
                 {
+                    ID = d.ID,
                     Name = d.Name,
                     Description = d.Description,
                     Price = d.Price,
                     CategoriesID = d.TypeBaseItem.Select(t => t.TypeID)
-                };
-
-                item.Categories = new List<string>();
-
-                foreach (TypeBaseItem t in d.TypeBaseItem)
-                {
-                    var type = await _unitOfWork.BaseItemTypes.GetById(t.TypeID);
-
-                    if (type != null)
-                    {
-                        item.Categories.Add(type.Name);
-                    }
-                }
-
-                donationItemsDTO.Add(item);
-            }
+                }).ToList();
 
             return Ok(donationItemsDTO);
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get(int id)
+        {
+            var donationItem = await _unitOfWork.DonationItems.GetById(id);
+
+            if (donationItem == null)
+            {
+                return BadRequest();
+            }
+
+            var donationItemDTO = new DonationItemDTO()
+            {
+                ID = donationItem.ID,
+                Name = donationItem.Name,
+                Description = donationItem.Description,
+                Price = donationItem.Price,
+                CategoriesID = donationItem.TypeBaseItem.Select(t => t.TypeID)
+            };
+
+            return Ok(donationItemDTO);
+        }
+
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]DonationItemDTO donationItemDTO)
+        public async Task<IActionResult> Create([FromForm]DonationItemDTO donationItemDTO)
         {
             if (!_donationItemValidator.IsValid(donationItemDTO))
             {
@@ -108,27 +119,29 @@ namespace FamilyNetServer.Controllers.API
 
             donationItem.TypeBaseItem = new List<TypeBaseItem>();
 
-            foreach (int c in donationItemDTO.CategoriesID)
-            {
-                var itemType = new TypeBaseItem
-                {
-                    ItemID = ID,
-                    TypeID = c
-                };
+            //foreach (int c in donationItemDTO.CategoriesID)
+            //{
+            //    var itemType = new TypeBaseItem
+            //    {
+            //        ItemID = ID,
+            //        TypeID = c
+            //    };
 
-                donationItem.TypeBaseItem.Add(itemType);
-            }
+            //    donationItem.TypeBaseItem.Add(itemType);
+            //}
 
             await _unitOfWork.DonationItems.Create(donationItem);
             _unitOfWork.SaveChangesAsync();
 
-            return Created("api/v1/donations/" + donationItem.ID, donationItemDTO);
+            donationItemDTO.ID = donationItem.ID;
+
+            return Created("api/v1/donationItems/" + donationItem.ID, donationItemDTO);
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit(int id, [FromBody]DonationItemDTO donationItemDTO)
+        public async Task<IActionResult> Edit(int id, [FromForm]DonationItemDTO donationItemDTO)
         {
             if (!_donationItemValidator.IsValid(donationItemDTO))
             {

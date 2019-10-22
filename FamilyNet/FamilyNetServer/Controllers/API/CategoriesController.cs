@@ -1,4 +1,5 @@
-﻿using FamilyNetServer.DTO;
+﻿using DataTransferObjects;
+using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;

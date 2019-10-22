@@ -2,21 +2,50 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerAddressDownloader
+    public class ServerAddressDownloader : IServerAddressDownloader
     {
+        public async Task<IEnumerable<AddressDTO>> GetAllAsync(string url)
+        {
+            List<AddressDTO> objs = null;
+
+            try
+            {
+                HttpResponseMessage response = null;
+
+                using (var httpClient = new HttpClient())
+                {
+                    response = await httpClient.GetAsync(url);
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                objs = JsonConvert.DeserializeObject<List<AddressDTO>>(json);
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            return objs;
+        }
         public async Task<HttpResponseMessage> СreatePostAsync(string url,
-                                                           AddressDTO dto)
+                                                   AddressDTO dto)
         {
             HttpResponseMessage msg = null;
-            
+
             using (var httpClient = new HttpClient())
             using (var formDataContent = new MultipartFormDataContent())
             {
@@ -47,7 +76,7 @@ namespace FamilyNet.Downloader
 
         private static void BuildMultipartFprmData(AddressDTO dto,
                                                    MultipartFormDataContent formDataContent)
-        {           
+        {
 
             if (dto.ID > 0)
             {

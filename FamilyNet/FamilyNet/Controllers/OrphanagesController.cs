@@ -1,17 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
 using System.IO;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using Microsoft.Extensions.Localization;
-using System.Globalization;
-using FamilyNet.Infrastructure;
 using System;
 using System.Collections.Generic;
 using FamilyNet.Downloader;

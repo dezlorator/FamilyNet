@@ -1,7 +1,6 @@
 ﻿using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
-using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -18,16 +17,14 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWorkAsync _repository;
-        private readonly IValidator<AddressDTO> _addressValidator;
 
         #endregion
 
         #region ctor
 
-        public AddressController(IUnitOfWorkAsync repo, IValidator<AddressDTO> addressValidator)
+        public AddressController(IUnitOfWorkAsync repo)
         {            
             _repository = repo;
-            _addressValidator = addressValidator;
         }
 
         #endregion
@@ -95,10 +92,10 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
         {
-            if (!_addressValidator.IsValid(addressDTO))
-            {
-                return BadRequest();
-            }
+            //if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
+            //{
+            //    return BadRequest();
+            //}
 
             var address = new Address()
             {
@@ -115,7 +112,7 @@ namespace FamilyNetServer.Controllers.API
 
             addressDTO.ID = address.ID;
 
-            return Created(addressDTO.ID.ToString(), addressDTO);
+            return Created("api/v1/childrenHouse/" + addressDTO.ID, addressDTO);
         }
 
         [HttpPut("{id}")]
@@ -123,10 +120,10 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AddressDTO addressDTO)
         {
-            if (!_addressValidator.IsValid(addressDTO))
-            {
-                return BadRequest();
-            }
+            //if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
+            //{
+            //    return BadRequest();
+            //}
 
             var address = await _repository.Address.GetById(id);
 

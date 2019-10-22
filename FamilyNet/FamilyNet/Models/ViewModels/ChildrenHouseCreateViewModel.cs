@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DataTransferObjects;
 
 namespace FamilyNet.Models.ViewModels
 {
     public class ChildrenHouseCreateViewModel
     {
-        public DataTransferObjects.ChildrenHouseDTO ChildrenHouse { get; set; }
+        public ChildrenHouseDTO ChildrenHouse { get; set; }
 
-        public DataTransferObjects.AddressDTO Address { get; set; }
+        public AddressDTO Address { get; set; }
     }
 }
