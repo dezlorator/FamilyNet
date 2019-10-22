@@ -45,12 +45,12 @@ namespace FamilyNetServer.Controllers.API
                                    )
         {
             var donationItems = _unitOfWork.DonationItems.GetAll().Where(b => !b.IsDeleted);
-
+            donationItems = _donationItemsFilter.GetDonationItems(donationItems, name, minPrice, maxPrice, category);
 
             if (rows != 0 && page != 0)
             {
-                donationItems = _donationItemsFilter.GetDonationItems(donationItems, name, minPrice, maxPrice, category)
-                    .Skip((page - 1) * rows).Take(rows);
+                donationItems = donationItems.
+                    Skip((page - 1) * rows).Take(rows);
             }
 
             if (donationItems == null)
