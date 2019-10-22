@@ -1,4 +1,5 @@
 ﻿using DataTransferObjects;
+using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
@@ -49,35 +50,16 @@ namespace FamilyNetServer.Controllers.API
 
             var categoriesDTO = new List<CategoryDTO>();
 
-            categoriesDTO = categories.Select(c =>
-                new CategoryDTO
-                {
-                    ID = c.ID,
-                    Name = c.Name
-                }).ToList();
-
-            return Ok(categoriesDTO);
-        }
-
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get(int id)
-        {
-            var category = await _unitOfWork.BaseItemTypes.GetById(id);
-
-            if (category == null)
+            foreach (var c in categories)
             {
-                return BadRequest();
+                categoriesDTO.Add(new CategoryDTO
+                {
+                    Name = c.Name
+                }
+                );
             }
 
-            var categoryDTO = new CategoryDTO()
-            {
-                ID = category.ID,
-                Name = category.Name
-            };
-
-            return Ok(categoryDTO);
+            return Ok(categoriesDTO);
         }
 
         [HttpPost]

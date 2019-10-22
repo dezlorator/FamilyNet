@@ -44,7 +44,7 @@
                                 <b>@Html.DisplayNameFor(model => model.Rating)</b>
                                 @Html.DisplayFor(model => model.Rating) <br>
                             <p>
-                                @if (Model.Donations.Count != 0)
+                                @if (Model.Donations != null && Model.Donations.Count != 0)
                                 {
                                     <b>@Html.DisplayNameFor(model => model.Donations)</b> <br />
                                     @foreach (var donation in Model.Donations)
@@ -69,7 +69,7 @@
             </div>
         </div>
         <div class="col-lg-4 order-lg-1 text-center">
-            <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content("~/avatars/" + Model.Avatar)" alt="">
+            <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content(Model.Avatar)" alt="">
 
 
         </div>

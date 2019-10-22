@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.Validators
 {
-    public class ChildrenHouseValidator : IChildrenHouseValidator
+    public class ChildrenHouseValidator : IValidator<ChildrenHouseDTO>
     {
         public bool IsValid(ChildrenHouseDTO childrenHouseDTO)
         {

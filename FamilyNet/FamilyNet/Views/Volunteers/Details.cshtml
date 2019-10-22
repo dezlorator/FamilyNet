@@ -25,7 +25,6 @@
 
                             <h6>@Html.DisplayNameFor(model => model.Address)</h6>
                             <p>
-                                @Html.DisplayFor(model => model.AddressID)
                                 @Html.DisplayFor(model => model.Address.Country)
                                 @Html.DisplayFor(model => model.Address.Region)
                                 @Html.DisplayFor(model => model.Address.City)
@@ -45,11 +44,11 @@
         <div class="col-lg-4 order-lg-1 text-center">
             @if (!String.IsNullOrEmpty(Model.Avatar))
             {
-                <img class="img-responsive" src="@Url.Content(Model.Avatar)" alt="Card image cap" style="height: 300px; width: 100%; display: block;" alt="avatar">
+                <img class="img-responsive" src="@Url.Content(Model.Avatar)" alt="Card image cap" style="height: 300px; width: 300px; display: block;" alt="avatar">
             }
             else
             {
-                <img class="img-responsive" src="@Url.Content("~/images/anonimusjpg.jpg")" alt="Card image cap" style="height: 300px; width: 100%; display: block;" alt="avatar">
+                <img class="img-responsive" src="@Url.Content("~/images/anonimusjpg.jpg")" alt="Card image cap" style="height: 300px; width: 300px; display: block;" alt="avatar">
             }
             <label class="custom-file">
                 <input type="file" id="file" class="custom-file-input">

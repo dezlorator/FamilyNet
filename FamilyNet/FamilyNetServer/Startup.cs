@@ -15,8 +15,9 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
-using FamilyNetServer.Configuration;
+using FamilyNetServer.DTO;
 using FamilyNetServer.Uploaders;
+using FamilyNetServer.Configuration;
 
 namespace FamilyNetServer
 {
@@ -72,8 +73,12 @@ namespace FamilyNetServer
             services.AddTransient<IFilterConditionsChildren, FilterConditionsChildren>();
             services.AddTransient<IRepresentativeValidator, RepresentativeValidator>();
             services.AddTransient<IFilterConditionsRepresentatives, FilterConditionsRepresentatives>();
+            services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IFilterConditionsChildrenHouse, FilterConditionChildrenHouse>();
-            services.AddTransient<IChildrenHouseValidator, ChildrenHouseValidator>();
+            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
+            services.AddTransient<IValidator<AddressDTO>, AddressValidator>();
+            services.AddTransient<IValidator<ChildrenHouseDTO>, ChildrenHouseValidator>();
+            services.AddTransient<IDonationValidator, DonationValidator>();
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
                 .AddViewLocalization(
