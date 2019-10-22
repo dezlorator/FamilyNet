@@ -8,10 +8,10 @@
         <h1>Список категорий</h1>
     </div>
     <div class="col-md-3">
-        <a asp-action="DonationsTable" class="btn btn-primary float-right">Потребности</a>
+        <a asp-action="Index" asp-controller="Donations" class="btn btn-primary float-right">Потребности</a>
     </div>
     <div class="col-md-3">
-        <a asp-action="CreateCategory" class="btn btn-primary float-right">+ Категория</a>
+        <a asp-action="Create" class="btn btn-primary float-right">+ Категория</a>
     </div>
 </div>
 <table class="table table-hover">
@@ -45,7 +45,7 @@
                     }
                 </td>                
                 <td>
-                    <a asp-action="DeleteCategory" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
+                    <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
                 </td>
             </tr>
         }

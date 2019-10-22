@@ -14,8 +14,6 @@ using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
-using System.IO;
-using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
@@ -31,7 +29,6 @@ namespace FamilyNet.Controllers
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
         private readonly string _apiPath = "api/v1/donations";
-        private readonly IFileStreamCreater _streamCreater;
         private readonly string _apiCategoriesPath = "api/v1/categories";
         private readonly string _apiDonationItemsPath = "api/v1/donationItems";
 
@@ -45,8 +42,7 @@ namespace FamilyNet.Controllers
                                  ServerSimpleDataDownloader<CategoryDTO> downloaderCategories,
                                  ServerSimpleDataDownloader<DonationItemDTO> downloaderItems,
                                  IURLDonationsBuilder uRLDonationsBuilder,
-                                 IURLDonationItemsBuilder uRLDonationItemsBuilder,
-                                 IFileStreamCreater streamCreater)
+                                 IURLDonationItemsBuilder uRLDonationItemsBuilder)
             : base(unitOfWork)
         {
             _localizer = localizer;
@@ -55,7 +51,6 @@ namespace FamilyNet.Controllers
             _downloaderItems = downloaderItems;
             _URLDonationsBuilder = uRLDonationsBuilder;
             _URLDonationItemsBuilder = uRLDonationItemsBuilder;
-            _streamCreater = streamCreater;
         }
 
         #endregion
