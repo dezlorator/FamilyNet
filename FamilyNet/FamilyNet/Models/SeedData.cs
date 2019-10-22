@@ -23,10 +23,10 @@ namespace FamilyNet.Models
                 #region Volunteer1
 
                 Volunteer volunteer = new Volunteer();
-                volunteer.FullName = new FullName() { Name = "Anna", Surname = "Бутенко", Patronymic = "Андреевна" };
+                volunteer.FullName = new FullName() { Name = "Анна", Surname = "Бутенко", Patronymic = "Андреевна" };
                 volunteer.Birthday = new DateTime(1998, 11, 30);
                 volunteer.Rating = 8;
-                volunteer.Avatar = "ewwwee";
+                volunteer.Avatar = "avatars/seeddata_0.jpg";
                 volunteer.Address = new Address()
                 {
                     Country = "Украина",
@@ -43,10 +43,10 @@ namespace FamilyNet.Models
                 #region Volunteer2
 
                 volunteer = new Volunteer();
-                volunteer.FullName = new FullName(){ Name = "Иван", Surname = "Новиков", Patronymic = "Русланович" };
+                volunteer.FullName = new FullName() { Name = "Иван", Surname = "Кенобов", Patronymic = "Русланович" };
                 volunteer.Birthday = new DateTime(1991, 4, 10);
                 volunteer.Rating = 3;
-                volunteer.Avatar = "";
+                volunteer.Avatar = "avatars/seeddata_1.jpg";
                 volunteer.Address = new Address()
                 {
                     Country = "Украина",
@@ -63,11 +63,11 @@ namespace FamilyNet.Models
                 #region Volunteer3
 
                 volunteer = new Volunteer();
-                
-                   volunteer.FullName = new FullName() { Name = "Михаил", Surname = "Иванов", Patronymic = "Сергеевич" };
-                   volunteer.Birthday = new DateTime(1993, 12, 25);
-                   volunteer.Rating = 4;
-                   volunteer.Avatar = "";
+
+                volunteer.FullName = new FullName() { Name = "Николай", Surname = "Ривский", Patronymic = "Сергеевич" };
+                volunteer.Birthday = new DateTime(1993, 12, 25);
+                volunteer.Rating = 4;
+                volunteer.Avatar = "avatars/seeddata_2.jpg";
                 volunteer.Address = new Address()
                 {
                     Country = "Украина",
@@ -84,10 +84,10 @@ namespace FamilyNet.Models
                 #region Volunteer4
 
                 volunteer = new Volunteer();
-                    volunteer.FullName = new FullName() { Name = "Марина", Surname = "Романчук", Patronymic = "Сергеевна" };
-                    volunteer.Birthday = new DateTime(1999, 1, 20);
-                    volunteer.Rating = 7;
-                    volunteer.Avatar = "";
+                volunteer.FullName = new FullName() { Name = "Евгения", Surname = "Романчук", Patronymic = "Сергеевна" };
+                volunteer.Birthday = new DateTime(1999, 1, 20);
+                volunteer.Rating = 7;
+                volunteer.Avatar = "avatars/seeddata_3.jpg";
                 volunteer.Address = new Address()
                 {
                     Country = "Украина",
@@ -104,10 +104,30 @@ namespace FamilyNet.Models
                 #region Volunteer5
 
                 volunteer = new Volunteer();
-                volunteer.FullName = new FullName() { Name = "Алина", Surname = "Лейко", Patronymic = "Олеговна" };
+                volunteer.FullName = new FullName() { Name = "Александр", Surname = "Бинов", Patronymic = "Олегович" };
                 volunteer.Birthday = new DateTime(1985, 4, 1);
                 volunteer.Rating = 10;
-                volunteer.Avatar = "";
+                volunteer.Avatar = "avatars/seeddata_4.jpg";
+                volunteer.Address = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Киевская",
+                    City = "Киев",
+                    Street = "Восьмого Марта",
+                    House = "17"
+                };
+
+                #endregion
+
+                volunteers.Add(volunteer);
+
+                #region Volunteer6
+
+                volunteer = new Volunteer();
+                volunteer.FullName = new FullName() { Name = "Александр", Surname = "Джеков", Patronymic = "Петрович" };
+                volunteer.Birthday = new DateTime(1987, 3, 10);
+                volunteer.Rating = 10;
+                volunteer.Avatar = "avatars/seeddata_5.jpg";
                 volunteer.Address = new Address()
                 {
                     Country = "Украина",
