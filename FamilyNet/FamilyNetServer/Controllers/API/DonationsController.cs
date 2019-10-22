@@ -57,23 +57,23 @@ namespace FamilyNetServer.Controllers.API
 
             var donationsDTO = new List<DonationDTO>();
 
-            donationsDTO = donations.Select(d =>             
+            donationsDTO = donations.Select(d =>
                 new DonationDTO()
                 {
-                      ID = d.ID,
-                      City = d.Orphanage.Adress.City,
-                      OrphanageName = d.Orphanage.Name,
-                      DonationItemID = d.DonationItemID,
-                      OrphanageID = d.OrphanageID,
-                      CharityMakerID = d.CharityMakerID,
-                      Status = d.Status.ToString(),
-                      LastDateWhenStatusChanged = d.LastDateWhenStatusChanged,
-                      ItemName = d.DonationItem.Name,
-                      ItemDescription = d.DonationItem.Description,
-                      Types = d.DonationItem.TypeBaseItem
+                    ID = d.ID,
+                    City = d.Orphanage.Adress.City,
+                    OrphanageName = d.Orphanage.Name,
+                    DonationItemID = d.DonationItemID,
+                    OrphanageID = d.OrphanageID,
+                    CharityMakerID = d.CharityMakerID,
+                    Status = d.Status.ToString(),
+                    LastDateWhenStatusChanged = d.LastDateWhenStatusChanged,
+                    ItemName = d.DonationItem.Name,
+                    ItemDescription = d.DonationItem.Description,
+                    Types = d.DonationItem.TypeBaseItem
                                .Select(t => t.TypeID)
                 }).ToList();
-               
+
             return Ok(donationsDTO);
         }
 
@@ -94,7 +94,7 @@ namespace FamilyNetServer.Controllers.API
                 ID = donation.ID,
                 Types = donation.DonationItem.TypeBaseItem
                                      .Select(t => t.TypeID),
-                DonationItemID =donation.DonationItemID,
+                DonationItemID = donation.DonationItemID,
                 CharityMakerID = donation.CharityMakerID,
                 OrphanageID = donation.OrphanageID,
                 ItemName = donation.DonationItem.Name,
@@ -157,7 +157,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 donation.DonationItemID = donationDTO.DonationItemID;
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
-            } 
+            }
 
             donation.IsRequest = true;
 
@@ -187,7 +187,7 @@ namespace FamilyNetServer.Controllers.API
 
             var donation = await _unitOfWork.Donations.GetById(id);
 
-            if(donation == null)
+            if (donation == null)
             {
                 return BadRequest();
             }

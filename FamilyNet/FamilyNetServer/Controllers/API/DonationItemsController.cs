@@ -19,8 +19,8 @@ namespace FamilyNetServer.Controllers.API
         #region fields
 
         private readonly IUnitOfWorkAsync _unitOfWork;
-         private readonly IDonationItemValidator _donationItemValidator;
-         private readonly IDonationItemsFilter _donationItemsFilter;
+        private readonly IDonationItemValidator _donationItemValidator;
+        private readonly IDonationItemsFilter _donationItemsFilter;
 
         #endregion
 
@@ -112,7 +112,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 Name = donationItemDTO.Name,
                 Description = donationItemDTO.Description,
-                Price = donationItemDTO.Price                
+                Price = donationItemDTO.Price
             };
 
             int ID = donationItem.ID;
