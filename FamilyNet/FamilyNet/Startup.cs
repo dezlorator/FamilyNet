@@ -16,6 +16,7 @@ using FamilyNet.Configuration;
 using FamilyNet.Downloader;
 using DataTransferObjects;
 using FamilyNet.StreamCreater;
+using FamilyNet.Models.ViewModels;
 
 namespace FamilyNet
 {
@@ -58,11 +59,12 @@ namespace FamilyNet
             services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationItemDTO>, ServerDonationItemsDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<CategoryDTO>, ServerCategoriesDownloader>();
-            services.AddTransient<ServerSimpleDataDownloader<RoleDTO>, ServerRoleDownloader>();
+          
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
             services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
             services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
-
+            services.AddTransient<ServerSimpleDataDownloader<RoleDTO>, ServerRoleDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<UserDTO>, ServerUserDownloader>();
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
