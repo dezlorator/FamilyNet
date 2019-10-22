@@ -391,10 +391,10 @@ namespace FamilyNet.Models
 
                 CharityMaker charityMaker = new CharityMaker();
 
-                charityMaker.FullName = new FullName() { Name = "Bладимир", Surname = "Халин", Patronymic = "Тарасович" };
-                charityMaker.Birthday = new DateTime(1991, 12, 3);
-                charityMaker.Rating = 5;
-                charityMaker.Avatar = "";
+                charityMaker.FullName = new FullName() { Name = "Константин", Surname = "Истенко", Patronymic = "Тарасович" };
+                charityMaker.Birthday = new DateTime(1930, 12, 3);
+                charityMaker.Rating = 6;
+                charityMaker.Avatar = "avatars/seeddata_KleenEastwood.jpg";
                 charityMaker.Address = new Address()
                 {
                     Country = "Украина",
@@ -411,10 +411,10 @@ namespace FamilyNet.Models
 
                 charityMaker = new CharityMaker();
 
-                charityMaker.FullName = new FullName() { Name = "Сергей", Surname = "Калинич", Patronymic = "Евгеньевич" };
+                charityMaker.FullName = new FullName() { Name = "Хидео", Surname = "Кодзима", Patronymic = "Петрович" };
                 charityMaker.Birthday = new DateTime(1972, 6, 12);
                 charityMaker.Rating = 7;
-                charityMaker.Avatar = "";
+                charityMaker.Avatar = "avatars/seeddata_KodzimaGeniy.png";
                 charityMaker.Address = new Address()
                 {
                     Country = "Украина",
@@ -431,10 +431,10 @@ namespace FamilyNet.Models
 
                 charityMaker = new CharityMaker();
 
-                charityMaker.FullName = new FullName() { Name = "Алена", Surname = "Чипко", Patronymic = "Максимовна" };
-                charityMaker.Birthday = new DateTime(1993, 4, 28);
+                charityMaker.FullName = new FullName() { Name = "Анатолий", Surname = "Ульфрик", Patronymic = "Скайримович" };
+                charityMaker.Birthday = new DateTime(1983, 4, 28);
                 charityMaker.Rating = 9;
-                charityMaker.Avatar = "";
+                charityMaker.Avatar = "avatars/seeddata_KypiSkairim.png";
                 charityMaker.Address = new Address()
                 {
                     Country = "Украина",
@@ -451,10 +451,50 @@ namespace FamilyNet.Models
 
                 charityMaker = new CharityMaker();
 
-                charityMaker.FullName = new FullName() { Name = "Кристина", Surname = "Юдина", Patronymic = "Сергеевна" };
-                charityMaker.Birthday = new DateTime(1984, 5, 18);
+                charityMaker.FullName = new FullName() { Name = "Тор", Surname = "Асгардов", Patronymic = "Одинович" };
+                charityMaker.Birthday = new DateTime(1, 1, 1);
                 charityMaker.Rating = 10;
-                charityMaker.Avatar = "";
+                charityMaker.Avatar = "avatars/seeddata_maxresdefault.jpg";
+                charityMaker.Address = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Одесская",
+                    City = "Одесса",
+                    Street = "Лютеранский Пер",
+                    House = "52"
+                };
+                #endregion
+
+                charityMakers.Add(charityMaker);
+
+                #region CharityMaker5
+
+                charityMaker = new CharityMaker();
+
+                charityMaker.FullName = new FullName() { Name = "Иван", Surname = "Морфеус", Patronymic = "Иванов" };
+                charityMaker.Birthday = new DateTime(1980, 8, 12);
+                charityMaker.Rating = 10;
+                charityMaker.Avatar = "avatars/seeddata_morfeys.jpg";
+                charityMaker.Address = new Address()
+                {
+                    Country = "Украина",
+                    Region = "Одесская",
+                    City = "Одесса",
+                    Street = "Лютеранский Пер",
+                    House = "52"
+                };
+                #endregion
+
+                charityMakers.Add(charityMaker);
+
+                #region CharityMaker6
+
+                charityMaker = new CharityMaker();
+
+                charityMaker.FullName = new FullName() { Name = "Валерий", Surname = "Кузнецов", Patronymic = "Иванов" };
+                charityMaker.Birthday = new DateTime(1980, 8, 12);
+                charityMaker.Rating = 3;
+                charityMaker.Avatar = "avatars/seeddata_WillSmith.png";
                 charityMaker.Address = new Address()
                 {
                     Country = "Украина",
