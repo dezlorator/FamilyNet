@@ -1,4 +1,5 @@
 ﻿using FamilyNet.Models.Interfaces;
+using FamilyNetServer.Models;
 using System;
 using System.Collections.Generic;
 
@@ -145,242 +146,216 @@ namespace FamilyNet.Models
                 _unitOfWorkAsync.SaveChangesAsync();
             }
 
-            if (_unitOfWorkAsync.Orphanages.Get(v => v.ID == v.ID) != null)
+            if (_unitOfWorkAsync.Orphans.Get(v => v.ID == v.ID) != null)
             {
-                List<Orphanage> orphanages = new List<Orphanage>();
-
-                #region Orphanage1
-
-                Orphanage orphanage = new Orphanage();
-
-                orphanage.Name = "Ромашка";
-                orphanage.Adress = new Address()
-                {
-                    Country = "Украина",
-                    Region = "Херсонская",
-                    City = "Херсон",
-                    Street = "Дровника",
-                    House = "25"
-                };
-                orphanage.Rating = 11;
-                orphanage.Avatar = "3nf3pby0.jpg";
-
-                List<Representative> representatives = new List<Representative>();
-
-                Representative representative = new Representative();
-                
-                representative.FullName = new FullName() { Name = "Олег", Surname = "Петренко", Patronymic = "Дмитреевич" };
-                representative.Birthday = new DateTime(1954, 12, 30);
-                representative.Rating = 5;
-                representative.Avatar = "";
-                
-                representatives.Add(representative);
-                orphanage.Representatives = representatives;
-
                 List<Orphan> orphans = new List<Orphan>();
 
-                Orphan orphan = new Orphan();
-
-                orphan.FullName = new FullName() { Name = "Глеб", Surname = "Левада", Patronymic = "Русланович" };
-                orphan.Birthday = new DateTime(2002, 2, 4);
-                orphan.Rating = 5;
-                orphan.Avatar = "";
-                orphan.ChildInOrphanage = true;
-                orphan.Confirmation = true;
-            
-                orphans.Add(orphan);
-
-                orphan = new Orphan();
-
-                orphan.FullName = new FullName() { Name = "Олег", Surname = "Курасов", Patronymic = "Михайлович" };
-                orphan.Birthday = new DateTime(2001, 4, 12);
-                orphan.Rating = 6;
-                orphan.Avatar = "";
-                orphan.ChildInOrphanage = true;
-                orphan.Confirmation = true;
-
-                orphans.Add(orphan);
-                orphanage.Orphans = orphans;
+                #region child1
+                Orphan orphan1 = new Orphan();
+                orphan1.FullName = new FullName() { Name = "Иван", Surname = "Бутенко", Patronymic = "Андреевич" };
+                orphan1.Birthday = new DateTime(2010, 11, 30);
+                orphan1.Rating = 3;
+                orphan1.Avatar = "avatars/seeddata_child1.jpg";
+                orphan1.OrphanageID = 1;
 
                 #endregion
 
-                orphanages.Add(orphanage);
+                orphans.Add(orphan1);
 
-                #region Orphanage2
-
-                orphanage = new Orphanage();
-
-                orphanage.Name = "Эльф";
-                orphanage.Adress = new Address()
-                {
-                    Country = "Украина",
-                    Region = "Сумская",
-                    City = "Сумы",
-                    Street = "Котляревського",
-                    House = "89"
-                };
-                orphanage.Rating = 7;
-                orphanage.Avatar = "jltx4rd2.jpg";
-
-                representatives = new List<Representative>();
-                representative = new Representative();
-
-                representative.FullName = new FullName() { Name = "Марина", Surname = "Кричич", Patronymic = "Михайловна" };
-                representative.Birthday = new DateTime(1954, 12, 30);
-                representative.Rating = 5;
-                representative.Avatar = "";
-
-                representatives.Add(representative);
-                orphanage.Representatives = representatives;
-
-                orphans = new List<Orphan>();
-                orphan = new Orphan();
-
-                orphan.FullName = new FullName(){Name = "Анастасия", Surname = "Горб", Patronymic = "Андреевна" };
-                orphan.Birthday = new DateTime(2004, 5, 14);
-                orphan.Rating = 8;
-                orphan.Avatar = "";
-                orphan.ChildInOrphanage = true;
-                orphan.Confirmation = true;
-
-                orphans.Add(orphan);
-
-
-                orphan = new Orphan();
-
-                orphan.FullName = new FullName() { Name = "Мария", Surname = "Павленко", Patronymic = "Александровна" };
-                orphan.Birthday = new DateTime(2010, 8, 11);
-                orphan.Rating = 7;
-                orphan.Avatar = "";
-                orphan.ChildInOrphanage = true;
-                orphan.Confirmation = true;
-
-                orphans.Add(orphan);
-                orphanage.Orphans = orphans;
-
+                #region child2
+                Orphan orphan2 = new Orphan();
+                orphan2.FullName = new FullName() { Name = "Виталий", Surname = "Гнатенко", Patronymic = "Богданович" };
+                orphan2.Birthday = new DateTime(2011, 7, 12);
+                orphan2.Rating = 5;
+                orphan2.Avatar = "avatars/seeddata_child2.jpg";
+                orphan2.OrphanageID = 3;
                 #endregion
 
-                orphanages.Add(orphanage);
+                orphans.Add(orphan2);
 
-                #region Orphanage3
-
-                orphanage = new Orphanage();
-
-                orphanage.Name = "Артек";
-                orphanage.Adress = new Address()
-                {
-                    Country = "Украина",
-                    Region = "Днепропетровская",
-                    City = "Никополь",
-                    Street = "Херсонская",
-                    House = "177"
-                };
-                orphanage.Rating = 8;
-                orphanage.Avatar = "proeundk.jpg";
-
-                representative = new Representative();
-                representatives = new List<Representative>();
-
-                representative.FullName = new FullName() { Name = "Глеб", Surname = "Голосенин", Patronymic = "Иванович" };
-                representative.Birthday = new DateTime(1988, 3, 4);
-                representative.Rating = 5;
-                representative.Avatar = "";
-
-                representatives.Add(representative);
-                orphanage.Representatives = representatives;
-
-
-                orphans = new List<Orphan>();
-                orphan = new Orphan();
-
-                
-                orphan.FullName= new FullName(){Name = "Арен", Surname = "Зурабян", Patronymic = "Кирилович" };
-                orphan.Birthday = new DateTime(2004, 5, 14);
-                orphan.Rating = 8;
-                orphan.Avatar = "";
-                orphan.ChildInOrphanage = true;
-                orphan.Confirmation = true;
-
-                orphans.Add(orphan);
-                orphan = new Orphan();
-
-                orphan.FullName = new FullName() { Name = "Виталий", Surname = "Цаль", Patronymic = "Ильич" };
-                orphan.Birthday = new DateTime(2010, 8, 11);
-                orphan.Rating = 7;
-                orphan.Avatar = "";
-                orphan.ChildInOrphanage = true;
-                orphan.Confirmation = true;
-
-                orphans.Add(orphan);
-
-                orphanage.Orphans = orphans;
-
+                #region child3
+                Orphan orphan3 = new Orphan();
+                orphan3.FullName = new FullName() { Name = "Павел", Surname = "Логвин", Patronymic = "Данилович" };
+                orphan3.Birthday = new DateTime(2009, 3, 3);
+                orphan3.Rating = 1;
+                orphan3.Avatar = "avatars/seeddata_child3.jpg";
+                orphan3.OrphanageID = 3;
                 #endregion
 
-                orphanages.Add(orphanage);
+                orphans.Add(orphan3);
 
-                #region Orphanage4
-
-                orphanage = new Orphanage();
-
-                orphanage.Name = "Нэвэрлэнд";
-                orphanage.Adress = new Address()
-                {
-                    Country = "Украина",
-                    Region = "Киевская",
-                    City = "Белая Церковь",
-                    Street = "Гаек",
-                    House = "227"
-                };
-                orphanage.Rating = 3;
-                orphanage.Avatar = "rwlmqppn.jpg";
-
-                representative = new Representative();
-                representatives = new List<Representative>();
-
-
-                representative.FullName = new FullName() { Name = "Спартак", Surname = "Алексеев", Patronymic = "Андреевич" };
-                representative.Birthday = new DateTime(1988, 3, 4);
-                representative.Rating = 8;
-                representative.Avatar = "";
-
-                representatives.Add(representative);
-                orphanage.Representatives = representatives;
-
-                orphans = new List<Orphan>();
-                orphan = new Orphan();
-
-                orphan.FullName = new FullName() { Name = "Захар", Surname = "Мисра", Patronymic = "Владимирович" };
-                orphan.Birthday = new DateTime(2011, 11, 14);
-                orphan.Rating = 7;
-                orphan.Avatar = "";
-                orphan.ChildInOrphanage = true;
-                orphan.Confirmation = true;
-
-                orphans.Add(orphan);
-
-                orphan = new Orphan();
-
-
-                orphan.FullName = new FullName() { Name = "Анна", Surname = "Анисимова", Patronymic = "Сергеевна" };
-                orphan.Birthday = new DateTime(2014, 7, 25);
-                orphan.Rating = 9;
-                orphan.Avatar = "";
-                orphan.ChildInOrphanage = true;
-                orphan.Confirmation = true;
-
-                orphans.Add(orphan);
-
-                orphanage.Orphans = orphans;
-
+                #region child4
+                Orphan orphan4 = new Orphan();
+                orphan4.FullName = new FullName() { Name = "Влад", Surname = "Петренко", Patronymic = "Гаврилович" };
+                orphan4.Birthday = new DateTime(2012, 7, 1);
+                orphan4.Rating = 6;
+                orphan4.Avatar = "avatars/seeddata_child4.jpg";
+                orphan4.OrphanageID = 2;
                 #endregion
 
-                orphanages.Add(orphanage);
+                orphans.Add(orphan4);
+
+                #region child5
+                Orphan orphan5 = new Orphan();
+                orphan5.FullName = new FullName() { Name = "Инна", Surname = "Овеченко", Patronymic = "Ивановна" };
+                orphan5.Birthday = new DateTime(2008, 8, 19);
+                orphan5.Rating = 8;
+                orphan5.Avatar = "avatars/seeddata_child5.jpg";
+                orphan5.OrphanageID = 3;
+                #endregion
+
+                orphans.Add(orphan5);
 
 
-                _unitOfWorkAsync.Orphanages.AddRange(orphanages);
+                #region child6
+                Orphan orphan6 = new Orphan();
+                orphan6.FullName = new FullName() { Name = "Дарина", Surname = "Пушненко", Patronymic = "Константиновна" };
+                orphan6.Birthday = new DateTime(2009, 2, 27);
+                orphan6.Rating = 4;
+                orphan6.Avatar = "avatars/seeddata_child6.jpg";
+                orphan6.OrphanageID = 4;
+                #endregion
+
+                orphans.Add(orphan6);
+
+                _unitOfWorkAsync.Orphans.AddRange(orphans);
                 _unitOfWorkAsync.SaveChangesAsync();
             }
+
+            //if (_unitOfWorkAsync.Orphanages.Get(v => v.ID == v.ID) != null)
+            //{
+            //    List<Orphanage> orphanages = new List<Orphanage>();
+
+            //    #region Orphanage1
+
+            //    Orphanage orphanage = new Orphanage();
+
+            //    orphanage.Name = "Ромашка";
+            //    orphanage.Adress = new Address()
+            //    {
+            //        Country = "Украина",
+            //        Region = "Херсонская",
+            //        City = "Херсон",
+            //        Street = "Дровника",
+            //        House = "25"
+            //    };
+            //    orphanage.Rating = 11;
+            //    orphanage.Avatar = "3nf3pby0.jpg";
+
+            //    List<Representative> representatives = new List<Representative>();
+
+            //    Representative representative = new Representative();
+                
+            //    representative.FullName = new FullName() { Name = "Олег", Surname = "Петренко", Patronymic = "Дмитреевич" };
+            //    representative.Birthday = new DateTime(1954, 12, 30);
+            //    representative.Rating = 5;
+            //    representative.Avatar = "";
+                
+            //    representatives.Add(representative);
+            //    orphanage.Representatives = representatives;
+
+            //    #endregion
+
+            //    orphanages.Add(orphanage);
+
+            //    #region Orphanage2
+
+            //    orphanage = new Orphanage();
+
+            //    orphanage.Name = "Эльф";
+            //    orphanage.Adress = new Address()
+            //    {
+            //        Country = "Украина",
+            //        Region = "Сумская",
+            //        City = "Сумы",
+            //        Street = "Котляревського",
+            //        House = "89"
+            //    };
+            //    orphanage.Rating = 7;
+            //    orphanage.Avatar = "jltx4rd2.jpg";
+
+            //    representatives = new List<Representative>();
+            //    representative = new Representative();
+
+            //    representative.FullName = new FullName() { Name = "Марина", Surname = "Кричич", Patronymic = "Михайловна" };
+            //    representative.Birthday = new DateTime(1954, 12, 30);
+            //    representative.Rating = 5;
+            //    representative.Avatar = "";
+
+            //    representatives.Add(representative);
+            //    orphanage.Representatives = representatives;
+
+            //    #endregion
+
+            //    orphanages.Add(orphanage);
+
+            //    #region Orphanage3
+
+            //    orphanage = new Orphanage();
+
+            //    orphanage.Name = "Артек";
+            //    orphanage.Adress = new Address()
+            //    {
+            //        Country = "Украина",
+            //        Region = "Днепропетровская",
+            //        City = "Никополь",
+            //        Street = "Херсонская",
+            //        House = "177"
+            //    };
+            //    orphanage.Rating = 8;
+            //    orphanage.Avatar = "proeundk.jpg";
+
+            //    representative = new Representative();
+            //    representatives = new List<Representative>();
+
+            //    representative.FullName = new FullName() { Name = "Глеб", Surname = "Голосенин", Patronymic = "Иванович" };
+            //    representative.Birthday = new DateTime(1988, 3, 4);
+            //    representative.Rating = 5;
+            //    representative.Avatar = "";
+
+            //    representatives.Add(representative);
+            //    orphanage.Representatives = representatives;
+
+            //    #endregion
+
+            //    orphanages.Add(orphanage);
+
+            //    #region Orphanage4
+
+            //    orphanage = new Orphanage();
+
+            //    orphanage.Name = "Нэвэрлэнд";
+            //    orphanage.Adress = new Address()
+            //    {
+            //        Country = "Украина",
+            //        Region = "Киевская",
+            //        City = "Белая Церковь",
+            //        Street = "Гаек",
+            //        House = "227"
+            //    };
+            //    orphanage.Rating = 3;
+            //    orphanage.Avatar = "rwlmqppn.jpg";
+
+            //    representative = new Representative();
+            //    representatives = new List<Representative>();
+
+
+            //    representative.FullName = new FullName() { Name = "Спартак", Surname = "Алексеев", Patronymic = "Андреевич" };
+            //    representative.Birthday = new DateTime(1988, 3, 4);
+            //    representative.Rating = 8;
+            //    representative.Avatar = "";
+
+            //    representatives.Add(representative);
+            //    orphanage.Representatives = representatives;
+
+            //    #endregion
+
+            //    orphanages.Add(orphanage);
+
+
+            //    _unitOfWorkAsync.Orphanages.AddRange(orphanages);
+            //    _unitOfWorkAsync.SaveChangesAsync();
+            //}
 
             if (_unitOfWorkAsync.CharityMakers.Get(v => v.ID == v.ID) != null)
             {
