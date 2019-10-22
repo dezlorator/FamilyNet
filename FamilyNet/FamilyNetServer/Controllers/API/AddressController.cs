@@ -1,6 +1,7 @@
 ﻿using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
+using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -17,14 +18,16 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWorkAsync _repository;
+        private readonly IValidator<AddressDTO> _addressValidator;
 
         #endregion
 
         #region ctor
 
-        public AddressController(IUnitOfWorkAsync repo)
-        {            
+        public AddressController(IUnitOfWorkAsync repo, IValidator<AddressDTO> addressValidator)
+        {
             _repository = repo;
+            _addressValidator = addressValidator;
         }
 
         #endregion
@@ -35,7 +38,7 @@ namespace FamilyNetServer.Controllers.API
         public IActionResult GetAll()
         {
             var address = _repository.Address.GetAll().Where(c => !c.IsDeleted);
-          
+
             if (address == null)
             {
                 return BadRequest();
@@ -54,7 +57,7 @@ namespace FamilyNetServer.Controllers.API
                     House = adrs.House,
                     Street = adrs.Street
                 };
-         
+
                 addressDTO.Add(childrenHouseDTO);
             }
 
@@ -92,10 +95,10 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
         {
-            //if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
-            //{
-            //    return BadRequest();
-            //}
+            if (!_addressValidator.IsValid(addressDTO))
+            {
+                return BadRequest();
+            }
 
             var address = new Address()
             {
@@ -106,13 +109,13 @@ namespace FamilyNetServer.Controllers.API
                 Street = addressDTO.Street
             };
 
-           
+
             await _repository.Address.Create(address);
             _repository.SaveChangesAsync();
 
             addressDTO.ID = address.ID;
 
-            return Created("api/v1/childrenHouse/" + addressDTO.ID, addressDTO);
+            return Created(addressDTO.ID.ToString(), addressDTO);
         }
 
         [HttpPut("{id}")]
@@ -120,10 +123,10 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AddressDTO addressDTO)
         {
-            //if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
-            //{
-            //    return BadRequest();
-            //}
+            if (!_addressValidator.IsValid(addressDTO))
+            {
+                return BadRequest();
+            }
 
             var address = await _repository.Address.GetById(id);
 
@@ -137,7 +140,7 @@ namespace FamilyNetServer.Controllers.API
             address.City = addressDTO.City;
             address.Street = addressDTO.Street;
             address.House = addressDTO.House;
-       
+
             _repository.Address.Update(address);
             _repository.SaveChangesAsync();
 
