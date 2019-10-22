@@ -16,6 +16,7 @@ using FamilyNet.Configuration;
 using FamilyNet.Downloader;
 using DataTransferObjects;
 using FamilyNet.StreamCreater;
+using FamilyNet.Models.ViewModels;
 
 namespace FamilyNet
 {
@@ -55,36 +56,15 @@ namespace FamilyNet
 
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<ServerDataDownLoader<ChildDTO>, ServerChildrenDownloader>();
-            services.AddTransient<ServerDataDownLoader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationItemDTO>, ServerDonationItemsDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<CategoryDTO>, ServerCategoriesDownloader>();
-            services.AddTransient<ServerDataDownLoader<ChildrenHouseDTO>, ServerChildrenHouseDownloader>();
-            services.AddTransient<ServerDataDownLoader<RepresentativeDTO>, ServerRepresentativesDownloader>();
-            services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
+
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
-
-            services.AddTransient<ServerChildrenHouseDownloader>();
-            services.AddTransient<ServerAddressDownloader>();
-            services.AddTransient<ServerLocationDownloader>();
-            services.AddTransient<ServerDataDownLoader<VolunteerDTO>, ServerVolunteersDownloader>();
-            services.AddTransient<ServerDataDownLoader<CharityMakerDTO>, ServerCharityMakersDownloader>();
-            services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
-            services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
-            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
-            services.AddTransient<IURLAddressBuilder, URLAddressBuilder>();
-            services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
-            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
-            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
-
-            services.AddTransient<ServerDataDownLoader<VolunteerDTO>, ServerVolunteersDownloader>();
-            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
             services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
-            services.AddTransient<IURLCategoriesBuilder, URLCategoriesBuilder>();
             services.AddTransient<ServerSimpleDataDownloader<RoleDTO>, ServerRoleDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<UserDTO>, ServerUserDownloader>();
-
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
