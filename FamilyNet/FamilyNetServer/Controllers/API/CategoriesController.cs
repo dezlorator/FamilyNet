@@ -1,12 +1,9 @@
-﻿using FamilyNetServer.DTO;
-using FamilyNetServer.Enums;
-using FamilyNetServer.Filters;
+﻿using DataTransferObjects;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,16 +49,35 @@ namespace FamilyNetServer.Controllers.API
 
             var categoriesDTO = new List<CategoryDTO>();
 
-            foreach (var c in categories)
-            {
-                categoriesDTO.Add(new CategoryDTO
+            categoriesDTO = categories.Select(c =>
+                new CategoryDTO
                 {
+                    ID = c.ID,
                     Name = c.Name
-                }
-                );
-            }
+                }).ToList();
 
             return Ok(categoriesDTO);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get(int id)
+        {
+            var category = await _unitOfWork.BaseItemTypes.GetById(id);
+
+            if (category == null)
+            {
+                return BadRequest();
+            }
+
+            var categoryDTO = new CategoryDTO()
+            {
+                ID = category.ID,
+                Name = category.Name
+            };
+
+            return Ok(categoryDTO);
         }
 
         [HttpPost]

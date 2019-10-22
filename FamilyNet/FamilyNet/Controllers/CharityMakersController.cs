@@ -107,12 +107,30 @@ namespace FamilyNet.Controllers
 
             var url = _urlBilder.GetById(_apiPath, id.Value);
             CharityMakerDTO charityMakerDTO = null;
-            var addressUrl = _urlAdressBuilder.GetById(_pathToAdressApi, id.Value);
-            AddressDTO adderessDTO = null;
 
             try
             {
                 charityMakerDTO = await _serverDownloader.GetByIdAsync(url);
+
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect(_pathToErrorView);
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect(_pathToErrorView);
+            }
+            catch (JsonException)
+            {
+                return Redirect(_pathToErrorView);
+            }
+
+            var addressUrl = _urlAdressBuilder.GetById(_pathToAdressApi, charityMakerDTO.AdressID);
+            AddressDTO adderessDTO = null;
+
+            try
+            {
                 adderessDTO = await _serverAddressDownloader.GetByIdAsync(addressUrl);
 
             }

@@ -11,10 +11,10 @@
         <h1>Список потребностей</h1>
     </div>
     <div class="col-md-3">
-        <a asp-action="CreateDonation" class="btn btn-primary float-right">+ Потребность</a>
+        <a asp-action="Create" class="btn btn-primary float-right">+ Потребность</a>
     </div>
     <div class="col-md-3">
-        <a asp-action="CategoriesTable" class="btn btn-primary float-right">Категории</a>
+        <a asp-controller="Categories" asp-action ="Index" class="btn btn-primary float-right">Категории</a>
     </div>
 </div>
 <table class="table table-hover">
@@ -74,13 +74,14 @@
                     @foreach (var t in item.DonationItem.TypeBaseItem)
                     {
                         @t.Type.Name
+                        <br/>
                     }
                 }
             </td> 
             <td>
-                <a asp-action="EditDonation" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
+                <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
                 <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
-                <a asp-action="DeleteDonation" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
+                <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
             </td>
         </tr>
         }
