@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace DataTransferObjects
 {
@@ -9,6 +10,8 @@ namespace DataTransferObjects
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Patronymic { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Birthday { get; set; }
         public float Rating { get; set; }
         public IFormFile Avatar { get; set; }

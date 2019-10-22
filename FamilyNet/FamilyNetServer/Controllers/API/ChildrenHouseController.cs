@@ -1,5 +1,5 @@
-﻿using FamilyNetServer.Configuration;
-using FamilyNetServer.DTO;
+﻿using DataTransferObjects;
+using FamilyNetServer.Configuration;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
