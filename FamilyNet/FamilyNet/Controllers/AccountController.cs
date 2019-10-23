@@ -19,6 +19,7 @@ namespace FamilyNet.Controllers
     {
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IAuthorizeCreater _authorizeCreater;
+        private readonly string _headerToken = "Bearer";
 
         public AccountController(IUnitOfWorkAsync unitOfWork,
                                  IStringLocalizer<HomeController> localizer,
@@ -154,7 +155,7 @@ namespace FamilyNet.Controllers
 
                 if (!String.IsNullOrEmpty(token))
                 {
-                    HttpContext.Session.SetString("Bearer", token);
+                    HttpContext.Session.SetString(_headerToken, token);
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -168,9 +169,9 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
-            await _unitOfWorkAsync.SignInManager.SignOutAsync();
+            HttpContext.Session.SetString(_headerToken, String.Empty);
             GetViewData();
             return RedirectToAction("Index", "Home");
         }

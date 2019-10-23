@@ -108,7 +108,6 @@ namespace FamilyNetServer.Controllers.API
             return Ok(childDTO);
         }
 
-        [Authorize]
         [HttpPost]
         [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -153,7 +152,6 @@ namespace FamilyNetServer.Controllers.API
             return Created("api/v1/children/" + child.ID, new ChildDTO());
         }
 
-        [Authorize]
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -195,7 +193,6 @@ namespace FamilyNetServer.Controllers.API
             return NoContent();
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]

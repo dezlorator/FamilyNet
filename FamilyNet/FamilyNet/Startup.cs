@@ -34,6 +34,7 @@ namespace FamilyNet
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IFileStreamCreater, FileStreamCreater>();
+            services.AddTransient<IAuthorizeCreater, AuthorizeCreater>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
             //services.AddTransient<FamilyNetPhoneValidator>();
