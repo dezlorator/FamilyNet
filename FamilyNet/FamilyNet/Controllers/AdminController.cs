@@ -8,75 +8,116 @@ using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Infrastructure;
 using FamilyNet.Models.Interfaces;
-
+using System;
+using System.Collections.Generic;
+using DataTransferObjects;
+using FamilyNet.Downloader;
+using Microsoft.Extensions.Localization;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Net;
+using System.IO;
+using FamilyNet.StreamCreater;
 namespace FamilyNet.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class AdminController : BaseController
     {
-                
-        public AdminController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        ServerSimpleDataDownloader<UserDTO> _downloader;
+        private readonly string _apiPath = "http://localhost:53605/api/v1/users/";
+        public AdminController(IUnitOfWorkAsync unitOfWork, ServerSimpleDataDownloader<UserDTO> downloader)
+                              : base(unitOfWork)
         {
-
+            _downloader = downloader;
         }
-        public ViewResult Index() => View(_unitOfWorkAsync.UserManager.Users);
+
+        public async Task<IActionResult> Index()
+        {
+            var url = _apiPath;
+            IEnumerable<UserDTO> userDTO = null;
+
+            try
+            {
+                userDTO = await _downloader.GetAllAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+
+
+            var users = userDTO.Select(user => new ApplicationUser()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            });
+
+
+            return View(users);
+        }
         public ViewResult Create() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateUserViewModel model)
+        public async Task<IActionResult> Create(UserDTO model)
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser
-                {
-                    Email = model.Email,
-                    UserName = model.Email,
-                    PhoneNumber = model.Phone
-                    
-                };
-
-
-                IdentityResult result
-                        = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
-
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        foreach (IdentityError error in result.Errors)
-                        {
-                            ModelState.AddModelError("", error.Description);
-                        }
-                    }
-                
+                return View(model);
             }
-            return View(model);
+            var url = _apiPath;
+            var status = await _downloader.CreatePostAsync(url, model);
+
+            if (status.StatusCode != HttpStatusCode.Created)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            return Redirect("/Admin/Index");
+
+
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> DeleteAsync(string id)
         {
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(id);
-            if (user != null)
+            if (id == null)
             {
-                IdentityResult result = await _unitOfWorkAsync.UserManager.DeleteAsync(user);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    AddErrorsFromResult(result);
-                }
+                return NotFound();
             }
-            else
+
+            var url = _apiPath + id;
+
+            try
             {
-                ModelState.AddModelError("", "User Not Found");
+                var status = await _downloader.DeleteAsync(url);
+
             }
-            return View("Index", _unitOfWorkAsync.UserManager.Users);
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            return RedirectToAction("Index");
         }
+
 
         public async Task<IActionResult> Edit(string id)
         {
@@ -91,7 +132,7 @@ namespace FamilyNet.Controllers
                 return RedirectToAction("Index");
             }
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel us, string password)
         {
@@ -134,7 +175,7 @@ namespace FamilyNet.Controllers
 
 
 
-                if ((validEmail.Succeeded  && validPhone.Succeeded))
+                if ((validEmail.Succeeded && validPhone.Succeeded))
 
                 {
                     if ((validPass != null && validEmail.Succeeded && password != string.Empty && validPass.Succeeded && validPhone.Succeeded))

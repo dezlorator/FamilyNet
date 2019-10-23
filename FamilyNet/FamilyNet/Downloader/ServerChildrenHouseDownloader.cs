@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerChildrenHouseDownloader : ServerDataDownLoader<ChildrenHouseDTO>
+    public class ServerChildrenHouseDownloader : ServerDataDownloader<ChildrenHouseDTO>
     {
         public async Task<HttpStatusCode> CreatePostAsync(string url,
                                                             ChildrenHouseDTO dto,

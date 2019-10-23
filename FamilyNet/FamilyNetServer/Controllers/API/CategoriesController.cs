@@ -1,5 +1,4 @@
 ﻿using DataTransferObjects;
-using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
@@ -22,12 +21,16 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
+        #region ctor
+
         public CategoriesController(IUnitOfWorkAsync unitOfWork,
                                     ICategoryValidator categoryValidator)
         {
             _unitOfWork = unitOfWork;
             _categoryValidator = categoryValidator;
         }
+
+        #endregion
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -50,22 +53,41 @@ namespace FamilyNetServer.Controllers.API
 
             var categoriesDTO = new List<CategoryDTO>();
 
-            foreach (var c in categories)
-            {
-                categoriesDTO.Add(new CategoryDTO
+            categoriesDTO = categories.Select(c =>
+                new CategoryDTO
                 {
+                    ID = c.ID,
                     Name = c.Name
-                }
-                );
-            }
+                }).ToList();
 
             return Ok(categoriesDTO);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get(int id)
+        {
+            var category = await _unitOfWork.BaseItemTypes.GetById(id);
+
+            if (category == null)
+            {
+                return BadRequest();
+            }
+
+            var categoryDTO = new CategoryDTO()
+            {
+                ID = category.ID,
+                Name = category.Name
+            };
+
+            return Ok(categoryDTO);
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]CategoryDTO categoryDTO)
+        public async Task<IActionResult> Create([FromForm]CategoryDTO categoryDTO)
         {
             if (!_categoryValidator.IsValid(categoryDTO))
             {

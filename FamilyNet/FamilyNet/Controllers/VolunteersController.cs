@@ -25,7 +25,7 @@ namespace FamilyNet.Controllers
         #region private fields
 
         private readonly IStringLocalizer<VolunteersController> _localizer;
-        private readonly ServerDataDownLoader<VolunteerDTO> _downloader;
+        private readonly ServerDataDownloader<VolunteerDTO> _downloader;
         private readonly IServerAddressDownloader _addressDownloader;
         private readonly IURLVolunteersBuilder _URLVolunteersBuilder;
         private readonly IURLAddressBuilder _URLAddressBuilder;
@@ -39,7 +39,7 @@ namespace FamilyNet.Controllers
 
         public VolunteersController(IUnitOfWorkAsync unitOfWork,
                                  IStringLocalizer<VolunteersController> localizer,
-                                 ServerDataDownLoader<VolunteerDTO> downLoader,
+                                 ServerDataDownloader<VolunteerDTO> downLoader,
                                  IServerAddressDownloader addressDownloader,
                                  IURLVolunteersBuilder URLVolunteersBuilder,
                                  IURLAddressBuilder URLAddressBuilder,

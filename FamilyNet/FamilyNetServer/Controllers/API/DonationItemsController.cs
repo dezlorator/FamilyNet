@@ -19,8 +19,8 @@ namespace FamilyNetServer.Controllers.API
         #region fields
 
         private readonly IUnitOfWorkAsync _unitOfWork;
-         private readonly IDonationItemValidator _donationItemValidator;
-         private readonly IDonationItemsFilter _donationItemsFilter;
+        private readonly IDonationItemValidator _donationItemValidator;
+        private readonly IDonationItemsFilter _donationItemsFilter;
 
         #endregion
 
@@ -45,12 +45,12 @@ namespace FamilyNetServer.Controllers.API
                                    )
         {
             var donationItems = _unitOfWork.DonationItems.GetAll().Where(b => !b.IsDeleted);
-
+            donationItems = _donationItemsFilter.GetDonationItems(donationItems, name, minPrice, maxPrice, category);
 
             if (rows != 0 && page != 0)
             {
-                donationItems = _donationItemsFilter.GetDonationItems(donationItems, name, minPrice, maxPrice, category)
-                    .Skip((page - 1) * rows).Take(rows);
+                donationItems = donationItems.
+                    Skip((page - 1) * rows).Take(rows);
             }
 
             if (donationItems == null)
@@ -112,23 +112,26 @@ namespace FamilyNetServer.Controllers.API
             {
                 Name = donationItemDTO.Name,
                 Description = donationItemDTO.Description,
-                Price = donationItemDTO.Price                
+                Price = donationItemDTO.Price
             };
 
             int ID = donationItem.ID;
 
             donationItem.TypeBaseItem = new List<TypeBaseItem>();
 
-            //foreach (int c in donationItemDTO.CategoriesID)
-            //{
-            //    var itemType = new TypeBaseItem
-            //    {
-            //        ItemID = ID,
-            //        TypeID = c
-            //    };
+            if (donationItemDTO.CategoriesID != null)
+            {
+                foreach (int c in donationItemDTO.CategoriesID)
+                {
+                    var itemType = new TypeBaseItem
+                    {
+                        ItemID = ID,
+                        TypeID = c
+                    };
 
-            //    donationItem.TypeBaseItem.Add(itemType);
-            //}
+                    donationItem.TypeBaseItem.Add(itemType);
+                }
+            }
 
             await _unitOfWork.DonationItems.Create(donationItem);
             _unitOfWork.SaveChangesAsync();
