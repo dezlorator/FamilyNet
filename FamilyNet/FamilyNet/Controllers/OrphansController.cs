@@ -179,7 +179,7 @@ namespace FamilyNet.Controllers
             try
             {
                 status = await _childrenDownloader.СreatePostAsync(url, childDTO,
-                                                                 stream, childDTO.Avatar.FileName);
+                                                                 stream, childDTO.Avatar?.FileName);
             }
             catch (ArgumentNullException)
             {
