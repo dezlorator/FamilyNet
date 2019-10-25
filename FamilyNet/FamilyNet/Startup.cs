@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FamilyNet.Models;
-using FamilyNet.Models.EntityFramework;
+﻿using FamilyNet.Models.EntityFramework;
 using FamilyNet.Models.Interfaces;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +12,10 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNet.Infrastructure;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using FamilyNet.Configuration;
+using FamilyNet.Downloader;
+using DataTransferObjects;
+using FamilyNet.StreamCreater;
 
 namespace FamilyNet
 {
@@ -32,6 +31,7 @@ namespace FamilyNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IFileStreamCreater, FileStreamCreater>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
             //services.AddTransient<FamilyNetPhoneValidator>();
@@ -40,7 +40,8 @@ namespace FamilyNet
                     Configuration["Data:FamilyNet:ConnectionString"]));
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
-            services.AddIdentity<ApplicationUser, IdentityRole>(opts => {
+            services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
+            {
                 opts.User.RequireUniqueEmail = true;
                 opts.Password.RequiredLength = 6;
                 opts.Password.RequireNonAlphanumeric = false;
@@ -51,6 +52,38 @@ namespace FamilyNet
             }).AddEntityFrameworkStores<ApplicationIdentityDbContext>()
             .AddUserManager<ApplicationUserManager>()
             .AddDefaultTokenProviders();
+
+            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
+            services.AddTransient<ServerDataDownloader<ChildDTO>, ServerChildrenDownloader>();
+            services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<DonationItemDTO>, ServerDonationItemsDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<CategoryDTO>, ServerCategoriesDownloader>();
+            services.AddTransient<ServerDataDownloader<ChildrenHouseDTO>, ServerChildrenHouseDownloader>();
+            services.AddTransient<ServerDataDownloader<RepresentativeDTO>, ServerRepresentativesDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<RoleDTO>, ServerRoleDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<UserDTO>, ServerUserDownloader>();
+            services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
+            services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
+
+            services.AddTransient<ServerChildrenHouseDownloader>();
+            services.AddTransient<ServerAddressDownloader>();
+            services.AddTransient<ServerLocationDownloader>();
+            services.AddTransient < ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader >();
+            services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
+            services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
+            services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
+            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
+            services.AddTransient<IURLAddressBuilder, URLAddressBuilder>();
+            services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
+            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
+            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
+
+            services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
+            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
+            services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
+            services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
+            services.AddTransient<IURLCategoriesBuilder, URLCategoriesBuilder>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -73,7 +106,7 @@ namespace FamilyNet
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-           
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -103,7 +136,7 @@ namespace FamilyNet
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
-           
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -113,16 +146,7 @@ namespace FamilyNet
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-                
-                    
             });
-
-            ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
-                    Configuration).Wait();
-            ApplicationIdentityDbContext.InitializeRolesAsync(app.ApplicationServices).Wait();
-
-
-
         }
     }
 }

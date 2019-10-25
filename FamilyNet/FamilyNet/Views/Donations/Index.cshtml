@@ -1,0 +1,90 @@
+﻿@model IEnumerable<FamilyNet.Models.Donation>
+
+@{
+    ViewData["Title"] = "Нужды";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row">
+    <div class="col-md-5">
+        <h1>Список потребностей</h1>
+    </div>
+    <div class="col-md-3">
+        <a asp-action="Create" class="btn btn-primary float-right">+ Потребность</a>
+    </div>
+    <div class="col-md-3">
+        <a asp-controller="Categories" asp-action="Index" class="btn btn-primary float-right">Категории</a>
+    </div>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Orphanage.Adress.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orphanage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastDateWhenStatusChanged)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DonationItem.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DonationItem.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DonationItem.TypeBaseItem)
+            </th>
+            <th>
+                Действия
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Orphanage.Adress.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Orphanage.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastDateWhenStatusChanged)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DonationItem.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DonationItem.Description)
+                </td>
+                <td>
+                    @if (item.DonationItem != null && item.DonationItem.TypeBaseItem != null)
+                    {
+                        @foreach (var t in item.DonationItem.TypeBaseItem)
+                        {
+                            @t.Type.Name
+                            <br />
+                        }
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
+                    <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
+                    <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

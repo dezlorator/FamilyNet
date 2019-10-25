@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Content\**" />
+    <Compile Remove="Resources\OrphanagesController\**" />
+    <Content Remove="Content\**" />
+    <Content Remove="Resources\OrphanagesController\**" />
+    <EmbeddedResource Remove="Content\**" />
+    <EmbeddedResource Remove="Resources\OrphanagesController\**" />
+    <None Remove="Content\**" />
+    <None Remove="Resources\OrphanagesController\**" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="FontAwesome" Version="4.7.0" />
+    <PackageReference Include="MailKit" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
+    <PackageReference Include="Nominatim.API" Version="1.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\avatars\" />
+    <Folder Include="wwwroot\charitymaker\" />
+    <Folder Include="wwwroot\representatives\" />
+    <Folder Include="wwwroot\volunteer\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,21 +1,31 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
-@inject IHtmlLocalizer<SharedResource> SharedLocalizer
-@model IEnumerable<FamilyNet.Models.Volunteer>
+﻿@model IEnumerable<FamilyNet.Models.Volunteer>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Волонтеры";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>@ViewData["OurVolonteers"]</h1>
+<h1>
+    Список волонтеров
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="VolunteersTable" class="btn btn-primary float-right">Таблица</a>
+    }
+</h1>
+
 
 <form asp-action="Filter">
     <table class="table">
         <th>
-            <a>@SharedLocalizer["FullName"]:</a>
+            @Html.Label(@Html.DisplayNameFor(model => model.FullName) + ":")
             @Html.TextBox("FullNameString", "", new { @class = "form-control" })
         </th>
-        <th width="15%">
-            <a>@SharedLocalizer["Rating"] @SharedLocalizer["From"]:</a>
+        <th width="12%">
+            @Html.Label("Возраст от:")
+            @Html.TextBox("AgeNumber", "", new { @class = "form-control", type = "number" })
+        </th>
+        <th width="12%">
+            @Html.Label(@Html.DisplayNameFor(model => model.Rating) + " от:")
             @Html.TextBox("RatingNumber", "", new { @class = "form-control", type = "number" })
         </th>
         <th></th>
@@ -36,49 +46,43 @@
     </table>
 </form>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @SharedLocalizer["FullName"]
-            </th>
-            <th>
-                @SharedLocalizer["Country"]
-            </th>
-            <th>
-                @SharedLocalizer["City"]
-            </th>
 
-            <th>
-                @SharedLocalizer["Rating"]
-            </th>
-            <th><a asp-action="Create" class="btn btn-outline-success"><i class="far fa-plus-square"></i>@SharedLocalizer["Add"]</a></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FullName.Surname)
-                    @Html.DisplayFor(modelItem => item.FullName.Name)
-                    @Html.DisplayFor(modelItem => item.FullName.Patronymic)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address.Country)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address.City)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Rating)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID"><i class="fa fa-marker fa-lg"></i></a>
-                    <a asp-action="Details" asp-route-id="@item.ID"><i class="fa fa-list fa-lg"></i></a>
-                    <a asp-action="Delete" asp-route-id="@item.ID"><i class="fa fa-trash-alt fa-lg"></i></a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="box">
+    <div class="container">
+        <div class="row">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4">
+
+                    <div class="card mb-4 box-shadow text-center">
+                        <a asp-action="Details" asp-route-id="@item.ID" style="text-decoration:none;">
+                            @if (item.Avatar != null && item.Avatar != "")
+                            {
+                                <img class="img-responsive" src="@Url.Content(@item.Avatar)" alt="Card image cap" width="100%" height="300px">
+                            }
+                            else
+                            {
+                                <img class="img-responsive" src="@Url.Content("~/images/anonimusjpg.jpg")" alt="Card image cap" width="100%" height="300px">
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    @Html.DisplayFor(modelItem => item.FullName.Name)
+                                    @Html.DisplayFor(modelItem => item.FullName.Surname)
+                                </h5>
+                                <p class="card-text">
+                                    @Html.DisplayFor(modelItem => item.Birthday)
+                                </p>
+                                <p class="card-text">
+                                    Рейтинг
+                                    @Html.DisplayFor(modelItem => item.Rating)
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

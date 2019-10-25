@@ -33,25 +33,8 @@ namespace FamilyNet.Models
         [Display(Name = "Последние изменения")]
         public DateTime LastDateWhenStatusChanged { get; set; }
 
-
         [BindNever]
         public bool IsDeleted { get; set; } = false;
-
-        public enum DonationStatus
-        {
-            Sended = 1,
-            Aproved,
-            Taken,
-        }
-
-        public void CopyState(Donation sender)
-        {            
-            Donation donationSended = sender as Donation;
-            Orphanage = donationSended.Orphanage;
-            Status = donationSended.Status;
-            LastDateWhenStatusChanged = donationSended.LastDateWhenStatusChanged;
-            DonationItem = donationSended.DonationItem;            
-        }
 
         [Display(Name = "Категория")]
         [NotMapped]

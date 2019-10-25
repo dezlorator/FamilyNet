@@ -1,4 +1,5 @@
-﻿@model IEnumerable<FamilyNet.Models.Orphan>
+﻿@model IEnumerable<ChildDTO>
+@using DataTransferObjects
 
 @{
     ViewData["Title"] = "Дети";
@@ -17,7 +18,6 @@
 <form asp-action="Filter">
     <table class="table">
         <th>
-            @Html.Label(@Html.DisplayNameFor(model => model.FullName) + ":")
             @Html.TextBox("FullNameString", "", new { @class = "form-control" })
         </th>
         <th width="12%">
@@ -57,9 +57,9 @@
 
                     <div class="card mb-4 box-shadow text-center">
                         <a asp-action="Details" asp-route-id="@item.ID" style="text-decoration:none;">
-                            @if (item.Avatar != null && item.Avatar != "")
+                            @if (!String.IsNullOrEmpty(item.PhotoPath))
                             {
-                                <img class="img-responsive" src="@Url.Content("~/children/" + @item.Avatar)" alt="Card image cap" width="100%" height="300px">
+                                <img class="img-responsive" src="@item.PhotoPath" alt="Card image cap" width="100%" height="300px">
                             }
                             else
                             {
@@ -67,15 +67,14 @@
                             }
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    @Html.DisplayFor(modelItem => item.FullName.Name)
-                                    @Html.DisplayFor(modelItem => item.FullName.Surname)
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                    @Html.DisplayFor(modelItem => item.Surname)
                                 </h5>
                                 <p class="card-text">
                                     @Html.DisplayFor(modelItem => item.Birthday)
                                 </p>
                                 <p class="card-text">
-                                    @Html.DisplayFor(modelItem => item.Orphanage.Name)
-                                    @Html.DisplayFor(modelItem => item.Orphanage.Adress.City)
+                                    @Html.DisplayFor(modelItem => item.Name)
                                 </p>
                             </div>
                         </a>
@@ -86,6 +85,3 @@
         </div>
     </div>
 </div>
-
-
-

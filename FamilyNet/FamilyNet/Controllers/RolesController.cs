@@ -6,53 +6,115 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using FamilyNet.Models;
-using FamilyNet.Models.ViewModels;
-using FamilyNet.Models.Identity;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.Interfaces;
-
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using FamilyNet.Models.ViewModels;
+using DataTransferObjects;
+using FamilyNet.Downloader;
+using Microsoft.Extensions.Localization;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Net;
+using System.IO;
+using FamilyNet.StreamCreater;
+using FamilyNet.Models.Identity;
 namespace FamilyNet.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class RolesController : BaseController
     {
+        ServerSimpleDataDownloader<RoleDTO> _downloader;
+        private readonly string _apiPath = "http://localhost:53605/api/v1/roles/";
 
-        public RolesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        public RolesController(IUnitOfWorkAsync unitOfWork, ServerSimpleDataDownloader<RoleDTO> downloader) : base(unitOfWork)
         {
-
+            _downloader = downloader;
         }
-        public IActionResult Index() => View(_unitOfWorkAsync.RoleManager.Roles);
+        public async Task<IActionResult> Index()
+        {
+            var url = _apiPath;
+            IEnumerable<RoleDTO> rolesDTO = null;
 
+            try
+            {
+                rolesDTO = await _downloader.GetAllAsync(url);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+
+
+            var roles = rolesDTO.Select(role => new IdentityRole()
+            {   Id = role.ID,
+                Name = role.Name
+            });
+          
+
+            return View(roles);
+        }
+        
         public IActionResult Create() => View();
         [HttpPost]
-        public async Task<IActionResult> Create(string name)
+        public async Task<IActionResult> Create(RoleDTO role)
         {
-            if (!string.IsNullOrEmpty(name))
+
+            if (!ModelState.IsValid)
             {
-                IdentityResult result = await _unitOfWorkAsync.RoleManager.CreateAsync(new IdentityRole(name));
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                }
+                return View(role);
             }
-            return View(name);
+
+            var url = _apiPath;
+            var status = await _downloader.CreatePostAsync(url, role);
+
+            if (status.StatusCode != HttpStatusCode.Created)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            return Redirect("/Roles/Index");
+        
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        
+        public async Task<IActionResult> DeleteAsync(string id)
         {
-            IdentityRole role = await _unitOfWorkAsync.RoleManager.FindByIdAsync(id);
-            if (role != null)
+            if (id == null)
             {
-                IdentityResult result = await _unitOfWorkAsync.RoleManager.DeleteAsync(role);
+                return NotFound();
             }
+
+            var url = _apiPath+id;
+            
+            try
+            {
+                var status = await _downloader.DeleteAsync(url);
+
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
             return RedirectToAction("Index");
         }
 
