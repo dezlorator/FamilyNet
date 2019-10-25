@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerChildrenHouseDownloader : ServerDataDownLoader<ChildrenHouseDTO>
+    public class ServerChildrenHouseDownloader : ServerDataDownloader<ChildrenHouseDTO>
     {
 
         public ServerChildrenHouseDownloader(IHttpAuthorizationHandler authorizationHandler)

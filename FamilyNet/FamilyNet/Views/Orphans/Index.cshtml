@@ -1,4 +1,5 @@
-﻿@model IEnumerable<DataTransferObjects.ChildDTO>
+﻿@model IEnumerable<ChildDTO>
+@using DataTransferObjects
 
 @{
     ViewData["Title"] = "Дети";
@@ -17,7 +18,6 @@
 <form asp-action="Filter">
     <table class="table">
         <th>
-            @Html.Label(@Html.DisplayNameFor(model => model.Surname) + ":")
             @Html.TextBox("FullNameString", "", new { @class = "form-control" })
         </th>
         <th width="12%">
@@ -59,7 +59,7 @@
                         <a asp-action="Details" asp-route-id="@item.ID" style="text-decoration:none;">
                             @if (!String.IsNullOrEmpty(item.PhotoPath))
                             {
-                                <img class="img-responsive" src="@Url.Content(@item.PhotoPath)" alt="Card image cap" width="100%" height="300px">
+                                <img class="img-responsive" src="@item.PhotoPath" alt="Card image cap" width="100%" height="300px">
                             }
                             else
                             {
@@ -73,10 +73,9 @@
                                 <p class="card-text">
                                     @Html.DisplayFor(modelItem => item.Birthday)
                                 </p>
-                                @*<p class="card-text">
-                                    @Html.DisplayFor(modelItem => item.Orphanage.Name)
-                                    @Html.DisplayFor(modelItem => item.Orphanage.Adress.City)
-                                </p>*@
+                                <p class="card-text">
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </p>
                             </div>
                         </a>
                     </div>
@@ -86,6 +85,3 @@
         </div>
     </div>
 </div>
-
-
-

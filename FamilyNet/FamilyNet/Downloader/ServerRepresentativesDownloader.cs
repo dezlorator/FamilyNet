@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerRepresentativesDownloader : ServerDataDownLoader<RepresentativeDTO>
+    public class ServerRepresentativesDownloader : ServerDataDownloader<RepresentativeDTO>
     {
         public ServerRepresentativesDownloader(IHttpAuthorizationHandler authorizationHandler)
             : base(authorizationHandler)

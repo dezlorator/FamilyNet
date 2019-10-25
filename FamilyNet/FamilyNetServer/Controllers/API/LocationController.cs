@@ -1,6 +1,4 @@
-﻿using FamilyNetServer.DTO;
-using FamilyNetServer.Enums;
-using FamilyNetServer.Filters;
+﻿using DataTransferObjects;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
@@ -20,14 +18,16 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWork _repository;
+        private readonly IValidator<AddressDTO> _addressValidator;
 
         #endregion
 
         #region ctor
 
-        public LocationController(IUnitOfWork repository)
+        public LocationController(IUnitOfWork repository, IValidator<AddressDTO> addressValidator)
         {
             _repository = repository;
+            _addressValidator = addressValidator;
         }
 
         #endregion
@@ -38,7 +38,7 @@ namespace FamilyNetServer.Controllers.API
         public IActionResult GetAll()
         {
             var location = _repository.Location.GetAll().Where(c => !c.IsDeleted);
-           
+
             if (location == null)
             {
                 return BadRequest();
@@ -88,44 +88,59 @@ namespace FamilyNetServer.Controllers.API
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]LocationDTO locationDTO)
+        public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
         {
-            
-            var location = new Location()
+            if (!_addressValidator.IsValid(addressDTO))
             {
-                MapCoordX = locationDTO.MapCoordX,
-                MapCoordY = locationDTO.MapCoordY,
-            };
+                return BadRequest();
+            }
 
+            bool IsLocationNotNull = GetCoordProp(addressDTO, out var coord);
+            Location location = null;
+            if (IsLocationNotNull)
+            {
+                location = new Location()
+                {
+                    MapCoordX = coord.Item1,
+                    MapCoordY = coord.Item2,
+                };
+
+            }
+            else
+                return BadRequest();
 
             await _repository.Location.Create(location);
             _repository.SaveChangesAsync();
 
-            locationDTO.ID = location.ID;
-
-            return Created("api/v1/childrenHouse/" + locationDTO.ID, locationDTO);
+            return Created("api/v1/childrenHouse/" + location.ID, location);
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]LocationDTO locationDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AddressDTO addressDTO)
         {
-            //if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
-            //{
-            //    return BadRequest();
-            //}
+            if (!_addressValidator.IsValid(addressDTO))
+            {
+                return BadRequest();
+            }
 
             var location = await _repository.Location.GetById(id);
-
             if (location == null)
             {
                 return BadRequest();
             }
 
-            location.MapCoordX = locationDTO.MapCoordX;
-            location.MapCoordY = locationDTO.MapCoordY;
-
+            bool IsLocationNotNull = GetCoordProp(addressDTO, out var coord);
+            if (IsLocationNotNull)
+            {
+                location.MapCoordX = coord.Item1;
+                location.MapCoordY = coord.Item2;
+            }
+            else
+            {
+                location.IsDeleted = true;
+            }
             _repository.Location.Update(location);
             _repository.SaveChangesAsync();
 
@@ -155,6 +170,35 @@ namespace FamilyNetServer.Controllers.API
             _repository.SaveChangesAsync();
 
             return Ok();
+        }
+
+        private bool GetCoordProp(AddressDTO addressDTO, out Tuple<float?, float?> result)
+        {
+            result = null;
+            bool forOut = false;
+
+            var nominatim = new Nominatim.API.Geocoders.ForwardGeocoder();
+            var d = nominatim.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest()
+            {
+                Country = addressDTO.Country,
+                State = addressDTO.Region,
+                City = addressDTO.City,
+                StreetAddress = String.Concat(addressDTO.Street, " ", addressDTO.House)
+            });
+
+            //TODO:some validation for search
+            if (d != null)
+            {
+                if (d.Result.Count() != 0)
+                {
+                    float? X = (float)d.Result[0].Latitude;
+                    float? Y = (float)d.Result[0].Longitude;
+
+                    result = new Tuple<float?, float?>(X, Y);
+                    forOut = true;
+                }
+            }
+            return forOut;
         }
     }
 }

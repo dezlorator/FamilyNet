@@ -1,4 +1,4 @@
-﻿@model FamilyNet.Models.BaseItemType
+﻿@model DataTransferObjects.CategoryDTO
 
 @{
     ViewData["Title"] = "Удаление";
@@ -7,9 +7,9 @@
 
 <h3>Вы уверены что хотите удалить категорию?</h3>
 <div>
-    <form asp-action="DeleteCategory">
+    <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
         <input type="submit" value="Удалить" class="btn btn-danger" />
-        <a class="btn btn-danger" asp-action="CategoriesTable">Назад</a>
+        <a class="btn btn-danger" asp-action="Index">Назад</a>
     </form>
 </div>

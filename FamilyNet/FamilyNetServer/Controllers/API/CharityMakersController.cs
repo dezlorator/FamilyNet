@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
-using FamilyNetServer.DTO;
 using FamilyNetServer.Models;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
@@ -13,6 +12,7 @@ using FamilyNetServer.Validators;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Configuration;
 using Microsoft.Extensions.Options;
+using DataTransferObjects;
 
 namespace FamilyNetServer.Controllers.API
 {

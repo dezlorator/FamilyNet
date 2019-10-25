@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public abstract class ServerDataDownLoader<T> where T : class, new()
+    public abstract class ServerDataDownloader<T> where T : class, new()
     {
         #region private fields
 
@@ -20,7 +20,7 @@ namespace FamilyNet.Downloader
 
         #region ctor
 
-        public ServerDataDownLoader(IHttpAuthorizationHandler authorizationHandler)
+        public ServerDataDownloader(IHttpAuthorizationHandler authorizationHandler)
         {
             _authorizationHandler = authorizationHandler;
         }

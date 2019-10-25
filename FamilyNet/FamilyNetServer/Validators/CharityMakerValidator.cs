@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FamilyNetServer.DTO;
+using DataTransferObjects;
 using FamilyNetServer.Models.Interfaces;
 
 namespace FamilyNetServer.Validators

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerCharityMakersDownloader : ServerDataDownLoader<CharityMakerDTO>
+    public class ServerCharityMakersDownloader : ServerDataDownloader<CharityMakerDTO>
     {
         public ServerCharityMakersDownloader(IHttpAuthorizationHandler authorizationHandler)
             : base(authorizationHandler)

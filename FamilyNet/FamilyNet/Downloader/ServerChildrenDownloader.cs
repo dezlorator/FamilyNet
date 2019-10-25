@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerChildrenDownloader : ServerDataDownLoader<ChildDTO>
+    public class ServerChildrenDownloader : ServerDataDownloader<ChildDTO>
     {
         public ServerChildrenDownloader(IHttpAuthorizationHandler authorizationHandler)
             : base(authorizationHandler) { }

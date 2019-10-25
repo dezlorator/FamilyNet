@@ -24,7 +24,7 @@ namespace FamilyNet.Controllers
     {
         #region private fields
 
-        private readonly ServerDataDownLoader<RepresentativeDTO> _downLoader;
+        private readonly ServerDataDownloader<RepresentativeDTO> _downLoader;
         private readonly IURLRepresentativeBuilder _URLRepresentativeBuilder;
         private readonly string _apiPath = "api/v1/representatives";
         private readonly IFileStreamCreater _streamCreater;
@@ -36,7 +36,7 @@ namespace FamilyNet.Controllers
 
         public RepresentativesController(IUnitOfWorkAsync unitOfWork,
             IURLRepresentativeBuilder urlRepresentativeBuilder,
-            ServerDataDownLoader<RepresentativeDTO> downloader,
+            ServerDataDownloader<RepresentativeDTO> downloader,
             IFileStreamCreater streamCreater) : base(unitOfWork)
         {
             _URLRepresentativeBuilder = urlRepresentativeBuilder;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerVolunteersDownloader : ServerDataDownLoader<VolunteerDTO>
+    public class ServerVolunteersDownloader : ServerDataDownloader<VolunteerDTO>
     {
         public ServerVolunteersDownloader(IHttpAuthorizationHandler authorizationHandler)
            : base(authorizationHandler)

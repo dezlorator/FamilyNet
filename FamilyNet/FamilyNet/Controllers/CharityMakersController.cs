@@ -24,7 +24,7 @@ namespace FamilyNet.Controllers
         #region private
 
         private readonly IURLCharityMakerBuilder _urlBilder;
-        private readonly ServerDataDownLoader<CharityMakerDTO> _serverDownloader;
+        private readonly ServerDataDownloader<CharityMakerDTO> _serverDownloader;
         private readonly string _apiPath = "api/v1/charityMakers";
         private readonly IFileStreamCreater _streamCreator;
         private readonly string _pathToErrorView = "/Home/Error";
@@ -36,7 +36,7 @@ namespace FamilyNet.Controllers
 
         public CharityMakersController(IUnitOfWorkAsync unitOfWork,
                 IURLCharityMakerBuilder urlCharityMakerBuilder,
-                ServerDataDownLoader<CharityMakerDTO> downloader,
+                ServerDataDownloader<CharityMakerDTO> downloader,
                 IFileStreamCreater streamCreator,
                 IURLAddressBuilder urlAdressBuilder,
                 IServerAddressDownloader addressDownloader) : base (unitOfWork)

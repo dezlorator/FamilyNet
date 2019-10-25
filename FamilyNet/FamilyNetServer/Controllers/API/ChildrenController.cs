@@ -73,6 +73,7 @@ namespace FamilyNetServer.Controllers.API
                 Patronymic = c.FullName.Patronymic,
                 Surname = c.FullName.Surname,
                 ChildrenHouseID = c.OrphanageID ?? 0,
+                ChildrenHouseName = c.Orphanage.Name,
                 Rating = c.Rating
             });
 
@@ -98,6 +99,7 @@ namespace FamilyNetServer.Controllers.API
                 ID = child.ID,
                 Name = child.FullName.Name,
                 ChildrenHouseID = child.OrphanageID ?? 0,
+                ChildrenHouseName = child.Orphanage.Name,
                 Patronymic = child.FullName.Patronymic,
                 Rating = child.Rating,
                 Surname = child.FullName.Surname,
