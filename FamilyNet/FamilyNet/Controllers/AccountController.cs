@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
@@ -16,9 +15,15 @@ namespace FamilyNet.Controllers
 {
     public class AccountController : BaseController
     {
+        #region fields
+
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IAuthorizeCreater _authorizeCreater;
         private readonly string _headerToken = "Bearer";
+
+        #endregion
+
+        #region ctor
 
         public AccountController(IUnitOfWorkAsync unitOfWork,
                                  IStringLocalizer<HomeController> localizer,
@@ -30,12 +35,13 @@ namespace FamilyNet.Controllers
             _authorizeCreater = authorizeCreater;
         }
 
+        #endregion
+
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Register()
         {
             GetViewData();
-            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
             {
                 Text = item.Name,
@@ -50,11 +56,10 @@ namespace FamilyNet.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             GetViewData();
-            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
             {
                 Text = item.Name,
@@ -72,14 +77,14 @@ namespace FamilyNet.Controllers
                     PersonID = null
                 };
                 // добавляем пользователя.
-                var result = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
+                var result = await _unitOfWork.UserManager.CreateAsync(user, model.Password);
 
-                await _unitOfWorkAsync.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
+                await _unitOfWork.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
 
                 if (result.Succeeded)
                 {
 
-                    var code = await _unitOfWorkAsync.UserManager.GenerateEmailConfirmationTokenAsync(user);
+                    var code = await _unitOfWork.UserManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action(
                         "ConfirmEmail",
                         "Account",
@@ -108,22 +113,21 @@ namespace FamilyNet.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
             if (userId == null || code == null)
             {
                 return View("Error");
             }
-            var user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return View("Error");
             }
-            var result = await _unitOfWorkAsync.UserManager.ConfirmEmailAsync(user, code);
+            var result = await _unitOfWork.UserManager.ConfirmEmailAsync(user, code);
             if (result.Succeeded)
             {
-                await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
+                await _unitOfWork.SignInManager.SignInAsync(user, false);
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -133,7 +137,6 @@ namespace FamilyNet.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
             GetViewData();
@@ -141,7 +144,6 @@ namespace FamilyNet.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -166,7 +168,6 @@ namespace FamilyNet.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public IActionResult Logout()
         {

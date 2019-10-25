@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using DataTransferObjects;
-using FamilyNetServer.DTO;
 using FamilyNetServer.Factories;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc;

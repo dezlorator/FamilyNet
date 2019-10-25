@@ -12,9 +12,9 @@ namespace FamilyNet.Downloader
     {
         public ServerCharityMakersDownloader(IHttpAuthorizationHandler authorizationHandler)
             : base(authorizationHandler)
-        {}
+        { }
 
-        public override async Task<HttpStatusCode> CreatePostAsync(string url, CharityMakerDTO dto, 
+        public override async Task<HttpStatusCode> CreatePostAsync(string url, CharityMakerDTO dto,
             Stream streamFile, string fileName, ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
@@ -23,7 +23,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFprmData(dto, streamFile, fileName, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PostAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 
@@ -36,7 +36,7 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        public override async Task<HttpStatusCode> CreatePutAsync(string url, 
+        public override async Task<HttpStatusCode> CreatePutAsync(string url,
             CharityMakerDTO dto, Stream streamFile, string fileName, ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
@@ -45,7 +45,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFprmData(dto, streamFile, fileName, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PutAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 

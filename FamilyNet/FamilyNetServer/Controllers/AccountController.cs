@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using FamilyNetServer.Models;
 using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -14,16 +9,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 
 namespace FamilyNetServer.Controllers
-{
-    
+{    
     public class AccountController : BaseController
     {
+        #region feilds
+
         private readonly IStringLocalizer<HomeController> _localizer;
 
-        public AccountController(IUnitOfWork unitOfWork, IStringLocalizer<HomeController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        #endregion
+
+        #region ctor
+
+        public AccountController(IUnitOfWork unitOfWork,
+                                 IStringLocalizer<HomeController> localizer,
+                                 IStringLocalizer<SharedResource> sharedLocalizer)
+            : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;
         }
+
+        #endregion
 
         [HttpGet]
         [AllowAnonymous]

@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
-using Microsoft.AspNetCore.Authorization;
-using FamilyNet.Infrastructure;
 using FamilyNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -18,7 +16,6 @@ using System.Net;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class AdminController : BaseController
     {
         ServerSimpleDataDownloader<UserDTO> _downloader;
@@ -36,7 +33,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                userDTO = await _downloader.GetAllAsync(url);
+                userDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -73,7 +70,7 @@ namespace FamilyNet.Controllers
                 return View(model);
             }
             var url = _apiPath;
-            var status = await _downloader.CreatePostAsync(url, model);
+            var status = await _downloader.CreatePostAsync(url, model, HttpContext.Session);
 
             if (status.StatusCode != HttpStatusCode.Created)
             {
@@ -97,7 +94,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                var status = await _downloader.DeleteAsync(url);
+                var status = await _downloader.DeleteAsync(url, HttpContext.Session);
 
             }
             catch (ArgumentNullException)
@@ -119,7 +116,7 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(id);
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(id);
             if (user != null)
             {
                 EditViewModel editView = new EditViewModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber };
@@ -134,20 +131,20 @@ namespace FamilyNet.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel us, string password)
         {
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(us.Id);
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(us.Id);
             if (user != null)
             {
                 user.Email = us.Email;
 
                 IdentityResult validEmail
-                    = await _unitOfWorkAsync.UserValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
+                    = await _unitOfWork.UserValidator.ValidateAsync(_unitOfWork.UserManager, user);
                 if (!validEmail.Succeeded)
                 {
                     AddErrorsFromResult(validEmail);
                 }
                 user.PhoneNumber = us.PhoneNumber;
                 IdentityResult validPhone
-                    = await _unitOfWorkAsync.PhoneValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
+                    = await _unitOfWork.PhoneValidator.ValidateAsync(_unitOfWork.UserManager, user);
                 if (!validPhone.Succeeded)
                 {
                     AddErrorsFromResult(validPhone);
@@ -158,11 +155,11 @@ namespace FamilyNet.Controllers
                 IdentityResult validPass = null;
                 if (!string.IsNullOrEmpty(password))
                 {
-                    validPass = await _unitOfWorkAsync.PasswordValidator.ValidateAsync(_unitOfWorkAsync.UserManager,
+                    validPass = await _unitOfWork.PasswordValidator.ValidateAsync(_unitOfWork.UserManager,
                         user, password);
                     if (validPass.Succeeded)
                     {
-                        user.PasswordHash = _unitOfWorkAsync.PasswordHasher.HashPassword(user,
+                        user.PasswordHash = _unitOfWork.PasswordHasher.HashPassword(user,
                             password);
                     }
                     else
@@ -178,7 +175,7 @@ namespace FamilyNet.Controllers
                 {
                     if ((validPass != null && validEmail.Succeeded && password != string.Empty && validPass.Succeeded && validPhone.Succeeded))
                     {
-                        IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                        IdentityResult result = await _unitOfWork.UserManager.UpdateAsync(user);
                         if (result.Succeeded)
                         {
                             return RedirectToAction("Index");
@@ -191,7 +188,7 @@ namespace FamilyNet.Controllers
                     else
                     {
 
-                        IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                        IdentityResult result = await _unitOfWork.UserManager.UpdateAsync(user);
                         if (result.Succeeded && validPass.Succeeded)
                         {
                             return RedirectToAction("Index");
@@ -220,7 +217,7 @@ namespace FamilyNet.Controllers
 
         public IActionResult SeedData()
         {
-            SeedData seedData = new SeedData(_unitOfWorkAsync);
+            SeedData seedData = new SeedData(_unitOfWork);
             seedData.EnsurePopulated();
 
             return Redirect("/Home/Index");

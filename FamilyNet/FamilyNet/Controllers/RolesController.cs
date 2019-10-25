@@ -38,7 +38,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                rolesDTO = await _downloader.GetAllAsync(url);
+                rolesDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -75,7 +75,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _apiPath;
-            var status = await _downloader.CreatePostAsync(url, role);
+            var status = await _downloader.CreatePostAsync(url, role, HttpContext.Session);
 
             if (status.StatusCode != HttpStatusCode.Created)
             {
@@ -99,7 +99,7 @@ namespace FamilyNet.Controllers
             
             try
             {
-                var status = await _downloader.DeleteAsync(url);
+                var status = await _downloader.DeleteAsync(url, HttpContext.Session);
 
             }
             catch (ArgumentNullException)
@@ -118,17 +118,17 @@ namespace FamilyNet.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult UserList() => View(_unitOfWorkAsync.UserManager.Users);
+        public IActionResult UserList() => View(_unitOfWork.UserManager.Users);
 
         public async Task<IActionResult> Edit(string userId)
         {
             // получаем пользователя
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await _unitOfWorkAsync.UserManager.GetRolesAsync(user);
-                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+                var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
+                var allRoles = _unitOfWork.RoleManager.Roles.ToList();
                 ChangeRoleViewModel model = new ChangeRoleViewModel
                 {
                     UserId = user.Id,
@@ -145,21 +145,21 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {
             // получаем пользователя
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await _unitOfWorkAsync.UserManager.GetRolesAsync(user);
+                var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
                 // получаем все роли
-                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+                var allRoles = _unitOfWork.RoleManager.Roles.ToList();
                 // получаем список ролей, которые были добавлены
                 var addedRoles = roles.Except(userRoles);
                 // получаем роли, которые были удалены
                 var removedRoles = userRoles.Except(roles);
 
-                await _unitOfWorkAsync.UserManager.AddToRolesAsync(user, addedRoles);
+                await _unitOfWork.UserManager.AddToRolesAsync(user, addedRoles);
 
-                await _unitOfWorkAsync.UserManager.RemoveFromRolesAsync(user, removedRoles);
+                await _unitOfWork.UserManager.RemoveFromRolesAsync(user, removedRoles);
 
                 return RedirectToAction("UserList");
             }

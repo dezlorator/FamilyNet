@@ -1,8 +1,7 @@
 ﻿using DataTransferObjects;
-using System.IO;
-using System.Net;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 
@@ -10,8 +9,11 @@ namespace FamilyNet.Downloader
 {
     public class ServerRegistrationDownloader : ServerSimpleDataDownloader<UserDTO>
     {
+        public ServerRegistrationDownloader(IHttpAuthorizationHandler authorizationHandler)
+        :base(authorizationHandler){}
+
         public override async Task<HttpResponseMessage> CreatePostAsync(string url,
-                                                               UserDTO dto)
+                                                               UserDTO dto, ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -19,7 +21,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PostAsync(url, formDataContent);
             }
 
@@ -27,7 +29,7 @@ namespace FamilyNet.Downloader
         }
 
         public override async Task<HttpResponseMessage> CreatePutAsync(string url,
-                                                                  UserDTO dto)
+                                                                  UserDTO dto, ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -35,7 +37,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PutAsync(url, formDataContent);
             }
 

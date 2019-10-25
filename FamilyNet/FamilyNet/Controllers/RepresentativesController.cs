@@ -19,7 +19,6 @@ using DataTransferObjects;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
     public class RepresentativesController : BaseController
     {
         #region private fields
@@ -32,6 +31,7 @@ namespace FamilyNet.Controllers
 
 
         #endregion
+
         #region Ctor
 
         public RepresentativesController(IUnitOfWorkAsync unitOfWork,
@@ -48,9 +48,7 @@ namespace FamilyNet.Controllers
 
         #region Methods
 
-        // GET: Representatives
-        [AllowAnonymous]
-        public async Task<IActionResult> Index(int id,
+        public async Task<IActionResult> Index(int id, 
             PersonSearchModel searchModel)
         {
             var url = _URLRepresentativeBuilder
@@ -94,8 +92,7 @@ namespace FamilyNet.Controllers
             return View(representatives);
         }
 
-        // GET: Representatives/Details/5
-        [AllowAnonymous]
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -147,13 +144,12 @@ namespace FamilyNet.Controllers
             return View(representative);
         }
 
-        [Authorize(Roles = "Admin, Representative")]
-        // GET: Representatives/Create
+  
         public async Task<IActionResult> Create()
         {
             await Check();
 
-            List<Orphanage> orphanages = await _unitOfWorkAsync.Orphanages.GetAll()
+            List<Orphanage> orphanages = await _unitOfWork.Orphanages.GetAll()
                 .OrderBy(o => o.Name).ToListAsync();
 
             ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
@@ -168,7 +164,6 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,Rating,Avatar,ChildrenHouseID")]
         RepresentativeDTO representativeDTO)
         {
@@ -198,25 +193,16 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Representatives/Edit/5
-        [Authorize(Roles = "Admin, Representative")]
+       
         public async Task<IActionResult> Edit(int? id)
         {
-
-            List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll()
+            List<Orphanage> orphanages = _unitOfWork.Orphanages.GetAll()
                 .OrderBy(o => o.Name).ToList();
             ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
-
 
             if (id == null)
             {
                 return NotFound();
-            }
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
             }
 
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id.Value);
@@ -247,7 +233,6 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Edit(int id, RepresentativeDTO representativeDTO)
         {
             if (id != representativeDTO.ID)
@@ -276,8 +261,6 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Representatives/Delete/5
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -313,10 +296,8 @@ namespace FamilyNet.Controllers
             return View(representativeDTO);
         }
 
-        // POST: Representatives/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
