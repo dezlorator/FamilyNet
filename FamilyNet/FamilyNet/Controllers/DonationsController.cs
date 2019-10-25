@@ -25,6 +25,7 @@ namespace FamilyNet.Controllers
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloader;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloaderCategories;
         private readonly ServerSimpleDataDownloader<DonationItemDTO> _downloaderItems;
+        private readonly ServerSimpleDataDownloader<ChildrenHouseDTO> _downloaderOrphanage;
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
         private readonly string _apiPath = "api/v1/donations";

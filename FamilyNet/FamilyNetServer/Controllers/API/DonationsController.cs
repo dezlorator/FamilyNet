@@ -205,6 +205,33 @@ namespace FamilyNetServer.Controllers.API
             return NoContent();
         }
 
+        [HttpPut("donationMade/{id}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddCharityMaker(int id, [FromBody]int charityMakerID)
+        {
+            CharityMaker charityMaker = await _unitOfWork.CharityMakers.GetById(charityMakerID);
+
+            if (charityMaker == null)
+            {
+                return BadRequest();
+            }
+
+            Donation donation = await _unitOfWork.Donations.GetById(id);
+
+            if (donation == null)
+            {
+                return BadRequest();
+            }
+
+            donation.CharityMakerID = charityMakerID;
+
+            _unitOfWork.Donations.Update(donation);
+            _unitOfWork.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
