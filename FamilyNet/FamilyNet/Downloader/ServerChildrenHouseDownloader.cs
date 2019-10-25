@@ -1,4 +1,6 @@
 ﻿using DataTransferObjects;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,9 +13,16 @@ namespace FamilyNet.Downloader
 {
     public class ServerChildrenHouseDownloader : ServerDataDownloader<ChildrenHouseDTO>
     {
-        public async Task<HttpStatusCode> CreatePostAsync(string url,
-                                                            ChildrenHouseDTO dto,
-                                                            Stream streamFile)
+
+        public ServerChildrenHouseDownloader(IHttpAuthorizationHandler authorizationHandler)
+           : base(authorizationHandler)
+        { }
+
+        public override async Task<HttpStatusCode> CreatePostAsync(string url,
+                                                              ChildrenHouseDTO dto,
+                                                              Stream streamFile,
+                                                              string fieName,
+                                                              ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -34,10 +43,11 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        public override async Task<HttpStatusCode> СreatePutAsync(string url,
+        public override async Task<HttpStatusCode> CreatePutAsync(string url,
                                                               ChildrenHouseDTO dto,
                                                               Stream streamFile,
-                                                              string fileName)
+                                                              string fileName,
+                                                              ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -80,9 +90,9 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.AdressID.ToString()), "AdressID");
         }
 
-        public override Task<HttpStatusCode> СreatePostAsync(string url, ChildrenHouseDTO dto, Stream file, string fieName)
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<HttpStatusCode> CreatePostAsync(string url, ChildrenHouseDTO dto, Stream file, string fieName)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

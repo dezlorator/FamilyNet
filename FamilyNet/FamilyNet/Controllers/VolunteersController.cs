@@ -66,7 +66,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteers = await _downloader.GetAllAsync(url);
+                volunteers = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -113,7 +113,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteerDTO = await _downloader.GetByIdAsync(url);
+                volunteerDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -215,9 +215,9 @@ namespace FamilyNet.Controllers
 
             volunteerDTO.AddressID = statusAddress.Content.ReadAsAsync<AddressDTO>().Result.ID;
             var url = _URLVolunteersBuilder.CreatePost(_apiPath);
-
-            var status = await _downloader.СreatePostAsync(url, volunteerDTO,
-                                                             stream, volunteerDTO.Avatar?.FileName);
+            var status = await _downloader.CreatePostAsync(url, volunteerDTO,
+                                                             stream, volunteerDTO.Avatar.FileName,
+                                                             HttpContext.Session);
 
             if (status != HttpStatusCode.Created)
             {
@@ -248,7 +248,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteerDTO = await _downloader.GetByIdAsync(url);
+                volunteerDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -326,8 +326,9 @@ namespace FamilyNet.Controllers
                                             volunteerDTO.Address);
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);
-            var status = await _downloader.СreatePutAsync(url, volunteerDTO,
-                                                            stream, volunteerDTO.Avatar?.FileName);
+            var status = await _downloader.CreatePutAsync(url, volunteerDTO,
+                                                            stream, volunteerDTO.Avatar?.FileName,
+                                                            HttpContext.Session);
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -351,7 +352,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteerDTO = await _downloader.GetByIdAsync(url);
+                volunteerDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -385,7 +386,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);
-            var status = await _downloader.DeleteAsync(url);
+            var status = await _downloader.DeleteAsync(url, HttpContext.Session);
 
             if (status != HttpStatusCode.OK)
             {
@@ -408,7 +409,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteers = await _downloader.GetAllAsync(url);
+                volunteers = await _downloader.GetAllAsync(url, HttpContext.Session);
                 addresses = await _addressDownloader.GetAllAsync(addressUrl);
             }
             catch (ArgumentNullException)

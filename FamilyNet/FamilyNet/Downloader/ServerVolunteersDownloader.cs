@@ -1,4 +1,6 @@
 ﻿using DataTransferObjects;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -9,10 +11,15 @@ namespace FamilyNet.Downloader
 {
     public class ServerVolunteersDownloader : ServerDataDownloader<VolunteerDTO>
     {
-        public override async Task<HttpStatusCode> СreatePostAsync(string url,
+        public ServerVolunteersDownloader(IHttpAuthorizationHandler authorizationHandler)
+           : base(authorizationHandler)
+        { }
+
+        public override async Task<HttpStatusCode> CreatePostAsync(string url,
                                                     VolunteerDTO dto,
                                                     Stream streamFile,
-                                                    string fileName)
+                                                    string fileName,
+                                                    ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -33,10 +40,11 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        public override async Task<HttpStatusCode> СreatePutAsync(string url,
+        public override async Task<HttpStatusCode> CreatePutAsync(string url,
                                                               VolunteerDTO dto,
                                                               Stream streamFile,
-                                                              string fileName)
+                                                              string fileName,
+                                                              ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 

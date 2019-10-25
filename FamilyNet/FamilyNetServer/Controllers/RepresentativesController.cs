@@ -19,7 +19,7 @@ namespace FamilyNet.Controllers
     {
         #region Ctor
 
-        public RepresentativesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        public RepresentativesController(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
 
@@ -32,7 +32,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Index(int id,
             PersonSearchModel searchModel)
         {
-            IEnumerable<Representative> representatives = _unitOfWorkAsync.Representatives.GetAll();
+            IEnumerable<Representative> representatives = _unitOfWork.Representatives.GetAll();
 
             representatives = RepresentativeFilter.GetFiltered(representatives, searchModel);
 
@@ -52,7 +52,7 @@ namespace FamilyNet.Controllers
             if (id == null)
                 return NotFound();
 
-            var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
+            var representative = await _unitOfWork.Representatives.GetById((int)id);
 
             if (representative == null)
                 return NotFound();
@@ -66,7 +66,7 @@ namespace FamilyNet.Controllers
         {
             await Check();
 
-            List<Orphanage> orphanages = await _unitOfWorkAsync.Orphanages.GetAll()
+            List<Orphanage> orphanages = await _unitOfWork.Orphanages.GetAll()
                 .OrderBy(o => o.Name).ToListAsync();
 
             ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
@@ -89,16 +89,16 @@ namespace FamilyNet.Controllers
 
             if (ModelState.IsValid)
             {
-                var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
+                var orphanage = await _unitOfWork.Orphanages.GetById(id);
                 representative.Orphanage = orphanage;
 
-                await _unitOfWorkAsync.Representatives.Create(representative);
-                await _unitOfWorkAsync.Representatives.SaveChangesAsync();
+                await _unitOfWork.Representatives.Create(representative);
+                await _unitOfWork.Representatives.SaveChangesAsync();
 
                 var user = await GetCurrentUserAsync();
                 user.PersonID = representative.ID;
                 user.PersonType = FamilyNetServer.Models.Identity.PersonType.Representative;
-                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                await _unitOfWork.UserManager.UpdateAsync(user);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -110,7 +110,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
 
-            List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll()
+            List<Orphanage> orphanages = _unitOfWork.Orphanages.GetAll()
                 .OrderBy(o => o.Name).ToList();
             ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
 
@@ -127,7 +127,7 @@ namespace FamilyNet.Controllers
 
 
 
-            var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
+            var representative = await _unitOfWork.Representatives.GetById((int)id);
 
             if (representative == null)
                 return NotFound();
@@ -160,17 +160,17 @@ namespace FamilyNet.Controllers
             {
                 try
                 {
-                    var orphanage = await _unitOfWorkAsync.Orphanages.GetById(orphanageId);
+                    var orphanage = await _unitOfWork.Orphanages.GetById(orphanageId);
                     representative.Orphanage = orphanage;
 
-                    var representativeToEdit = await _unitOfWorkAsync.Representatives.GetById(representative.ID);
+                    var representativeToEdit = await _unitOfWork.Representatives.GetById(representative.ID);
                     representativeToEdit.CopyState(representative);
-                    _unitOfWorkAsync.Representatives.Update(representativeToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
+                    _unitOfWork.Representatives.Update(representativeToEdit);
+                    _unitOfWork.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_unitOfWorkAsync.Representatives.Any(representative.ID))
+                    if (!_unitOfWork.Representatives.Any(representative.ID))
                         return NotFound();
                     else
                         throw; //TODO: Loging
@@ -189,7 +189,7 @@ namespace FamilyNet.Controllers
             if (id == null)
                 return NotFound();
 
-            var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
+            var representative = await _unitOfWork.Representatives.GetById((int)id);
 
             if (representative == null)
                 return NotFound();
@@ -203,9 +203,9 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var representative = await _unitOfWorkAsync.Representatives.GetById((int)id);
-            await _unitOfWorkAsync.Representatives.Delete(representative.ID);
-            _unitOfWorkAsync.SaveChangesAsync();
+            var representative = await _unitOfWork.Representatives.GetById((int)id);
+            await _unitOfWork.Representatives.Delete(representative.ID);
+            _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

@@ -16,14 +16,14 @@ namespace FamilyNetServer.Controllers.API
     {
         #region fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ICategoryValidator _categoryValidator;
 
         #endregion
 
         #region ctor
 
-        public CategoriesController(IUnitOfWorkAsync unitOfWork,
+        public CategoriesController(IUnitOfWork unitOfWork,
                                     ICategoryValidator categoryValidator)
         {
             _unitOfWork = unitOfWork;

@@ -17,16 +17,16 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _repository;
+        private readonly IUnitOfWork _repository;
         private readonly IValidator<AddressDTO> _addressValidator;
 
         #endregion
 
         #region ctor
 
-        public LocationController(IUnitOfWorkAsync repo, IValidator<AddressDTO> addressValidator)
+        public LocationController(IUnitOfWork repository, IValidator<AddressDTO> addressValidator)
         {
-            _repository = repo;
+            _repository = repository;
             _addressValidator = addressValidator;
         }
 

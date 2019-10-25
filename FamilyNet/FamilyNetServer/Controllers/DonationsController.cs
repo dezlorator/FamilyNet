@@ -11,7 +11,7 @@ namespace FamilyNetServer.Controllers
     [Authorize]
     public class DonationsController : BaseController
     {
-        public DonationsController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        public DonationsController(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
 
         }
@@ -20,14 +20,14 @@ namespace FamilyNetServer.Controllers
         [AllowAnonymous]
         public IActionResult DonationsTable()
         {
-            return View(_unitOfWorkAsync.Donations.GetAll());
+            return View(_unitOfWork.Donations.GetAll());
         }
 
         // GET: CategoriesTable
         [AllowAnonymous]
         public IActionResult CategoriesTable()
         {
-            return View(_unitOfWorkAsync.BaseItemTypes.GetAll());
+            return View(_unitOfWork.BaseItemTypes.GetAll());
         }
 
         #region CreateCategory
@@ -49,8 +49,8 @@ namespace FamilyNetServer.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWorkAsync.BaseItemTypes.Create(request);
-                await _unitOfWorkAsync.BaseItemTypes.SaveChangesAsync();
+                await _unitOfWork.BaseItemTypes.Create(request);
+                await _unitOfWork.BaseItemTypes.SaveChangesAsync();
                 return RedirectToAction(nameof(CategoriesTable));
             }
             return View(request);
@@ -69,7 +69,7 @@ namespace FamilyNetServer.Controllers
                 return NotFound();
             }
 
-            BaseItemType category = await _unitOfWorkAsync.BaseItemTypes
+            BaseItemType category = await _unitOfWork.BaseItemTypes
                 .GetById((int)id);
 
             if (category == null)
@@ -86,13 +86,13 @@ namespace FamilyNetServer.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategoryConfirmed(int id)
         {
-            var category = await _unitOfWorkAsync.BaseItemTypes.GetById((int)id);
+            var category = await _unitOfWork.BaseItemTypes.GetById((int)id);
             if (category == null)
             {
                 return RedirectToAction(nameof(CategoriesTable));
             }
-            await _unitOfWorkAsync.BaseItemTypes.Delete((int)id);
-            _unitOfWorkAsync.SaveChangesAsync();
+            await _unitOfWork.BaseItemTypes.Delete((int)id);
+            _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(CategoriesTable));
         }
@@ -105,8 +105,8 @@ namespace FamilyNetServer.Controllers
         [Authorize(Roles = "Admin,CharityMaker,Volunteer,Representative")]
         public IActionResult CreateDonation()
         {
-            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
-            ViewBag.ListOfBaseItemTypes = _unitOfWorkAsync.BaseItemTypes.GetAll();
+            ViewBag.ListOfOrphanages = _unitOfWork.Orphanages.GetAll();
+            ViewBag.ListOfBaseItemTypes = _unitOfWork.BaseItemTypes.GetAll();
             return View();
         }
 
@@ -124,12 +124,12 @@ namespace FamilyNetServer.Controllers
                 
                 request.IsRequest = true;
 
-                await _unitOfWorkAsync.Donations.Create(request);
-                await _unitOfWorkAsync.Donations.SaveChangesAsync();
+                await _unitOfWork.Donations.Create(request);
+                await _unitOfWork.Donations.SaveChangesAsync();
 
-                _unitOfWorkAsync.TypeBaseItems.Add(new TypeBaseItem() { ItemID = request.DonationItem.ID, TypeID = idDonationItem  });
+                _unitOfWork.TypeBaseItems.Add(new TypeBaseItem() { ItemID = request.DonationItem.ID, TypeID = idDonationItem  });
 
-                _unitOfWorkAsync.SaveChangesAsync();
+                _unitOfWork.SaveChangesAsync();
 
                 return RedirectToAction(nameof(DonationsTable));
             }
@@ -149,9 +149,9 @@ namespace FamilyNetServer.Controllers
                 return NotFound();
             }
             
-            ViewBag.ListOfOrphanages = _unitOfWorkAsync.Orphanages.GetAll();
-            ViewBag.ListOfBaseItemTypes = _unitOfWorkAsync.BaseItemTypes.GetAll();
-            var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
+            ViewBag.ListOfOrphanages = _unitOfWork.Orphanages.GetAll();
+            ViewBag.ListOfBaseItemTypes = _unitOfWork.BaseItemTypes.GetAll();
+            var donation = await _unitOfWork.Donations.GetById((int)id);
 
             if (donation == null)
             {
@@ -179,10 +179,10 @@ namespace FamilyNetServer.Controllers
             {
                 try
                 {
-                    Donation donationToEdit = await _unitOfWorkAsync.Donations.GetById(id);
+                    Donation donationToEdit = await _unitOfWork.Donations.GetById(id);
                     donationToEdit.CopyState(donation);
-                    _unitOfWorkAsync.Donations.Update(donationToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
+                    _unitOfWork.Donations.Update(donationToEdit);
+                    _unitOfWork.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -213,7 +213,7 @@ namespace FamilyNetServer.Controllers
                 return NotFound();
             }
 
-            Donation donation = await _unitOfWorkAsync.Donations
+            Donation donation = await _unitOfWork.Donations
                 .GetById((int)id);
 
             if (donation == null)
@@ -230,13 +230,13 @@ namespace FamilyNetServer.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDonationConfirmed(int id)
         {
-            var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
+            var donation = await _unitOfWork.Donations.GetById((int)id);
             if (donation == null)
             {
                 return RedirectToAction(nameof(DonationsTable));
             }
-            await _unitOfWorkAsync.Donations.Delete((int)id);
-            _unitOfWorkAsync.SaveChangesAsync();
+            await _unitOfWork.Donations.Delete((int)id);
+            _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(DonationsTable));
         }
@@ -254,7 +254,7 @@ namespace FamilyNetServer.Controllers
                 return NotFound();
             }
 
-            var donation = await _unitOfWorkAsync.Donations.GetById((int)id);
+            var donation = await _unitOfWork.Donations.GetById((int)id);
             if (donation == null)
             {
                 return NotFound();
@@ -273,7 +273,7 @@ namespace FamilyNetServer.Controllers
                 return NotFound();
             }
 
-            var category = await _unitOfWorkAsync.BaseItemTypes.GetById((int)id);
+            var category = await _unitOfWork.BaseItemTypes.GetById((int)id);
             if (category == null)
             {
                 return NotFound();
@@ -286,12 +286,12 @@ namespace FamilyNetServer.Controllers
 
         private bool DonationExists(int id)
         {
-            return _unitOfWorkAsync.Donations.GetById(id) != null;
+            return _unitOfWork.Donations.GetById(id) != null;
         }
 
         private bool CategoryExists(int id)
         {
-            return _unitOfWorkAsync.BaseItemTypes.GetById(id) != null;
+            return _unitOfWork.BaseItemTypes.GetById(id) != null;
         }
 
     }

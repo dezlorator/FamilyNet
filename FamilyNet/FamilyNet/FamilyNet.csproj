@@ -43,11 +43,5 @@
   <ItemGroup>
     <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="DataTransferObjects">
-      <HintPath>..\DataTransferObjects\bin\Debug\DataTransferObjects.dll</HintPath>
-    </Reference>
-  </ItemGroup>  
 
 </Project>

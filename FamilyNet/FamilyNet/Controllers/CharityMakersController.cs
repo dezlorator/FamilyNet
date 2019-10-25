@@ -59,7 +59,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                charityMakerContainer = await _serverDownloader.GetAllAsync(url);
+                charityMakerContainer = await _serverDownloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -107,7 +107,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                charityMakerDTO = await _serverDownloader.GetByIdAsync(url);
+                charityMakerDTO = await _serverDownloader.GetByIdAsync(url, HttpContext.Session);
 
             }
             catch (ArgumentNullException)
@@ -207,8 +207,9 @@ namespace FamilyNet.Controllers
 
             charityMakerDTO.AdressID = status1.Content.ReadAsAsync<AddressDTO>().Result.ID;
             var url = _urlBilder.CreatePost(_apiPath);
-            var status = await _serverDownloader.СreatePostAsync(url, charityMakerDTO,
-                                                             stream, charityMakerDTO.Avatar.FileName);
+            var status = await _serverDownloader.CreatePostAsync(url, charityMakerDTO,
+                                                             stream, charityMakerDTO.Avatar.FileName,
+                                                             HttpContext.Session);
 
 
             if (status != HttpStatusCode.Created)
@@ -241,7 +242,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                charityMakerDTO = await _serverDownloader.GetByIdAsync(url);
+                charityMakerDTO = await _serverDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -313,8 +314,9 @@ namespace FamilyNet.Controllers
             }
 
             var url = _urlBilder.GetById(_apiPath, id);
-            var status = await _serverDownloader.СreatePutAsync(url, charityMakerDTO,
-                                                            stream, charityMakerDTO.Avatar?.FileName);
+            var status = await _serverDownloader.CreatePutAsync(url, charityMakerDTO,
+                                                            stream, charityMakerDTO.Avatar?.FileName,
+                                                            HttpContext.Session);
 
             var addressUrl = _urlAdressBuilder.GetById(_pathToAdressApi, charityMakerDTO.AdressID);
             var status1 = await _serverAddressDownloader.CreatePutAsync(addressUrl, 
@@ -343,7 +345,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                charityMakerDTO = await _serverDownloader.GetByIdAsync(url);
+                charityMakerDTO = await _serverDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -378,7 +380,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _urlBilder.GetById(_apiPath, id);
-            var status = await _serverDownloader.DeleteAsync(url);
+            var status = await _serverDownloader.DeleteAsync(url, HttpContext.Session);
 
             if (status != HttpStatusCode.OK)
             {
@@ -400,7 +402,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                charityMakerContainer = await _serverDownloader.GetAllAsync(url);
+                charityMakerContainer = await _serverDownloader.GetAllAsync(url, HttpContext.Session);
                 addressDTOContainer = await _serverAddressDownloader.GetAllAsync(adderssUrl);
             }
             catch (ArgumentNullException)

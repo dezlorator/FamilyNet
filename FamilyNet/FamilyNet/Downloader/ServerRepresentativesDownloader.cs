@@ -3,12 +3,25 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DataTransferObjects;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 
 namespace FamilyNet.Downloader
 {
     public class ServerRepresentativesDownloader : ServerDataDownloader<RepresentativeDTO>
     {
-        public override async Task<HttpStatusCode> СreatePostAsync(string url, RepresentativeDTO dto, Stream streamFile, string fileName)
+        public ServerRepresentativesDownloader(IHttpAuthorizationHandler authorizationHandler)
+            : base(authorizationHandler)
+        {
+
+        }
+
+
+        public override async Task<HttpStatusCode> CreatePostAsync(string url,
+                                                             RepresentativeDTO dto,
+                                                             Stream streamFile,
+                                                             string fileName,
+                                                             ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -24,12 +37,16 @@ namespace FamilyNet.Downloader
                 {
                     streamFile.Close();
                 }
-
-                return statusCode;
             }
+
+            return statusCode;
         }
 
-        public override async Task<HttpStatusCode> СreatePutAsync(string url, RepresentativeDTO dto, Stream streamFile, string fileName)
+        public override async Task<HttpStatusCode> CreatePutAsync(string url,
+                                                            RepresentativeDTO dto,
+                                                            Stream streamFile,
+                                                            string fileName,
+                                                            ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -51,9 +68,9 @@ namespace FamilyNet.Downloader
         }
 
         private static void BuildMultipartFormData(RepresentativeDTO dto,
-            Stream streamFile,
-            string fileName,
-            MultipartFormDataContent formDataContent)
+                                                   Stream streamFile,
+                                                   string fileName,
+                                                   MultipartFormDataContent formDataContent)
         {
             if (streamFile != null && streamFile.Length > 0)
             {

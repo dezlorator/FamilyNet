@@ -60,7 +60,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativesDTO = await _downLoader.GetAllAsync(url);
+                representativesDTO = await _downLoader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -108,7 +108,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _downLoader.GetByIdAsync(url);
+                representativeDTO = await _downLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -185,9 +185,10 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.СreatePostAsync(url, representativeDTO,
+            var status = await _downLoader.CreatePostAsync(url, representativeDTO,
                                                  stream,
-                                                 representativeDTO.Avatar.FileName);
+                                                 representativeDTO.Avatar.FileName,
+                                                 HttpContext.Session);
 
             if (status != HttpStatusCode.Created)
             {
@@ -223,7 +224,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _downLoader.GetByIdAsync(url);
+                representativeDTO = await _downLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -262,8 +263,9 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatePutAsync(url, representativeDTO,
-                                                            stream, representativeDTO.Avatar?.FileName);
+            var status = await _downLoader.CreatePutAsync(url, representativeDTO,
+                                                            stream, representativeDTO.Avatar?.FileName,
+                                                            HttpContext.Session);
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -288,7 +290,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _downLoader.GetByIdAsync(url);
+                representativeDTO = await _downLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -322,7 +324,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.DeleteAsync(url);
+            var status = await _downLoader.DeleteAsync(url, HttpContext.Session);
 
             if (status != HttpStatusCode.OK)
             {

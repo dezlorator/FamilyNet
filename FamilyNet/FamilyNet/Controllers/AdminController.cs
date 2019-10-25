@@ -12,12 +12,10 @@ using System;
 using System.Collections.Generic;
 using DataTransferObjects;
 using FamilyNet.Downloader;
-using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
-using System.IO;
-using FamilyNet.StreamCreater;
+
 namespace FamilyNet.Controllers
 {
     [Authorize(Roles = "Admin")]

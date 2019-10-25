@@ -73,7 +73,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childrenHouse = await _childrenHouseDownloader.GetAllAsync(url);
+                childrenHouse = await _childrenHouseDownloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -118,7 +118,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url);
+                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -197,7 +197,10 @@ namespace FamilyNet.Controllers
 
 
             url = _URLChildrenHouseBuilder.CreatePost(_apiPath);
-            var status  = await _childrenHouseDownloader.CreatePostAsync(url, model.ChildrenHouse, stream);
+            var status  = await _childrenHouseDownloader.CreatePostAsync(url, model.ChildrenHouse,
+                                                                stream,
+                                                                String.Empty,
+                                                                HttpContext.Session);
 
             if (status != HttpStatusCode.Created)
             {
@@ -231,7 +234,7 @@ namespace FamilyNet.Controllers
             AddressDTO addressDTO = null;
             try
             {
-                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url);
+                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url, HttpContext.Session);
                 url = _URLAddressBuilder.GetById(_apiAddressPath, childrenHouseDTO.AdressID.Value);
                 addressDTO = await _addressDownLoader.GetByIdAsync(url);
             }
@@ -310,8 +313,9 @@ namespace FamilyNet.Controllers
 
 
             url = _URLChildrenHouseBuilder.GetById(_apiPath, id);
-            var status = await _childrenHouseDownloader.ÑreatePutAsync(url, model.ChildrenHouse,
-                                                            stream, model.ChildrenHouse.Avatar?.FileName);
+            var status = await _childrenHouseDownloader.CreatePutAsync(url, model.ChildrenHouse,
+                                                            stream, model.ChildrenHouse.Avatar?.FileName,
+                                                            HttpContext.Session);
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -338,7 +342,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url);
+                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -392,7 +396,7 @@ namespace FamilyNet.Controllers
             ChildrenHouseDTO childrenHouseDTO = null;
             try
             {
-                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url);               
+                childrenHouseDTO = await _childrenHouseDownloader.GetByIdAsync(url, HttpContext.Session);               
             }
             catch (ArgumentNullException)
             {
@@ -421,7 +425,7 @@ namespace FamilyNet.Controllers
             }
 
             url = _URLChildrenHouseBuilder.GetById(_apiPath, id);
-            var houseStatus = await _childrenHouseDownloader.DeleteAsync(url);      
+            var houseStatus = await _childrenHouseDownloader.DeleteAsync(url, HttpContext.Session);      
             if (houseStatus != HttpStatusCode.OK)
             {
                 return Redirect("/Home/Error");
@@ -461,7 +465,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> SearchOrphanageOnMap()
         {
             var url = _URLChildrenHouseBuilder.CreatePost(_apiPath);
-            var houses = await _childrenHouseDownloader.GetAllAsync(url);
+            var houses = await _childrenHouseDownloader.GetAllAsync(url, HttpContext.Session);
             var filtredHouses = houses.Where(loc => loc.LocationID != null && loc.AdressID != null)
                 .Select( orph =>  
                 new Orphanage

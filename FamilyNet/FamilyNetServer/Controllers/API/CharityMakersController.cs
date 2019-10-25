@@ -21,8 +21,7 @@ namespace FamilyNetServer.Controllers.API
     public class CharityMakersController : ControllerBase
     {
         #region private
-
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ICharityMakersSelection _selection;
         private readonly ICharityMakerValidator _validator;
         private readonly IFileUploader _fileUploader;
@@ -31,7 +30,7 @@ namespace FamilyNetServer.Controllers.API
         #endregion
 
         #region ctro
-        public CharityMakersController(IUnitOfWorkAsync unitOfWork,
+        public CharityMakersController(IUnitOfWork unitOfWork,
              ICharityMakersSelection selection, ICharityMakerValidator validator,
              IFileUploader fileUploader,
              IOptionsSnapshot<ServerURLSettings> settings)
@@ -102,12 +101,12 @@ namespace FamilyNetServer.Controllers.API
                 Birthday = charityMaker.Birthday,
                 ID = charityMaker.ID,
                 Name = charityMaker.FullName.Name,
+                AdressID = charityMaker.AddressID ?? 0,
                 Patronymic = charityMaker.FullName.Patronymic,
                 Rating = charityMaker.Rating,
                 Surname = charityMaker.FullName.Surname,
                 EmailID = charityMaker.EmailID,
                 PhotoPath = _settings.Value.ServerURL + charityMaker.Avatar,
-                AdressID = charityMaker.AddressID ?? 0
             };
 
             return Ok(charityMakerDTO);

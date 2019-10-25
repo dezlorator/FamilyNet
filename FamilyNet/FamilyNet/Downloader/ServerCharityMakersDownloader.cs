@@ -1,16 +1,21 @@
 ﻿using DataTransferObjects;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
     public class ServerCharityMakersDownloader : ServerDataDownloader<CharityMakerDTO>
     {
-        public override async Task<HttpStatusCode> СreatePostAsync(string url, CharityMakerDTO dto, 
-            Stream streamFile, string fileName)
+        public ServerCharityMakersDownloader(IHttpAuthorizationHandler authorizationHandler)
+            : base(authorizationHandler)
+        {}
+
+        public override async Task<HttpStatusCode> CreatePostAsync(string url, CharityMakerDTO dto, 
+            Stream streamFile, string fileName, ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -31,8 +36,8 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        public override async Task<HttpStatusCode> СreatePutAsync(string url, 
-            CharityMakerDTO dto, Stream streamFile, string fileName)
+        public override async Task<HttpStatusCode> CreatePutAsync(string url, 
+            CharityMakerDTO dto, Stream streamFile, string fileName, ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 

@@ -23,7 +23,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IFileUploader _fileUploader;
         private readonly IVolunteerValidator _volunteerValidator;
         private readonly IFilterConditionsVolunteers _filterConditions;
@@ -34,7 +34,7 @@ namespace FamilyNetServer.Controllers.API
         #region ctor
 
         public VolunteersController(IFileUploader fileUploader,
-                                  IUnitOfWorkAsync unitOfWork,
+                                  IUnitOfWork unitOfWork,
                                   IVolunteerValidator volunteerValidator,
                                   IFilterConditionsVolunteers filterConditions,
                                   IOptionsSnapshot<ServerURLSettings> setings)

@@ -18,7 +18,6 @@ using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
     public class OrphansController : BaseController
     {
         #region private fields
@@ -55,7 +54,6 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        [AllowAnonymous]
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
             var url = _URLChildrenBuilder.GetAllWithFilter(_apiChildrenPath,
@@ -65,7 +63,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                children = await _childrenDownloader.GetAllAsync(url);
+                children = await _childrenDownloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -84,8 +82,7 @@ namespace FamilyNet.Controllers
 
             return View(children);
         }
-
-        [AllowAnonymous]
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -98,7 +95,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childDTO = await _childrenDownloader.GetByIdAsync(url);
+                childDTO = await _childrenDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -123,32 +120,11 @@ namespace FamilyNet.Controllers
             return View(childDTO);
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            await Check();
-
-            var urlChildrenHouse = _URLChildrenHouseBuilder.GetAllWithFilter(_apiChildrenHousesPath,
-                                                                            new OrphanageSearchModel(),
-                                                                            SortStateOrphanages.NameAsc);
-            try
-            {
-                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse);
-                ViewBag.ListOfOrphanages = childrenHouses;
-            }
-            catch (ArgumentNullException)
-            {
-                return Redirect("/Home/Error");
-            }
-            catch (HttpRequestException)
-            {
-                return Redirect("/Home/Error");
-            }
-            catch (JsonException)
-            {
-                return Redirect("/Home/Error");
-            }
-
+            var orphanagesList = new List<Orphanage>();
+            orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            ViewBag.ListOfOrphanages = orphanagesList;
             GetViewData();
 
             return View();
@@ -156,7 +132,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,ChildrenHouseID,Avatar")]
                                                 ChildDTO childDTO)
         {
@@ -172,14 +147,17 @@ namespace FamilyNet.Controllers
                 stream = _streamCreater.CopyFileToStream(childDTO.Avatar);
             }
 
-            var url = _URLChildrenBuilder.CreatePost(_apiChildrenPath);           
-
-            HttpStatusCode status = HttpStatusCode.BadRequest;
+            var url = _URLChildrenBuilder.CreatePost(_apiChildrenPath);
+            var status = await _childrenDownloader.CreatePostAsync(url, childDTO,
+                                                             stream,
+                                                             childDTO.Avatar.FileName,
+                                                             HttpContext.Session);
 
             try
             {
-                status = await _childrenDownloader.СreatePostAsync(url, childDTO,
-                                                                 stream, childDTO.Avatar?.FileName);
+                status = await _childrenDownloader.CreatePostAsync(url, childDTO,
+                                                                 stream, childDTO.Avatar?.FileName,
+                                                                 HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -203,7 +181,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Orphans/Index");
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -227,9 +204,11 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childDTO = await _childrenDownloader.GetByIdAsync(urlChildren);
-                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse);
+                childDTO = await _childrenDownloader.GetByIdAsync(urlChildren, HttpContext.Session);
+                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse,
+                                                                                HttpContext.Session);
                 ViewBag.ListOfOrphanages = childrenHouses;
+                childDTO = await _childrenDownloader.GetByIdAsync(urlChildrenHouse, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -251,7 +230,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int id, ChildDTO childDTO)
         {
             if (id != childDTO.ID)
@@ -271,13 +249,14 @@ namespace FamilyNet.Controllers
                 stream = _streamCreater.CopyFileToStream(childDTO.Avatar);
             }
 
-            var url = _URLChildrenBuilder.GetById(_apiChildrenPath, id);
+            var urlChildren = _URLChildrenBuilder.GetById(_apiChildrenPath, id);
             HttpStatusCode status = HttpStatusCode.BadRequest;
 
             try
             {
-                status = await _childrenDownloader.СreatePutAsync(url, childDTO,
-                                                  stream, childDTO.Avatar?.FileName);
+                status = await _childrenDownloader.CreatePutAsync(urlChildren, childDTO,
+                                                  stream, childDTO.Avatar?.FileName,
+                                                  HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -292,6 +271,12 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+                //TODO: log
+            }
+
             if (status != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
@@ -299,8 +284,7 @@ namespace FamilyNet.Controllers
 
             return Redirect("/Orphans/Index");
         }
-
-        [Authorize(Roles = "Admin")]
+        
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -313,7 +297,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                childDTO = await _childrenDownloader.GetByIdAsync(url);
+                childDTO = await _childrenDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -340,7 +324,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
@@ -353,7 +336,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                status = await _childrenDownloader.DeleteAsync(url);
+                status = await _childrenDownloader.DeleteAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -377,8 +360,7 @@ namespace FamilyNet.Controllers
 
             return Redirect("/Orphans/Index");
         }
-
-        [AllowAnonymous]
+        
         public async Task<IActionResult> OrphansTable(int id, PersonSearchModel searchModel)
         {
             var url = _URLChildrenBuilder.GetAllWithFilter(_apiChildrenPath,
@@ -388,7 +370,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                children = await _childrenDownloader.GetAllAsync(url);
+                children = await _childrenDownloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.Models.EntityFramework
 {
-    public class OrphanageRepositoryAsync : EFRepositoryAsync<Orphanage>, IOrphanageAsyncRepository
+    public class OrphanageRepositoryAsync : EFRepository<Orphanage>, IOrphanageRepository
     {
         public OrphanageRepositoryAsync(ApplicationDbContext dbContext) : base(dbContext)
         {
