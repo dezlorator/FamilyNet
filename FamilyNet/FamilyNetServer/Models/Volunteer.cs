@@ -15,6 +15,8 @@ namespace FamilyNetServer.Models
         [Display(Name="Адресс")]
         public virtual Address Address { get; set; }
 
+        public virtual IEnumerable<Donation> Donations { get; set; }
+
         public override void CopyState(Person sender)
         {
             base.CopyState(sender);
