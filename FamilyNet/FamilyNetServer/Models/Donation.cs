@@ -37,13 +37,6 @@ namespace FamilyNetServer.Models
         [BindNever]
         public bool IsDeleted { get; set; } = false;
 
-        public enum DonationStatus
-        {
-            Sended = 1,
-            Aproved,
-            Taken,
-        }
-
         public void CopyState(Donation sender)
         {            
             Donation donationSended = sender as Donation;
