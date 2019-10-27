@@ -18,6 +18,7 @@ using FamilyNetServer.Filters;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Configuration;
 using DataTransferObjects;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace FamilyNetServer
 {
@@ -101,6 +102,14 @@ namespace FamilyNetServer
                  options.ClientErrorMapping[404].Link =
                      "https://httpstatuses.com/404";
              });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin());
+            });
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
