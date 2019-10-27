@@ -13,6 +13,8 @@ using FamilyNetServer.Uploaders;
 using FamilyNetServer.Configuration;
 using Microsoft.Extensions.Options;
 using DataTransferObjects;
+using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -27,6 +29,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly ICharityMakerValidator _validator;
         private readonly IFileUploader _fileUploader;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
+        private readonly ILogger<CharityMakersController> _logger;
 
         #endregion
 
@@ -34,13 +37,15 @@ namespace FamilyNetServer.Controllers.API
         public CharityMakersController(IUnitOfWorkAsync unitOfWork,
              ICharityMakersSelection selection, ICharityMakerValidator validator,
              IFileUploader fileUploader,
-             IOptionsSnapshot<ServerURLSettings> settings)
+             IOptionsSnapshot<ServerURLSettings> settings,
+             ILogger<CharityMakersController> logger)
         {
             _unitOfWork = unitOfWork;
             _selection = selection;
             _validator = validator;
             _fileUploader = fileUploader;
             _settings = settings;
+            _logger = logger;
         }
         #endregion
 
