@@ -21,7 +21,8 @@ namespace FamilyNetServer.Validators
 
         private bool DateTimeIsPresent(DateTime birthday)
         {
-            return birthday >= DateTime.MinValue;
+            int maxChildAge = 19;
+            return birthday >= DateTime.Now.AddYears(-maxChildAge);
         }
 
         private bool NameIsPresent(string name)
