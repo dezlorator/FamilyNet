@@ -25,9 +25,10 @@ namespace FamilyNet.Controllers
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloader;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloaderCategories;
         private readonly ServerSimpleDataDownloader<DonationItemDTO> _downloaderItems;
-        private readonly ServerSimpleDataDownloader<ChildrenHouseDTO> _downloaderOrphanages;
+        private readonly ServerDataDownloader<ChildrenHouseDTO> _downloaderOrphanages;
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
+
         private readonly string _apiPath = "api/v1/donations";
         private readonly string _apiCategoriesPath = "api/v1/categories";
         private readonly string _apiDonationItemsPath = "api/v1/donationItems";
@@ -42,6 +43,7 @@ namespace FamilyNet.Controllers
                                  ServerSimpleDataDownloader<DonationDetailDTO> downloader,
                                  ServerSimpleDataDownloader<CategoryDTO> downloaderCategories,
                                  ServerSimpleDataDownloader<DonationItemDTO> downloaderItems,
+                                 ServerDataDownloader<ChildrenHouseDTO> serverChildrenHouseDownloader,
                                  IURLDonationsBuilder uRLDonationsBuilder,
                                  IURLDonationItemsBuilder uRLDonationItemsBuilder)
             : base(unitOfWork)
@@ -50,6 +52,7 @@ namespace FamilyNet.Controllers
             _downloader = downloader;
             _downloaderCategories = downloaderCategories;
             _downloaderItems = downloaderItems;
+            _downloaderOrphanages = serverChildrenHouseDownloader;
             _URLDonationsBuilder = uRLDonationsBuilder;
             _URLDonationItemsBuilder = uRLDonationItemsBuilder;
         }
@@ -186,7 +189,7 @@ namespace FamilyNet.Controllers
             var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath);
             ViewBag.ListOfDonationItems = donationItemsList;
 
-            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiDonationItemsPath);
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiOrphanagesPath);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -271,7 +274,7 @@ namespace FamilyNet.Controllers
             var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath);
             ViewBag.ListOfDonationItems = donationItemsList;
 
-            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiDonationItemsPath);
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiOrphanagesPath);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
