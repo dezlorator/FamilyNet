@@ -7,6 +7,11 @@ namespace FamilyNetServer.Validators
     {
         public bool IsValid(ChildDTO childDTO)
         {
+            if (childDTO == null)
+            {
+                return false;
+            }
+
             return DateTimeIsPresent(childDTO.Birthday) &&
                    NameIsPresent(childDTO.Name) &&
                    SurnameIsPresent(childDTO.Surname) &&
