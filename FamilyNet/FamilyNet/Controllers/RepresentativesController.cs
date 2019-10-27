@@ -185,6 +185,11 @@ namespace FamilyNet.Controllers
                                                  representativeDTO.Avatar.FileName,
                                                  HttpContext.Session);
 
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (status != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
@@ -251,6 +256,10 @@ namespace FamilyNet.Controllers
             var status = await _downLoader.CreatePutAsync(url, representativeDTO,
                                                             stream, representativeDTO.Avatar?.FileName,
                                                             HttpContext.Session);
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -306,6 +315,11 @@ namespace FamilyNet.Controllers
             }
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
             var status = await _downLoader.DeleteAsync(url, HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.OK)
             {

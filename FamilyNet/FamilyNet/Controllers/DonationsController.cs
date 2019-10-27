@@ -23,11 +23,13 @@ namespace FamilyNet.Controllers
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloader;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloaderCategories;
         private readonly ServerSimpleDataDownloader<DonationItemDTO> _downloaderItems;
+        private readonly ServerSimpleDataDownloader<ChildrenHouseDTO> _downloaderOrphanages;
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
         private readonly string _apiPath = "api/v1/donations";
         private readonly string _apiCategoriesPath = "api/v1/categories";
         private readonly string _apiDonationItemsPath = "api/v1/donationItems";
+        private readonly string _apiOrphanagesPath = "api/v1/childrenHouse";
 
         #endregion
 
@@ -176,10 +178,10 @@ namespace FamilyNet.Controllers
         {
             await Check();
 
-            var donationItemsList = _unitOfWork.DonationItems.GetAll().ToList();
+            var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
             ViewBag.ListOfDonationItems = donationItemsList;
 
-            var orphanagesList = _unitOfWork.Orphanages.GetAll().ToList();
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -204,6 +206,11 @@ namespace FamilyNet.Controllers
 
             url = _URLDonationsBuilder.CreatePost(_apiPath);
             msg = await _downloader.CreatePostAsync(url, model.Donation, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -251,11 +258,11 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var orphanagesList = _unitOfWork.Orphanages.GetAll().ToList();
-            ViewBag.ListOfOrphanages = orphanagesList;
+            var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
+            ViewBag.ListOfDonationItems = donationItemsList;
 
-            var categoriesList = _unitOfWork.BaseItemTypes.GetAll().ToList();
-            ViewBag.ListOfCategories = categoriesList;
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
+            ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
 
@@ -284,6 +291,11 @@ namespace FamilyNet.Controllers
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
             var msg = await _downloader.CreatePutAsync(url, model.Donation, HttpContext.Session);
 
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
@@ -294,6 +306,10 @@ namespace FamilyNet.Controllers
             {
                 url = _URLDonationItemsBuilder.GetById(_apiDonationItemsPath, model.Donation.DonationItemID.Value);
                 msg = await _downloaderItems.CreatePutAsync(url, model.DonationItem, HttpContext.Session);
+            }
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
             }
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
@@ -358,6 +374,11 @@ namespace FamilyNet.Controllers
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
             var msg = await _downloader.CreatePutAsync(url, donationDTO, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {

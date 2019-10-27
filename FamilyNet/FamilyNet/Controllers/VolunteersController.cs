@@ -213,6 +213,11 @@ namespace FamilyNet.Controllers
                                                              stream, volunteerDTO.Avatar?.FileName,
                                                              HttpContext.Session);
 
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (status != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
@@ -321,6 +326,10 @@ namespace FamilyNet.Controllers
             var status = await _downloader.CreatePutAsync(url, volunteerDTO,
                                                             stream, volunteerDTO.Avatar?.FileName,
                                                             HttpContext.Session);
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -377,6 +386,11 @@ namespace FamilyNet.Controllers
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);
             var status = await _downloader.DeleteAsync(url, HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.OK)
             {

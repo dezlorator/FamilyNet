@@ -1,11 +1,9 @@
 ﻿using System.Threading.Tasks;
-using System.Web.Http;
 using DataTransferObjects;
 using FamilyNetServer.Factories;
 using FamilyNetServer.Models.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using FromBodyAttribute = Microsoft.AspNetCore.Mvc.FromBodyAttribute;
-using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -31,7 +29,7 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
-        [System.Web.Http.HttpPost]
+        [HttpPost]
         [Produces("application/json")]        
         public async Task<IActionResult> Authentication([FromForm]CredentialsDTO credentialsDTO)
         {

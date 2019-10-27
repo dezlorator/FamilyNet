@@ -3,13 +3,13 @@ using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static FamilyNetServer.Models.Donation;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -114,6 +114,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]DonationDTO donationDTO)
@@ -141,6 +142,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]DonationDTO donationDTO)
@@ -180,6 +182,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("StatusEdit/{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> StatusEdit(int id, [FromBody]string status)
@@ -204,7 +207,36 @@ namespace FamilyNetServer.Controllers.API
             return NoContent();
         }
 
+        [HttpPut("donationMade/{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddCharityMaker(int id, [FromBody]int charityMakerID)
+        {
+            CharityMaker charityMaker = await _unitOfWork.CharityMakers.GetById(charityMakerID);
+
+            if (charityMaker == null)
+            {
+                return BadRequest();
+            }
+
+            Donation donation = await _unitOfWork.Donations.GetById(id);
+
+            if (donation == null)
+            {
+                return BadRequest();
+            }
+
+            donation.CharityMakerID = charityMakerID;
+
+            _unitOfWork.Donations.Update(donation);
+            _unitOfWork.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)

@@ -17,7 +17,7 @@ using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
-    public class OrphansController : BaseController
+    public class OrphansController : Controller
     {
         #region private fields
 
@@ -34,14 +34,12 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public OrphansController(IUnitOfWorkAsync unitOfWork,
-                                 IStringLocalizer<OrphansController> localizer,
+        public OrphansController(IStringLocalizer<OrphansController> localizer,
                                  ServerDataDownloader<ChildDTO> childrenDownloader,
                                  ServerDataDownloader<ChildrenHouseDTO> childrenHouseDownloader,
                                  IURLChildrenBuilder URLChildrenBuilder,
                                  IURLChildrenHouseBuilder URLChildrenHouseBuilder,
                                  IFileStreamCreater streamCreater)
-            : base(unitOfWork)
         {
             _localizer = localizer;
             _childrenDownloader = childrenDownloader;
@@ -122,8 +120,8 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Create()
         {
             var urlChildrenHouse = _URLChildrenHouseBuilder.GetAllWithFilter(_apiChildrenHousesPath,
-                            new OrphanageSearchModel(), SortStateOrphanages.NameAsc);
-
+                                                                            new OrphanageSearchModel(),
+                                                                            SortStateOrphanages.NameAsc);
             try
             {
                 var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse, HttpContext.Session);

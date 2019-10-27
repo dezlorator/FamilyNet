@@ -208,7 +208,11 @@ namespace FamilyNet.Controllers
             var status = await _serverDownloader.CreatePostAsync(url, charityMakerDTO,
                                                              stream, charityMakerDTO.Avatar.FileName,
                                                              HttpContext.Session);
-            
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (status != HttpStatusCode.Created)
             {
                 return Redirect(_pathToErrorView);
@@ -309,6 +313,11 @@ namespace FamilyNet.Controllers
             var status1 = await _serverAddressDownloader.CreatePutAsync(addressUrl,
                                                             charityMakerDTO.AddressDTO, HttpContext.Session);
 
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (status != HttpStatusCode.NoContent)
             {
                 return Redirect(_pathToErrorView);
@@ -365,6 +374,11 @@ namespace FamilyNet.Controllers
 
             var url = _urlBilder.GetById(_apiPath, id);
             var status = await _serverDownloader.DeleteAsync(url, HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.OK)
             {

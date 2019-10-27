@@ -53,14 +53,11 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-
-
             var roles = rolesDTO.Select(role => new IdentityRole()
             {   Id = role.ID,
                 Name = role.Name
             });
           
-
             return View(roles);
         }
         
@@ -76,6 +73,11 @@ namespace FamilyNet.Controllers
 
             var url = _apiPath;
             var status = await _downloader.CreatePostAsync(url, role, HttpContext.Session);
+
+            if (status.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status.StatusCode != HttpStatusCode.Created)
             {

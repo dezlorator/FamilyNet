@@ -74,13 +74,11 @@ namespace FamilyNet.Controllers
 
             if (status.StatusCode != HttpStatusCode.Created)
             {
-                return Redirect("/Home/Error");
+                return Redirect("/Account/Login");
                 //TODO: log
             }
 
             return Redirect("/Admin/Index");
-
-
         }
 
         public async Task<IActionResult> DeleteAsync(string id)
@@ -95,7 +93,6 @@ namespace FamilyNet.Controllers
             try
             {
                 var status = await _downloader.DeleteAsync(url, HttpContext.Session);
-
             }
             catch (ArgumentNullException)
             {
@@ -150,8 +147,6 @@ namespace FamilyNet.Controllers
                     AddErrorsFromResult(validPhone);
                 }
 
-
-
                 IdentityResult validPass = null;
                 if (!string.IsNullOrEmpty(password))
                 {
@@ -168,10 +163,7 @@ namespace FamilyNet.Controllers
                     }
                 }
 
-
-
-                if ((validEmail.Succeeded && validPhone.Succeeded))
-
+                if (validEmail.Succeeded && validPhone.Succeeded)
                 {
                     if ((validPass != null && validEmail.Succeeded && password != string.Empty && validPass.Succeeded && validPhone.Succeeded))
                     {
@@ -187,7 +179,6 @@ namespace FamilyNet.Controllers
                     }
                     else
                     {
-
                         IdentityResult result = await _unitOfWork.UserManager.UpdateAsync(user);
                         if (result.Succeeded && validPass.Succeeded)
                         {

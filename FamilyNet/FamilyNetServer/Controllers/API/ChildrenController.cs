@@ -97,10 +97,10 @@ namespace FamilyNetServer.Controllers.API
             {
                 Birthday = child.Birthday,
                 ID = child.ID,
-                Name = child.FullName.Name,
+                Name = child.FullName?.Name,
                 ChildrenHouseID = child.OrphanageID ?? 0,
-                ChildrenHouseName = child.Orphanage.Name,
-                Patronymic = child.FullName.Patronymic,
+                ChildrenHouseName = child.Orphanage?.Name,
+                Patronymic = child.FullName?.Patronymic,
                 Rating = child.Rating,
                 Surname = child.FullName.Surname,
                 EmailID = child.EmailID,

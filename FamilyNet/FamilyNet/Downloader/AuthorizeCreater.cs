@@ -33,7 +33,7 @@ namespace FamilyNet.Downloader
                         new KeyValuePair<string, string>("Password", credentials.Email)
                     });
 
-                var result = await httpClient.PutAsync(url, content);
+                var result = await httpClient.PostAsync(url, content);
                 var json = await result.Content.ReadAsStringAsync();
                 token = JsonConvert.DeserializeObject<TokenDTO>(json).Token;
             }

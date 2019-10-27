@@ -161,6 +161,11 @@ namespace FamilyNet.Controllers
             var url = _URLAddressBuilder.CreatePost(_apiAddressPath);
             var msg = await _addressDownLoader.CreatePostAsync(url, model.Address, HttpContext.Session);
 
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (msg.StatusCode != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
@@ -190,6 +195,10 @@ namespace FamilyNet.Controllers
                                                                 stream,
                                                                 String.Empty,
                                                                 HttpContext.Session);
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.Created)
             {
@@ -295,6 +304,10 @@ namespace FamilyNet.Controllers
             var status = await _childrenHouseDownloader.CreatePutAsync(url, model.ChildrenHouse,
                                                             stream, model.ChildrenHouse.Avatar?.FileName,
                                                             HttpContext.Session);
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -395,6 +408,11 @@ namespace FamilyNet.Controllers
 
             url = _URLChildrenHouseBuilder.GetById(_apiPath, id);
             var houseStatus = await _childrenHouseDownloader.DeleteAsync(url, HttpContext.Session);
+
+            if (houseStatus == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
             if (houseStatus != HttpStatusCode.OK)
             {
                 return Redirect("/Home/Error");
