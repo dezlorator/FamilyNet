@@ -18,6 +18,9 @@ using FamilyNetServer.Filters;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Configuration;
 using DataTransferObjects;
+using NLog;
+using Microsoft.Extensions.Logging;
+using FamilyNetServer.Controllers.API;
 
 namespace FamilyNetServer
 {
@@ -64,6 +67,8 @@ namespace FamilyNetServer
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
 
             services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
+            services.AddTransient<ILogger<CharityMakersController>, Logger<CharityMakersController>>();
+            services.AddTransient<ILogger<VolunteersController>, Logger<VolunteersController>>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
             services.AddTransient<IVolunteerValidator, VolunteerValidator>();
