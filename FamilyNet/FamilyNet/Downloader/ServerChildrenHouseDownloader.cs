@@ -1,10 +1,7 @@
 ﻿using DataTransferObjects;
 using FamilyNet.HttpHandlers;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -30,7 +27,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFprmData(dto, streamFile, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PostAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 
@@ -55,7 +52,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFprmData(dto, streamFile, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PutAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 

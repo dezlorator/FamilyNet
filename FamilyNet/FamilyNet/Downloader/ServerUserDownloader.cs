@@ -22,7 +22,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PostAsync(url, formDataContent);
             }
 
@@ -38,7 +38,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PutAsync(url, formDataContent);
             }
 
@@ -64,8 +64,6 @@ namespace FamilyNet.Downloader
             {
                 formDataContent.Add(new StringContent(dto.Roles.ToString()), "Role");
             }
-
-
         }
     }
 }

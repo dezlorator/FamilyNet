@@ -63,8 +63,6 @@ namespace FamilyNet.Downloader
             {
                 formDataContent.Add(new StringContent(dto.Roles.ToString()), "Role");
             }
-
-
         }
     }
 }

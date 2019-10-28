@@ -183,7 +183,7 @@ namespace FamilyNet.Controllers
             model.ChildrenHouse.AdressID = addressDTO.ID;
 
             url = _URLLocationBuilder.CreatePost(_apiLocationPath);
-            msg = await _locationDownLoader.ÑreatePostAsync(url, model.Address);
+            msg = await _locationDownLoader.ÑreatePostAsync(url, model.Address, HttpContext.Session);
             if (msg.StatusCode == HttpStatusCode.Created)
             {
                 var locationDTO = msg.Content.ReadAsAsync<LocationDTO>().Result;
@@ -284,12 +284,12 @@ namespace FamilyNet.Controllers
                     if (model.ChildrenHouse.LocationID != null)
                     {
                         url = _URLLocationBuilder.GetById(_apiLocationPath, model.ChildrenHouse.LocationID.Value);
-                        msg = await _locationDownLoader.ÑreatePutAsync(url, model.Address);
+                        msg = await _locationDownLoader.ÑreatePutAsync(url, model.Address, HttpContext.Session);
                     }
                     else
                     {
                         url = _URLLocationBuilder.CreatePost(_apiLocationPath);
-                        msg = await _locationDownLoader.ÑreatePostAsync(url, model.Address);
+                        msg = await _locationDownLoader.ÑreatePostAsync(url, model.Address, HttpContext.Session);
                         if (msg.StatusCode == HttpStatusCode.Created)
                         {
                             var locationDTO = msg.Content.ReadAsAsync<LocationDTO>().Result;
@@ -399,7 +399,7 @@ namespace FamilyNet.Controllers
             if (childrenHouseDTO.LocationID != null)
             {
                 url = _URLLocationBuilder.GetById(_apiLocationPath, childrenHouseDTO.LocationID.Value);
-                var locationStatus = await _locationDownLoader.DeleteAsync(url);
+                var locationStatus = await _locationDownLoader.DeleteAsync(url, HttpContext.Session);
                 if (locationStatus != HttpStatusCode.OK)
                 {
                     return Redirect("/Home/Error");
@@ -492,7 +492,7 @@ namespace FamilyNet.Controllers
         {
             var url = _URLLocationBuilder.GetById(_apiLocationPath, id);
 
-            var location = await _locationDownLoader.GetByIdAsync(url);
+            var location = await _locationDownLoader.GetByIdAsync(url, HttpContext.Session);
 
             var newLocation = new Location()
             {

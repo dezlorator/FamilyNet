@@ -11,10 +11,7 @@ namespace FamilyNet.Downloader
     public class ServerRepresentativesDownloader : ServerDataDownloader<RepresentativeDTO>
     {
         public ServerRepresentativesDownloader(IHttpAuthorizationHandler authorizationHandler)
-            : base(authorizationHandler)
-        {
-
-        }
+            : base(authorizationHandler){}
 
 
         public override async Task<HttpStatusCode> CreatePostAsync(string url,
@@ -29,7 +26,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, streamFile, fileName, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PostAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 
@@ -54,7 +51,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, streamFile, fileName, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PutAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 
