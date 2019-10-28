@@ -20,7 +20,7 @@ using FamilyNetServer.Configuration;
 using DataTransferObjects;
 using NLog;
 using Microsoft.Extensions.Logging;
-using FamilyNetServer.Controllers;
+using FamilyNetServer.Controllers.API;
 
 namespace FamilyNetServer
 {

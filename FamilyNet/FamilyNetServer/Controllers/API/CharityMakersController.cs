@@ -60,11 +60,13 @@ namespace FamilyNetServer.Controllers.API
 
             if (rows != 0 && page != 0)
             {
+                _logger.LogInformation("Paging were used");
                 charityMakerContainer = charityMakerContainer.Skip(rows * page).Take(rows);
             }
 
             if (charityMakerContainer == null)
             {
+                _logger.LogError("Bad request. No charity maker found");
                 return BadRequest();
             }
 
@@ -87,6 +89,7 @@ namespace FamilyNetServer.Controllers.API
 
             }
 
+            _logger.LogInformation("List of charity makers was sent");
             return Ok(charityMakerDTO);
         }
 
@@ -99,6 +102,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (charityMaker == null)
             {
+                _logger.LogError("Bad request. No charity maker found");
                 return BadRequest();
             }
 
@@ -115,6 +119,7 @@ namespace FamilyNetServer.Controllers.API
                 AdressID = charityMaker.AddressID ?? 0
             };
 
+            _logger.LogInformation("Charity maker was sent");
             return Ok(charityMakerDTO);
         }
 
@@ -125,6 +130,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_validator.IsValid(charityMakerDTO))
             {
+                _logger.LogError("Unfilled name, surname, patronymic, birthday or wrong id");
                 return BadRequest();
             }
 
@@ -137,6 +143,7 @@ namespace FamilyNetServer.Controllers.API
 
                 pathPhoto = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.CharityMaker), charityMakerDTO.Avatar);
+                _logger.LogInformation(string.Format("{0} - this path to photo was created", pathPhoto));
             }
 
             var charityMaker = new CharityMaker()
@@ -159,6 +166,7 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.CharityMakers.Create(charityMaker);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("Charity maker was created");
             return Created("api/v1/charityMakers/" + charityMaker.ID, charityMaker);
         }
 
@@ -169,6 +177,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_validator.IsValid(charityMakerDTO))
             {
+                _logger.LogError("Unfilled name, surname, patronymic, birthday or wrong id");
                 return BadRequest();
             }
 
@@ -176,6 +185,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (charityMaker == null)
             {
+                _logger.LogError("Bad request. No charity maker found");
                 return BadRequest();
             }
 
@@ -194,11 +204,14 @@ namespace FamilyNetServer.Controllers.API
 
                 charityMaker.Avatar = _fileUploader.CopyFileToServer(fileName,
                         nameof(DirectoryUploadName.CharityMaker), charityMakerDTO.Avatar);
+                _logger.LogInformation(string.Format("{0} - this path to photo was created",
+                    charityMaker.Avatar));
             }
 
             _unitOfWork.CharityMakers.Update(charityMaker);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("Charity maker was successfully updated");
             return NoContent();
         }
         
@@ -209,6 +222,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (id <= 0)
             {
+                _logger.LogError("Wrong id - {0}", id);
                 return BadRequest();
             }
 
@@ -216,6 +230,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (child == null)
             {
+                _logger.LogError("Bad request. No charity maker found");
                 return BadRequest();
             }
 
@@ -224,6 +239,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.CharityMakers.Update(child);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("Charity maker was deleted");
             return Ok();
         }
     }
