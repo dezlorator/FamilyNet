@@ -33,7 +33,8 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
-        #region ctro
+        #region ctor
+
         public CharityMakersController(IUnitOfWorkAsync unitOfWork,
              ICharityMakersSelection selection, ICharityMakerValidator validator,
              IFileUploader fileUploader,
@@ -47,6 +48,7 @@ namespace FamilyNetServer.Controllers.API
             _settings = settings;
             _logger = logger;
         }
+
         #endregion
 
         [HttpGet]

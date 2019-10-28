@@ -68,6 +68,7 @@ namespace FamilyNetServer
 
             services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
             services.AddTransient<ILogger<CharityMakersController>, Logger<CharityMakersController>>();
+            services.AddTransient<ILogger<VolunteersController>, Logger<VolunteersController>>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
             services.AddTransient<IVolunteerValidator, VolunteerValidator>();
