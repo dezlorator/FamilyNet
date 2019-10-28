@@ -1,14 +1,14 @@
-﻿using DataTransferObjects;
-using FamilyNetServer.Enums;
-using FamilyNetServer.Filters;
-using FamilyNetServer.Models;
-using FamilyNetServer.Models.Interfaces;
-using FamilyNetServer.Validators;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using FamilyNetServer.Models.Interfaces;
+using Microsoft.AspNetCore.Http;
+using FamilyNetServer.Models;
+using FamilyNetServer.Filters;
+using FamilyNetServer.Validators;
+using DataTransferObjects;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -21,16 +21,19 @@ namespace FamilyNetServer.Controllers.API
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly IDonationItemValidator _donationItemValidator;
         private readonly IDonationItemsFilter _donationItemsFilter;
+        private readonly ILogger<DonationItem> _logger;
 
         #endregion
 
         public DonationItemsController(IUnitOfWorkAsync unitOfWork,
                                   IDonationItemValidator donationItemValidator,
-                                  IDonationItemsFilter donationItemsFilter)
+                                  IDonationItemsFilter donationItemsFilter,
+                                  ILogger<DonationItem> logger)
         {
             _unitOfWork = unitOfWork;
             _donationItemValidator = donationItemValidator;
             _donationItemsFilter = donationItemsFilter;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -49,12 +52,14 @@ namespace FamilyNetServer.Controllers.API
 
             if (rows != 0 && page != 0)
             {
+                _logger.LogInformation("Paging were used");
                 donationItems = donationItems.
                     Skip((page - 1) * rows).Take(rows);
             }
 
             if (donationItems == null)
             {
+                _logger.LogError("Bad request. No donation items were found");
                 return BadRequest();
             }
 
@@ -70,6 +75,8 @@ namespace FamilyNetServer.Controllers.API
                     CategoriesID = d.TypeBaseItem.Select(t => t.TypeID)
                 }).ToList();
 
+            _logger.LogInformation("List of donation items was sent");
+
             return Ok(donationItemsDTO);
         }
 
@@ -82,6 +89,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (donationItem == null)
             {
+                _logger.LogError("Bad request. No donation item was found");
                 return BadRequest();
             }
 
@@ -94,6 +102,7 @@ namespace FamilyNetServer.Controllers.API
                 CategoriesID = donationItem.TypeBaseItem.Select(t => t.TypeID)
             };
 
+            _logger.LogInformation("Donation item was sent");
             return Ok(donationItemDTO);
         }
 
@@ -105,6 +114,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_donationItemValidator.IsValid(donationItemDTO))
             {
+                _logger.LogError("Model is not valid.");
                 return BadRequest();
             }
 
@@ -131,12 +141,16 @@ namespace FamilyNetServer.Controllers.API
 
                     donationItem.TypeBaseItem.Add(itemType);
                 }
+
+                _logger.LogInformation("Categories were added.");
             }
 
             await _unitOfWork.DonationItems.Create(donationItem);
             _unitOfWork.SaveChangesAsync();
 
             donationItemDTO.ID = donationItem.ID;
+
+            _logger.LogInformation("Donation was created");
 
             return Created("api/v1/donationItems/" + donationItem.ID, donationItemDTO);
         }
@@ -148,6 +162,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_donationItemValidator.IsValid(donationItemDTO))
             {
+                _logger.LogError("Model is not valid.");
                 return BadRequest();
             }
 
@@ -155,6 +170,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (donationItem == null)
             {
+                _logger.LogError("Bad request. No donation item was found");
                 return BadRequest();
             }
 
@@ -164,6 +180,8 @@ namespace FamilyNetServer.Controllers.API
 
             _unitOfWork.DonationItems.Update(donationItem);
             _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation("Donation item was edited.");
 
             return NoContent();
         }
@@ -175,6 +193,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (id <= 0)
             {
+                _logger.LogError("Bad request. Id must be greater than zero.");
                 return BadRequest();
             }
 
@@ -182,6 +201,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (donationItem == null)
             {
+                _logger.LogError("Bad request. No donation item with such id was found");
                 return BadRequest();
             }
 
@@ -189,6 +209,8 @@ namespace FamilyNetServer.Controllers.API
 
             _unitOfWork.DonationItems.Update(donationItem);
             _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation("Donation item was deleted.");
 
             return Ok();
         }
