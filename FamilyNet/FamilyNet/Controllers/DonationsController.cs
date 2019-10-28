@@ -28,6 +28,7 @@ namespace FamilyNet.Controllers
         private readonly ServerDataDownloader<ChildrenHouseDTO> _downloaderOrphanages;
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
+        private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
 
         private readonly string _apiPath = "api/v1/donations";
         private readonly string _apiCategoriesPath = "api/v1/categories";
@@ -45,7 +46,8 @@ namespace FamilyNet.Controllers
                                  ServerSimpleDataDownloader<DonationItemDTO> downloaderItems,
                                  ServerDataDownloader<ChildrenHouseDTO> serverChildrenHouseDownloader,
                                  IURLDonationsBuilder uRLDonationsBuilder,
-                                 IURLDonationItemsBuilder uRLDonationItemsBuilder)
+                                 IURLDonationItemsBuilder uRLDonationItemsBuilder,
+                                 IURLChildrenHouseBuilder uRLChildrenHouseBuilder)
             : base(unitOfWork)
         {
             _localizer = localizer;
@@ -55,6 +57,7 @@ namespace FamilyNet.Controllers
             _downloaderOrphanages = serverChildrenHouseDownloader;
             _URLDonationsBuilder = uRLDonationsBuilder;
             _URLDonationItemsBuilder = uRLDonationItemsBuilder;
+            _URLChildrenHouseBuilder = uRLChildrenHouseBuilder;
         }
 
         #endregion
@@ -186,10 +189,8 @@ namespace FamilyNet.Controllers
         {
             await Check();
 
-            var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath);
-            ViewBag.ListOfDonationItems = donationItemsList;
-
-            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiOrphanagesPath);
+            var urlOrphanages = _URLChildrenHouseBuilder.GetAllWithFilter(_apiOrphanagesPath, new OrphanageSearchModel(), SortStateOrphanages.NameAsc);
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(urlOrphanages);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -375,7 +376,7 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> EditStatus(int id, DonationDetailDTO donationDTO)
+        public async Task<IActionResult> EditStatus(int id, DonationDetailDTO donationDTO) //TODO: completely remake
         {
             if (id != donationDTO.ID)
             {
