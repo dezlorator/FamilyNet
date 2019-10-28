@@ -42,7 +42,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\DataTransferObjects\DataTransferObjects.csproj" />
-    <ProjectReference Include="..\FamilyNetServer\FamilyNetServer.csproj" />
   </ItemGroup>
   
   <ItemGroup>
