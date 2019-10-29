@@ -68,7 +68,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (charityMakerContainer == null)
             {
-                _logger.LogError("Bad request. No charity maker found");
+                _logger.LogError("Bad request. No charity maker found status - 400BadRequest");
                 return BadRequest();
             }
 
@@ -91,7 +91,7 @@ namespace FamilyNetServer.Controllers.API
 
             }
 
-            _logger.LogInformation("List of charity makers was sent");
+            _logger.LogInformation("List of charity makers was sent to UI status - 200OK");
             return Ok(charityMakerDTO);
         }
 
@@ -104,7 +104,8 @@ namespace FamilyNetServer.Controllers.API
 
             if (charityMaker == null)
             {
-                _logger.LogError("Bad request. No charity maker found");
+                _logger.LogError(string.Format("Bad request. No charity maker found id-{0} status - 400BadRequest",
+                    id));
                 return BadRequest();
             }
 
@@ -121,7 +122,8 @@ namespace FamilyNetServer.Controllers.API
                 AdressID = charityMaker.AddressID ?? 0
             };
 
-            _logger.LogInformation("Charity maker was sent");
+            _logger.LogInformation(string.Format("Charity maker was sent id - {0} status - 200OK",
+                id));
             return Ok(charityMakerDTO);
         }
 
@@ -132,7 +134,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_validator.IsValid(charityMakerDTO))
             {
-                _logger.LogError("Unfilled name, surname, patronymic, birthday or wrong id");
+                _logger.LogError("Unfilled name, surname, patronymic, birthday or wrong id status - 400BadRequest");
                 return BadRequest();
             }
 
@@ -168,7 +170,7 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.CharityMakers.Create(charityMaker);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Charity maker was created");
+            _logger.LogInformation(string.Format("Charity maker was created status - 201Created"));
             return Created("api/v1/charityMakers/" + charityMaker.ID, charityMaker);
         }
 
@@ -187,7 +189,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (charityMaker == null)
             {
-                _logger.LogError("Bad request. No charity maker found");
+                _logger.LogError("Bad request. No charity maker found status - 400BadRequest");
                 return BadRequest();
             }
 
@@ -213,7 +215,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.CharityMakers.Update(charityMaker);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Charity maker was successfully updated");
+            _logger.LogInformation("Charity maker was successfully updated status - 204NoContent");
             return NoContent();
         }
         
@@ -232,7 +234,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (child == null)
             {
-                _logger.LogError("Bad request. No charity maker found");
+                _logger.LogError("Bad request. No charity maker found status - 400BadRequest");
                 return BadRequest();
             }
 
@@ -241,7 +243,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.CharityMakers.Update(child);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Charity maker was deleted");
+            _logger.LogInformation("Charity maker was deleted status - Status200OK");
             return Ok();
         }
     }
