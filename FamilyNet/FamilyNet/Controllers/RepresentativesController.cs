@@ -16,31 +16,39 @@ using FamilyNet.Models.ViewModels;
 using FamilyNet.Downloader;
 using FamilyNet.StreamCreater;
 using DataTransferObjects;
+using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
     [Authorize]
-    public class RepresentativesController : BaseController
+    public class RepresentativesController : Controller
     {
         #region private fields
 
-        private readonly ServerDataDownloader<RepresentativeDTO> _downLoader;
+        private readonly ServerDataDownloader<ChildrenHouseDTO> _childrenHouseDownloader;
+        private readonly ServerDataDownloader<RepresentativeDTO> _representativesDownLoader;
         private readonly IURLRepresentativeBuilder _URLRepresentativeBuilder;
+        private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
         private readonly string _apiPath = "api/v1/representatives";
+        private readonly string _apiChildrenHousesPath = "api/v1/childrenhouse";
         private readonly IFileStreamCreater _streamCreater;
 
 
 
         #endregion
+
         #region Ctor
 
-        public RepresentativesController(IUnitOfWorkAsync unitOfWork,
-            IURLRepresentativeBuilder urlRepresentativeBuilder,
-            ServerDataDownloader<RepresentativeDTO> downloader,
-            IFileStreamCreater streamCreater) : base(unitOfWork)
+        public RepresentativesController(IURLRepresentativeBuilder urlRepresentativeBuilder,
+                                         IURLChildrenHouseBuilder URLChildrenHouseBuilder,
+                                         ServerDataDownloader<RepresentativeDTO> downloader,
+                                         ServerDataDownloader<ChildrenHouseDTO> childrenHouseDownloader,
+                                         IFileStreamCreater streamCreater)
         {
             _URLRepresentativeBuilder = urlRepresentativeBuilder;
-            _downLoader = downloader;
+            _URLChildrenHouseBuilder = URLChildrenHouseBuilder;
+            _representativesDownLoader = downloader;
+            _childrenHouseDownloader = childrenHouseDownloader;
             _streamCreater = streamCreater;
         }
 
@@ -60,7 +68,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativesDTO = await _downLoader.GetAllAsync(url);
+                representativesDTO = await _representativesDownLoader.GetAllAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -108,7 +116,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _downLoader.GetByIdAsync(url);
+                representativeDTO = await _representativesDownLoader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -151,12 +159,26 @@ namespace FamilyNet.Controllers
         // GET: Representatives/Create
         public async Task<IActionResult> Create()
         {
-            await Check();
-
-            List<Orphanage> orphanages = await _unitOfWorkAsync.Orphanages.GetAll()
-                .OrderBy(o => o.Name).ToListAsync();
-
-            ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
+            var urlChildrenHouse = _URLChildrenHouseBuilder.GetAllWithFilter(_apiChildrenHousesPath,
+                                                                            new OrphanageSearchModel(),
+                                                                            SortStateOrphanages.NameAsc);
+            try
+            {
+                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse);
+                ViewBag.ListOfOrphanages = childrenHouses;
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
 
             return View();
         }
@@ -185,7 +207,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.СreatePostAsync(url, representativeDTO,
+            var status = await _representativesDownLoader.СreatePostAsync(url, representativeDTO,
                                                  stream,
                                                  representativeDTO.Avatar.FileName);
 
@@ -201,29 +223,28 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Edit(int? id)
         {
-
-            List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll()
-                .OrderBy(o => o.Name).ToList();
-            ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
-
-
             if (id == null)
             {
                 return NotFound();
             }
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
-            }
 
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id.Value);
+            var urlChildrenHouse = _URLChildrenHouseBuilder
+                .GetAllWithFilter(_apiChildrenHousesPath,
+                                  new OrphanageSearchModel(),
+                                  SortStateOrphanages.NameAsc);
+
+
+
+
+
             RepresentativeDTO representativeDTO = null;
 
             try
             {
-                representativeDTO = await _downLoader.GetByIdAsync(url);
+                representativeDTO = await _representativesDownLoader.GetByIdAsync(url);
+                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse);
+                ViewBag.ListOfOrphanages = childrenHouses;
             }
             catch (ArgumentNullException)
             {
@@ -262,7 +283,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatePutAsync(url, representativeDTO,
+            var status = await _representativesDownLoader.СreatePutAsync(url, representativeDTO,
                                                             stream, representativeDTO.Avatar?.FileName);
 
             if (status != HttpStatusCode.NoContent)
@@ -288,7 +309,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _downLoader.GetByIdAsync(url);
+                representativeDTO = await _representativesDownLoader.GetByIdAsync(url);
             }
             catch (ArgumentNullException)
             {
@@ -322,7 +343,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.DeleteAsync(url);
+            var status = await _representativesDownLoader.DeleteAsync(url);
 
             if (status != HttpStatusCode.OK)
             {
