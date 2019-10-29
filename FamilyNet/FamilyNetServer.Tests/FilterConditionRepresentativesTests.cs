@@ -45,7 +45,7 @@ namespace FamilyNetServer.Tests
                     Patronymic = "Петрович"
                 },
                 Rating = 7.2f,
-                Birthday = new DateTime(1885, 7, 8),
+                Birthday = new DateTime(1985, 7, 8),
                 OrphanageID = 2
             };
 
@@ -85,7 +85,7 @@ namespace FamilyNetServer.Tests
                 },
                 Rating = 3.2f,
                 Birthday = new DateTime(1954, 5, 8),
-                OrphanageID = 2
+                OrphanageID = 3
             };
 
             _representatives = new List<Representative>()
@@ -147,6 +147,22 @@ namespace FamilyNetServer.Tests
         }
 
         [Test]
+        public void GetRepresentatives_WithNullName_ShouldReturnNull()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Name = null
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _representatives);
+        }
+
+        [Test]
         public void GetRepresentatives_WithExistingName_ShouldReturnOneRepresentativeContatinsCollection()
         {
             //Arrange
@@ -155,7 +171,7 @@ namespace FamilyNetServer.Tests
                 Name = "Иван"
             };
             var expectedList = new List<Representative>()
-            { 
+            {
                 _representative1
             }.AsQueryable();
 
@@ -165,7 +181,7 @@ namespace FamilyNetServer.Tests
             //Assert
             Assert.AreEqual(result, expectedList);
         }
-        
+
         [Test]
         public void GetRepresentatives_WithUnexistingSurname_ShouldReturnNull()
         {
@@ -183,6 +199,22 @@ namespace FamilyNetServer.Tests
         }
 
         [Test]
+        public void GetRepresentatives_WithNullSurname_ShouldReturnNull()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Name = null
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _representatives);
+        }
+
+        [Test]
         public void GetRepresentatives_WithExistingSurname_ShouldReturnOneRepresentativeContatinsCollection()
         {
             //Arrange
@@ -191,7 +223,7 @@ namespace FamilyNetServer.Tests
                 Name = "Иванов"
             };
             var expectedList = new List<Representative>()
-            { 
+            {
                 _representative1
             }.AsQueryable();
 
@@ -201,7 +233,7 @@ namespace FamilyNetServer.Tests
             //Assert
             Assert.AreEqual(result, expectedList);
         }
-        
+
         [Test]
         public void GetRepresentatives_WithUnexistingPatronymic_ShouldReturnNull()
         {
@@ -219,6 +251,22 @@ namespace FamilyNetServer.Tests
         }
 
         [Test]
+        public void GetRepresentatives_WithNullPatronymic_ShouldReturnNull()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Name = null
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _representatives);
+        }
+
+        [Test]
         public void GetRepresentatives_WithExistingPatronymic_ShouldReturnOneRepresentativeContatinsCollection()
         {
             //Arrange
@@ -227,7 +275,7 @@ namespace FamilyNetServer.Tests
                 Name = "Иванович"
             };
             var expectedList = new List<Representative>()
-            { 
+            {
                 _representative1
             }.AsQueryable();
 
@@ -247,7 +295,7 @@ namespace FamilyNetServer.Tests
                 Rating = 4.1f
             };
 
-            var expectedList1 = new List<Representative>()
+            var expectedList = new List<Representative>()
             {
                 _representative3,
                 _representative5
@@ -257,9 +305,9 @@ namespace FamilyNetServer.Tests
             var result = _filter.GetRepresentatives(_representatives, conditions);
 
             //Assert
-            Assert.AreEqual(result, expectedList1);
+            Assert.AreEqual(result, expectedList);
         }
-        
+
         [Test]
         public void GetRepresentatives_WithInsufficientRating_ShouldReturnEmptyList()
         {
@@ -267,6 +315,224 @@ namespace FamilyNetServer.Tests
             var conditions = new FilterParametersRepresentatives()
             {
                 Rating = 2.0f
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _emptyList);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithChildrenHouseID_ShouldReturnRepresentativesCollection()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                ChildrenHouseID = 2
+            };
+
+            var expectedList = new List<Representative>()
+            {
+                _representative2,
+                _representative4
+            }.AsQueryable();
+
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, expectedList);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithZeroChildrenHouseID_ShouldReturnAllRepresentativesList()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                ChildrenHouseID = 0
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _representatives);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithAge_ShouldReturnRepresentativesList()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Age = DateTime.Now.Year - new DateTime(1985, 1, 1).Year
+            };
+
+            var expectedList = new List<Representative>()
+            {
+                _representative2,
+                _representative5
+            }.AsQueryable();
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, expectedList);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithBigAge_ShouldReturnEmptyRepresentativesList()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Age = DateTime.Now.Year - new DateTime(1885, 1, 1).Year
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _emptyList);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithInvalidAge_ShouldReturnAllRepresentativesCollection()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Age = DateTime.Now.Year - (DateTime.Now.Year - 1)
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _representatives);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithRows_ShouldReturnRepresentativesCollection()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Rows = 2
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _representatives);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithPage_ShouldReturnRepresentativesCollection()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Page = 2
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _representatives);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithRowsAndPage_ShouldReturnRepresentativesCollection()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Rows = 2,
+                Page = 2
+            };
+
+            var expectedList = new List<Representative>()
+            {
+                _representative3,
+                _representative4
+            }.AsQueryable();
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, expectedList);
+        }
+
+        [Test]
+        [TestCase(0, 0)]
+        [TestCase(-2, -1)]
+        [TestCase(-2, 1)]
+        [TestCase(0, -1)]
+        [TestCase(2, 0)]
+        [TestCase(2, -1)]
+        public void GetRepresentatives_WithIvalidRowsAndPage_ShouldReturnRepresentativesCollection(int page, int rows)
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Rows = rows,
+                Page = page
+            };
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, _representatives);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithAllParameters_ShouldReturnRepresentativesCollection()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Name = "Иван",
+                Rating = 6.3f,
+                ChildrenHouseID = 1,
+                Age = DateTime.Now.Year - new DateTime(1990, 1, 1).Year,
+                Rows = 3,
+                Page = 1
+            };
+
+            var expectedList = new List<Representative>()
+            {
+                _representative1
+            }.AsQueryable();
+
+            //Act
+            var result = _filter.GetRepresentatives(_representatives, conditions);
+
+            //Assert
+            Assert.AreEqual(result, expectedList);
+        }
+
+        [Test]
+        public void GetRepresentatives_WithAllParametersAndBigPage_ShouldReturnRepresentativesCollection()
+        {
+            //Arrange
+            var conditions = new FilterParametersRepresentatives()
+            {
+                Name = "Иван",
+                Rating = 6.3f,
+                ChildrenHouseID = 1,
+                Age = DateTime.Now.Year - new DateTime(1990, 1, 1).Year,
+                Rows = 3,
+                Page = 10
             };
 
             //Act
