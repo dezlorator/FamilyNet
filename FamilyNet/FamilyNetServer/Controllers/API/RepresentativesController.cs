@@ -11,6 +11,8 @@ using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Uploaders;
 using DataTransferObjects;
+using FamilyNetServer.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -24,6 +26,8 @@ namespace FamilyNetServer.Controllers.API
         private readonly IFileUploader _fileUploader;
         private readonly IRepresentativeValidator _representativeValidator;
         private readonly IFilterConditionsRepresentatives _filterConditions;
+        private readonly IOptionsSnapshot<ServerURLSettings> _settings;
+
         private string _url
         {
             get
@@ -39,12 +43,15 @@ namespace FamilyNetServer.Controllers.API
         public RepresentativesController(IFileUploader fileUploader,
                                   IUnitOfWorkAsync unitOfWork,
                                   IRepresentativeValidator representativeValidator,
-                                  IFilterConditionsRepresentatives filterConditions)
+                                  IFilterConditionsRepresentatives filterConditions,
+                                   IOptionsSnapshot<ServerURLSettings> settings)
         {
             _fileUploader = fileUploader;
             _unitOfWork = unitOfWork;
             _representativeValidator = representativeValidator;
             _filterConditions = filterConditions;
+            _settings = settings;
+
         }
 
         #endregion
@@ -64,7 +71,7 @@ namespace FamilyNetServer.Controllers.API
             var representativesDTO = representatives.Select(r =>
             new RepresentativeDTO()
             {
-                PhotoPath = _url + r.Avatar,
+                PhotoPath = _settings.Value.ServerURL + r.Avatar,
                 Birthday = r.Birthday,
                 EmailID = r.EmailID,
                 ID = r.ID,
@@ -100,7 +107,7 @@ namespace FamilyNetServer.Controllers.API
                 Rating = represenntative.Rating,
                 Surname = represenntative.FullName.Surname,
                 EmailID = represenntative.EmailID,
-                PhotoPath = _url + represenntative.Avatar
+                PhotoPath = _settings.Value.ServerURL + represenntative.Avatar
             };
 
             return Ok(representativeDTO);
