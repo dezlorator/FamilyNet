@@ -13,7 +13,6 @@ using FamilyNetServer.Uploaders;
 using FamilyNetServer.Configuration;
 using Microsoft.Extensions.Options;
 using DataTransferObjects;
-using NLog;
 using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Controllers.API
@@ -60,7 +59,7 @@ namespace FamilyNetServer.Controllers.API
             var charityMakerContainer = _unitOfWork.CharityMakers.GetAll().Where(p => p.IsDeleted == false);
             charityMakerContainer = _selection.GetFiltered(charityMakerContainer, name, rating);
 
-            if (rows != 0 && page != 0)
+            if (rows > 0 && page > 0)
             {
                 _logger.LogInformation("Paging were used");
                 charityMakerContainer = charityMakerContainer.Skip(rows * page).Take(rows);
