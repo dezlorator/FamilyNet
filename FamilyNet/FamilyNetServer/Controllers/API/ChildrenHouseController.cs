@@ -9,6 +9,7 @@ using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IValidator<ChildrenHouseDTO> _childrenHouseValidator;
         private readonly IFilterConditionsChildrenHouse _filterConditions;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
+        private readonly ILogger<ChildrenHouseController> _logger;
 
         #endregion
 
@@ -37,13 +39,15 @@ namespace FamilyNetServer.Controllers.API
                                   IUnitOfWork repo,
                                   IValidator<ChildrenHouseDTO> childrenHouseValidator,
                                   IFilterConditionsChildrenHouse filterConditions,
-                                  IOptionsSnapshot<ServerURLSettings> setings)
+                                  IOptionsSnapshot<ServerURLSettings> setings,
+                                  ILogger<ChildrenHouseController> logger)
         {
             _fileUploader = fileUploader;
             _repository = repo;
             _childrenHouseValidator = childrenHouseValidator;
             _filterConditions = filterConditions;
             _settings = setings;
+            _logger = logger;
         }
 
         #endregion
@@ -60,8 +64,11 @@ namespace FamilyNetServer.Controllers.API
                                    [FromQuery]int page)
         {
             var childrenHouses = _repository.Orphanages.GetAll().Where(c => !c.IsDeleted);
+            _logger.LogInformation("Get all children houses");
             childrenHouses = _filterConditions.GetFilteredChildrenHouses(childrenHouses, name, rating, address);
+            _logger.LogInformation("Get children houses filtered");
             childrenHouses = _filterConditions.GetSortedChildrenHouses(childrenHouses, sort);
+            _logger.LogInformation("Get children houses sorted");
 
             if (rows != 0 && page != 0)
             {
@@ -70,6 +77,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (childrenHouses == null)
             {
+                _logger.LogError("No children houses in database");
                 return BadRequest();
             }
 
@@ -90,6 +98,7 @@ namespace FamilyNetServer.Controllers.API
                 childrenDTO.Add(childrenHouseDTO);
             }
 
+            _logger.LogInformation("Returned children house list");
             return Ok(childrenDTO);
         }
 
@@ -103,6 +112,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (childrenHouses == null)
             {
+                _logger.LogError($"No children house with #{id} in database");
                 return BadRequest();
             }
 
@@ -116,6 +126,7 @@ namespace FamilyNetServer.Controllers.API
                 PhotoPath = _settings.Value.ServerURL + childrenHouses.Avatar
             };
 
+            _logger.LogInformation($"Returned children house with id #{id}");
             return Ok(childrenHouseDTO);
         }
 
@@ -127,6 +138,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
             {
+                _logger.LogError("Invalid children house");
                 return BadRequest();
             }
             
@@ -156,6 +168,8 @@ namespace FamilyNetServer.Controllers.API
             childrenHousesDTO.PhotoPath = childrenHouse.Avatar;
             childrenHousesDTO.Avatar = null;
 
+            _logger.LogInformation($"Created children house with id #{childrenHouse.ID}");
+
             return Created("api/v1/childrenHouse/" + childrenHouse.ID, childrenHousesDTO);
         }
 
@@ -167,6 +181,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
             {
+                _logger.LogError("Invalid children house");
                 return BadRequest();
             }
 
@@ -192,6 +207,8 @@ namespace FamilyNetServer.Controllers.API
             _repository.Orphanages.Update(childrenHouse);
             _repository.SaveChangesAsync();
 
+            _logger.LogInformation($"Edited children house with id #{childrenHouse.ID}");
+
             return NoContent();
         }
 
@@ -203,6 +220,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (id <= 0)
             {
+                _logger.LogError($"Invalid id");
                 return BadRequest();
             }
 
@@ -210,6 +228,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (childrenHouse == null)
             {
+                _logger.LogError($"No children house with #{id} in database");
                 return BadRequest();
             }
 
@@ -217,6 +236,8 @@ namespace FamilyNetServer.Controllers.API
 
             _repository.Orphanages.Update(childrenHouse);
             _repository.SaveChangesAsync();
+
+            _logger.LogInformation($"Deleted children house with id #{childrenHouse.ID}");
 
             return Ok();
         }
