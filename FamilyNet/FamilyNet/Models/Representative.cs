@@ -1,6 +1,4 @@
-﻿using FamilyNet.Models.Interfaces;
-using FamilyNet.Models.ViewModels;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FamilyNet.Models
 {

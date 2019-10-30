@@ -3,11 +3,6 @@ using FamilyNet.Models.Identity;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace FamilyNet.Models.EntityFramework
 {
     public class EFUnitOfWorkAsync : IUnitOfWorkAsync
@@ -29,14 +24,8 @@ namespace FamilyNet.Models.EntityFramework
                                  RoleManager<IdentityRole> roleManager)
         {
             _context = cont;
-            CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
             Donations = new EFRepositoryAsync<Donation>(cont);
-            DonationItems = new EFRepositoryAsync<DonationItem>(cont);
             Orphanages = new OrphanageRepositoryAsync(cont);
-            Orphans = new EFRepositoryAsync<Orphan>(cont);
-            Representatives = new EFRepositoryAsync<Representative>(cont);
-            Volunteers = new EFRepositoryAsync<Volunteer>(cont);
-            BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
             PasswordHasher = passwordHash;
             UserValidator = userValid;
             PasswordValidator = passValid;
@@ -51,20 +40,10 @@ namespace FamilyNet.Models.EntityFramework
         #region Property
 
         public IOrphanageAsyncRepository Orphanages { get; set; }
-
-        public IAsyncRepository<CharityMaker> CharityMakers { get; set; }
-
-        public IAsyncRepository<Representative> Representatives { get; set; }
-
-        public IAsyncRepository<Volunteer> Volunteers { get; set; }
-
+        
         public IAsyncRepository<Donation> Donations { get; set; }
 
-        public IAsyncRepository<DonationItem> DonationItems { get; set; }
-
         public DbSet<TypeBaseItem> TypeBaseItems { get; set; } // TODO : rewrite this
-
-        public IAsyncRepository<Orphan> Orphans { get; set; }
 
         public IUserValidator<ApplicationUser> UserValidator { get; set; }
 

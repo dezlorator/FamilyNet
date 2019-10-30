@@ -18,7 +18,6 @@ using FamilyNetServer.Filters;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Configuration;
 using DataTransferObjects;
-using NLog;
 using Microsoft.Extensions.Logging;
 using FamilyNetServer.Controllers.API;
 

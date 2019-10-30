@@ -15,15 +15,26 @@ using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
-    
+
     public class AccountController : BaseController
     {
+        #region private fields
+
         private readonly IStringLocalizer<HomeController> _localizer;
 
-        public AccountController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        #endregion
+
+        #region ctor
+
+        public AccountController(IUnitOfWorkAsync unitOfWork,
+                                IStringLocalizer<HomeController> localizer,
+                                IStringLocalizer<SharedResource> sharedLocalizer)
+            : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;
         }
+
+        #endregion
 
         [HttpGet]
         [AllowAnonymous]
@@ -99,19 +110,19 @@ namespace FamilyNet.Controllers
             }
 
             return View(model);
-            
+
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
-            if(userId == null || code == null)
+            if (userId == null || code == null)
             {
                 return View("Error");
             }
             var user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
-            if(user == null)
+            if (user == null)
             {
                 return View("Error");
             }
@@ -126,7 +137,7 @@ namespace FamilyNet.Controllers
                 return View("Error");
             }
         }
-       
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -147,7 +158,7 @@ namespace FamilyNet.Controllers
                 ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
-                    if(!await _unitOfWorkAsync.UserManager.IsEmailConfirmedAsync(user))
+                    if (!await _unitOfWorkAsync.UserManager.IsEmailConfirmedAsync(user))
                     {
                         ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
                         return View(model);
@@ -201,7 +212,7 @@ namespace FamilyNet.Controllers
         public IActionResult GetDetails()
         {
             var url = Url.Action("Details", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
-            return Redirect(url);            
+            return Redirect(url);
         }
 
         public IActionResult AccountEdits()
@@ -212,18 +223,18 @@ namespace FamilyNet.Controllers
 
         public IActionResult PersonalRoom()
         {
-            if(GetCurrentUserAsync().Result.PersonType == PersonType.User)
+            if (GetCurrentUserAsync().Result.PersonType == PersonType.User)
             {
                 RedirectToAction("Index", "Home");
             }
-            if(!GetCurrentUserAsync().Result.HasPerson)
+            if (!GetCurrentUserAsync().Result.HasPerson)
             {
                 return GetRedirect(GetCurrentUserAsync().Result.PersonType.ToString(), "Create");
             }
             return View();
         }
 
-        private IActionResult GetRedirect(string role , string action)
+        private IActionResult GetRedirect(string role, string action)
         {
             switch (role)
             {
@@ -263,7 +274,7 @@ namespace FamilyNet.Controllers
         private void GetViewData()
         {
             ViewData["CharityMakers"] = _localizer["CharityMakers"];
-            
+
         }
     }
 }
