@@ -10,6 +10,11 @@ namespace FamilyNetServer.Filters
         public IQueryable<Orphan> GetOrphans(IQueryable<Orphan> children,
                                              FilterParemetersChildren filter)
         {
+            if (children == null || filter == null)
+            {
+                return children;
+            }
+
             if (filter.ChildrenHouseID > 0)
             {
                 children = children.Where(c => c.OrphanageID == filter.ChildrenHouseID);
@@ -32,7 +37,7 @@ namespace FamilyNetServer.Filters
                                                 >= filter.Age * daysPerYear);
             }
 
-            if (filter.Rows != 0 && filter.Page != 0)
+            if (filter.Rows > 0 && filter.Page > 0)
             {
                 children = children.Skip(filter.Rows * (filter.Page - 1))
                     .Take(filter.Rows);

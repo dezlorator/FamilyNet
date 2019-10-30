@@ -145,7 +145,6 @@ namespace FamilyNetServer.Controllers.API
                 Avatar = pathPhoto,
             };
 
-
             await _repository.Orphanages.Create(childrenHouse);
             _repository.SaveChangesAsync();
 

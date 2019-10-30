@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
@@ -19,7 +18,7 @@ using FamilyNet.StreamCreater;
 namespace FamilyNet.Controllers
 {
     [Authorize]
-    public class OrphansController : BaseController
+    public class OrphansController : Controller
     {
         #region private fields
 
@@ -36,14 +35,12 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public OrphansController(IUnitOfWorkAsync unitOfWork,
-                                 IStringLocalizer<OrphansController> localizer,
+        public OrphansController(IStringLocalizer<OrphansController> localizer,
                                  ServerDataDownloader<ChildDTO> childrenDownloader,
                                  ServerDataDownloader<ChildrenHouseDTO> childrenHouseDownloader,
                                  IURLChildrenBuilder URLChildrenBuilder,
                                  IURLChildrenHouseBuilder URLChildrenHouseBuilder,
                                  IFileStreamCreater streamCreater)
-            : base(unitOfWork)
         {
             _localizer = localizer;
             _childrenDownloader = childrenDownloader;
@@ -126,8 +123,6 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create()
         {
-            await Check();
-
             var urlChildrenHouse = _URLChildrenHouseBuilder.GetAllWithFilter(_apiChildrenHousesPath,
                                                                             new OrphanageSearchModel(),
                                                                             SortStateOrphanages.NameAsc);
@@ -209,13 +204,6 @@ namespace FamilyNet.Controllers
             if (id == null)
             {
                 return NotFound();
-            }
-
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
             }
 
             var urlChildren = _URLChildrenBuilder.GetById(_apiChildrenPath, id.Value);

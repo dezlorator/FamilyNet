@@ -25,12 +25,13 @@ namespace FamilyNet.Controllers
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloader;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloaderCategories;
         private readonly ServerSimpleDataDownloader<DonationItemDTO> _downloaderItems;
-        private readonly ServerSimpleDataDownloader<ChildrenHouseDTO> _downloaderOrphanage;
+        private readonly ServerSimpleDataDownloader<ChildrenHouseDTO> _downloaderOrphanages;
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
         private readonly string _apiPath = "api/v1/donations";
         private readonly string _apiCategoriesPath = "api/v1/categories";
         private readonly string _apiDonationItemsPath = "api/v1/donationItems";
+        private readonly string _apiOrphanagesPath = "api/v1/childrenHouse";
 
         #endregion
 
@@ -182,10 +183,10 @@ namespace FamilyNet.Controllers
         {
             await Check();
 
-            var donationItemsList = _unitOfWorkAsync.DonationItems.GetAll().ToList();
+            var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath);
             ViewBag.ListOfDonationItems = donationItemsList;
 
-            var orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiDonationItemsPath);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -267,11 +268,11 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
-            ViewBag.ListOfOrphanages = orphanagesList;
+            var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath);
+            ViewBag.ListOfDonationItems = donationItemsList;
 
-            var categoriesList = _unitOfWorkAsync.BaseItemTypes.GetAll().ToList();
-            ViewBag.ListOfCategories = categoriesList;
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiDonationItemsPath);
+            ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
 

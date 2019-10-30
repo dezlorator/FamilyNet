@@ -7,6 +7,11 @@ namespace FamilyNetServer.Validators
     {
         public bool IsValid(ChildDTO childDTO)
         {
+            if (childDTO == null)
+            {
+                return false;
+            }
+
             return DateTimeIsPresent(childDTO.Birthday) &&
                    NameIsPresent(childDTO.Name) &&
                    SurnameIsPresent(childDTO.Surname) &&
@@ -16,7 +21,8 @@ namespace FamilyNetServer.Validators
 
         private bool DateTimeIsPresent(DateTime birthday)
         {
-            return birthday >= DateTime.MinValue;
+            int maxChildAge = 19;
+            return birthday >= DateTime.Now.AddYears(-maxChildAge);
         }
 
         private bool NameIsPresent(string name)
