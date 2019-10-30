@@ -7,11 +7,23 @@ namespace FamilyNetServer.Validators
     {
         public bool IsValid(RepresentativeDTO representativeDTO)
         {
-            if (representativeDTO.Birthday == null ||
+            if (isValidDate(representativeDTO.Birthday) ||
                 String.IsNullOrEmpty(representativeDTO.Name) ||
                 String.IsNullOrEmpty(representativeDTO.Surname) ||
                 representativeDTO.ChildrenHouseID < 0)
             {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool isValidDate(DateTime birthday)
+        {
+            var maxAge = 90;
+
+            if (birthday.Year > (DateTime.Now.Year - maxAge))
+            { 
                 return false;
             }
 
