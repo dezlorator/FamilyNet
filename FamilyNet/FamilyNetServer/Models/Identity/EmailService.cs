@@ -13,7 +13,7 @@ namespace FamilyNetServer.Models.Identity
         {
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("Администрация сайта", "yesbutno187@gmail.com"));
+            emailMessage.From.Add(new MailboxAddress("Администрация сайта", "itacdp1661@gmail.com"));
             emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -24,7 +24,7 @@ namespace FamilyNetServer.Models.Identity
             using (var client = new SmtpClient())
             {
                 await client.ConnectAsync("smtp.gmail.com", 587, false);
-                await client.AuthenticateAsync("yesbutno187@gmail.com", "4pquWybv");
+                await client.AuthenticateAsync("itacdp1661@gmail.com", "sssfzjdggtjdubfm");
                 await client.SendAsync(emailMessage);
 
                 await client.DisconnectAsync(true);

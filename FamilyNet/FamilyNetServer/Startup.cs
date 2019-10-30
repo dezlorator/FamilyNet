@@ -21,6 +21,7 @@ using DataTransferObjects;
 using NLog;
 using Microsoft.Extensions.Logging;
 using FamilyNetServer.Controllers.API;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace FamilyNetServer
 {
@@ -90,6 +91,14 @@ namespace FamilyNetServer
             services.AddTransient<IDonationsFilter, DonationsFilter>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
+            });
             services.AddMvc()
                 .AddViewLocalization(
                 Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
@@ -111,7 +120,6 @@ namespace FamilyNetServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
