@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -10,7 +10,14 @@ namespace FamilyNet.Downloader
 {
     public abstract class ServerSimpleDataDownloader<T> where T : class, new()
     {
-        public async Task<IEnumerable<T>> GetAllAsync(string url)
+        protected readonly IHttpAuthorizationHandler _authorizationHandler;
+
+        public ServerSimpleDataDownloader(IHttpAuthorizationHandler authorizationHandler)
+        {
+            _authorizationHandler = authorizationHandler;
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync(string url, ISession session)
         {
             List<T> objs;
 
@@ -20,6 +27,7 @@ namespace FamilyNet.Downloader
 
                 using (var httpClient = new HttpClient())
                 {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
                     response = await httpClient.GetAsync(url);
                 }
 
@@ -42,7 +50,7 @@ namespace FamilyNet.Downloader
             return objs;
         }
 
-        public async Task<T> GetByIdAsync(string url)
+        public async Task<T> GetByIdAsync(string url, ISession session)
         {
             T obj;
 
@@ -52,6 +60,7 @@ namespace FamilyNet.Downloader
 
                 using (var httpClient = new HttpClient())
                 {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
                     response = await httpClient.GetAsync(url);
                 }
 
@@ -75,12 +84,12 @@ namespace FamilyNet.Downloader
         }
 
         public abstract Task<HttpResponseMessage> CreatePostAsync(string url,
-                                                               T dto);
+                                                               T dto, ISession session);
 
         public abstract Task<HttpResponseMessage> CreatePutAsync(string url,
-                                                               T dto);
+                                                               T dto, ISession session);
 
-        public async Task<HttpResponseMessage> DeleteAsync(string url)
+        public async Task<HttpResponseMessage> DeleteAsync(string url, ISession session)
         {
             HttpResponseMessage response;
 
@@ -88,6 +97,7 @@ namespace FamilyNet.Downloader
             {
                 using (var httpClient = new HttpClient())
                 {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
                     response = await httpClient.DeleteAsync(url);
                 }
             }

@@ -14,14 +14,15 @@ namespace FamilyNetServer.Controllers {
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        public HomeController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<HomeController> localizer) : base(unitOfWork) {
+        public HomeController(IUnitOfWork unitOfWork, IHostingEnvironment environment, IStringLocalizer<HomeController> localizer)
+            : base(unitOfWork) {
             _localizer = localizer;
             _hostingEnvironment = environment;
 
         }
 
         public async Task<IActionResult> Index() {
-            ViewData["Best"] = _unitOfWorkAsync.Orphanages.GetAll()
+            ViewData["Best"] = _unitOfWork.Orphanages.GetAll()
               .OrderByDescending(c => c.Rating)
 
               .Take(3);

@@ -23,22 +23,22 @@ namespace FamilyNetServer.Tests
     [TestFixture]
     class RepresentativesControllerTests
     {
-        private Mock<IUnitOfWorkAsync> _mockUnitOfWork;
+        private Mock<IUnitOfWork> _mockUnitOfWork;
         private Mock<IFileUploader> _mockFileUploader;
         private Mock<IRepresentativeValidator> _mockValidator;
         private Mock<IFilterConditionsRepresentatives> _mockFilterConditions;
-        private Mock<IAsyncRepository<Representative>> _mockRepresentatives;
+        private Mock<IRepository<Representative>> _mockRepresentatives;
         private Mock<IOptionsSnapshot<ServerURLSettings>> _mockSettings;
         private RepresentativesController _controller;
 
         [SetUp]
         public virtual void SetUp()
         {
-            _mockUnitOfWork = new Mock<IUnitOfWorkAsync>();
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockFileUploader = new Mock<IFileUploader>();
             _mockFilterConditions = new Mock<IFilterConditionsRepresentatives>();
             _mockValidator = new Mock<IRepresentativeValidator>();
-            _mockRepresentatives = new Mock<IAsyncRepository<Representative>>();
+            _mockRepresentatives = new Mock<IRepository<Representative>>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
             _controller = new RepresentativesController(_mockFileUploader.Object,
                                                 _mockUnitOfWork.Object,

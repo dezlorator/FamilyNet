@@ -22,7 +22,7 @@ namespace FamilyNetServer.Tests
     {
         #region fields
 
-        private Mock<IUnitOfWorkAsync> _mockUnitOfWork;
+        private Mock<IUnitOfWork> _mockUnitOfWork;
         private Mock<IFileUploader> _mockFileUploader;
         private Mock<IChildValidator> _mockChildValidator;
         private Mock<IFilterConditionsChildren> _mockFilterConditions;
@@ -36,7 +36,7 @@ namespace FamilyNetServer.Tests
         [SetUp]
         public void Init()
         {
-            _mockUnitOfWork = new Mock<IUnitOfWorkAsync>();
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockFileUploader = new Mock<IFileUploader>();
             _mockFilterConditions = new Mock<IFilterConditionsChildren>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
@@ -53,7 +53,7 @@ namespace FamilyNetServer.Tests
         [Test]
         public void ChildrenController_WithFilter_ShouldReturnListOfChildren()
         {
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
 
             var orphans = new List<Orphan>()
             {
@@ -84,7 +84,7 @@ namespace FamilyNetServer.Tests
         [TestCase(1)]
         public async Task ChildrenController_WithValidId_ShouldReturnChildById(int id)
         {
-            var mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var mockOrphanRepository = new Mock<IRepository<Orphan>>();
 
             var orphan = new Orphan()
             {
@@ -113,7 +113,7 @@ namespace FamilyNetServer.Tests
         [TestCase(0)]
         public async Task ChildrenController_WithInValidId_ShouldReturnChildById(int id)
         {
-            var mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var mockOrphanRepository = new Mock<IRepository<Orphan>>();
             mockOrphanRepository.Setup(m => m.GetById(id)).ReturnsAsync(() => null);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(mockOrphanRepository.Object);
 
@@ -131,7 +131,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
@@ -156,7 +156,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
@@ -180,7 +180,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
@@ -203,7 +203,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
@@ -226,7 +226,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
@@ -246,7 +246,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
@@ -266,7 +266,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
@@ -288,7 +288,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
@@ -309,7 +309,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
@@ -329,7 +329,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
@@ -351,7 +351,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
@@ -372,7 +372,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
@@ -392,7 +392,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
@@ -412,7 +412,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
@@ -434,7 +434,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
@@ -456,7 +456,7 @@ namespace FamilyNetServer.Tests
         {
             var childDTO = new ChildDTO();
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
@@ -487,7 +487,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -522,7 +522,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -554,7 +554,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -587,7 +587,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -619,7 +619,7 @@ namespace FamilyNetServer.Tests
                 Avatar = new Mock<IFormFile>().Object
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -651,7 +651,7 @@ namespace FamilyNetServer.Tests
                 ChildrenHouseName = "ChildrenHouseName",
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -687,7 +687,7 @@ namespace FamilyNetServer.Tests
                 ChildrenHouseName = "ChildrenHouseName",
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -720,7 +720,7 @@ namespace FamilyNetServer.Tests
                 ChildrenHouseName = "ChildrenHouseName",
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -753,7 +753,7 @@ namespace FamilyNetServer.Tests
                 ChildrenHouseName = "ChildrenHouseName",
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -786,7 +786,7 @@ namespace FamilyNetServer.Tests
                 ChildrenHouseName = "ChildrenHouseName",
             };
 
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(r => r.Update(It.IsNotNull<Orphan>()));
             _mockOrphanRepository.Setup(m => m.GetById(It.IsAny<int>()))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
@@ -808,7 +808,7 @@ namespace FamilyNetServer.Tests
         [TestCase(300)]
         public async Task ChildrenController_WithValidId_ShouldCallRepositoryUpdate(int id)
         {
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(m => m.GetById(id))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
 
@@ -825,7 +825,7 @@ namespace FamilyNetServer.Tests
         [TestCase(300)]
         public async Task ChildrenController_WithValidId_ShouldCallRepositoryGetById(int id)
         {
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(m => m.GetById(id))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
 
@@ -842,7 +842,7 @@ namespace FamilyNetServer.Tests
         [TestCase(300)]
         public async Task ChildrenController_WithValidId_ShouldCallUnitOfWorkSaveChanges(int id)
         {
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(m => m.GetById(id))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
 
@@ -858,7 +858,7 @@ namespace FamilyNetServer.Tests
         [TestCase(300)]
         public async Task ChildrenController_WithValidId_ShouldReturnOkResult(int id)
         {
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(m => m.GetById(id))
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
 
@@ -875,7 +875,7 @@ namespace FamilyNetServer.Tests
         [TestCase(0)]
         public async Task ChildrenController_WithInValidId_ShouldNotCallRepositoryUpdate(int id)
         {
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(m => m.GetById(id))
                 .ReturnsAsync(() => null);
 
@@ -892,7 +892,7 @@ namespace FamilyNetServer.Tests
         [TestCase(0)]
         public async Task ChildrenController_WithInValidId_ShouldNotRepositoryCallGetById(int id)
         {
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(m => m.GetById(id))
                 .ReturnsAsync(() => null);
 
@@ -910,7 +910,7 @@ namespace FamilyNetServer.Tests
         [TestCase(0)]
         public async Task ChildrenController_WithInValidId_ShouldNotCallUnitOfWorkSaveChanges(int id)
         {
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(m => m.GetById(id))
                 .ReturnsAsync(() => null);
 
@@ -927,7 +927,7 @@ namespace FamilyNetServer.Tests
         [TestCase(0)]
         public async Task ChildrenController_WithInValidId_ShouldReturnBadRequest(int id)
         {
-            var _mockOrphanRepository = new Mock<IAsyncRepository<Orphan>>();
+            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
             _mockOrphanRepository.Setup(m => m.GetById(id))
                 .ReturnsAsync(() => null);
 

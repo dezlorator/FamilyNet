@@ -2,25 +2,25 @@
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNetServer.Controllers.API
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class RolesController : ControllerBase
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         #endregion
 
-        public RolesController(IUnitOfWorkAsync unitOfWork)
+        public RolesController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

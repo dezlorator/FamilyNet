@@ -1,8 +1,7 @@
 ﻿using DataTransferObjects;
-using System.IO;
-using System.Net;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 
@@ -10,8 +9,12 @@ namespace FamilyNet.Downloader
 {
     public class ServerUserDownloader : ServerSimpleDataDownloader<UserDTO>
     {
+        public ServerUserDownloader(IHttpAuthorizationHandler authorizationHandler)
+       : base(authorizationHandler) { }
+
+
         public override async Task<HttpResponseMessage> CreatePostAsync(string url,
-                                                               UserDTO dto)
+                                                               UserDTO dto, ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -19,7 +22,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PostAsync(url, formDataContent);
             }
 
@@ -27,7 +30,7 @@ namespace FamilyNet.Downloader
         }
 
         public override async Task<HttpResponseMessage> CreatePutAsync(string url,
-                                                                  UserDTO dto)
+                                                                  UserDTO dto, ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -35,7 +38,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PutAsync(url, formDataContent);
             }
 
@@ -61,8 +64,6 @@ namespace FamilyNet.Downloader
             {
                 formDataContent.Add(new StringContent(dto.Roles.ToString()), "Role");
             }
-
-
         }
     }
 }

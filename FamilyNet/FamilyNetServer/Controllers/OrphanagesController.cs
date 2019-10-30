@@ -26,7 +26,7 @@ namespace FamilyNetServer.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IStringLocalizer<OrphanagesController> _localizer;
 
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        public OrphanagesController(IUnitOfWork unitOfWork, IHostingEnvironment environment, IStringLocalizer<OrphanagesController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
         {
             _hostingEnvironment = environment;
             _localizer = localizer;
@@ -56,7 +56,7 @@ namespace FamilyNetServer.Controllers
         public async Task<IActionResult> Index(int id, OrphanageSearchModel searchModel,
             SortStateOrphanages sortOrder = SortStateOrphanages.NameAsc)
         {
-            IQueryable<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll();
+            IQueryable<Orphanage> orphanages = _unitOfWork.Orphanages.GetAll();
 
             orphanages = GetFiltered(orphanages, searchModel);
             orphanages = GetSorted(orphanages, sortOrder);
@@ -77,7 +77,7 @@ namespace FamilyNetServer.Controllers
             if (id == null)
                 return NotFound();
 
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+            var orphanage = await _unitOfWork.Orphanages.GetById((int)id);
 
             if (orphanage == null)
                 return NotFound();
@@ -114,8 +114,8 @@ namespace FamilyNetServer.Controllers
 
             if (ModelState.IsValid)
             {
-                await _unitOfWorkAsync.Orphanages.Create(orphanage);
-                await _unitOfWorkAsync.Orphanages.SaveChangesAsync();
+                await _unitOfWork.Orphanages.Create(orphanage);
+                await _unitOfWork.Orphanages.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -131,7 +131,7 @@ namespace FamilyNetServer.Controllers
             if (id == null)
                 return NotFound();
 
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+            var orphanage = await _unitOfWork.Orphanages.GetById((int)id);
 
             if (orphanage == null)
                 return NotFound();
@@ -157,7 +157,7 @@ namespace FamilyNetServer.Controllers
                 try
                 {
                     //in ef to change the object you need to track it out of context
-                    var orphanageToEdit = await _unitOfWorkAsync.Orphanages.GetById(orphanage.ID);
+                    var orphanageToEdit = await _unitOfWork.Orphanages.GetById(orphanage.ID);
 
                     //copying the state with NOT CHANGING REFERENCES
                     orphanageToEdit.CopyState(orphanage);
@@ -175,12 +175,12 @@ namespace FamilyNetServer.Controllers
                     else
                         orphanageToEdit.LocationID = null;
 
-                    _unitOfWorkAsync.Orphanages.Update(orphanageToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
+                    _unitOfWork.Orphanages.Update(orphanageToEdit);
+                    _unitOfWork.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_unitOfWorkAsync.Orphanages.Any(orphanage.ID))
+                    if (!_unitOfWork.Orphanages.Any(orphanage.ID))
                         return NotFound();
                     else
                         throw; //TODO: Loging
@@ -200,7 +200,7 @@ namespace FamilyNetServer.Controllers
             if (id == null)
                 return NotFound();
 
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById((int)id);
+            var orphanage = await _unitOfWork.Orphanages.GetById((int)id);
 
             if (orphanage == null)
                 return NotFound();
@@ -215,9 +215,9 @@ namespace FamilyNetServer.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var orphanage = await _unitOfWorkAsync.Orphanages.GetById(id);
-            await _unitOfWorkAsync.Orphanages.Delete(orphanage.ID);
-            _unitOfWorkAsync.SaveChangesAsync();
+            var orphanage = await _unitOfWork.Orphanages.GetById(id);
+            await _unitOfWork.Orphanages.Delete(orphanage.ID);
+            _unitOfWork.SaveChangesAsync();
             GetViewData();
 
             return RedirectToAction(nameof(Index));
@@ -237,7 +237,7 @@ namespace FamilyNetServer.Controllers
             ViewData["TypeHelp"] = typeHelp;
             IEnumerable<Orphanage> list = new List<Orphanage>();
             if(typeHelp != null)
-            list = _unitOfWorkAsync.Orphanages.Get(
+            list = _unitOfWork.Orphanages.Get(
                 orp => orp.Donations.Where(
                     donat => donat.DonationItem.TypeBaseItem.Where(
                         donatitem =>  donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
@@ -251,7 +251,7 @@ namespace FamilyNetServer.Controllers
         [AllowAnonymous]
         public IActionResult SearchOrphanageOnMap()
         {
-            var orphanages = _unitOfWorkAsync.Orphanages.GetForSearchOrphanageOnMap();
+            var orphanages = _unitOfWork.Orphanages.GetForSearchOrphanageOnMap();
             GetViewData();
 
             return View(orphanages);

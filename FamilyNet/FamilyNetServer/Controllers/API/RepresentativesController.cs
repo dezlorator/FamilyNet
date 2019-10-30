@@ -13,6 +13,7 @@ using FamilyNetServer.Uploaders;
 using DataTransferObjects;
 using FamilyNetServer.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -22,7 +23,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IFileUploader _fileUploader;
         private readonly IRepresentativeValidator _representativeValidator;
         private readonly IFilterConditionsRepresentatives _filterConditions;
@@ -41,7 +42,7 @@ namespace FamilyNetServer.Controllers.API
         #region ctor
 
         public RepresentativesController(IFileUploader fileUploader,
-                                  IUnitOfWorkAsync unitOfWork,
+                                  IUnitOfWork unitOfWork,
                                   IRepresentativeValidator representativeValidator,
                                   IFilterConditionsRepresentatives filterConditions,
                                    IOptionsSnapshot<ServerURLSettings> settings)
@@ -114,6 +115,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]RepresentativeDTO representativeDTO)
@@ -160,6 +162,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]RepresentativeDTO representativeDTO)
@@ -200,6 +203,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)

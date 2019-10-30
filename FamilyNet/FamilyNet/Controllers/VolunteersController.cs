@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
@@ -19,7 +18,6 @@ using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
     public class VolunteersController : BaseController
     {
         #region private fields
@@ -56,7 +54,6 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        [AllowAnonymous]
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
             var url = _URLVolunteersBuilder.GetAllWithFilter(_apiPath,
@@ -66,7 +63,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteers = await _downloader.GetAllAsync(url);
+                volunteers = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -100,7 +97,6 @@ namespace FamilyNet.Controllers
             return View(selectedVolunteers);
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -113,7 +109,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteerDTO = await _downloader.GetByIdAsync(url);
+                volunteerDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -138,7 +134,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                adderessDTO = await _addressDownloader.GetByIdAsync(addressUrl);
+                adderessDTO = await _addressDownloader.GetByIdAsync(addressUrl, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -185,7 +181,6 @@ namespace FamilyNet.Controllers
             return View(volunteer);
         }
 
-        [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Create()
         {
             await Check();
@@ -194,7 +189,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Create(VolunteerDTO volunteerDTO)
         {
             if (!ModelState.IsValid)
@@ -211,13 +205,18 @@ namespace FamilyNet.Controllers
 
             var addressUrl = _URLAddressBuilder.CreatePost(_apiAddressPath);
             var statusAddress = await _addressDownloader.CreatePostAsync(addressUrl,
-                                            volunteerDTO.Address);
+                                            volunteerDTO.Address, HttpContext.Session);
 
             volunteerDTO.AddressID = statusAddress.Content.ReadAsAsync<AddressDTO>().Result.ID;
             var url = _URLVolunteersBuilder.CreatePost(_apiPath);
+            var status = await _downloader.CreatePostAsync(url, volunteerDTO,
+                                                             stream, volunteerDTO.Avatar?.FileName,
+                                                             HttpContext.Session);
 
-            var status = await _downloader.СreatePostAsync(url, volunteerDTO,
-                                                             stream, volunteerDTO.Avatar?.FileName);
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.Created)
             {
@@ -228,7 +227,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Volunteers/Index");
         }
 
-        [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -248,7 +246,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteerDTO = await _downloader.GetByIdAsync(url);
+                volunteerDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -274,7 +272,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                addressDTO = await _addressDownloader.GetByIdAsync(addressURL);
+                addressDTO = await _addressDownloader.GetByIdAsync(addressURL, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -296,7 +294,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Volunteer")]
         public async Task<IActionResult> Edit(int id, VolunteerDTO volunteerDTO)
         {
             if (id != volunteerDTO.ID)
@@ -323,11 +320,16 @@ namespace FamilyNet.Controllers
 
             var addressUrl = _URLAddressBuilder.GetById(_apiAddressPath, (int)volunteerDTO.AddressID);
             var statusAddress = await _addressDownloader.CreatePutAsync(addressUrl,
-                                            volunteerDTO.Address);
+                                            volunteerDTO.Address, HttpContext.Session);
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);
-            var status = await _downloader.СreatePutAsync(url, volunteerDTO,
-                                                            stream, volunteerDTO.Avatar?.FileName);
+            var status = await _downloader.CreatePutAsync(url, volunteerDTO,
+                                                            stream, volunteerDTO.Avatar?.FileName,
+                                                            HttpContext.Session);
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -338,7 +340,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Volunteers/Index");
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -351,7 +352,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteerDTO = await _downloader.GetByIdAsync(url);
+                volunteerDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -376,7 +377,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
@@ -385,7 +385,12 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id);
-            var status = await _downloader.DeleteAsync(url);
+            var status = await _downloader.DeleteAsync(url, HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.OK)
             {
@@ -395,7 +400,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Volunteers/Index");
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> VolunteersTable(int id, PersonSearchModel searchModel)
         {
             var url = _URLVolunteersBuilder.GetAllWithFilter(_apiPath,
@@ -408,8 +412,8 @@ namespace FamilyNet.Controllers
 
             try
             {
-                volunteers = await _downloader.GetAllAsync(url);
-                addresses = await _addressDownloader.GetAllAsync(addressUrl);
+                volunteers = await _downloader.GetAllAsync(url, HttpContext.Session);
+                addresses = await _addressDownloader.GetAllAsync(addressUrl, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {

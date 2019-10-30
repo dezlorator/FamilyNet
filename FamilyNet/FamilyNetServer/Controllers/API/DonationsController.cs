@@ -1,16 +1,15 @@
 ﻿using DataTransferObjects;
-using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static FamilyNetServer.Models.Donation;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -20,7 +19,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IDonationValidator _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
 
@@ -28,7 +27,7 @@ namespace FamilyNetServer.Controllers.API
 
         #region ctor
 
-        public DonationsController(IUnitOfWorkAsync unitOfWork,
+        public DonationsController(IUnitOfWork unitOfWork,
                                    IDonationValidator donationValidator,
                                    IDonationsFilter donationsFilter)
         {
@@ -115,6 +114,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]DonationDTO donationDTO)
@@ -142,6 +142,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]DonationDTO donationDTO)
@@ -181,6 +182,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("StatusEdit/{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> StatusEdit(int id, [FromBody]string status)
@@ -206,6 +208,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("donationMade/{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddCharityMaker(int id, [FromBody]int charityMakerID)
@@ -233,6 +236,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)

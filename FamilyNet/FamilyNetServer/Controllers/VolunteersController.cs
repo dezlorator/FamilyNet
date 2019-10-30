@@ -24,7 +24,7 @@ namespace FamilyNetServer.Controllers
 
         #endregion
 
-        public VolunteersController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<VolunteersController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        public VolunteersController(IUnitOfWork unitOfWork, IStringLocalizer<VolunteersController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;
         }
@@ -34,7 +34,7 @@ namespace FamilyNetServer.Controllers
         public async Task<IActionResult> Index(PersonSearchModel searchModel)
         {
 
-            IEnumerable<Volunteer> volunteers = _unitOfWorkAsync.Volunteers.GetAll();
+            IEnumerable<Volunteer> volunteers = _unitOfWork.Volunteers.GetAll();
 
             volunteers = VolunteerFilter.GetFiltered(volunteers, searchModel);
             GetViewData();
@@ -53,7 +53,7 @@ namespace FamilyNetServer.Controllers
                 return NotFound();
             }
 
-            var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
+            var volunteer = await _unitOfWork.Volunteers.GetById((int)id);
             if (volunteer == null)
             {
                 return NotFound();
@@ -70,7 +70,7 @@ namespace FamilyNetServer.Controllers
             GetViewData();
 
             List<Orphanage> orphanagesList = new List<Orphanage>();
-            orphanagesList = _unitOfWorkAsync.Orphanages.GetAll().ToList();
+            orphanagesList = _unitOfWork.Orphanages.GetAll().ToList();
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -89,13 +89,13 @@ namespace FamilyNetServer.Controllers
 
             if (ModelState.IsValid)
             {
-                await _unitOfWorkAsync.Volunteers.Create(volunteer);
-                await _unitOfWorkAsync.Volunteers.SaveChangesAsync();
+                await _unitOfWork.Volunteers.Create(volunteer);
+                await _unitOfWork.Volunteers.SaveChangesAsync();
 
                 var user = await GetCurrentUserAsync();
                 user.PersonID = volunteer.ID;
                 user.PersonType = Models.Identity.PersonType.Volunteer;
-                await _unitOfWorkAsync.UserManager.UpdateAsync(user);
+                await _unitOfWork.UserManager.UpdateAsync(user);
                 GetViewData();
 
                 return RedirectToAction(nameof(Index));
@@ -123,7 +123,7 @@ namespace FamilyNetServer.Controllers
                 return check;
             }
 
-            var volunteer = await _unitOfWorkAsync.Volunteers.GetById((int)id);
+            var volunteer = await _unitOfWork.Volunteers.GetById((int)id);
             if (volunteer == null)
             {
                 return NotFound();
@@ -158,14 +158,14 @@ namespace FamilyNetServer.Controllers
             {
                 try
                 {
-                    var volunteerToEdit = await _unitOfWorkAsync.Volunteers.GetById(id);
+                    var volunteerToEdit = await _unitOfWork.Volunteers.GetById(id);
                     volunteerToEdit.CopyState(volunteer);
-                    _unitOfWorkAsync.Volunteers.Update(volunteerToEdit);
-                    _unitOfWorkAsync.SaveChangesAsync();
+                    _unitOfWork.Volunteers.Update(volunteerToEdit);
+                    _unitOfWork.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_unitOfWorkAsync.Volunteers.Any(volunteer.ID))
+                    if (!_unitOfWork.Volunteers.Any(volunteer.ID))
                     {
                         return NotFound();
                     }
@@ -189,7 +189,7 @@ namespace FamilyNetServer.Controllers
                 return NotFound();
             }
 
-            var volunteer = await _unitOfWorkAsync.Volunteers
+            var volunteer = await _unitOfWork.Volunteers
                 .GetById((int)id);
             if (volunteer == null)
             {
@@ -206,9 +206,9 @@ namespace FamilyNetServer.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var volunteer = await _unitOfWorkAsync.Volunteers.GetById(id);
-            await _unitOfWorkAsync.Volunteers.Delete(volunteer.ID);
-            _unitOfWorkAsync.SaveChangesAsync();
+            var volunteer = await _unitOfWork.Volunteers.GetById(id);
+            await _unitOfWork.Volunteers.Delete(volunteer.ID);
+            _unitOfWork.SaveChangesAsync();
             GetViewData();
 
             return RedirectToAction(nameof(Index));
