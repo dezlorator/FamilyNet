@@ -365,9 +365,6 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var donationsList = _unitOfWorkAsync.Donations.GetAll().ToList();
-            ViewBag.ListOfDonations = donationsList;
-
             GetViewData();
 
             return View(donationDTO);
