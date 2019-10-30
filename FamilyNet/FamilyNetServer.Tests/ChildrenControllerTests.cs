@@ -9,6 +9,7 @@ using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
@@ -41,11 +42,13 @@ namespace FamilyNetServer.Tests
             _mockFilterConditions = new Mock<IFilterConditionsChildren>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
             _mockChildValidator = new Mock<IChildValidator>();
+            var mockLogger = new Mock<ILogger<ChildrenController>>();
             controller = new ChildrenController(_mockFileUploader.Object,
                                                 _mockUnitOfWork.Object,
                                                 _mockChildValidator.Object,
                                                 _mockFilterConditions.Object,
-                                                _mockSettings.Object);
+                                                _mockSettings.Object,
+                                                mockLogger.Object);
         }
 
         #endregion
