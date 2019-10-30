@@ -14,6 +14,7 @@ using DataTransferObjects;
 using Microsoft.Extensions.Options;
 using FamilyNetServer.Configuration;
 using FamilyNetServer.Filters.FilterParameters;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNetServer.Controllers.API
@@ -29,6 +30,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IVolunteerValidator _volunteerValidator;
         private readonly IFilterConditionsVolunteers _filterConditions;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
+        private readonly ILogger<VolunteersController> _logger;
 
         #endregion
 
@@ -38,13 +40,15 @@ namespace FamilyNetServer.Controllers.API
                                   IUnitOfWork unitOfWork,
                                   IVolunteerValidator volunteerValidator,
                                   IFilterConditionsVolunteers filterConditions,
-                                  IOptionsSnapshot<ServerURLSettings> setings)
+                                  IOptionsSnapshot<ServerURLSettings> setings,
+                                  ILogger<VolunteersController> logger)
         {
             _fileUploader = fileUploader;
             _unitOfWork = unitOfWork;
             _volunteerValidator = volunteerValidator;
             _filterConditions = filterConditions;
             _settings = setings;
+            _logger = logger;
         }
 
         #endregion
