@@ -16,7 +16,8 @@ using DataTransferObjects;
 
 namespace FamilyNet.Controllers
 {
-    public class CharityMakersController : BaseController
+    [Authorize]
+    public class CharityMakersController : Controller
     {
         #region private
 
@@ -31,14 +32,11 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        #region  ctor
-
-        public CharityMakersController(IUnitOfWorkAsync unitOfWork,
-                IURLCharityMakerBuilder urlCharityMakerBuilder,
+        public CharityMakersController(IURLCharityMakerBuilder urlCharityMakerBuilder,
                 ServerDataDownloader<CharityMakerDTO> downloader,
                 IFileStreamCreater streamCreator,
                 IURLAddressBuilder urlAdressBuilder,
-                IServerAddressDownloader addressDownloader) : base(unitOfWork)
+                IServerAddressDownloader addressDownloader)
         {
             _urlBilder = urlCharityMakerBuilder;
             _serverDownloader = downloader;
@@ -177,7 +175,6 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Create()
         {
-            await Check();
             return View();
         }
 

@@ -14,7 +14,7 @@ using System.Net;
 
 namespace FamilyNet.Controllers
 {
-    public class CategoriesController : BaseController
+    public class CategoriesController : Controller
     {
         #region private fields
 
@@ -27,11 +27,9 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public CategoriesController(IUnitOfWorkAsync unitOfWork,
-                                    IStringLocalizer<CategoriesController> localizer,
+        public CategoriesController(IStringLocalizer<CategoriesController> localizer,
                                     ServerSimpleDataDownloader<CategoryDTO> downloader,
                                     IURLCategoriesBuilder uRLBuilder)
-            : base(unitOfWork)
         {
             _localizer = localizer;
             _downloader = downloader;
@@ -73,7 +71,6 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Create()
         {
-            await Check();
             GetViewData();
 
             return View();

@@ -15,7 +15,7 @@ namespace FamilyNet.Controllers
 {
     public class AccountController : BaseController
     {
-        #region fields
+        #region private fields
 
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IAuthorizeCreater _authorizeCreater;
@@ -25,10 +25,13 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
+        #endregion
+
+        #region ctor
+
         public AccountController(IUnitOfWorkAsync unitOfWork,
-                                 IStringLocalizer<HomeController> localizer,
-                                 IStringLocalizer<SharedResource> sharedLocalizer,
-                                 IAuthorizeCreater authorizeCreater)
+                                IStringLocalizer<HomeController> localizer,
+                                IStringLocalizer<SharedResource> sharedLocalizer)
             : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;

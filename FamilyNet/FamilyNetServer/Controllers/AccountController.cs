@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using FamilyNetServer.Models.ViewModels;
 
 namespace FamilyNetServer.Controllers
 {    
@@ -133,69 +133,7 @@ namespace FamilyNetServer.Controllers
         }
        
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
-        {
-            GetViewData();
-            return View(new LoginViewModel { ReturnUrl = returnUrl });
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-            GetViewData();
-            if (ModelState.IsValid)
-            {
-                ApplicationUser user = await _unitOfWork.UserManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    if(!await _unitOfWork.UserManager.IsEmailConfirmedAsync(user))
-                    {
-                        ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
-                        return View(model);
-                    }
-                    await _unitOfWork.SignInManager.SignOutAsync();
-                    Microsoft.AspNetCore.Identity.SignInResult result =
-                            await _unitOfWork.SignInManager.PasswordSignInAsync(
-                                user, model.Password, model.RememberMe, false);
-                    if (result.Succeeded)
-                    {
-                        if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                        {
-                            return Redirect(model.ReturnUrl);
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index", "Home");
-                        }
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Неправильный логин и (или) пароль");
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Такого пользователя не существует, зарегистрируйтесь, пожалуйста!");
-                }
-            }
-            return View(model);
-        }
-
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            // удаляем аутентификационные куки
-            await _unitOfWork.SignInManager.SignOutAsync();
-            GetViewData();
-            return RedirectToAction("Index", "Home");
-        }
-
+      
         [AllowAnonymous]
         public IActionResult AccessDenied()
         {
