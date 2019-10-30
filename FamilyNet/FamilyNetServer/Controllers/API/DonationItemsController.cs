@@ -21,14 +21,14 @@ namespace FamilyNetServer.Controllers.API
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly IDonationItemValidator _donationItemValidator;
         private readonly IDonationItemsFilter _donationItemsFilter;
-        private readonly ILogger<DonationItem> _logger;
+        private readonly ILogger<DonationItemsController> _logger;
 
         #endregion
 
         public DonationItemsController(IUnitOfWorkAsync unitOfWork,
                                   IDonationItemValidator donationItemValidator,
                                   IDonationItemsFilter donationItemsFilter,
-                                  ILogger<DonationItem> logger)
+                                  ILogger<DonationItemsController> logger)
         {
             _unitOfWork = unitOfWork;
             _donationItemValidator = donationItemValidator;
@@ -75,7 +75,7 @@ namespace FamilyNetServer.Controllers.API
                     CategoriesID = d.TypeBaseItem.Select(t => t.TypeID)
                 }).ToList();
 
-            _logger.LogInformation("List of donation items was sent");
+            _logger.LogInformation("Status: OK. List of donation items was sent");
 
             return Ok(donationItemsDTO);
         }
@@ -102,7 +102,7 @@ namespace FamilyNetServer.Controllers.API
                 CategoriesID = donationItem.TypeBaseItem.Select(t => t.TypeID)
             };
 
-            _logger.LogInformation("Donation item was sent");
+            _logger.LogInformation("Status: OK. Donation item was sent");
             return Ok(donationItemDTO);
         }
 
@@ -131,16 +131,13 @@ namespace FamilyNetServer.Controllers.API
 
             if (donationItemDTO.CategoriesID != null)
             {
-                foreach (int c in donationItemDTO.CategoriesID)
-                {
-                    var itemType = new TypeBaseItem
+                donationItem.TypeBaseItem = donationItemDTO.CategoriesID.Select(c =>
+                    new TypeBaseItem
                     {
                         ItemID = ID,
                         TypeID = c
-                    };
-
-                    donationItem.TypeBaseItem.Add(itemType);
-                }
+                    }
+                ).ToList();
 
                 _logger.LogInformation("Categories were added.");
             }
@@ -150,7 +147,7 @@ namespace FamilyNetServer.Controllers.API
 
             donationItemDTO.ID = donationItem.ID;
 
-            _logger.LogInformation("Donation was created");
+            _logger.LogInformation("Status: Created. Donation was created");
 
             return Created("api/v1/donationItems/" + donationItem.ID, donationItemDTO);
         }
@@ -181,7 +178,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.DonationItems.Update(donationItem);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Donation item was edited.");
+            _logger.LogInformation("Status: NoContent. Donation item was edited.");
 
             return NoContent();
         }
@@ -210,7 +207,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.DonationItems.Update(donationItem);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Donation item was deleted.");
+            _logger.LogInformation("Status: OK. Donation item was deleted.");
 
             return Ok();
         }

@@ -22,7 +22,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly IDonationValidator _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
-        private readonly ILogger<Donation> _logger;
+        private readonly ILogger<DonationsController> _logger;
 
         #endregion
 
@@ -31,7 +31,7 @@ namespace FamilyNetServer.Controllers.API
         public DonationsController(IUnitOfWorkAsync unitOfWork,
                                    IDonationValidator donationValidator,
                                    IDonationsFilter donationsFilter,
-                                   ILogger<Donation> logger)
+                                   ILogger<DonationsController> logger)
         {
             _unitOfWork = unitOfWork;
             _donationValidator = donationValidator;
@@ -83,7 +83,7 @@ namespace FamilyNetServer.Controllers.API
                                .Select(t => t.TypeID)
                 }).ToList();
 
-            _logger.LogInformation("List of donations was sent");
+            _logger.LogInformation("Status: OK. List of donations was sent");
             return Ok(donationsDTO);
         }
 
@@ -117,7 +117,7 @@ namespace FamilyNetServer.Controllers.API
                 OrphanageRating = donation.Orphanage.Rating
             };
 
-            _logger.LogInformation("Donation was sent");
+            _logger.LogInformation("Status: OK. Donation was sent");
             return Ok(donationDetailsDTO);
         }
 
@@ -146,7 +146,7 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Donations.Create(donation);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Donation was created");
+            _logger.LogInformation("Status: Created. Donation was created");
             return Created("api/v1/donations/" + donation.ID, donationDTO);
         }
 
@@ -190,7 +190,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Donation was edited.");
+            _logger.LogInformation("Status: NoContent. Donation was edited.");
 
             return NoContent();
         }
@@ -219,7 +219,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Donation status was edited.");
+            _logger.LogInformation("Status: NoContent. Donation status was edited.");
 
             return NoContent();
         }
@@ -250,7 +250,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Charity maker was added.");
+            _logger.LogInformation("Status: NoContent. Charity maker was added.");
 
             return NoContent();
         }
@@ -279,7 +279,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Donation was deleted.");
+            _logger.LogInformation("Status: OK. Donation was deleted.");
 
             return Ok();
         }

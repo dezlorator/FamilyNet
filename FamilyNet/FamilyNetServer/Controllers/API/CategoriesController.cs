@@ -19,7 +19,7 @@ namespace FamilyNetServer.Controllers.API
 
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly ICategoryValidator _categoryValidator;
-        private readonly ILogger<BaseItemType> _logger;
+        private readonly ILogger<CategoriesController> _logger;
 
         #endregion
 
@@ -27,7 +27,7 @@ namespace FamilyNetServer.Controllers.API
 
         public CategoriesController(IUnitOfWorkAsync unitOfWork,
                                     ICategoryValidator categoryValidator,
-                                    ILogger<BaseItemType> logger)
+                                    ILogger<CategoriesController> logger)
         {
             _unitOfWork = unitOfWork;
             _categoryValidator = categoryValidator;
@@ -66,7 +66,7 @@ namespace FamilyNetServer.Controllers.API
                     Name = c.Name
                 }).ToList();
 
-            _logger.LogInformation("List of categories was sent");
+            _logger.LogInformation("Status: OK. List of categories was sent");
 
             return Ok(categoriesDTO);
         }
@@ -90,7 +90,7 @@ namespace FamilyNetServer.Controllers.API
                 Name = category.Name
             };
 
-            _logger.LogInformation("Category item was sent");
+            _logger.LogInformation("Status: OK. Category item was sent");
 
             return Ok(categoryDTO);
         }
@@ -114,7 +114,7 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.BaseItemTypes.Create(category);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Category was created");
+            _logger.LogInformation("Status: Created. Category was created");
 
             return Created("api/v1/categories/" + category.ID, categoryDTO);
         }
@@ -143,7 +143,7 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.BaseItemTypes.Update(category);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Category was deleted.");
+            _logger.LogInformation("Status: OK. Category was deleted.");
 
             return Ok();
         }
