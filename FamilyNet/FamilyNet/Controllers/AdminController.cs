@@ -205,13 +205,5 @@ namespace FamilyNet.Controllers
                 ModelState.AddModelError("", error.Description);
             }
         }
-
-        public IActionResult SeedData()
-        {
-            SeedData seedData = new SeedData(_unitOfWork);
-            seedData.EnsurePopulated();
-
-            return Redirect("/Home/Index");
-        }
     }
 }

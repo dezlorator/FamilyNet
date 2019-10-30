@@ -31,7 +31,8 @@ namespace FamilyNet.Controllers
 
         public AccountController(IUnitOfWorkAsync unitOfWork,
                                 IStringLocalizer<HomeController> localizer,
-                                IStringLocalizer<SharedResource> sharedLocalizer)
+                                IStringLocalizer<SharedResource> sharedLocalizer,
+                                IAuthorizeCreater authorizeCreater)
             : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;

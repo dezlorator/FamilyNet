@@ -18,7 +18,6 @@ using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
     public class VolunteersController : Controller
     {
         #region private fields
