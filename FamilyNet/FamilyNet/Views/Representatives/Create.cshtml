@@ -52,7 +52,7 @@
                                     <select asp-for="ChildrenHouseID"
                                             class="form-control"
                                             name="ChildrenHouseID"
-                                            asp-items="@ViewBag.Orphanages as SelectList"></select>
+                                            asp-items="@(new SelectList(ViewBag.ListOfOrphanages,"ID", "Name"))"></select>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Avatar" class="control-label"></label>
