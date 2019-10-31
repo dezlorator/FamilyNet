@@ -37,7 +37,7 @@ namespace FamilyNetServer.Controllers.API
 
         [HttpPost]
         [Produces("application/json")]
-        public async Task<IActionResult> Authentication([FromForm]CredentialsDTO credentialsDTO)
+        public async Task<IActionResult> Authentication([FromBody]CredentialsDTO credentialsDTO)
         {
             _logger.LogInformation("Authentication method is called. Arguments password: " +
                 credentialsDTO.Password + " email: " + credentialsDTO.Email);
