@@ -57,11 +57,17 @@ namespace FamilyNet.Migrations
 
                     b.Property<int?>("AuctionLotItemID");
 
-                    b.Property<DateTime>("Date");
+                    b.Property<string>("Avatar");
+
+                    b.Property<DateTime>("DateEnd");
+
+                    b.Property<DateTime>("DateStart");
 
                     b.Property<bool>("IsDeleted");
 
                     b.Property<int?>("OrphanID");
+
+                    b.Property<int>("Quantity");
 
                     b.HasKey("ID");
 
@@ -257,6 +263,31 @@ namespace FamilyNet.Migrations
                     b.HasIndex("LocationID");
 
                     b.ToTable("Orphanages");
+                });
+
+            modelBuilder.Entity("FamilyNet.Models.Purchase", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AuctionLotId");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<float>("Paid");
+
+                    b.Property<int>("Quantity");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AuctionLotId");
+
+                    b.ToTable("Purchases");
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Representative", b =>
@@ -457,6 +488,14 @@ namespace FamilyNet.Migrations
                     b.HasOne("FamilyNet.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationID");
+                });
+
+            modelBuilder.Entity("FamilyNet.Models.Purchase", b =>
+                {
+                    b.HasOne("FamilyNet.Models.AuctionLot", "AuctionLot")
+                        .WithMany()
+                        .HasForeignKey("AuctionLotId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("FamilyNet.Models.Representative", b =>

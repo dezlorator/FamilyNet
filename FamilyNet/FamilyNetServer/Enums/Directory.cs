@@ -6,6 +6,7 @@
         Volunteer,
         CharityMaker,
         Representatives,
-        ChildrenHouses
+        ChildrenHouses,
+        Auction
     }
 }

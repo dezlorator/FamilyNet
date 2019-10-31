@@ -44,6 +44,7 @@ namespace FamilyNet.Models.EntityFramework
             SignInManager = signInManager;
             RoleManager = roleManager;
             TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
+            Purchases = new EFRepositoryAsync<Purchase>(cont);
         }
 
         #endregion
@@ -81,6 +82,9 @@ namespace FamilyNet.Models.EntityFramework
         public IAsyncRepository<BaseItemType> BaseItemTypes { get; set; }
 
         public FamilyNetPhoneValidator PhoneValidator { get; set; }
+
+        public IAsyncRepository<Purchase> Purchases { get; set; }
+
         #endregion
 
         public void SaveChangesAsync()

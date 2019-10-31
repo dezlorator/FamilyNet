@@ -27,7 +27,6 @@ namespace FamilyNetServer.Models.EntityFramework {
         public async Task Create(TEntity entity)
         {
             await _dbContext.Set<TEntity>().AddAsync(entity);
-
         }
 
         public void Update(TEntity entity)

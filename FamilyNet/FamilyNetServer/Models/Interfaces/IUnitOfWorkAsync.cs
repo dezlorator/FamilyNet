@@ -19,6 +19,10 @@ namespace FamilyNetServer.Models.Interfaces
         IAsyncRepository<BaseItemType> BaseItemTypes { get; }
         IAsyncRepository<DonationItem> DonationItems { get; }
 
+        IAsyncRepository<AuctionLot> AuctionLots { get; }
+
+        IAsyncRepository<Purchase> Purchases { get; set; }
+
         DbSet<TypeBaseItem> TypeBaseItems { get; set; }// TODO : rewrite this
 
         void SaveChangesAsync();
