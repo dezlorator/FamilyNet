@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using DataTransferObjects;
 using FamilyNetServer.Factories;
+using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -43,10 +45,27 @@ namespace FamilyNetServer.Controllers.API
 
             if (user == null)
             {
-                _logger.LogError("User was not found!");
-                return BadRequest();
+                var msg = "Credentials are invalid!";
+                _logger.LogError(msg);
+                return BadRequest(msg);
             }
 
+            if (!await _unitOfWork.UserManager.IsEmailConfirmedAsync(user))
+            {
+                var msg = "User's email was not confirmed!";
+                _logger.LogError(msg);
+                return BadRequest(msg);
+            }
+
+            var result = await _unitOfWork.UserManager.CheckPasswordAsync(user, credentialsDTO.Password);
+
+            if (!result)
+            {
+                var msg = "Credentials are invalid!";
+                _logger.LogError(msg);
+                return BadRequest(msg);
+            }
+                        
             var roles = await _unitOfWork.UserManager.GetRolesAsync(user).ConfigureAwait(false);
             var token = new TokenDTO() { Token = _tokenFactory.Create(user, roles) };
             _logger.LogInformation("User " + credentialsDTO.Email + " has token " +
