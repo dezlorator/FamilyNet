@@ -1,5 +1,6 @@
 ﻿using DataTransferObjects;
 using FamilyNet.Configuration;
+using FamilyNet.HttpHandlers;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -18,9 +19,9 @@ namespace FamilyNet.Downloader
             _serverURL = options.Value;
         }
 
-        public async Task<string> Login(CredentialsDTO credentials)
+        public async Task<AuthenticationResult> Login(CredentialsDTO credentials)
         {
-            string token = String.Empty;
+            var authenticationResult = new AuthenticationResult();
             var url = _serverURL.ServerURL + "api/v1/authentication";
 
             using (var httpClient = new HttpClient())
@@ -28,15 +29,25 @@ namespace FamilyNet.Downloader
                 var content = new FormUrlEncodedContent(new[]
                     {
                         new KeyValuePair<string, string>("Email", credentials.Email),
-                        new KeyValuePair<string, string>("Password", credentials.Email)
+                        new KeyValuePair<string, string>("Password", credentials.Password)
                     });
 
                 var result = await httpClient.PostAsync(url, content);
                 var json = await result.Content.ReadAsStringAsync();
-                token = JsonConvert.DeserializeObject<TokenDTO>(json).Token;
+                try
+                {
+                    var token = JsonConvert.DeserializeObject<TokenDTO>(json).Token;
+                    authenticationResult.Token = token;
+                    authenticationResult.Success = true;
+                }
+                catch (JsonException)
+                {
+                    authenticationResult.Token = String.Empty;
+                    authenticationResult.Success = false;
+                }
             }
 
-            return token;
+            return authenticationResult;
         }
     }
 }
