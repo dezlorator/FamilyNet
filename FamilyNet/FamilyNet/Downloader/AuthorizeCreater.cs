@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
@@ -26,11 +27,9 @@ namespace FamilyNet.Downloader
 
             using (var httpClient = new HttpClient())
             {
-                var content = new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("Email", credentials.Email),
-                        new KeyValuePair<string, string>("Password", credentials.Password)
-                    });
+               
+                var content = new StringContent(JsonConvert.SerializeObject(credentials),
+                                                Encoding.UTF8, "application/json");
 
                 var result = await httpClient.PostAsync(url, content);
                 var json = await result.Content.ReadAsStringAsync();
