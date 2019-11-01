@@ -4,9 +4,7 @@ using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
@@ -16,10 +14,13 @@ using Microsoft.AspNetCore.Localization;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Uploaders;
+using FamilyNetServer.ConfigurationServices;
 using FamilyNetServer.Configuration;
+using FamilyNetServer.Factories;
 using DataTransferObjects;
 using NLog;
 using Microsoft.Extensions.Logging;
+using FamilyNetServer.Controllers.API;
 using FamilyNetServer.Controllers.API;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
@@ -39,37 +40,17 @@ namespace FamilyNetServer
         {
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetServerPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetServerUserValidator>();
-            //services.AddTransient<FamilyNetServerPhoneValidator>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration["Data:FamilyNet:ConnectionString"]));
-            services.AddDbContext<ApplicationIdentityDbContext>(options =>
-                options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
-            services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
-            {
-                opts.User.RequireUniqueEmail = true;
-                opts.Password.RequiredLength = 6;
-                opts.Password.RequireNonAlphanumeric = false;
-                opts.Password.RequireLowercase = true;
-                opts.Password.RequireUppercase = true;
-                opts.Password.RequireDigit = true;
-
-            }).AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-            .AddUserManager<ApplicationUserManager>()
-            .AddDefaultTokenProviders();
-
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
+            services.AddDBContextService(Configuration);
+            services.AddIdentityService();
+            services.AddTransient<ITokenFactory, TokenFactory>();
+            services.AddAuthorizationService(Configuration);
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
-
-            services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
+            services.AddTransient<IUnitOfWork, EFUnitOfWork>();
             services.AddTransient<ILogger<CharityMakersController>, Logger<CharityMakersController>>();
             services.AddTransient<ILogger<VolunteersController>, Logger<VolunteersController>>();
+            services.AddTransient<ILogger<AddressController>, Logger<AddressController>>();
+            services.AddTransient<ILogger<ChildrenHouseController>, Logger<ChildrenHouseController>>();
+            services.AddTransient<ILogger<LocationController>, Logger<LocationController>>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
             services.AddTransient<IVolunteerValidator, VolunteerValidator>();
@@ -102,9 +83,7 @@ namespace FamilyNetServer
             services.AddMvc()
                 .AddViewLocalization(
                 Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
-            //    opts => { opts.ResourcesPath = "Resources"; })
                 .AddDataAnnotationsLocalization();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
             .ConfigureApiBehaviorOptions(options =>
              {
@@ -147,28 +126,12 @@ namespace FamilyNetServer
             });
 
             app.UseStaticFiles();
-            app.UseCookiePolicy();
             app.UseAuthentication();
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default2",
-                    template: "{controller}/{action}/{id?}"
-                    );
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-
-
-            });
+            app.UseMvc();
 
             //ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
             //        Configuration).Wait();
             //ApplicationIdentityDbContext.InitializeRolesAsync(app.ApplicationServices).Wait();
-
-
-
         }
     }
 }

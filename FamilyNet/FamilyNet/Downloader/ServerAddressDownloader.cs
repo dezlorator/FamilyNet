@@ -1,4 +1,6 @@
 ﻿using DataTransferObjects;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,7 +12,14 @@ namespace FamilyNet.Downloader
 {
     public class ServerAddressDownloader : IServerAddressDownloader
     {
-        public async Task<IEnumerable<AddressDTO>> GetAllAsync(string url)
+        private readonly IHttpAuthorizationHandler _authorizationHandler;
+
+        public ServerAddressDownloader(IHttpAuthorizationHandler authorizationHandler)
+        {
+            _authorizationHandler = authorizationHandler;
+        }
+
+        public async Task<IEnumerable<AddressDTO>> GetAllAsync(string url, ISession session)
         {
             List<AddressDTO> objs = null;
 
@@ -20,6 +29,7 @@ namespace FamilyNet.Downloader
 
                 using (var httpClient = new HttpClient())
                 {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
                     response = await httpClient.GetAsync(url);
                 }
 
@@ -41,16 +51,18 @@ namespace FamilyNet.Downloader
 
             return objs;
         }
+
+
         public async Task<HttpResponseMessage> CreatePostAsync(string url,
-                                                   AddressDTO dto)
+                                                   AddressDTO dto, ISession session)
         {
             HttpResponseMessage msg = null;
 
             using (var httpClient = new HttpClient())
             using (var formDataContent = new MultipartFormDataContent())
             {
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 BuildMultipartFprmData(dto, formDataContent);
-
                 msg = await httpClient.PostAsync(url, formDataContent);
             }
 
@@ -58,7 +70,8 @@ namespace FamilyNet.Downloader
         }
 
         public async Task<HttpResponseMessage> CreatePutAsync(string url,
-                                                              AddressDTO dto)
+                                                              AddressDTO dto,
+                                                              ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -66,9 +79,8 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFprmData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PutAsync(url, formDataContent);
-
             }
 
             return msg;
@@ -91,7 +103,7 @@ namespace FamilyNet.Downloader
         }
 
 
-        public async Task<AddressDTO> GetByIdAsync(string url)
+        public async Task<AddressDTO> GetByIdAsync(string url, ISession session)
         {
             AddressDTO obj = null;
 
@@ -101,6 +113,7 @@ namespace FamilyNet.Downloader
 
                 using (var httpClient = new HttpClient())
                 {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
                     response = await httpClient.GetAsync(url);
                 }
 
@@ -123,7 +136,7 @@ namespace FamilyNet.Downloader
             return obj;
         }
 
-        public async Task<HttpStatusCode> DeleteAsync(string url)
+        public async Task<HttpStatusCode> DeleteAsync(string url, ISession session)
         {
             HttpResponseMessage response;
 
@@ -131,6 +144,7 @@ namespace FamilyNet.Downloader
             {
                 using (var httpClient = new HttpClient())
                 {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
                     response = await httpClient.DeleteAsync(url);
                 }
             }

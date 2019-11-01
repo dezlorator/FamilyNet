@@ -13,8 +13,8 @@ using FamilyNetServer.Uploaders;
 using FamilyNetServer.Configuration;
 using Microsoft.Extensions.Options;
 using DataTransferObjects;
-using NLog;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -23,8 +23,7 @@ namespace FamilyNetServer.Controllers.API
     public class CharityMakersController : ControllerBase
     {
         #region private
-
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ICharityMakersSelection _selection;
         private readonly ICharityMakerValidator _validator;
         private readonly IFileUploader _fileUploader;
@@ -33,9 +32,8 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
-        #region ctor
-
-        public CharityMakersController(IUnitOfWorkAsync unitOfWork,
+        #region ctro
+        public CharityMakersController(IUnitOfWork unitOfWork,
              ICharityMakersSelection selection, ICharityMakerValidator validator,
              IFileUploader fileUploader,
              IOptionsSnapshot<ServerURLSettings> settings,
@@ -60,7 +58,7 @@ namespace FamilyNetServer.Controllers.API
             var charityMakerContainer = _unitOfWork.CharityMakers.GetAll().Where(p => p.IsDeleted == false);
             charityMakerContainer = _selection.GetFiltered(charityMakerContainer, name, rating);
 
-            if (rows != 0 && page != 0)
+            if (rows > 0 && page > 0)
             {
                 _logger.LogInformation("Paging were used");
                 charityMakerContainer = charityMakerContainer.Skip(rows * page).Take(rows);
@@ -113,12 +111,12 @@ namespace FamilyNetServer.Controllers.API
                 Birthday = charityMaker.Birthday,
                 ID = charityMaker.ID,
                 Name = charityMaker.FullName.Name,
+                AdressID = charityMaker.AddressID ?? 0,
                 Patronymic = charityMaker.FullName.Patronymic,
                 Rating = charityMaker.Rating,
                 Surname = charityMaker.FullName.Surname,
                 EmailID = charityMaker.EmailID,
                 PhotoPath = _settings.Value.ServerURL + charityMaker.Avatar,
-                AdressID = charityMaker.AddressID ?? 0
             };
 
             _logger.LogInformation("Charity maker was sent");
@@ -126,6 +124,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, CharityMaker")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm] CharityMakerDTO charityMakerDTO)
@@ -173,6 +172,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, CharityMaker")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]CharityMakerDTO charityMakerDTO)
@@ -218,6 +218,7 @@ namespace FamilyNetServer.Controllers.API
         }
         
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)

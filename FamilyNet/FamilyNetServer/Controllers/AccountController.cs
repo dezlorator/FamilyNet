@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using FamilyNetServer.Models;
 using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -14,23 +9,33 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 
 namespace FamilyNetServer.Controllers
-{
-    
+{    
     public class AccountController : BaseController
     {
+        #region feilds
+
         private readonly IStringLocalizer<HomeController> _localizer;
 
-        public AccountController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        #endregion
+
+        #region ctor
+
+        public AccountController(IUnitOfWork unitOfWork,
+                                 IStringLocalizer<HomeController> localizer,
+                                 IStringLocalizer<SharedResource> sharedLocalizer)
+            : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;
         }
+
+        #endregion
 
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
         {
             GetViewData();
-            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
             {
                 Text = item.Name,
@@ -49,7 +54,7 @@ namespace FamilyNetServer.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             GetViewData();
-            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
             {
                 Text = item.Name,
@@ -67,14 +72,14 @@ namespace FamilyNetServer.Controllers
                     PersonID = null
                 };
                 // добавляем пользователя.
-                var result = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
+                var result = await _unitOfWork.UserManager.CreateAsync(user, model.Password);
 
-                await _unitOfWorkAsync.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
+                await _unitOfWork.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
 
                 if (result.Succeeded)
                 {
 
-                    var code = await _unitOfWorkAsync.UserManager.GenerateEmailConfirmationTokenAsync(user);
+                    var code = await _unitOfWork.UserManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action(
                         "ConfirmEmail",
                         "Account",
@@ -110,15 +115,15 @@ namespace FamilyNetServer.Controllers
             {
                 return View("Error");
             }
-            var user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if(user == null)
             {
                 return View("Error");
             }
-            var result = await _unitOfWorkAsync.UserManager.ConfirmEmailAsync(user, code);
+            var result = await _unitOfWork.UserManager.ConfirmEmailAsync(user, code);
             if (result.Succeeded)
             {
-                await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
+                await _unitOfWork.SignInManager.SignInAsync(user, false);
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -144,17 +149,17 @@ namespace FamilyNetServer.Controllers
             GetViewData();
             if (ModelState.IsValid)
             {
-                ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
+                ApplicationUser user = await _unitOfWork.UserManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
-                    if(!await _unitOfWorkAsync.UserManager.IsEmailConfirmedAsync(user))
+                    if(!await _unitOfWork.UserManager.IsEmailConfirmedAsync(user))
                     {
                         ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
                         return View(model);
                     }
-                    await _unitOfWorkAsync.SignInManager.SignOutAsync();
+                    await _unitOfWork.SignInManager.SignOutAsync();
                     Microsoft.AspNetCore.Identity.SignInResult result =
-                            await _unitOfWorkAsync.SignInManager.PasswordSignInAsync(
+                            await _unitOfWork.SignInManager.PasswordSignInAsync(
                                 user, model.Password, model.RememberMe, false);
                     if (result.Succeeded)
                     {
@@ -186,7 +191,7 @@ namespace FamilyNetServer.Controllers
         public async Task<IActionResult> Logout()
         {
             // удаляем аутентификационные куки
-            await _unitOfWorkAsync.SignInManager.SignOutAsync();
+            await _unitOfWork.SignInManager.SignOutAsync();
             GetViewData();
             return RedirectToAction("Index", "Home");
         }

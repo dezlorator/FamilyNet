@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FamilyNetServer.Models.EntityFramework
 {
-    public class EFUnitOfWorkAsync : IUnitOfWorkAsync
+    public class EFUnitOfWork : IUnitOfWork
     {
         #region Private fields
 
@@ -17,7 +17,7 @@ namespace FamilyNetServer.Models.EntityFramework
 
         #region Constructors
 
-        public EFUnitOfWorkAsync(ApplicationDbContext cont,
+        public EFUnitOfWork(ApplicationDbContext cont,
                                  IUserValidator<ApplicationUser> userValid, 
                                  IPasswordValidator<ApplicationUser> passValid, 
                                  IPasswordHasher<ApplicationUser> passwordHash, 
@@ -26,15 +26,15 @@ namespace FamilyNetServer.Models.EntityFramework
                                  RoleManager<IdentityRole> roleManager)
         {
             _context = cont;
-            Address = new EFRepositoryAsync<Address>(cont);
-            Location = new EFRepositoryAsync<Location>(cont);
-            CharityMakers = new EFRepositoryAsync<CharityMaker>(cont);
-            Donations = new EFRepositoryAsync<Donation>(cont);
+            Address = new EFRepository<Address>(cont);
+            Location = new EFRepository<Location>(cont);
+            CharityMakers = new EFRepository<CharityMaker>(cont);
+            Donations = new EFRepository<Donation>(cont);
             Orphanages = new OrphanageRepositoryAsync(cont);
-            Orphans = new EFRepositoryAsync<Orphan>(cont);
-            DonationItems = new EFRepositoryAsync<DonationItem>(cont);
-            Representatives = new EFRepositoryAsync<Representative>(cont);
-            Volunteers = new EFRepositoryAsync<Volunteer>(cont);
+            Orphans = new EFRepository<Orphan>(cont);
+            DonationItems = new EFRepository<DonationItem>(cont);
+            Representatives = new EFRepository<Representative>(cont);
+            Volunteers = new EFRepository<Volunteer>(cont);
             PasswordHasher = passwordHash;
             UserValidator = userValid;
             PasswordValidator = passValid;
@@ -42,7 +42,7 @@ namespace FamilyNetServer.Models.EntityFramework
             UserManager = userManager;
             SignInManager = signInManager;
             RoleManager = roleManager;
-            BaseItemTypes = new EFRepositoryAsync<BaseItemType>(cont);
+            BaseItemTypes = new EFRepository<BaseItemType>(cont);
             TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
         }
 
@@ -50,22 +50,22 @@ namespace FamilyNetServer.Models.EntityFramework
 
         #region Property
 
-        public IOrphanageAsyncRepository Orphanages { get; set; }
+        public IOrphanageRepository Orphanages { get; set; }
 
-        public IAsyncRepository<Address> Address { get; set; }
-        public IAsyncRepository<Location> Location { get; set; }
+        public IRepository<Address> Address { get; set; }
+        public IRepository<Location> Location { get; set; }
 
-        public IAsyncRepository<CharityMaker> CharityMakers { get; set; }
+        public IRepository<CharityMaker> CharityMakers { get; set; }
 
-        public IAsyncRepository<Representative> Representatives { get; set; }
+        public IRepository<Representative> Representatives { get; set; }
 
-        public IAsyncRepository<Volunteer> Volunteers { get; set; }
+        public IRepository<Volunteer> Volunteers { get; set; }
 
-        public IAsyncRepository<Donation> Donations { get; set; }
+        public IRepository<Donation> Donations { get; set; }
 
         public DbSet<TypeBaseItem> TypeBaseItems { get; set; } // TODO : rewrite this
 
-        public IAsyncRepository<Orphan> Orphans { get; set; }
+        public IRepository<Orphan> Orphans { get; set; }
 
         public IUserValidator<ApplicationUser> UserValidator { get; set; }
 
@@ -80,9 +80,9 @@ namespace FamilyNetServer.Models.EntityFramework
         public SignInManager<ApplicationUser> SignInManager { get; set; }
 
         public RoleManager<IdentityRole> RoleManager { get; set; }
-        public IAsyncRepository<DonationItem> DonationItems { get; set; }
+        public IRepository<DonationItem> DonationItems { get; set; }
 
-        public IAsyncRepository<BaseItemType> BaseItemTypes { get; set; }
+        public IRepository<BaseItemType> BaseItemTypes { get; set; }
 
         #endregion
 

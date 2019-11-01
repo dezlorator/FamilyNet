@@ -6,21 +6,15 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Downloader;
 using FamilyNet.StreamCreater;
 using DataTransferObjects;
-using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
     public class RepresentativesController : Controller
     {
         #region private fields
@@ -56,9 +50,7 @@ namespace FamilyNet.Controllers
 
         #region Methods
 
-        // GET: Representatives
-        [AllowAnonymous]
-        public async Task<IActionResult> Index(int id,
+        public async Task<IActionResult> Index(int id, 
             PersonSearchModel searchModel)
         {
             var url = _URLRepresentativeBuilder
@@ -68,7 +60,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativesDTO = await _representativesDownLoader.GetAllAsync(url);
+                representativesDTO = await _representativesDownLoader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -102,8 +94,7 @@ namespace FamilyNet.Controllers
             return View(representatives);
         }
 
-        // GET: Representatives/Details/5
-        [AllowAnonymous]
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -116,7 +107,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _representativesDownLoader.GetByIdAsync(url);
+                representativeDTO = await _representativesDownLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -155,8 +146,7 @@ namespace FamilyNet.Controllers
             return View(representative);
         }
 
-        [Authorize(Roles = "Admin, Representative")]
-        // GET: Representatives/Create
+  
         public async Task<IActionResult> Create()
         {
             var urlChildrenHouse = _URLChildrenHouseBuilder.GetAllWithFilter(_apiChildrenHousesPath,
@@ -164,7 +154,7 @@ namespace FamilyNet.Controllers
                                                                             SortStateOrphanages.NameAsc);
             try
             {
-                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse);
+                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse, HttpContext.Session);
                 ViewBag.ListOfOrphanages = childrenHouses;
             }
             catch (ArgumentNullException)
@@ -190,7 +180,6 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,Rating,Avatar,ChildrenHouseID")]
         RepresentativeDTO representativeDTO)
         {
@@ -207,9 +196,15 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.CreatePost(_apiPath);
-            var status = await _representativesDownLoader.СreatePostAsync(url, representativeDTO,
+            var status = await _representativesDownLoader.CreatePostAsync(url, representativeDTO,
                                                  stream,
-                                                 representativeDTO.Avatar.FileName);
+                                                 representativeDTO.Avatar.FileName,
+                                                 HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.Created)
             {
@@ -219,8 +214,7 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Representatives/Edit/5
-        [Authorize(Roles = "Admin, Representative")]
+       
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -242,8 +236,8 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _representativesDownLoader.GetByIdAsync(url);
-                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse);
+                representativeDTO = await _representativesDownLoader.GetByIdAsync(url, HttpContext.Session);
+                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse, HttpContext.Session);
                 ViewBag.ListOfOrphanages = childrenHouses;
             }
             catch (ArgumentNullException)
@@ -267,7 +261,6 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Edit(int id, RepresentativeDTO representativeDTO)
         {
             if (id != representativeDTO.ID)
@@ -283,8 +276,9 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
-            var status = await _representativesDownLoader.СreatePutAsync(url, representativeDTO,
-                                                            stream, representativeDTO.Avatar?.FileName);
+            var status = await _representativesDownLoader.CreatePutAsync(url, representativeDTO,
+                                                            stream, representativeDTO.Avatar?.FileName,
+                                                            HttpContext.Session);
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -295,8 +289,6 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Representatives/Delete/5
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -309,7 +301,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _representativesDownLoader.GetByIdAsync(url);
+                representativeDTO = await _representativesDownLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -332,10 +324,8 @@ namespace FamilyNet.Controllers
             return View(representativeDTO);
         }
 
-        // POST: Representatives/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
@@ -343,7 +333,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
-            var status = await _representativesDownLoader.DeleteAsync(url);
+            var status = await _representativesDownLoader.DeleteAsync(url, HttpContext.Session);
 
             if (status != HttpStatusCode.OK)
             {
