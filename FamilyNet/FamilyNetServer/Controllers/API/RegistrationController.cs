@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using FamilyNetServer.Models;
 using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -24,11 +19,11 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
         private readonly IStringLocalizer<HomeController> _localizer;
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         #endregion
 
-        public RegistrationController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer)
+        public RegistrationController(IUnitOfWork unitOfWork, IStringLocalizer<HomeController> localizer)
         {
             _unitOfWork = unitOfWork;
             _localizer = localizer;

@@ -17,11 +17,11 @@ namespace FamilyNetServer.Controllers
     public class RolesController : BaseController
     {
 
-        public RolesController(IUnitOfWorkAsync unitOfWork) : base(unitOfWork)
+        public RolesController(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
 
         }
-        public IActionResult Index() => View(_unitOfWorkAsync.RoleManager.Roles);
+        public IActionResult Index() => View(_unitOfWork.RoleManager.Roles);
 
         public IActionResult Create() => View();
         [HttpPost]
@@ -29,7 +29,7 @@ namespace FamilyNetServer.Controllers
         {
             if (!string.IsNullOrEmpty(name))
             {
-                IdentityResult result = await _unitOfWorkAsync.RoleManager.CreateAsync(new IdentityRole(name));
+                IdentityResult result = await _unitOfWork.RoleManager.CreateAsync(new IdentityRole(name));
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index");
@@ -48,25 +48,25 @@ namespace FamilyNetServer.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            IdentityRole role = await _unitOfWorkAsync.RoleManager.FindByIdAsync(id);
+            IdentityRole role = await _unitOfWork.RoleManager.FindByIdAsync(id);
             if (role != null)
             {
-                IdentityResult result = await _unitOfWorkAsync.RoleManager.DeleteAsync(role);
+                IdentityResult result = await _unitOfWork.RoleManager.DeleteAsync(role);
             }
             return RedirectToAction("Index");
         }
 
-        public IActionResult UserList() => View(_unitOfWorkAsync.UserManager.Users);
+        public IActionResult UserList() => View(_unitOfWork.UserManager.Users);
 
         public async Task<IActionResult> Edit(string userId)
         {
             // получаем пользователя
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await _unitOfWorkAsync.UserManager.GetRolesAsync(user);
-                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+                var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
+                var allRoles = _unitOfWork.RoleManager.Roles.ToList();
                 ChangeRoleViewModel model = new ChangeRoleViewModel
                 {
                     UserId = user.Id,
@@ -83,21 +83,21 @@ namespace FamilyNetServer.Controllers
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {
             // получаем пользователя
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await _unitOfWorkAsync.UserManager.GetRolesAsync(user);
+                var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
                 // получаем все роли
-                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+                var allRoles = _unitOfWork.RoleManager.Roles.ToList();
                 // получаем список ролей, которые были добавлены
                 var addedRoles = roles.Except(userRoles);
                 // получаем роли, которые были удалены
                 var removedRoles = userRoles.Except(roles);
 
-                await _unitOfWorkAsync.UserManager.AddToRolesAsync(user, addedRoles);
+                await _unitOfWork.UserManager.AddToRolesAsync(user, addedRoles);
 
-                await _unitOfWorkAsync.UserManager.RemoveFromRolesAsync(user, removedRoles);
+                await _unitOfWork.UserManager.RemoveFromRolesAsync(user, removedRoles);
 
                 return RedirectToAction("UserList");
             }

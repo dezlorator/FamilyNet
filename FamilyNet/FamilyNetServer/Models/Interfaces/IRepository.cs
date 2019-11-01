@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.Models.Interfaces
 {
-    public interface IAsyncRepository<TEntity> where TEntity : class, IEntity
+    public interface IRepository<TEntity> where TEntity : class, IEntity
     {
         IQueryable<TEntity> GetAll();
 

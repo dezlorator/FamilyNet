@@ -2,8 +2,10 @@
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,17 +19,20 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _repository;
+        private readonly IUnitOfWork _repository;
         private readonly IValidator<AddressDTO> _addressValidator;
+        private readonly ILogger<LocationController> _logger;
 
         #endregion
 
         #region ctor
 
-        public LocationController(IUnitOfWorkAsync repo, IValidator<AddressDTO> addressValidator)
+        public LocationController(IUnitOfWork repo, IValidator<AddressDTO> addressValidator,
+            ILogger<LocationController> logger)
         {
             _repository = repo;
             _addressValidator = addressValidator;
+            _logger = logger;
         }
 
         #endregion
@@ -41,6 +46,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (location == null)
             {
+                _logger.LogError("No location in database");
                 return BadRequest();
             }
 
@@ -58,6 +64,8 @@ namespace FamilyNetServer.Controllers.API
                 locationsDTO.Add(locationDTO);
             }
 
+            _logger.LogInformation("Returned location list");
+
             return Ok(locationsDTO);
         }
 
@@ -71,6 +79,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (locations == null)
             {
+                _logger.LogError($"No location with id #{id} in database");
                 return BadRequest();
             }
 
@@ -82,16 +91,19 @@ namespace FamilyNetServer.Controllers.API
 
             };
 
+            _logger.LogInformation($"Returned location with id #{id}");
             return Ok(locationDTO);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
         {
             if (!_addressValidator.IsValid(addressDTO))
             {
+                _logger.LogError("Invalid address data");
                 return BadRequest();
             }
 
@@ -107,27 +119,35 @@ namespace FamilyNetServer.Controllers.API
 
             }
             else
+            {
+                _logger.LogError("Invalid address data");
                 return BadRequest();
+            }
 
             await _repository.Location.Create(location);
             _repository.SaveChangesAsync();
 
+            _logger.LogInformation($"Created location with id #{location.ID}");
+            
             return Created("api/v1/childrenHouse/" + location.ID, location);
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AddressDTO addressDTO)
         {
             if (!_addressValidator.IsValid(addressDTO))
             {
+                _logger.LogError("Invalid address data");
                 return BadRequest();
             }
 
             var location = await _repository.Location.GetById(id);
             if (location == null)
             {
+                _logger.LogError($"No location with id #{id} in database");
                 return BadRequest();
             }
 
@@ -139,21 +159,26 @@ namespace FamilyNetServer.Controllers.API
             }
             else
             {
+                _logger.LogInformation("Invalid address data");
                 location.IsDeleted = true;
             }
             _repository.Location.Update(location);
             _repository.SaveChangesAsync();
 
+            _logger.LogInformation($"Edited location with id #{location.ID}");
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute]int id)
         {
             if (id <= 0)
             {
+                _logger.LogError("Invalid id");
                 return BadRequest();
             }
 
@@ -161,6 +186,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (location == null)
             {
+                _logger.LogError($"No location with id #{id} in database");
                 return BadRequest();
             }
 
@@ -168,6 +194,8 @@ namespace FamilyNetServer.Controllers.API
 
             _repository.Location.Update(location);
             _repository.SaveChangesAsync();
+
+            _logger.LogInformation($"Deleted location with id #{location.ID}");
 
             return Ok();
         }

@@ -1,15 +1,18 @@
 ﻿using DataTransferObjects;
-using System.IO;
-using System.Net;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
     public class ServerCategoriesDownloader : ServerSimpleDataDownloader<CategoryDTO>
     {
-        public override async Task<HttpResponseMessage> CreatePostAsync(string url, CategoryDTO dto)
+        public ServerCategoriesDownloader(IHttpAuthorizationHandler authorizationHandler)
+            : base(authorizationHandler){}
+
+        public override async Task<HttpResponseMessage> CreatePostAsync(string url, CategoryDTO dto,
+                                                                        ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -17,14 +20,14 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PostAsync(url, formDataContent);
             }
 
             return msg;
         }
         
-        public override Task<HttpResponseMessage> CreatePutAsync(string url, CategoryDTO dto)
+        public override Task<HttpResponseMessage> CreatePutAsync(string url, CategoryDTO dto, ISession session)
         {
             throw new System.NotImplementedException();
         }

@@ -4,6 +4,7 @@ using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -18,13 +19,13 @@ namespace FamilyNetServer.Controllers.API
     {
         #region fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
-        private readonly IDonationItemValidator _donationItemValidator;
-        private readonly IDonationItemsFilter _donationItemsFilter;
+        private readonly IUnitOfWork _unitOfWork;
+         private readonly IDonationItemValidator _donationItemValidator;
+         private readonly IDonationItemsFilter _donationItemsFilter;
 
         #endregion
 
-        public DonationItemsController(IUnitOfWorkAsync unitOfWork,
+        public DonationItemsController(IUnitOfWork unitOfWork,
                                   IDonationItemValidator donationItemValidator,
                                   IDonationItemsFilter donationItemsFilter)
         {
@@ -99,6 +100,7 @@ namespace FamilyNetServer.Controllers.API
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin, CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]DonationItemDTO donationItemDTO)
@@ -142,6 +144,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]DonationItemDTO donationItemDTO)
@@ -169,6 +172,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)

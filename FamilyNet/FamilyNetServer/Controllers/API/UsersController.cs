@@ -2,9 +2,7 @@
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using FamilyNetServer.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Models.Identity;
 using System.Linq;
@@ -19,11 +17,11 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         #endregion
 
-        public UsersController(IUnitOfWorkAsync unitOfWork)
+        public UsersController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

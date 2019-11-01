@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using Microsoft.Extensions.Localization;
@@ -17,7 +16,6 @@ namespace FamilyNet.Controllers
 {
     public class CategoriesController : BaseController
     {
-
         #region private fields
 
         private readonly IStringLocalizer<CategoriesController> _localizer;
@@ -42,7 +40,6 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var url = _URLBuilder.GetAll(_apiPath);
@@ -50,7 +47,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                categoryDTO = await _downloader.GetAllAsync(url);
+                categoryDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -74,7 +71,6 @@ namespace FamilyNet.Controllers
             return View(categories);
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create()
         {
             await Check();
@@ -85,11 +81,10 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create(CategoryDTO category)
         {
             var url = _URLBuilder.CreatePost(_apiPath);
-            var msg = await _downloader.CreatePostAsync(url, category);
+            var msg = await _downloader.CreatePostAsync(url, category, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -102,7 +97,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Categories/Index");
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -115,7 +109,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                categoryDTO = await _downloader.GetByIdAsync(url);
+                categoryDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -142,7 +136,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
@@ -151,7 +144,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLBuilder.GetById(_apiPath, id);
-            var msg = await _downloader.DeleteAsync(url);
+            var msg = await _downloader.DeleteAsync(url, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.OK)
             {

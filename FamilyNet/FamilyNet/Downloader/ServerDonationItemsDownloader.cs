@@ -1,5 +1,6 @@
 ﻿using DataTransferObjects;
-using System.Net;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -7,7 +8,11 @@ namespace FamilyNet.Downloader
 {
     public class ServerDonationItemsDownloader : ServerSimpleDataDownloader<DonationItemDTO>
     {
-        public override async Task<HttpResponseMessage> CreatePutAsync(string url, DonationItemDTO dto)
+        public ServerDonationItemsDownloader(IHttpAuthorizationHandler authorizationHandler)
+       :base(authorizationHandler) {}
+
+        public override async Task<HttpResponseMessage> CreatePutAsync(string url, DonationItemDTO dto,
+                                                                        ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -15,14 +20,15 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PutAsync(url, formDataContent);
             }
 
             return msg;
         }
 
-        public override async Task<HttpResponseMessage> CreatePostAsync(string url, DonationItemDTO dto)
+        public override async Task<HttpResponseMessage> CreatePostAsync(string url, DonationItemDTO dto,
+                                                                         ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -30,7 +36,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 msg = await httpClient.PostAsync(url, formDataContent);
             }
 

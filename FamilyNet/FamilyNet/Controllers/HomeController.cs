@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -9,19 +7,33 @@ using FamilyNet.Models.Interfaces;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Hosting;
 
-namespace FamilyNet.Controllers {
-    public class HomeController : BaseController {
+namespace FamilyNet.Controllers
+{
+    public class HomeController : BaseController
+    {
+        #region fields
+
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        public HomeController(IUnitOfWorkAsync unitOfWork, IHostingEnvironment environment, IStringLocalizer<HomeController> localizer) : base(unitOfWork) {
+        #endregion
+
+        #region ctor
+
+        public HomeController(IUnitOfWorkAsync unitOfWork,
+                              IHostingEnvironment environment,
+                              IStringLocalizer<HomeController> localizer)
+            : base(unitOfWork)
+        {
             _localizer = localizer;
             _hostingEnvironment = environment;
-
         }
 
-        public async Task<IActionResult> Index() {
-            ViewData["Best"] = _unitOfWorkAsync.Orphanages.GetAll()
+        #endregion
+
+        public async Task<IActionResult> Index()
+        {
+            ViewData["Best"] = _unitOfWork.Orphanages.GetAll()
               .OrderByDescending(c => c.Rating)
 
               .Take(3);
@@ -29,18 +41,22 @@ namespace FamilyNet.Controllers {
             GetViewData();
             return View();
         }
-        public IActionResult Privacy() {
+        public IActionResult Privacy()
+        {
             GetViewData();
             return View();
         }
 
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error() {
+        public IActionResult Error()
+        {
             GetViewData();
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private void GetViewData() {
+        private void GetViewData()
+        {
             ViewData["CharityMakers"] = _localizer["CharityMakers"];
             ViewData["Children"] = _localizer["Children"];
             ViewData["Orphanages"] = _localizer["Orphanages"];

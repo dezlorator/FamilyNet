@@ -6,10 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace FamilyNetServer.Models.EntityFramework {
-    public class EFRepositoryAsync<TEntity> : IAsyncRepository<TEntity> where TEntity : class, IEntity {
+    public class EFRepository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity {
         protected readonly ApplicationDbContext _dbContext;
 
-        public EFRepositoryAsync(ApplicationDbContext dbContext)
+        public EFRepository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -20,14 +20,12 @@ namespace FamilyNetServer.Models.EntityFramework {
         /// <returns>IQueryable<TEntity></returns>
         public IQueryable<TEntity> GetAll() {
             return _dbContext.Set<TEntity>();
-
         }
 
 
         public async Task Create(TEntity entity)
         {
             await _dbContext.Set<TEntity>().AddAsync(entity);
-
         }
 
         public void Update(TEntity entity)
@@ -39,7 +37,6 @@ namespace FamilyNetServer.Models.EntityFramework {
         {
             var entity = await _dbContext.Set<TEntity>().FindAsync(id);
             _dbContext.Set<TEntity>().Remove(entity);
-
         }
 
         public async Task<TEntity> GetById(int id)
