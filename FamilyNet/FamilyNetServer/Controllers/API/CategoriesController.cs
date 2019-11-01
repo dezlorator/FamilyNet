@@ -1,13 +1,13 @@
-﻿using DataTransferObjects;
-using FamilyNetServer.Models;
-using FamilyNetServer.Models.Interfaces;
-using FamilyNetServer.Validators;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using FamilyNetServer.Models.Interfaces;
+using Microsoft.AspNetCore.Http;
+using FamilyNetServer.Models;
+using FamilyNetServer.Validators;
+using DataTransferObjects;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -19,16 +19,19 @@ namespace FamilyNetServer.Controllers.API
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICategoryValidator _categoryValidator;
+        private readonly ILogger<CategoriesController> _logger;
 
         #endregion
 
         #region ctor
 
         public CategoriesController(IUnitOfWork unitOfWork,
-                                    ICategoryValidator categoryValidator)
+                                    ICategoryValidator categoryValidator,
+                                    ILogger<CategoriesController> logger)
         {
             _unitOfWork = unitOfWork;
             _categoryValidator = categoryValidator;
+            _logger = logger;
         }
 
         #endregion
@@ -43,12 +46,14 @@ namespace FamilyNetServer.Controllers.API
 
             if (rows != 0 && page != 0)
             {
+                _logger.LogInformation("Paging were used");
                 categories = categories
                     .Skip((page - 1) * rows).Take(rows);
             }
 
             if (categories == null)
             {
+                _logger.LogError("Bad request. No categories were found");
                 return BadRequest();
             }
 
@@ -60,6 +65,8 @@ namespace FamilyNetServer.Controllers.API
                     ID = c.ID,
                     Name = c.Name
                 }).ToList();
+
+            _logger.LogInformation("Status: OK. List of categories was sent");
 
             return Ok(categoriesDTO);
         }
@@ -73,6 +80,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (category == null)
             {
+                _logger.LogError("Bad request. No category was found");
                 return BadRequest();
             }
 
@@ -82,17 +90,19 @@ namespace FamilyNetServer.Controllers.API
                 Name = category.Name
             };
 
+            _logger.LogInformation("Status: OK. Category item was sent");
+
             return Ok(categoryDTO);
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Volunteer, CharityMaker, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]CategoryDTO categoryDTO)
         {
             if (!_categoryValidator.IsValid(categoryDTO))
             {
+                _logger.LogError("Model is not valid.");
                 return BadRequest();
             }
 
@@ -104,17 +114,19 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.BaseItemTypes.Create(category);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("Status: Created. Category was created");
+
             return Created("api/v1/categories/" + category.ID, categoryDTO);
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
             {
+                _logger.LogError("Bad request. Id must be greater than zero.");
                 return BadRequest();
             }
 
@@ -122,6 +134,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (category == null)
             {
+                _logger.LogError("Bad request. No category with such id was found");
                 return BadRequest();
             }
 
@@ -129,6 +142,8 @@ namespace FamilyNetServer.Controllers.API
 
             _unitOfWork.BaseItemTypes.Update(category);
             _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation("Status: OK. Category was deleted.");
 
             return Ok();
         }

@@ -22,6 +22,10 @@ namespace FamilyNetServer.Models
         [Display(Name = "Филантроп")]
         public virtual CharityMaker CharityMaker { get; set; }
 
+        public virtual int? VolunteerID { get; set; }
+
+        public virtual Volunteer Volunteer { get; set; }
+
         public int? OrphanageID { get; set; }
 
         [Display(Name = "Детский дом")]

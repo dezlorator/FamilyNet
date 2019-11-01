@@ -83,7 +83,7 @@ namespace FamilyNet
             services.AddTransient<ServerChildrenHouseDownloader>();
             services.AddTransient<ServerAddressDownloader>();
             services.AddTransient<ServerLocationDownloader>();
-            services.AddTransient < ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader >();
+            services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader >();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
