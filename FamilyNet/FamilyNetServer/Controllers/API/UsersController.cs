@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FamilyNetServer.Models.ViewModels;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Models.Identity;
 using System.Linq;
@@ -20,12 +20,14 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly ILogger<UsersController> _logger;
 
         #endregion
 
-        public UsersController(IUnitOfWorkAsync unitOfWork)
+        public UsersController(IUnitOfWorkAsync unitOfWork, ILogger<UsersController> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -34,7 +36,12 @@ namespace FamilyNetServer.Controllers.API
         public IActionResult Get()
         {
             var users = _unitOfWork.UserManager.Users;
-
+            if (users==null)
+            {
+                _logger.LogError("BadRequest[400]. List of users was not fount.");
+                return BadRequest();
+            }
+            _logger.LogInformation("0k[200]. List of users was sent.");
             return Ok(users);
         }
 
@@ -49,6 +56,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (user == null)
             {
+                _logger.LogError("BadRequest[400]. User was not fount.");
                 return BadRequest();
             }
 
@@ -57,8 +65,9 @@ namespace FamilyNetServer.Controllers.API
                 Id = user.Id,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Roles = userRoles.ToArray()
+                Roles = userRoles.ToList()
             };
+            _logger.LogInformation("0k[200]. User was sent.");
             return Ok(userDTO);
         }
         [HttpPost]
@@ -68,6 +77,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (userDTO == null)
             {
+                _logger.LogError("BadRequest[400]. UserDTO is not valid, user vas not created.");
                 return BadRequest();
             }
             var user = new ApplicationUser
@@ -81,9 +91,10 @@ namespace FamilyNetServer.Controllers.API
             if (result.Succeeded)
             {
                 _unitOfWork.SaveChangesAsync();
+                _logger.LogInformation("Created[201].New user was created.");
                 return Created("api/v1/users/", userDTO);
             }
-
+            _logger.LogError("BadRequest[400]. UserDTO is not valid, user vas not created.");
             return BadRequest();
         }
 
@@ -96,12 +107,13 @@ namespace FamilyNetServer.Controllers.API
 
             if (user == null)
             {
+                _logger.LogError("BadRequest[400]. Users was not found and not deleted.");
                 return BadRequest();
             }
 
             IdentityResult result
                        = await _unitOfWork.UserManager.DeleteAsync(user);
-
+            _logger.LogInformation("0k[200]. User was deleted.");
             _unitOfWork.SaveChangesAsync();
 
             return Ok();
@@ -115,6 +127,7 @@ namespace FamilyNetServer.Controllers.API
             ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(us.Id);
             if (user == null)
             {
+                _logger.LogError("BadRequest[400]. User was ot found, user vas not created.");
                 return BadRequest();
             }
 
@@ -125,6 +138,7 @@ namespace FamilyNetServer.Controllers.API
                 = await _unitOfWork.UserValidator.ValidateAsync(_unitOfWork.UserManager, user);
             if (!validEmail.Succeeded)
             {
+                _logger.LogError("BadRequest[400]. User EMAIL is not valid, user vas not created.");
                 return BadRequest();
             }
 
@@ -134,6 +148,7 @@ namespace FamilyNetServer.Controllers.API
                 = await _unitOfWork.PhoneValidator.ValidateAsync(_unitOfWork.UserManager, user);
             if (!validPhone.Succeeded)
             {
+                _logger.LogError("BadRequest[400]. User Phone is not valid, user vas not created.");
                 return BadRequest();
             }
 
@@ -150,14 +165,13 @@ namespace FamilyNetServer.Controllers.API
                 }
                 else
                 {
+                    _logger.LogError("BadRequest[400]. User PASSWORD is not valid, user vas not created.");
                     return BadRequest();
                 }
             }
 
             // получем список ролей пользователя
             var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
-            // получаем все роли
-            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
             // получаем список ролей, которые были добавлены
             var addedRoles = us.Roles.Except(userRoles);
             // получаем роли, которые были удалены
@@ -170,19 +184,13 @@ namespace FamilyNetServer.Controllers.API
             IdentityResult result = await _unitOfWork.UserManager.UpdateAsync(user);
             if (result.Succeeded)
             {
+                _logger.LogInformation("0k[200]. User was edited.");
                 return NoContent();
             }
             else
             {
+                _logger.LogError("BadRequest[400]. User ROLES is not valid, user vas not created.");
                 return BadRequest();
-            }
-        }
-
-        private void AddErrorsFromResult(IdentityResult result)
-        {
-            foreach (IdentityError error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
             }
         }
     }

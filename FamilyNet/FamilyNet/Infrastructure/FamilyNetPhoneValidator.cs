@@ -18,7 +18,7 @@ namespace FamilyNet.Infrastructure
             List<IdentityError> errors = result.Succeeded ?
                 new List<IdentityError>() : result.Errors.ToList();
 
-            Regex regex = new Regex(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$");
+            Regex regex = new Regex(@"(\+[0-9]{2}|\+[0-9]{2}\(0\)|\(\+[0-9]{2}\)\(0\)|00[0-9]{2}|0)([0-9]{9}|[0-9\-\s]{9,18})");
 
             if (!regex.IsMatch(applicationUser.PhoneNumber))
             {

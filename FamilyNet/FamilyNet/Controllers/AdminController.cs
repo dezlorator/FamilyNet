@@ -24,11 +24,16 @@ namespace FamilyNet.Controllers
     public class AdminController : BaseController
     {
         ServerSimpleDataDownloader<UserDTO> _downloader;
+        ServerSimpleDataDownloader<RoleDTO> _rolesDownloader;
         private readonly string _apiPath = "http://localhost:53605/api/v1/users/";
-        public AdminController(IUnitOfWorkAsync unitOfWork, ServerSimpleDataDownloader<UserDTO> downloader)
+
+        private readonly string _apiRolesPath = "http://localhost:53605/api/v1/roles/";
+        public AdminController(IUnitOfWorkAsync unitOfWork, ServerSimpleDataDownloader<UserDTO> downloader
+            , ServerSimpleDataDownloader<RoleDTO> rolesDownloader)
                               : base(unitOfWork)
         {
             _downloader = downloader;
+            _rolesDownloader = rolesDownloader;
         }
 
         public async Task<IActionResult> Index()
@@ -121,95 +126,69 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(id);
-            if (user != null)
+           if (id == null)
             {
-                EditViewModel editView = new EditViewModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber };
-                return View(editView);
+                return NotFound();
             }
-            else
+            string url = _apiPath + id;
+            UserDTO userDTO = new UserDTO();
+            try
             {
-                return RedirectToAction("Index");
+                var allRoles = await _rolesDownloader.GetAllAsync(_apiRolesPath);
+                userDTO = await _downloader.GetByIdAsync(url);
+                ViewBag.AllRoles = allRoles.ToList();
             }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            return View(userDTO);
+
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditViewModel us, string password)
+        public async Task<IActionResult> Edit(UserDTO userDTO, string id)
         {
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(us.Id);
-            if (user != null)
+            if (id != userDTO.Id)
             {
-                user.Email = us.Email;
-
-                IdentityResult validEmail
-                    = await _unitOfWorkAsync.UserValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
-                if (!validEmail.Succeeded)
-                {
-                    AddErrorsFromResult(validEmail);
-                }
-                user.PhoneNumber = us.PhoneNumber;
-                IdentityResult validPhone
-                    = await _unitOfWorkAsync.PhoneValidator.ValidateAsync(_unitOfWorkAsync.UserManager, user);
-                if (!validPhone.Succeeded)
-                {
-                    AddErrorsFromResult(validPhone);
-                }
-
-
-
-                IdentityResult validPass = null;
-                if (!string.IsNullOrEmpty(password))
-                {
-                    validPass = await _unitOfWorkAsync.PasswordValidator.ValidateAsync(_unitOfWorkAsync.UserManager,
-                        user, password);
-                    if (validPass.Succeeded)
-                    {
-                        user.PasswordHash = _unitOfWorkAsync.PasswordHasher.HashPassword(user,
-                            password);
-                    }
-                    else
-                    {
-                        AddErrorsFromResult(validPass);
-                    }
-                }
-
-
-
-                if ((validEmail.Succeeded && validPhone.Succeeded))
-
-                {
-                    if ((validPass != null && validEmail.Succeeded && password != string.Empty && validPass.Succeeded && validPhone.Succeeded))
-                    {
-                        IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
-                        if (result.Succeeded)
-                        {
-                            return RedirectToAction("Index");
-                        }
-                        else
-                        {
-                            AddErrorsFromResult(result);
-                        }
-                    }
-                    else
-                    {
-
-                        IdentityResult result = await _unitOfWorkAsync.UserManager.UpdateAsync(user);
-                        if (result.Succeeded && validPass.Succeeded)
-                        {
-                            return RedirectToAction("Index");
-                        }
-                        else
-                        {
-                            AddErrorsFromResult(result);
-                        }
-                    }
-                }
+                return NotFound();
             }
-            else
+
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "User Not Found");
+                return View(userDTO);
             }
-            return View(us);
+
+            
+            var url = _apiPath+id;
+
+            try
+            {
+               var status = await _downloader.CreatePutAsync(url, userDTO);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            return Redirect("/Admin/Index");
         }
 
         private void AddErrorsFromResult(IdentityResult result)

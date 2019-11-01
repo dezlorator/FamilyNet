@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 
@@ -17,12 +17,14 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly ILogger<RolesController> _logger;
 
         #endregion
 
-        public RolesController(IUnitOfWorkAsync unitOfWork)
+        public RolesController(IUnitOfWorkAsync unitOfWork, ILogger<RolesController> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -31,7 +33,7 @@ namespace FamilyNetServer.Controllers.API
         public IActionResult GetAllAsync()
         {
             var allRoles = _unitOfWork.RoleManager.Roles.ToList();
-           
+            _logger.LogInformation("0k[200]. List of roles was sent.");
             return Ok(allRoles);
         }
 
@@ -48,11 +50,13 @@ namespace FamilyNetServer.Controllers.API
                 });
 
                 _unitOfWork.SaveChangesAsync();
+                _logger.LogInformation("Return Created[201].New role was added.");
                 return Created("api/v1/roles/", roleDTO);
                 
             }
             else
             {
+                _logger.LogError("Bad request[400]. RoleDTO is not valid. Role was not created.");
                 return BadRequest();
             }
         }
@@ -71,12 +75,13 @@ namespace FamilyNetServer.Controllers.API
                 }
 
                 _unitOfWork.SaveChangesAsync();
-
+                _logger.LogInformation("Return Ok[200].Role was deleted.");
 
                 return Ok();
             }
             else
             {
+                _logger.LogError("Bad request[400]. Id is not valid. Role was not deleted.");
                 return BadRequest();
             }
         }

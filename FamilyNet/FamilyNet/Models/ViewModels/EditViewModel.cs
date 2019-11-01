@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+
+using Microsoft.AspNetCore.Identity;
 namespace FamilyNet.Models.ViewModels
 {
     public class EditViewModel
@@ -14,5 +16,14 @@ namespace FamilyNet.Models.ViewModels
         public string PhoneNumber { get; set; }
 
         public string Email { get; set; }
+        public List<IdentityRole> AllRoles { get; set; }
+
+        public IList<string> UserRoles { get; set; }
+
+        public EditViewModel()
+        {
+            AllRoles = new List<IdentityRole>();
+            UserRoles = new List<string>();
+        }
     }
 }
