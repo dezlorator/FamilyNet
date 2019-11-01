@@ -71,7 +71,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donationDTO = await _downloader.GetAllAsync(url);
+                donationDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -133,7 +133,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donationDetailDTO = await _downloader.GetByIdAsync(url);
+                donationDetailDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -190,7 +190,7 @@ namespace FamilyNet.Controllers
             await Check();
 
             var urlOrphanages = _URLChildrenHouseBuilder.GetAllWithFilter(_apiOrphanagesPath, new OrphanageSearchModel(), SortStateOrphanages.NameAsc);
-            var orphanagesList = await _downloaderOrphanages.GetAllAsync(urlOrphanages);
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(urlOrphanages, HttpContext.Session);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -203,7 +203,7 @@ namespace FamilyNet.Controllers
         public async Task<IActionResult> Create(DonationViewModel model)
         {
             var url = _URLDonationItemsBuilder.CreatePost(_apiDonationItemsPath);
-            var msg = await _downloaderItems.CreatePostAsync(url, model.DonationItem);
+            var msg = await _downloaderItems.CreatePostAsync(url, model.DonationItem, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -215,7 +215,7 @@ namespace FamilyNet.Controllers
             model.Donation.DonationItemID = itemDTO.ID;
 
             url = _URLDonationsBuilder.CreatePost(_apiPath);
-            msg = await _downloader.CreatePostAsync(url, model.Donation);
+            msg = await _downloader.CreatePostAsync(url, model.Donation, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -251,12 +251,12 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donation = await _downloader.GetByIdAsync(urlDonation);
+                donation = await _downloader.GetByIdAsync(urlDonation, HttpContext.Session);
 
                 if (donation.DonationItemID != null)
                 {
                     var urlItem = _URLDonationsBuilder.GetById(_apiDonationItemsPath, donation.DonationItemID.Value);
-                    item = await _downloaderItems.GetByIdAsync(urlItem);
+                    item = await _downloaderItems.GetByIdAsync(urlItem, HttpContext.Session);
                 }
             }
             catch (ArgumentNullException)
@@ -272,10 +272,10 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath);
+            var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
             ViewBag.ListOfDonationItems = donationItemsList;
 
-            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiOrphanagesPath);
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiOrphanagesPath, HttpContext.Session);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -304,7 +304,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var msg = await _downloader.CreatePutAsync(url, model.Donation);
+            var msg = await _downloader.CreatePutAsync(url, model.Donation, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
@@ -315,7 +315,7 @@ namespace FamilyNet.Controllers
             if (model.Donation.DonationItemID != null)
             {
                 url = _URLDonationItemsBuilder.GetById(_apiDonationItemsPath, model.Donation.DonationItemID.Value);
-                msg = await _downloaderItems.CreatePutAsync(url, model.DonationItem);
+                msg = await _downloaderItems.CreatePutAsync(url, model.DonationItem, HttpContext.Session);
             }
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
@@ -350,7 +350,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donationDTO = await _downloader.GetByIdAsync(url);
+                donationDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -386,7 +386,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var msg = await _downloader.CreatePutAsync(url, donationDTO);
+            var msg = await _downloader.CreatePutAsync(url, donationDTO, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
@@ -409,7 +409,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                donationDTO = await _downloader.GetByIdAsync(url);
+                donationDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -445,7 +445,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var msg = await _downloader.DeleteAsync(url);
+            var msg = await _downloader.DeleteAsync(url, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.OK)
             {
@@ -471,7 +471,7 @@ namespace FamilyNet.Controllers
         {
             var url = _URLDonationsBuilder.GetById(_apiCategoriesPath, id);
 
-            var category = await _downloaderCategories.GetByIdAsync(url);
+            var category = await _downloaderCategories.GetByIdAsync(url, HttpContext.Session);
 
             var newCategory = new BaseItemType()
             {

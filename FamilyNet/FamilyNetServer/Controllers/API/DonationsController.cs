@@ -19,7 +19,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IDonationValidator _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
         private readonly ILogger<DonationsController> _logger;
@@ -28,7 +28,7 @@ namespace FamilyNetServer.Controllers.API
 
         #region ctor
 
-        public DonationsController(IUnitOfWorkAsync unitOfWork,
+        public DonationsController(IUnitOfWork unitOfWork,
                                    IDonationValidator donationValidator,
                                    IDonationsFilter donationsFilter,
                                    ILogger<DonationsController> logger)

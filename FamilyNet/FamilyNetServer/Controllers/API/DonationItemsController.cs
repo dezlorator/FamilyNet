@@ -18,14 +18,14 @@ namespace FamilyNetServer.Controllers.API
     {
         #region fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IDonationItemValidator _donationItemValidator;
         private readonly IDonationItemsFilter _donationItemsFilter;
         private readonly ILogger<DonationItemsController> _logger;
 
         #endregion
 
-        public DonationItemsController(IUnitOfWorkAsync unitOfWork,
+        public DonationItemsController(IUnitOfWork unitOfWork,
                                   IDonationItemValidator donationItemValidator,
                                   IDonationItemsFilter donationItemsFilter,
                                   ILogger<DonationItemsController> logger)

@@ -17,7 +17,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ICategoryValidator _categoryValidator;
         private readonly ILogger<CategoriesController> _logger;
 
@@ -25,7 +25,7 @@ namespace FamilyNetServer.Controllers.API
 
         #region ctor
 
-        public CategoriesController(IUnitOfWorkAsync unitOfWork,
+        public CategoriesController(IUnitOfWork unitOfWork,
                                     ICategoryValidator categoryValidator,
                                     ILogger<CategoriesController> logger)
         {
