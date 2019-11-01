@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using System.IO;
 
 namespace FamilyNetServer
 {
@@ -46,7 +45,6 @@ namespace FamilyNetServer
                 // Enable NLog as one of the Logging Provider
                 logging.AddNLog();
             })
-            .UseContentRoot(Directory.GetCurrentDirectory())
             .UseStartup<Startup>()
             .UseDefaultServiceProvider(options =>
                 options.ValidateScopes = false)
