@@ -16,7 +16,7 @@ namespace FamilyNetServer.Models
 
         [Display(Name = "Адрес")]
         public virtual Address Address { get; set; }
-
+      
         public override void CopyState(Person sender)
         {
             IAddress adressSender = sender as IAddress;

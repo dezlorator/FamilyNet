@@ -182,31 +182,6 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("Donations");
                 });
 
-            modelBuilder.Entity("FamilyNetServer.Models.Feedback", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("DonationId");
-
-                    b.Property<string>("Image");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Message");
-
-                    b.Property<double>("Rating");
-
-                    b.Property<int>("ReceiverRole");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DonationId");
-
-                    b.ToTable("Feedback");
-                });
-
             modelBuilder.Entity("FamilyNetServer.Models.Location", b =>
                 {
                     b.Property<int>("ID")
@@ -438,14 +413,6 @@ namespace FamilyNetServer.Migrations
                     b.HasOne("FamilyNetServer.Models.Orphanage", "Orphanage")
                         .WithMany("Donations")
                         .HasForeignKey("OrphanageID");
-                });
-
-            modelBuilder.Entity("FamilyNetServer.Models.Feedback", b =>
-                {
-                    b.HasOne("FamilyNetServer.Models.Donation", "Donation")
-                        .WithMany()
-                        .HasForeignKey("DonationId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Orphan", b =>
