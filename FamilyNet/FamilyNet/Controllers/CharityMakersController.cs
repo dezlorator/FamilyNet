@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Downloader;
 using System.Net.Http;
@@ -16,7 +15,7 @@ using DataTransferObjects;
 
 namespace FamilyNet.Controllers
 {
-    public class CharityMakersController : BaseController
+    public class CharityMakersController : Controller
     {
         #region private
 
@@ -31,14 +30,13 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        #region  ctor
+        #region ctor
 
-        public CharityMakersController(IUnitOfWorkAsync unitOfWork,
-                IURLCharityMakerBuilder urlCharityMakerBuilder,
+        public CharityMakersController(IURLCharityMakerBuilder urlCharityMakerBuilder,
                 ServerDataDownloader<CharityMakerDTO> downloader,
                 IFileStreamCreater streamCreator,
                 IURLAddressBuilder urlAdressBuilder,
-                IServerAddressDownloader addressDownloader) : base(unitOfWork)
+                IServerAddressDownloader addressDownloader)
         {
             _urlBilder = urlCharityMakerBuilder;
             _serverDownloader = downloader;
@@ -48,8 +46,7 @@ namespace FamilyNet.Controllers
         }
 
         #endregion
-
-
+        
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
             var url = _urlBilder.GetAllWithFilter(_apiPath,
@@ -177,7 +174,6 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Create()
         {
-            await Check();
             return View();
         }
 

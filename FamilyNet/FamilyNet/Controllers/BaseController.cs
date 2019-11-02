@@ -10,21 +10,21 @@ namespace FamilyNet.Controllers
     {
         #region fields
 
-        protected IUnitOfWorkAsync _unitOfWork;
+        protected IIdentity _unitOfWork;
         protected IStringLocalizer<SharedResource> _sharedLocalizer;
 
         #endregion
 
         #region ctor
 
-        public BaseController(IUnitOfWorkAsync unitOfWork)
+        public BaseController(IIdentity unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
         #endregion
 
-        public BaseController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<SharedResource> sharedLocalizer)
+        public BaseController(IIdentity unitOfWork, IStringLocalizer<SharedResource> sharedLocalizer)
         {
             _unitOfWork = unitOfWork;
             _sharedLocalizer = sharedLocalizer;

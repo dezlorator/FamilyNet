@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace FamilyNet.Models.ViewModels
+﻿namespace FamilyNet.Models.ViewModels
 {
     public class OrphanageSearchModel
     {

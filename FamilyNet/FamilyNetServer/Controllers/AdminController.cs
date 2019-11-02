@@ -1,12 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
-using FamilyNetServer.Infrastructure;
 using FamilyNetServer.Models.Interfaces;
 
 namespace FamilyNetServer.Controllers

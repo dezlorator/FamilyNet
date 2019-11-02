@@ -2,7 +2,7 @@
 
 namespace FamilyNetServer.Models.Interfaces
 {
-    public interface IUnitOfWork : IIdentityAsync
+    public interface IUnitOfWork : IIdentity
     {
         IRepository<Address> Address { get; }
         IRepository<Location> Location { get; }
