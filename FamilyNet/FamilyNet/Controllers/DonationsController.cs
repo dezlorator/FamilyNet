@@ -16,7 +16,6 @@ using System.Net;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
     public class DonationsController : BaseController
     {
         #region private fields
@@ -62,7 +61,6 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        [AllowAnonymous]
         public async Task<IActionResult> Index(int orphanageId)
         {
             var url = _URLDonationsBuilder.GetAllWithFilter(_apiPath,
@@ -120,7 +118,6 @@ namespace FamilyNet.Controllers
             return View(donations);
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -184,11 +181,8 @@ namespace FamilyNet.Controllers
             return View(donation);
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create()
         {
-            await Check();
-
             var urlOrphanages = _URLChildrenHouseBuilder.GetAllWithFilter(_apiOrphanagesPath, new OrphanageSearchModel(), SortStateOrphanages.NameAsc);
             var orphanagesList = await _downloaderOrphanages.GetAllAsync(urlOrphanages, HttpContext.Session);
             ViewBag.ListOfOrphanages = orphanagesList;
@@ -199,7 +193,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create(DonationViewModel model)
         {
             var url = _URLDonationItemsBuilder.CreatePost(_apiDonationItemsPath);
@@ -228,7 +221,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -290,7 +282,6 @@ namespace FamilyNet.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int id, DonationViewModel model)
         {
             if (id != model.Donation.ID)
@@ -329,7 +320,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditStatus(int? id)
         {
             if (id == null)
@@ -372,7 +362,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditStatus(int id, DonationDetailDTO donationDTO) //TODO: completely remake
         {
             if (id != donationDTO.ID)
@@ -396,7 +385,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -436,7 +424,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
