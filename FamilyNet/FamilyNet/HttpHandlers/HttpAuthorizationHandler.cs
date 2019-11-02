@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 namespace FamilyNet.HttpHandlers
 {
     public class HttpAuthorizationHandler : IHttpAuthorizationHandler
-    {        
+    {
         public void AddTokenBearer(ISession session, HttpClient httpClient)
         {
             var token = session.GetString("Bearer");
