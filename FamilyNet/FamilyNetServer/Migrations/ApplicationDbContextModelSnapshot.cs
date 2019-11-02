@@ -259,6 +259,29 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("Orphanages");
                 });
 
+            modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description");
+
+                    b.Property<int?>("DonationID");
+
+                    b.Property<int>("Status");
+
+                    b.Property<int?>("VolunteerID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DonationID");
+
+                    b.HasIndex("VolunteerID");
+
+                    b.ToTable("Quests");
+                });
+
             modelBuilder.Entity("FamilyNetServer.Models.Representative", b =>
                 {
                     b.Property<int>("ID")
@@ -457,6 +480,17 @@ namespace FamilyNetServer.Migrations
                     b.HasOne("FamilyNetServer.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationID");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>
+                {
+                    b.HasOne("FamilyNetServer.Models.Donation", "Donation")
+                        .WithMany()
+                        .HasForeignKey("DonationID");
+
+                    b.HasOne("FamilyNetServer.Models.Volunteer", "Volunteer")
+                        .WithMany()
+                        .HasForeignKey("VolunteerID");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Representative", b =>
