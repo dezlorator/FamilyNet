@@ -19,10 +19,6 @@ namespace FamilyNet.Models
 
         public int? CharityMakerID { get; set; }
 
-        public virtual int? VolunteerID { get; set; }
-
-        public virtual Volunteer Volunteer { get; set; }
-
         [Display(Name = "Филантроп")]
         public virtual CharityMaker CharityMaker { get; set; }
 

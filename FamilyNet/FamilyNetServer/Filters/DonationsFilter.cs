@@ -1,18 +1,25 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
 using FamilyNetServer.Models;
 
 namespace FamilyNetServer.Filters
 {
     public class DonationsFilter : IDonationsFilter
     {
-        public IQueryable<Donation> GetDonations(IQueryable<Donation> donations, int? orphanageID)
+        public IQueryable<Donation> GetDonations(IQueryable<Donation> donations, string filter)
         {
-            if (orphanageID != null && orphanageID > 0)
+            if (filter == null)
             {
-                donations = donations.Where(d => d.OrphanageID == orphanageID);
+                return donations;
             }
 
-            return donations;
+            return donations.Where(d => d.Orphanage.Name == filter
+                                || d.Orphanage.Adress.City == filter
+                                || d.Orphanage.Adress.Street == filter
+                                || d.DonationItem.Name == filter
+                                || d.DonationItem.TypeBaseItem
+                                                 .Select(i => i.Type.Name)
+                                                 .Contains(filter));
         }
     }
 }

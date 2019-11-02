@@ -21,42 +21,25 @@ namespace FamilyNetServer.Controllers.API
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDonationItemValidator _donationItemValidator;
-        private readonly IDonationItemsFilter _donationItemsFilter;
         private readonly ILogger<DonationItemsController> _logger;
 
         #endregion
 
         public DonationItemsController(IUnitOfWork unitOfWork,
                                   IDonationItemValidator donationItemValidator,
-                                  IDonationItemsFilter donationItemsFilter,
                                   ILogger<DonationItemsController> logger)
         {
             _unitOfWork = unitOfWork;
             _donationItemValidator = donationItemValidator;
-            _donationItemsFilter = donationItemsFilter;
             _logger = logger;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]int rows,
-                                          [FromQuery]int page,
-                                          [FromQuery]string name,
-                                          [FromQuery]float minPrice,
-                                          [FromQuery]float maxPrice,
-                                          [FromQuery]string category
-                                   )
+        public IActionResult GetAll()
         {
             var donationItems = _unitOfWork.DonationItems.GetAll().Where(b => !b.IsDeleted);
-            donationItems = _donationItemsFilter.GetDonationItems(donationItems, name, minPrice, maxPrice, category);
-
-            if (rows != 0 && page != 0)
-            {
-                _logger.LogInformation("Paging were used");
-                donationItems = donationItems.
-                    Skip((page - 1) * rows).Take(rows);
-            }
 
             if (donationItems == null)
             {

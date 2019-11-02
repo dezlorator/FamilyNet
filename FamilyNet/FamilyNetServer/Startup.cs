@@ -20,7 +20,6 @@ using FamilyNetServer.Factories;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using FamilyNetServer.Controllers.API;
-using FamilyNetServer.Controllers.API;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace FamilyNetServer
@@ -50,6 +49,7 @@ namespace FamilyNetServer
             services.AddTransient<ILogger<AddressController>, Logger<AddressController>>();
             services.AddTransient<ILogger<ChildrenHouseController>, Logger<ChildrenHouseController>>();
             services.AddTransient<ILogger<LocationController>, Logger<LocationController>>();
+            services.AddTransient<ILogger<QuestsController>, Logger<QuestsController>>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
             services.AddTransient<IVolunteerValidator, VolunteerValidator>();
@@ -67,8 +67,9 @@ namespace FamilyNetServer
             services.AddTransient<ICategoryValidator, CategoryValidator>();
             services.AddTransient<IDonationItemValidator, DonationItemValidator>();
             services.AddTransient<IDonationValidator, DonationValidator>();
-            services.AddTransient<IDonationItemsFilter, DonationItemsFilter>();
             services.AddTransient<IDonationsFilter, DonationsFilter>();
+            services.AddTransient<IQuestValidator, QuestValidator>();
+            services.AddTransient<IQuestsFilter, QuestsFilter>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>

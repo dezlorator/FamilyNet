@@ -45,12 +45,12 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromForm]int rows,
-                                    [FromForm]int page,
-                                    [FromForm]int? orphanageID)
+        public IActionResult GetAll([FromQuery]int rows,
+                                    [FromQuery]int page,
+                                    [FromQuery]string forSearch)
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
-            donations = _donationsFilter.GetDonations(donations, orphanageID);
+            donations = _donationsFilter.GetDonations(donations, forSearch);
 
             if (rows != 0 && page != 0)
             {

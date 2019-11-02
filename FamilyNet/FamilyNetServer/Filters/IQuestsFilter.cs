@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace FamilyNetServer.Filters
 {
-    public interface IDonationsFilter
+    public interface IQuestsFilter
     {
-        IQueryable<Donation> GetDonations(IQueryable<Donation> donations,
+        IQueryable<Quest> GetQuests(IQueryable<Quest> quests,
                                           string filter);
     }
 }
