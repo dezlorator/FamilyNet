@@ -18,6 +18,7 @@ using DataTransferObjects;
 using FamilyNet.StreamCreater;
 using FamilyNet.HttpHandlers;
 using System;
+using FamilyNet.Encoders;
 
 namespace FamilyNet
 {
@@ -36,7 +37,7 @@ namespace FamilyNet
             services.AddTransient<IFileStreamCreater, FileStreamCreater>();
             services.AddTransient<IAuthorizeCreater, AuthorizeCreater>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
-            services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();            
+            services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
             services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
@@ -73,7 +74,7 @@ namespace FamilyNet
             services.AddTransient<ServerSimpleDataDownloader<UserDTO>, ServerUserDownloader>();
             services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
-
+            services.AddTransient<IJWTEncoder, JWTEncoder>();
             services.AddTransient<ServerChildrenHouseDownloader>();
             services.AddTransient<ServerAddressDownloader>();
             services.AddTransient<ServerLocationDownloader>();
