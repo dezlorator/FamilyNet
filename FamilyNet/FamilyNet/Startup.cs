@@ -36,10 +36,7 @@ namespace FamilyNet
             services.AddTransient<IFileStreamCreater, FileStreamCreater>();
             services.AddTransient<IAuthorizeCreater, AuthorizeCreater>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
-            services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration["Data:FamilyNet:ConnectionString"]));
+            services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();            
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
             services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
@@ -103,7 +100,7 @@ namespace FamilyNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
+            services.AddTransient<IIdentity, EFUnitOfWork>();
             services.AddTransient<IHttpAuthorizationHandler, HttpAuthorizationHandler>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");

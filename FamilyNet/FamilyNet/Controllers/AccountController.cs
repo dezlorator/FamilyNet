@@ -29,11 +29,10 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public AccountController(IUnitOfWorkAsync unitOfWork,
+        public AccountController(IIdentity unitOfWork,
                                 IStringLocalizer<HomeController> localizer,
                                 IStringLocalizer<SharedResource> sharedLocalizer,
-                                IAuthorizeCreater authorizeCreater)
-            : base(unitOfWork, sharedLocalizer)
+                                IAuthorizeCreater authorizeCreater): base(unitOfWork)
         {
             _localizer = localizer;
             _authorizeCreater = authorizeCreater;

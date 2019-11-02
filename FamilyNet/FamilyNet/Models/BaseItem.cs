@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class BaseItem : IEntity
+    public class BaseItem 
     {
         public int ID { get; set; }
 

@@ -1,10 +1,10 @@
-﻿using FamilyNet.Infrastructure;
-using FamilyNet.Models.Identity;
+﻿using FamilyNetServer.Infrastructure;
+using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 
-namespace FamilyNet.Models.Interfaces
+namespace FamilyNetServer.Models.Interfaces
 {
-    public interface IIdentityAsync
+    public interface IIdentity
     {
 
         IUserValidator<ApplicationUser> UserValidator { get; }
@@ -13,7 +13,7 @@ namespace FamilyNet.Models.Interfaces
 
         IPasswordHasher<ApplicationUser> PasswordHasher { get; }
 
-        FamilyNetPhoneValidator PhoneValidator { get; }
+        FamilyNetServerPhoneValidator PhoneValidator { get; }
 
         UserManager<ApplicationUser> UserManager { get; }
 
