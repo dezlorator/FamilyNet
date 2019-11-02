@@ -36,11 +36,7 @@ namespace FamilyNet
             services.AddTransient<IFileStreamCreater, FileStreamCreater>();
             services.AddTransient<IAuthorizeCreater, AuthorizeCreater>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
-            services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
-            //services.AddTransient<FamilyNetPhoneValidator>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration["Data:FamilyNet:ConnectionString"]));
+            services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();            
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
             services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
@@ -66,8 +62,6 @@ namespace FamilyNet
             });
 
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
-            services.Configure<JWTCofiguration>(Configuration.GetSection("JWT"));
-
             services.AddTransient<ServerDataDownloader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();
@@ -83,7 +77,7 @@ namespace FamilyNet
             services.AddTransient<ServerChildrenHouseDownloader>();
             services.AddTransient<ServerAddressDownloader>();
             services.AddTransient<ServerLocationDownloader>();
-            services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader >();
+            services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
@@ -106,7 +100,7 @@ namespace FamilyNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
+            services.AddTransient<IIdentity, EFUnitOfWork>();
             services.AddTransient<IHttpAuthorizationHandler, HttpAuthorizationHandler>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");

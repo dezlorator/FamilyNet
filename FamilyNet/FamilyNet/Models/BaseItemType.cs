@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FamilyNet.Models
 {
-    public class BaseItemType : IEntity
+    public class BaseItemType
     {
         public int ID { get; set; }
 

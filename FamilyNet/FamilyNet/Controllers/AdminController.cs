@@ -20,7 +20,7 @@ namespace FamilyNet.Controllers
     {
         ServerSimpleDataDownloader<UserDTO> _downloader;
         private readonly string _apiPath = "http://localhost:53605/api/v1/users/";
-        public AdminController(IUnitOfWorkAsync unitOfWork, ServerSimpleDataDownloader<UserDTO> downloader)
+        public AdminController(IIdentity unitOfWork, ServerSimpleDataDownloader<UserDTO> downloader)
                               : base(unitOfWork)
         {
             _downloader = downloader;
@@ -204,14 +204,6 @@ namespace FamilyNet.Controllers
             {
                 ModelState.AddModelError("", error.Description);
             }
-        }
-
-        public IActionResult SeedData()
-        {
-            SeedData seedData = new SeedData(_unitOfWork);
-            seedData.EnsurePopulated();
-
-            return Redirect("/Home/Index");
         }
     }
 }

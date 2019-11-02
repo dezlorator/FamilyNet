@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
@@ -16,7 +14,7 @@ using System.Net;
 
 namespace FamilyNet.Controllers
 {
-    public class DonationsController : BaseController
+    public class DonationsController : Controller
     {
         #region private fields
 
@@ -38,8 +36,7 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public DonationsController(IUnitOfWorkAsync unitOfWork,
-                                 IStringLocalizer<DonationsController> localizer,
+        public DonationsController(IStringLocalizer<DonationsController> localizer,
                                  ServerSimpleDataDownloader<DonationDetailDTO> downloader,
                                  ServerSimpleDataDownloader<CategoryDTO> downloaderCategories,
                                  ServerSimpleDataDownloader<DonationItemDTO> downloaderItems,
@@ -47,7 +44,6 @@ namespace FamilyNet.Controllers
                                  IURLDonationsBuilder uRLDonationsBuilder,
                                  IURLDonationItemsBuilder uRLDonationItemsBuilder,
                                  IURLChildrenHouseBuilder uRLChildrenHouseBuilder)
-            : base(unitOfWork)
         {
             _localizer = localizer;
             _downloader = downloader;
@@ -198,6 +194,11 @@ namespace FamilyNet.Controllers
             var url = _URLDonationItemsBuilder.CreatePost(_apiDonationItemsPath);
             var msg = await _downloaderItems.CreatePostAsync(url, model.DonationItem, HttpContext.Session);
 
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (msg.StatusCode != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
@@ -209,6 +210,11 @@ namespace FamilyNet.Controllers
 
             url = _URLDonationsBuilder.CreatePost(_apiPath);
             msg = await _downloader.CreatePostAsync(url, model.Donation, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -226,14 +232,6 @@ namespace FamilyNet.Controllers
             if (id == null)
             {
                 return NotFound();
-            }
-
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-
-            if (checkResult)
-            {
-                return check;
             }
 
             var urlDonation = _URLDonationsBuilder.GetById(_apiPath, id.Value);
@@ -309,6 +307,11 @@ namespace FamilyNet.Controllers
                 msg = await _downloaderItems.CreatePutAsync(url, model.DonationItem, HttpContext.Session);
             }
 
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
@@ -325,14 +328,6 @@ namespace FamilyNet.Controllers
             if (id == null)
             {
                 return NotFound();
-            }
-
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-
-            if (checkResult)
-            {
-                return check;
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id.Value);
@@ -376,6 +371,11 @@ namespace FamilyNet.Controllers
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
             var msg = await _downloader.CreatePutAsync(url, donationDTO, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
@@ -433,6 +433,11 @@ namespace FamilyNet.Controllers
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
             var msg = await _downloader.DeleteAsync(url, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (msg.StatusCode != HttpStatusCode.OK)
             {

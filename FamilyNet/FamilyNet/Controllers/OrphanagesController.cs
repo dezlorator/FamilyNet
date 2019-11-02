@@ -17,7 +17,7 @@ using System.Net;
 
 namespace FamilyNet.Controllers
 {
-    public class OrphanagesController : BaseController
+    public class OrphanagesController : Controller
     {
         #region Private fields
 
@@ -44,8 +44,7 @@ namespace FamilyNet.Controllers
 
         #region Ctor
 
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork,
-                                IStringLocalizer<OrphansController> localizer,
+        public OrphanagesController(IStringLocalizer<OrphansController> localizer,
                                 ServerChildrenHouseDownloader downLoader,
                                 IURLChildrenHouseBuilder URLChildrenHouseBuilder,
                                 IFileStreamCreater streamCreater,
@@ -57,7 +56,6 @@ namespace FamilyNet.Controllers
                                 IURLDonationItemsBuilder URLDonationItem,
                                 IURLDonationsBuilder URLDonation,
                                 ServerSimpleDataDownloader<DonationDetailDTO> donation)
-           : base(unitOfWork)
         {
             _localizer = localizer;
             _streamCreater = streamCreater;

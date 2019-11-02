@@ -18,7 +18,7 @@ using FamilyNet.StreamCreater;
 
 namespace FamilyNet.Controllers
 {
-    public class VolunteersController : BaseController
+    public class VolunteersController : Controller
     {
         #region private fields
 
@@ -35,14 +35,12 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public VolunteersController(IUnitOfWorkAsync unitOfWork,
-                                 IStringLocalizer<VolunteersController> localizer,
+        public VolunteersController(IStringLocalizer<VolunteersController> localizer,
                                  ServerDataDownloader<VolunteerDTO> downLoader,
                                  IServerAddressDownloader addressDownloader,
                                  IURLVolunteersBuilder URLVolunteersBuilder,
                                  IURLAddressBuilder URLAddressBuilder,
                                  IFileStreamCreater streamCreater)
-            : base(unitOfWork)
         {
             _localizer = localizer;
             _downloader = downLoader;
@@ -183,7 +181,6 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Create()
         {
-            await Check();
             return View();
         }
 
@@ -232,13 +229,6 @@ namespace FamilyNet.Controllers
             if (id == null)
             {
                 return NotFound();
-            }
-
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
             }
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id.Value);

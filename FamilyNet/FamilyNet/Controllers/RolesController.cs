@@ -4,30 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
-using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
-using System.IO;
-using FamilyNet.StreamCreater;
 using FamilyNet.Models.Identity;
 namespace FamilyNet.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class RolesController : BaseController
+    public class RolesController : Controller
     {
         ServerSimpleDataDownloader<RoleDTO> _downloader;
+        private readonly IIdentity _unitOfWork;
         private readonly string _apiPath = "http://localhost:53605/api/v1/roles/";
 
-        public RolesController(IUnitOfWorkAsync unitOfWork, ServerSimpleDataDownloader<RoleDTO> downloader) : base(unitOfWork)
+        public RolesController(IIdentity unitOfWork, ServerSimpleDataDownloader<RoleDTO> downloader)
         {
             _downloader = downloader;
         }

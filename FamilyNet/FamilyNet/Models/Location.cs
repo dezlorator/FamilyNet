@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class Location : IEntity
+    public class Location 
     {
         public float? MapCoordX { get; set; }
 

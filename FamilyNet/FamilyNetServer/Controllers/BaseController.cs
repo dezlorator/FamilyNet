@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -27,29 +24,6 @@ namespace FamilyNetServer.Controllers
         }
 
         protected Task<ApplicationUser> GetCurrentUserAsync() => _unitOfWork.UserManager.GetUserAsync(HttpContext.User);
-
-        protected async Task Check() // TODO : rewrite name
-        {
-            var user = await GetCurrentUserAsync();
-
-            if (!(HttpContext.User.IsInRole("Admin") || user.HasPerson))
-            {
-                RedirectToAction("Index", "Home");
-            }
-        }
-
-        protected async Task<IActionResult> CheckById(int id) // TODO : rewrite name
-        {
-            var user = await GetCurrentUserAsync();
-
-            if (!(HttpContext.User.IsInRole("Admin") || (user.HasPerson && user.PersonID == id)) )
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            return null;
-        }
-
 
     }
 }
