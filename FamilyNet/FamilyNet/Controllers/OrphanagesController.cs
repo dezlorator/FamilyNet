@@ -19,7 +19,7 @@ using System.Net;
 namespace FamilyNet.Controllers
 {
     [Authorize]
-    public class OrphanagesController : BaseController
+    public class OrphanagesController : Controller
     {
         #region Private fields
 
@@ -46,7 +46,7 @@ namespace FamilyNet.Controllers
 
         #region Ctor
 
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork,
+        public OrphanagesController(
                                 IStringLocalizer<OrphansController> localizer,
                                 ServerChildrenHouseDownloader downLoader,
                                 IURLChildrenHouseBuilder URLChildrenHouseBuilder,
@@ -59,7 +59,7 @@ namespace FamilyNet.Controllers
                                 IURLDonationItemsBuilder URLDonationItem,
                                 IURLDonationsBuilder URLDonation,
                                 ServerSimpleDataDownloader<DonationDetailDTO> donation)
-           : base(unitOfWork)
+
         {
             _localizer = localizer;
             _streamCreater = streamCreater;
@@ -234,13 +234,6 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
-            }
-
             var url = _URLChildrenHouseBuilder.GetById(_apiPath, id.Value);
             ChildrenHouseDTO childrenHouseDTO = null;
             AddressDTO addressDTO = null;
@@ -396,12 +389,6 @@ namespace FamilyNet.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
-            }
 
             var url = _URLChildrenHouseBuilder.GetById(_apiPath, id);
             ChildrenHouseDTO childrenHouseDTO = null;

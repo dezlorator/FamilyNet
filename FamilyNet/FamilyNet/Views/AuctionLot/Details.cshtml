@@ -1,0 +1,64 @@
+﻿@model FamilyNet.Models.AuctionLot
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container">
+    <div class="row my-2">
+        <div class="col-lg-8 order-lg-2">
+            <div class="tab-content py-4">
+                <div class="tab-pane active" id="profile">
+                    <h5 class="mb-3">@ViewData["Profile"]</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="hidden" asp-for="ID" />
+                            <input type="hidden" asp-for="AuctionLotItemID" />
+                            <input type="hidden" asp-for="OrphanID" />
+                            <b>@Html.DisplayNameFor(model => model.AuctionLotItem.Name):</b>
+                            @Html.DisplayFor(model => model.AuctionLotItem.Name)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.AuctionLotItem.Price):</b>
+                                @Html.DisplayFor(model => model.AuctionLotItem.Price)
+                            </p>
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.DateStart)</b>
+                                @Html.DisplayFor(model => model.DateStart)
+                            </p>
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.DateEnd)</b>
+                                @Html.DisplayFor(model => model.DateEnd)
+                            </p>
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Quantity)</b>
+                                @Html.DisplayFor(model => model.Quantity)
+                            </p>
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Orphan)</b>
+                                @Html.DisplayFor(model => model.OrphanID)
+                            </p>
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.AuctionLotItem.Description)</b>
+                                @Html.DisplayFor(model => model.AuctionLotItem.Description) <br>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 order-lg-1 text-center">
+            <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content(Model.Avatar)" alt="">
+        </div>
+    </div>
+</div>
+
+@if (User.IsInRole("Representative"))
+ {
+   <a class="btn btn-info" asp-area="" asp-controller="AuctionLot" asp-action="Confirm" asp-route-id="@Model.ID">Confirm</a>
+ }
+
+<div>
+    <a asp-action="All" asp-controller="AuctionLot" type="submit" class="btn btn-info">Back</a>
+</div>
+

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataTransferObjects;
+using FamilyNetServer.Configuration;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
@@ -11,6 +12,7 @@ using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -24,6 +26,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IFileUploader _fileUploader;
         private readonly IValidator<AuctionLotDTO> _auctionValidator;
         private readonly ILogger<AuctionLotController> _logger;
+        private readonly IOptionsSnapshot<ServerURLSettings> _settings;
 
         #endregion
 
@@ -32,12 +35,14 @@ namespace FamilyNetServer.Controllers.API
         public AuctionLotController(IUnitOfWorkAsync repo, 
             IFileUploader fileUploader,
             IValidator<AuctionLotDTO> auctionValidator,
-            ILogger<AuctionLotController> logger)
+            ILogger<AuctionLotController> logger,
+            IOptionsSnapshot<ServerURLSettings> settings)
         {
             _repository = repo;
             _fileUploader = fileUploader;
             _auctionValidator = auctionValidator;
             _logger = logger;
+            _settings = settings;
         }
 
         #endregion
@@ -65,13 +70,15 @@ namespace FamilyNetServer.Controllers.API
                     DateEnd = lot.DateEnd,
                     OrphanID = lot.OrphanID,
                     Quantity = lot.Quantity,
+                    IsApproved = lot.IsApproved,
+                    PhotoParth = _settings.Value.ServerURL + lot.Avatar,
                     AuctionLotItemID = lot.AuctionLotItemID,
                 };
 
                 auctions.Add(auctionLotDTO);
             }
 
-            //_logger.LogInformation("Returned address list");
+            _logger.LogInformation("Returned auction lots list");
             return Ok(auctions);
         }
 
@@ -96,6 +103,8 @@ namespace FamilyNetServer.Controllers.API
                 DateEnd = auction.DateEnd,
                 OrphanID = auction.OrphanID,
                 Quantity = auction.Quantity,
+                IsApproved = auction.IsApproved,
+                PhotoParth = _settings.Value.ServerURL + auction.Avatar,
                 AuctionLotItemID = auction.AuctionLotItemID,
             };
 
@@ -120,6 +129,7 @@ namespace FamilyNetServer.Controllers.API
                 DateEnd = auctionDTO.DateEnd,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
+                IsApproved =  auctionDTO.IsApproved,
                 AuctionLotItemID = auctionDTO.AuctionLotItemID,
                 IsDeleted = false
             };
@@ -169,6 +179,7 @@ namespace FamilyNetServer.Controllers.API
             auction.DateEnd = auctionDTO.DateEnd;
             auction.DateStart = auctionDTO.DateStart;
             auction.OrphanID = auctionDTO.OrphanID;
+            auction.IsApproved = auctionDTO.IsApproved;
             auction.Quantity = auctionDTO.Quantity;
 
             if (auctionDTO.Avatar != null)

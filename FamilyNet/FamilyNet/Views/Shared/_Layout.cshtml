@@ -77,7 +77,24 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Donations" asp-action="Index">Потребности</a>
                         </li>
-
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="All">Fair</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Orphan"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="MyCrafts">My crafts</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Representative"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="ConfirmCrafts">Crafts to confirm</a>
+                            </li>
+                        }
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item dropdown">

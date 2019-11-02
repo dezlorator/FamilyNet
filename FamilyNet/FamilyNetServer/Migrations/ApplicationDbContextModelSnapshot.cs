@@ -63,6 +63,8 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<DateTime>("DateStart");
 
+                    b.Property<bool>("IsApproved");
+
                     b.Property<bool>("IsDeleted");
 
                     b.Property<int?>("OrphanID");

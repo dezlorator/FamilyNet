@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class URLAddressBuilder : IURLAddressBuilder
+    public class URLAuctionLotBuilder : IURLAuctionLotBuilder
     {
         #region private fields
 
@@ -17,20 +17,19 @@ namespace FamilyNet.Downloader
 
         #region ctor
 
-        public URLAddressBuilder(IOptionsSnapshot<ServerURLSettings> options)
+        public URLAuctionLotBuilder(IOptionsSnapshot<ServerURLSettings> options)
         {
             _options = options;
         }
 
         #endregion
 
-
         public string GetById(string api, int id)
         {
             return _options.Value.ServerURL + api + "/" + id;
         }
 
-        public string CreatePost(string api)
+        public string SimpleQuery(string api)
         {
             return _options.Value.ServerURL + api;
         }
