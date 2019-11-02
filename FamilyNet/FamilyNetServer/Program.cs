@@ -45,9 +45,9 @@ namespace FamilyNetServer
                 // Enable NLog as one of the Logging Provider
                 logging.AddNLog();
             })
-                .UseStartup<Startup>()
-                .UseDefaultServiceProvider(options =>
-                    options.ValidateScopes = false)
-                .Build();
+            .UseStartup<Startup>()
+            .UseDefaultServiceProvider(options =>
+                options.ValidateScopes = false)
+            .Build();
     }
 }

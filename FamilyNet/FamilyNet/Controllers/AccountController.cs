@@ -156,11 +156,11 @@ namespace FamilyNet.Controllers
             if (ModelState.IsValid)
             {
                 var dto = new CredentialsDTO() { Email = model.Email, Password = model.Password };
-                var token = await _authorizeCreater.Login(dto);
+                var result = await _authorizeCreater.Login(dto);
 
-                if (!String.IsNullOrEmpty(token))
+                if (result.Success)
                 {
-                    HttpContext.Session.SetString(_headerToken, token);
+                    HttpContext.Session.SetString(_headerToken, result.Token);
                     return RedirectToAction("Index", "Home");
                 }
                 else

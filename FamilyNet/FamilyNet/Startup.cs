@@ -65,8 +65,6 @@ namespace FamilyNet
             });
 
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
-            services.Configure<JWTConfiguration>(Configuration.GetSection("JWT"));
-
             services.AddTransient<ServerDataDownloader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();

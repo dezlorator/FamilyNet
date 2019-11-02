@@ -1,5 +1,7 @@
 ﻿using DataTransferObjects;
 using FamilyNetServer.Validators;
+using Microsoft.Extensions.Logging;
+using Moq;
 using NUnit.Framework;
 using System;
 
@@ -12,7 +14,8 @@ namespace FamilyNetServer.Tests
         [SetUp]
         public void Init()
         {
-            _validator = new ChildValidator();
+            var mockLogger = new Mock<ILogger<ChildValidator>>();
+            _validator = new ChildValidator(mockLogger.Object);
         }
 
         [Test]

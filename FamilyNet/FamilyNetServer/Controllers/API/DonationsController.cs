@@ -1,15 +1,15 @@
-﻿using DataTransferObjects;
-using FamilyNetServer.Filters;
-using FamilyNetServer.Models;
-using FamilyNetServer.Models.Interfaces;
-using FamilyNetServer.Validators;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using FamilyNetServer.Models.Interfaces;
+using Microsoft.AspNetCore.Http;
+using FamilyNetServer.Models;
+using FamilyNetServer.Filters;
+using FamilyNetServer.Validators;
+using DataTransferObjects;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -22,6 +22,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDonationValidator _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
+        private readonly ILogger<DonationsController> _logger;
 
         #endregion
 
@@ -29,11 +30,13 @@ namespace FamilyNetServer.Controllers.API
 
         public DonationsController(IUnitOfWork unitOfWork,
                                    IDonationValidator donationValidator,
-                                   IDonationsFilter donationsFilter)
+                                   IDonationsFilter donationsFilter,
+                                   ILogger<DonationsController> logger)
         {
             _unitOfWork = unitOfWork;
             _donationValidator = donationValidator;
             _donationsFilter = donationsFilter;
+            _logger = logger;
         }
 
         #endregion
@@ -50,12 +53,14 @@ namespace FamilyNetServer.Controllers.API
 
             if (rows != 0 && page != 0)
             {
+                _logger.LogInformation("Paging were used");
                 donations = donations
                     .Skip((page - 1) * rows).Take(rows);
             }
 
             if (donations == null)
             {
+                _logger.LogError("Bad request. No donations were found");
                 return BadRequest();
             }
 
@@ -78,6 +83,7 @@ namespace FamilyNetServer.Controllers.API
                                .Select(t => t.TypeID)
                 }).ToList();
 
+            _logger.LogInformation("Status: OK. List of donations was sent");
             return Ok(donationsDTO);
         }
 
@@ -90,6 +96,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (donation == null)
             {
+                _logger.LogError("Bad request. No donation was found");
                 return BadRequest();
             }
 
@@ -110,17 +117,18 @@ namespace FamilyNetServer.Controllers.API
                 OrphanageRating = donation.Orphanage.Rating
             };
 
+            _logger.LogInformation("Status: OK. Donation was sent");
             return Ok(donationDetailsDTO);
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]DonationDTO donationDTO)
         {
             if (!_donationValidator.IsValid(donationDTO))
             {
+                _logger.LogError("Model is not valid.");
                 return BadRequest();
             }
 
@@ -138,17 +146,18 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Donations.Create(donation);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("Status: Created. Donation was created");
             return Created("api/v1/donations/" + donation.ID, donationDTO);
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin, Orphan")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]DonationDTO donationDTO)
         {
             if (!_donationValidator.IsValid(donationDTO))
             {
+                _logger.LogError("Model is not valid.");
                 return BadRequest();
             }
 
@@ -156,11 +165,13 @@ namespace FamilyNetServer.Controllers.API
 
             if (donation == null)
             {
+                _logger.LogError("Bad request. No donation was found");
                 return BadRequest();
             }
 
             if (donation.DonationItemID != null)
             {
+                _logger.LogInformation("Donation item is not null.");
                 donation.DonationItemID = donationDTO.DonationItemID;
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
             }
@@ -171,6 +182,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (donationDTO.OrphanageID != null)
             {
+                _logger.LogInformation("Orphanage is not null.");
                 donation.OrphanageID = donationDTO.OrphanageID;
                 donation.Orphanage = await _unitOfWork.Orphanages.GetById(donation.OrphanageID.Value);
             }
@@ -178,17 +190,19 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("Status: NoContent. Donation was edited.");
+
             return NoContent();
         }
 
         [HttpPut("StatusEdit/{id}")]
-        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> StatusEdit(int id, [FromBody]string status)
+        public async Task<IActionResult> StatusEdit(int id, [FromForm]string status)
         {
             if(!Enum.TryParse(status, out DonationStatus donationStatus))
             {
+                _logger.LogError("Wrong string.");
                 return BadRequest();
             }
 
@@ -196,6 +210,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (donation == null)
             {
+                _logger.LogError("Bad request. No donation with such id was found");
                 return BadRequest();
             }
 
@@ -204,19 +219,21 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("Status: NoContent. Donation status was edited.");
+
             return NoContent();
         }
 
         [HttpPut("donationMade/{id}")]
-        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddCharityMaker(int id, [FromBody]int charityMakerID)
+        public async Task<IActionResult> AddCharityMaker(int id, [FromForm]int charityMakerID)
         {
             CharityMaker charityMaker = await _unitOfWork.CharityMakers.GetById(charityMakerID);
 
             if (charityMaker == null)
             {
+                _logger.LogError("Bad request. No charity maker with such id was found");
                 return BadRequest();
             }
 
@@ -224,6 +241,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (donation == null)
             {
+                _logger.LogError("Bad request. No donation with such id was found");
                 return BadRequest();
             }
 
@@ -232,17 +250,19 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("Status: NoContent. Charity maker was added.");
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
             {
+                _logger.LogError("Bad request. Id must be greater than zero.");
                 return BadRequest();
             }
 
@@ -250,6 +270,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (donation == null)
             {
+                _logger.LogError("Bad request. No donation with such id was found");
                 return BadRequest();
             }
 
@@ -257,6 +278,8 @@ namespace FamilyNetServer.Controllers.API
 
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation("Status: OK. Donation was deleted.");
 
             return Ok();
         }

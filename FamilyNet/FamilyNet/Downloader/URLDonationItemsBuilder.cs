@@ -49,6 +49,15 @@ namespace FamilyNet.Downloader
             {
                 queryParams.Add("category", category);
             }
+
+            return QueryHelpers.AddQueryString(_options.Value.ServerURL + api,
+                                                queryParams);
+        }
+
+        public string GetAll(string api)
+        {
+            var queryParams = new Dictionary<string, string>();
+
             return QueryHelpers.AddQueryString(_options.Value.ServerURL + api,
                                                 queryParams);
         }

@@ -1,10 +1,11 @@
 ﻿using DataTransferObjects;
+using FamilyNet.HttpHandlers;
 using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
     public interface IAuthorizeCreater
     {
-        Task<string> Login(CredentialsDTO credentials);
+        Task<AuthenticationResult> Login(CredentialsDTO credentials);
     }
 }

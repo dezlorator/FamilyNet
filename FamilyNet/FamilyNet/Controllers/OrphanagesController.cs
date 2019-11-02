@@ -33,6 +33,13 @@ namespace FamilyNet.Controllers
         private readonly string _apiLocationPath = "api/v1/location";
         private readonly IFileStreamCreater _streamCreater;
 
+        private readonly ServerSimpleDataDownloader<DonationItemDTO> _donationItems;
+        private readonly IURLDonationItemsBuilder _URLDonationItem;
+        private readonly string _apiDonationItemsPath = "api/v1/donationItems";
+        private readonly IURLDonationsBuilder _URLDonation;
+        private readonly ServerSimpleDataDownloader<DonationDetailDTO> _donation;
+        private readonly string _apiDonationPath = "api/v1/donations";
+
         #endregion
 
         #region Ctor
@@ -45,7 +52,11 @@ namespace FamilyNet.Controllers
                                 IURLAddressBuilder URLAddressBuilder,
                                 ServerAddressDownloader addressDownLoader,
                                 ServerLocationDownloader locationDownLoader,
-                                IURLLocationBuilder URLLocationBuilder)
+                                IURLLocationBuilder URLLocationBuilder,
+                                ServerSimpleDataDownloader<DonationItemDTO> donationItems,
+                                IURLDonationItemsBuilder URLDonationItem,
+                                IURLDonationsBuilder URLDonation,
+                                ServerSimpleDataDownloader<DonationDetailDTO> donation)
            : base(unitOfWork)
         {
             _localizer = localizer;
@@ -56,6 +67,10 @@ namespace FamilyNet.Controllers
             _childrenHouseDownloader = downLoader;
             _addressDownLoader = addressDownLoader;
             _locationDownLoader = locationDownLoader;
+            _donationItems = donationItems;
+            _URLDonationItem = URLDonationItem;
+            _URLDonation = URLDonation;
+            _donation = donation;
         }
 
         #endregion
@@ -434,13 +449,21 @@ namespace FamilyNet.Controllers
         {
             ViewData["TypeHelp"] = typeHelp;
             IEnumerable<Orphanage> list = new List<Orphanage>();
-            if (typeHelp != null)
-                list = _unitOfWork.Orphanages.Get(
-                    orp => orp.Donations.Where(
-                        donat => donat.DonationItem.TypeBaseItem.Where(
-                            donatitem => donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
-                            Count() > 0 && donat.IsRequest).
-                        Count() > 0);
+            if(typeHelp != null)
+            {
+                //var url = _URLDonationItem.GetAllWithFilter(_apiDonationItemsPath, "", 0, 0, typeHelp);
+                //var items = _donationItems.GetAllAsync(url);
+                //foreach(var item in items.Result)
+                //{
+                //    //var url = _URLDonation.
+                //}
+            }
+            //list = _unitOfWorkAsync.Orphanages.Get(
+            //    orp => orp.Donations.Where(
+            //        donat => donat.DonationItem.TypeBaseItem.Where(
+            //            donatitem =>  donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
+            //            Count() > 0 && donat.IsRequest).
+            //        Count() > 0);
             GetViewData();
 
             return View("SearchResult", list);
