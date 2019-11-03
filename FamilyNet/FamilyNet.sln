@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyNetServer", "FamilyNe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTransferObjects", "DataTransferObjects\DataTransferObjects.csproj", "{5EAFF1CB-ED69-43BA-A008-EF692A105AAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyNetServer.Tests", "FamilyNetServer.Tests\FamilyNetServer.Tests.csproj", "{0DE0795D-1B28-4B1E-9B0F-165CE7815CEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyNetServer.Tests", "FamilyNetServer.Tests\FamilyNetServer.Tests.csproj", "{0DE0795D-1B28-4B1E-9B0F-165CE7815CEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyNetLogs", "FamilyNetLogs\FamilyNetLogs.csproj", "{F8207772-70A7-4522-86D4-61DFCE30F291}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{0DE0795D-1B28-4B1E-9B0F-165CE7815CEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DE0795D-1B28-4B1E-9B0F-165CE7815CEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DE0795D-1B28-4B1E-9B0F-165CE7815CEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8207772-70A7-4522-86D4-61DFCE30F291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8207772-70A7-4522-86D4-61DFCE30F291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8207772-70A7-4522-86D4-61DFCE30F291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8207772-70A7-4522-86D4-61DFCE30F291}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

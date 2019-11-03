@@ -87,7 +87,7 @@ namespace FamilyNet.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return Redirect("/Orphans/Index");
             }
 
             var url = _URLChildrenBuilder.GetById(_apiChildrenPath, id.Value);
@@ -96,6 +96,11 @@ namespace FamilyNet.Controllers
             try
             {
                 childDTO = await _childrenDownloader.GetByIdAsync(url, HttpContext.Session);
+
+                if (childDTO == null)
+                {
+                    return Redirect("/Orphans/Index");
+                }
             }
             catch (ArgumentNullException)
             {

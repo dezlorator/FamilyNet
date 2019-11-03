@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Log>
+@using FamilyNetLogs.Models
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered table-sm" style="width:80%">
+        <thead>
+            <tr>
+                <th>Logged</th>
+                <th>Level</th>
+                <th>Message</th>
+                <th>Logger</th>
+                <th>Call</th>
+                <th>Exception</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td>@log.Logged</td>
+                    <td>@log.Level</td>
+                    <td>@log.Message</td>
+                    <td>@log.Logger</td>
+                    <td>@log.CallSite</td>
+                    <td>@log.Exception</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

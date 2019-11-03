@@ -13,7 +13,7 @@ namespace FamilyNetServer.Controllers.API
     [Route("api/v1/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class AuthenticationController : BaseController
+    public class AuthenticationController : Controller
     {
         #region private fields
 
@@ -28,7 +28,6 @@ namespace FamilyNetServer.Controllers.API
         public AuthenticationController(IUnitOfWork unitOfWork,
                                         ITokenFactory tokenFactory,
                                         ILogger<AuthenticationController> logger)
-            : base(unitOfWork)
         {
             _tokenFactory = tokenFactory;
             _logger = logger;

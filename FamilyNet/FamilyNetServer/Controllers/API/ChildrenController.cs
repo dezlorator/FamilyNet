@@ -126,7 +126,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_childValidator.IsValid(childDTO))
             {
-                _logger.LogError("Bad request[400]. ChildDTO is not valid");
+                _logger.LogError("Bad request[400]. ChildDTO is not valid", new object[] { HttpContext. });
                 return BadRequest();
             }
 
