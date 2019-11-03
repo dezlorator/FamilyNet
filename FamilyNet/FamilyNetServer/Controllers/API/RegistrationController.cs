@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using FamilyNetServer.DTO;
+using DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 
 
