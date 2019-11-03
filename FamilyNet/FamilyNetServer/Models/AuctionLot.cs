@@ -1,4 +1,5 @@
-﻿using FamilyNetServer.Models.Interfaces;
+﻿using FamilyNetServer.Enums;
+using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 
@@ -27,6 +28,6 @@ namespace FamilyNetServer.Models
 
         public int Quantity { get; set; }
 
-        public bool IsApproved { get; set; }
+        public AuctionLotStatus Status { get; set; }
     }
 }

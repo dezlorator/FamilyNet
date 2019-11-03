@@ -73,7 +73,7 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.DateStart.ToString()), "DateStart");
             formDataContent.Add(new StringContent(dto.OrphanID.ToString()), "OrphanID");
             formDataContent.Add(new StringContent(dto.Quantity.ToString()), "Quantity");
-            formDataContent.Add(new StringContent(dto.IsApproved.ToString()), "IsApproved");
+            formDataContent.Add(new StringContent(dto.Status.ToString()), "Status");
         }
 
     }

@@ -53,10 +53,11 @@
     </div>
 </div>
 
-@if (User.IsInRole("Representative"))
- {
-   <a class="btn btn-info" asp-area="" asp-controller="AuctionLot" asp-action="Confirm" asp-route-id="@Model.ID">Confirm</a>
- }
+@if (User.IsInRole("Representative") && Model.Status=="UnApproved")
+{
+    <a class="btn btn-info" asp-area="" asp-controller="AuctionLot" asp-action="Confirm" asp-route-id="@Model.ID">Confirm</a>
+    <a class="btn btn-danger" asp-area="" asp-controller="AuctionLot" asp-action="Decline" asp-route-id="@Model.ID">Decline</a>
+}
 
 <div>
     <a asp-action="All" asp-controller="AuctionLot" type="submit" class="btn btn-info">Back</a>

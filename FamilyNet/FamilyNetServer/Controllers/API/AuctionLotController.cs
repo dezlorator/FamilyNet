@@ -70,7 +70,7 @@ namespace FamilyNetServer.Controllers.API
                     DateEnd = lot.DateEnd,
                     OrphanID = lot.OrphanID,
                     Quantity = lot.Quantity,
-                    IsApproved = lot.IsApproved,
+                    Status = lot.Status.ToString(),
                     PhotoParth = _settings.Value.ServerURL + lot.Avatar,
                     AuctionLotItemID = lot.AuctionLotItemID,
                 };
@@ -103,7 +103,7 @@ namespace FamilyNetServer.Controllers.API
                 DateEnd = auction.DateEnd,
                 OrphanID = auction.OrphanID,
                 Quantity = auction.Quantity,
-                IsApproved = auction.IsApproved,
+                Status = auction.Status.ToString(),
                 PhotoParth = _settings.Value.ServerURL + auction.Avatar,
                 AuctionLotItemID = auction.AuctionLotItemID,
             };
@@ -129,7 +129,7 @@ namespace FamilyNetServer.Controllers.API
                 DateEnd = auctionDTO.DateEnd,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
-                IsApproved =  auctionDTO.IsApproved,
+                Status =  AuctionLotStatus.UnApproved,
                 AuctionLotItemID = auctionDTO.AuctionLotItemID,
                 IsDeleted = false
             };
@@ -179,7 +179,9 @@ namespace FamilyNetServer.Controllers.API
             auction.DateEnd = auctionDTO.DateEnd;
             auction.DateStart = auctionDTO.DateStart;
             auction.OrphanID = auctionDTO.OrphanID;
-            auction.IsApproved = auctionDTO.IsApproved;
+            var status = AuctionLotStatus.UnApproved;
+            Enum.TryParse(auctionDTO.Status,out status);
+            auction.Status = status;
             auction.Quantity = auctionDTO.Quantity;
 
             if (auctionDTO.Avatar != null)

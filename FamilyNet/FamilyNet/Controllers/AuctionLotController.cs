@@ -89,7 +89,7 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var crafts = auctionLots.Select(fair => new AuctionLot()
+            var crafts = auctionLots.Where(lot => lot.Status == "Approved").Select(fair => new AuctionLot()
             {
                 ID = fair.ID,
                 DateStart = fair.DateStart,
@@ -97,7 +97,7 @@ namespace FamilyNet.Controllers
                 Avatar = fair.PhotoParth,
                 OrphanID = fair.OrphanID,
                 Quantity = fair.Quantity,
-                IsApproved = fair.IsApproved,
+                Status = fair.Status,
                 AuctionLotItemID = fair.AuctionLotItemID,
                 AuctionLotItem = GetItem(fair.AuctionLotItemID.Value).Result
             });
@@ -113,7 +113,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                auctionLots =  _auctionLotDownloader.GetAllAsync(url).Result.Where(lot => lot.OrphanID == orphanId);
+                auctionLots =  _auctionLotDownloader.GetAllAsync(url).Result.Where(lot =>lot.Status !="Approved" && lot.OrphanID == orphanId);
             }
             catch (ArgumentNullException)
             {
@@ -136,14 +136,13 @@ namespace FamilyNet.Controllers
                 Avatar = fair.PhotoParth,
                 OrphanID = fair.OrphanID,
                 Quantity = fair.Quantity,
-                IsApproved = fair.IsApproved,
+                Status = fair.Status,
                 AuctionLotItemID = fair.AuctionLotItemID,
                 AuctionLotItem = GetItem(fair.AuctionLotItemID.Value).Result
             });
 
             return View(crafts);
         }
-
 
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id) 
@@ -186,7 +185,7 @@ namespace FamilyNet.Controllers
                 Avatar = auctionLot.PhotoParth,
                 OrphanID = auctionLot.OrphanID,
                 Quantity = auctionLot.Quantity,
-                IsApproved = auctionLot.IsApproved,
+                Status = auctionLot.Status,
                 AuctionLotItemID = auctionLot.AuctionLotItemID,
                 AuctionLotItem = GetItem(auctionLot.AuctionLotItemID.Value).Result
             };
@@ -194,7 +193,6 @@ namespace FamilyNet.Controllers
 
             return View(craft);
         }
-
 
         // GET: Orphanages/Create
         [Authorize(Roles = "Orphan")]
@@ -225,8 +223,6 @@ namespace FamilyNet.Controllers
 
             var itemDTO = msg.Content.ReadAsAsync<DonationItemDTO>().Result;
             model.AuctionLot.AuctionLotItemID = itemDTO.ID;
-            model.AuctionLot.IsApproved = false;
-
 
             url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
             var msg2 = await _auctionLotDownloader.СreatePostAsync(url, model.AuctionLot, stream, model.AuctionLot.Avatar.FileName);
@@ -316,7 +312,7 @@ namespace FamilyNet.Controllers
             }
 
             url = _URLAuctionLotBuilder.GetById(_apiAuctionLotPath, id);
-            model.AuctionLot.IsApproved = false;
+            model.AuctionLot.Status = "UnApproved";
             var status = await _auctionLotDownloader.СreatePutAsync(url, model.AuctionLot,
                                                             stream, model.AuctionLot.Avatar?.FileName);
 
@@ -326,7 +322,7 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
-            return View("MyCrafts");
+            return RedirectToAction("MyCrafts");
         }
 
 
@@ -403,7 +399,7 @@ namespace FamilyNet.Controllers
             var lots = new List<IEnumerable<AuctionLot>>();
             foreach(var orphan in orphans)
             {
-              var crafts = auctionLots.Where(lot => !lot.IsApproved && lot.OrphanID == orphan.ID).Select(fair => new AuctionLot()
+              var crafts = auctionLots.Where(lot => lot.Status =="UnApproved" && lot.OrphanID == orphan.ID).Select(fair => new AuctionLot()
               {
                         ID = fair.ID,
                         DateStart = fair.DateStart,
@@ -411,7 +407,7 @@ namespace FamilyNet.Controllers
                         Avatar = fair.PhotoParth,
                         OrphanID = fair.OrphanID,
                         Quantity = fair.Quantity,
-                        IsApproved = fair.IsApproved,
+                        Status = fair.Status,
                         AuctionLotItemID = fair.AuctionLotItemID,
                         AuctionLotItem = GetItem(fair.AuctionLotItemID.Value).Result
               });
@@ -429,7 +425,7 @@ namespace FamilyNet.Controllers
             {
                 var auctionLotDTO = await _auctionLotDownloader.GetByIdAsync(url);
 
-                auctionLotDTO.IsApproved = true;
+                auctionLotDTO.Status = "Approved";
 
                 var msg = await _auctionLotDownloader.СreatePutAsync(url, auctionLotDTO, null, null);
             }
@@ -446,7 +442,33 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            return Redirect("/AuctionLot/ConfirmCrafts");
+        }
 
+        [Authorize(Roles = "Representative")]
+        public async Task<IActionResult> Decline(int id)
+        {
+            var url = _URLAuctionLotBuilder.GetById(_apiAuctionLotPath, id);
+            try
+            {
+                var auctionLotDTO = await _auctionLotDownloader.GetByIdAsync(url);
+
+                auctionLotDTO.Status = "Declined";
+
+                var msg = await _auctionLotDownloader.СreatePutAsync(url, auctionLotDTO, null, null);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
 
             return Redirect("/AuctionLot/ConfirmCrafts");
         }

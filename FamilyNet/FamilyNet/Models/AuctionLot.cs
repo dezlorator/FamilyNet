@@ -29,6 +29,6 @@ namespace FamilyNet.Models
 
         public int Quantity { get; set; }
 
-        public bool IsApproved { get; set; }
+        public string Status { get; set; }
     }
 }
