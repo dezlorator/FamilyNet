@@ -1,4 +1,4 @@
-﻿using FamilyNetServer.DTO;
+﻿using DataTransferObjects;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

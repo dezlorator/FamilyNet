@@ -6,8 +6,6 @@ using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
-using FamilyNet.Infrastructure;
-using FamilyNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using DataTransferObjects;
@@ -16,34 +14,43 @@ using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
-using System.IO;
-using FamilyNet.StreamCreater;
+using FamilyNet.IdentityHelpers;
+
 namespace FamilyNet.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class AdminController : BaseController
+    public class AdminController : Controller
     {
         ServerSimpleDataDownloader<UserDTO> _downloader;
-        ServerSimpleDataDownloader<RoleDTO> _rolesDownloader;
-        private readonly string _apiPath = "http://localhost:53605/api/v1/users/";
+        private readonly IURLUsersBuilder _usersBuilder;
+        private readonly string _apiUsersPath = "api/v1/users";
 
-        private readonly string _apiRolesPath = "http://localhost:53605/api/v1/roles/";
-        public AdminController(IUnitOfWorkAsync unitOfWork, ServerSimpleDataDownloader<UserDTO> downloader
-            , ServerSimpleDataDownloader<RoleDTO> rolesDownloader)
-                              : base(unitOfWork)
+        ServerSimpleDataDownloader<RoleDTO> _rolesDownloader;
+        private readonly IURLRolesBuilder _rolesBuilder;
+        private readonly string _apiRolesPath = "api/v1/roles";
+
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
+ 
+        public AdminController(ServerSimpleDataDownloader<UserDTO> downloader,
+                              ServerSimpleDataDownloader<RoleDTO> rolesDownloader, 
+                              IIdentityInformationExtractor identityInformationExtactor,
+                              IURLRolesBuilder rolesBuilder, IURLUsersBuilder usersBuilder)
         {
             _downloader = downloader;
             _rolesDownloader = rolesDownloader;
+            _identityInformationExtactor = identityInformationExtactor;
+            _usersBuilder = usersBuilder;
+            _rolesBuilder = rolesBuilder;
         }
 
         public async Task<IActionResult> Index()
         {
-            var url = _apiPath;
+            var url = _usersBuilder.GetAll(_apiUsersPath);
             IEnumerable<UserDTO> userDTO = null;
 
             try
             {
-                userDTO = await _downloader.GetAllAsync(url);
+                userDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -58,8 +65,6 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-
-
             var users = userDTO.Select(user => new ApplicationUser()
             {
                 Id = user.Id,
@@ -67,10 +72,14 @@ namespace FamilyNet.Controllers
                 PhoneNumber = user.PhoneNumber
             });
 
-
+            GetViewData();
             return View(users);
         }
-        public ViewResult Create() => View();
+        public ViewResult Create()
+        {
+            GetViewData();
+            return View();
+        } 
 
         [HttpPost]
         public async Task<IActionResult> Create(UserDTO model)
@@ -79,8 +88,8 @@ namespace FamilyNet.Controllers
             {
                 return View(model);
             }
-            var url = _apiPath;
-            var status = await _downloader.CreatePostAsync(url, model);
+            var url = _usersBuilder.CreatePost(_apiUsersPath);
+            var status = await _downloader.CreatePostAsync(url, model, HttpContext.Session);
 
             if (status.StatusCode != HttpStatusCode.Created)
             {
@@ -88,9 +97,8 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            GetViewData();
             return Redirect("/Admin/Index");
-
-
         }
 
         public async Task<IActionResult> DeleteAsync(string id)
@@ -100,11 +108,11 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var url = _apiPath + id;
+            var url = _usersBuilder.GetById(_apiUsersPath, id);
 
             try
             {
-                var status = await _downloader.DeleteAsync(url);
+                var status = await _downloader.DeleteAsync(url, HttpContext.Session);
 
             }
             catch (ArgumentNullException)
@@ -120,6 +128,7 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
             return RedirectToAction("Index");
         }
 
@@ -130,12 +139,13 @@ namespace FamilyNet.Controllers
             {
                 return NotFound();
             }
-            string url = _apiPath + id;
+            var url = _usersBuilder.GetById(_apiUsersPath, id);
+            string urlRoles = _rolesBuilder.GetAll(_apiRolesPath);
             UserDTO userDTO = new UserDTO();
             try
             {
-                var allRoles = await _rolesDownloader.GetAllAsync(_apiRolesPath);
-                userDTO = await _downloader.GetByIdAsync(url);
+                var allRoles = await _rolesDownloader.GetAllAsync(urlRoles, HttpContext.Session);
+                userDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
                 ViewBag.AllRoles = allRoles.ToList();
             }
             catch (ArgumentNullException)
@@ -151,6 +161,7 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
             return View(userDTO);
 
         }
@@ -168,12 +179,11 @@ namespace FamilyNet.Controllers
                 return View(userDTO);
             }
 
-
-            var url = _apiPath + id;
+            var url = _usersBuilder.GetById(_apiUsersPath, id);
 
             try
             {
-                var status = await _downloader.CreatePutAsync(url, userDTO);
+                var status = await _downloader.CreatePutAsync(url, userDTO, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -188,23 +198,14 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
             return Redirect("/Admin/Index");
         }
 
-        private void AddErrorsFromResult(IdentityResult result)
+        private void GetViewData()
         {
-            foreach (IdentityError error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
-        }
-
-        public IActionResult SeedData()
-        {
-            SeedData seedData = new SeedData(_unitOfWorkAsync);
-            seedData.EnsurePopulated();
-
-            return Redirect("/Home/Index");
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                           ViewData);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace FamilyNet.Controllers
         private readonly string _headerToken = "Bearer";
         private readonly IJWTEncoder _encoder;
 
+
         #endregion
 
         #region ctor
