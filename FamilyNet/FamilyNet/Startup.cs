@@ -77,8 +77,11 @@ namespace FamilyNet
             services.AddTransient<ServerDataDownloader<RepresentativeDTO>, ServerRepresentativesDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<RoleDTO>, ServerRoleDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<UserDTO>, ServerUserDownloader>();
+            services.AddTransient<IServerAvailabilitiesDownloader, ServerAvailabilitiesDownloader>();
             services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
+
+            services.AddTransient<IURLAvailabilitiesBuilder, URLAvailabilitiesBuilder>();
 
             services.AddTransient<ServerChildrenHouseDownloader>();
             services.AddTransient<ServerAddressDownloader>();

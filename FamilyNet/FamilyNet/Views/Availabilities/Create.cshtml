@@ -1,0 +1,28 @@
+﻿@model DataTransferObjects.AvailabilityDTO
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Запланировать время для помощи</h2>
+<form method="post" asp-controller="Availabilities" asp-action="Create">
+    @*<div asp-validation-summary="ModelOnly"></div>*@
+    <div>
+        <label asp-for="Date"></label><br />
+        <input asp-for="Date" asp-format= "{0:yyyy-MM-dd}" />
+        @*<span asp-validation-for="Email"></span>*@
+    </div>
+    <div>
+        <label asp-for="FromHour"></label><br />
+        <input asp-for="FromHour" asp-format="{HH:mm}" />
+        @*<span asp-validation-for="Phone"></span>*@
+    </div>
+    <div>
+        <label asp-for="VolunteerHours.TotalHours"></label><br />
+        <input asp-for="VolunteerHours" asp-format="{HH:mm}">
+        @*<span asp-validation-for="Password"></span>*@
+    </div>
+    <div>
+        <input type="submit" value="Подтвердить" />
+    </div>
+</form>

@@ -24,7 +24,7 @@ namespace FamilyNetServer.Models.Identity
             using (var client = new SmtpClient())
             {
                 await client.ConnectAsync("smtp.gmail.com", 587, false);
-                await client.AuthenticateAsync("itacdp1661@gmail.com", "sssfzjdggtjdubfm");
+                await client.AuthenticateAsync("itacdp1661@gmail.com", "izooeayfogdlgcwp");
                 await client.SendAsync(emailMessage);
 
                 await client.DisconnectAsync(true);

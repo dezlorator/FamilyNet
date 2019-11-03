@@ -14,6 +14,7 @@ namespace FamilyNetServer.Models.Interfaces
         IRepository<Orphan> Orphans { get; }
         IRepository<BaseItemType> BaseItemTypes { get; }
         IRepository<DonationItem> DonationItems { get; }
+        IRepository<Availability> Availabilities { get; }
 
         DbSet<TypeBaseItem> TypeBaseItems { get; set; }// TODO : rewrite this
 
