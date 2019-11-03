@@ -72,6 +72,23 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("AuctionLot");
                 });
 
+            modelBuilder.Entity("FamilyNetServer.Models.Availability", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("FromHour");
+
+                    b.Property<TimeSpan>("VolunteerHours");
+
+                    b.Property<int>("VolunteerID");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Availabilities");
+                });
+
             modelBuilder.Entity("FamilyNetServer.Models.BaseItem", b =>
                 {
                     b.Property<int>("ID")
@@ -268,6 +285,10 @@ namespace FamilyNetServer.Migrations
                     b.Property<string>("Description");
 
                     b.Property<int?>("DonationID");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
 
                     b.Property<int>("Status");
 

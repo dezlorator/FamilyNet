@@ -36,6 +36,28 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork = unitOfWork;
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Admin, Volunteer")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetAll(DateTime date)
+        {
+            var availabilities = _unitOfWork.Availabilities.GetAll().Where(a => a.FromHour >= DateTime.Now);
+
+            if (availabilities == null)
+            {
+                return BadRequest();
+            }
+            var availabilitiesDTO = availabilities.Select(a =>
+            new AvailabilityDTO()
+            {
+                Date = a.FromHour,
+                FromHour = a.FromHour
+            });
+
+            return Ok(availabilitiesDTO);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -46,13 +68,21 @@ namespace FamilyNetServer.Controllers.API
             //{
             //    return BadRequest();
             //}
+            var userId = User.FindFirst(ClaimTypes.Name)?.Value;
+            var volunteerId = _unitOfWork.UserManager.FindByIdAsync(userId)
+                            .Result.PersonID;
 
             var availability = new Availability()
             {
-                VolunteerID = User.FindFirst(ClaimTypes.Name)?.Value,
-                Date = availabilityDTO.Date,
+                VolunteerID = volunteerId.Value,
                 VolunteerHours = availabilityDTO.VolunteerHours,
-                FromHour = availabilityDTO.FromHour
+                FromHour = new DateTime(availabilityDTO.Date.Year,
+                                        availabilityDTO.Date.Month,
+                                        availabilityDTO.Date.Day,
+                                        availabilityDTO.FromHour.Hour,
+                                        availabilityDTO.FromHour.Minute,
+                                        availabilityDTO.FromHour.Second
+                                       )
             };
 
             await _unitOfWork.Availabilities.Create(availability);
