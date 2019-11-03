@@ -19,6 +19,8 @@ using FamilyNet.StreamCreater;
 using FamilyNet.HttpHandlers;
 using System;
 using FamilyNet.Encoders;
+using FamilyNet.Controllers;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet
 {
@@ -87,7 +89,7 @@ namespace FamilyNet
             services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
-
+            services.AddTransient<IIdentityInformationExtractor, IdentityInformationExtractor>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
