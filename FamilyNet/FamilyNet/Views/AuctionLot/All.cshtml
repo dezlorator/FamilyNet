@@ -4,6 +4,9 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@{
+    var role = ViewData["role"] as String;
+}
 
 <h1>
     Fair
@@ -16,6 +19,10 @@
             <h5 class="card-title">@lot.AuctionLotItem.Name</h5>
             <p class="card-text">@lot.AuctionLotItem.Description</p>
             <a asp-action="Details" asp-controller="AuctionLot" asp-route-id="@lot.ID" class="btn btn-primary">More details</a>
+            @if (role == "CharityMaker" || role == "Volunteer")
+            {
+                <a class="btn btn-dark" asp-area="" asp-controller="Purchase" asp-action="Buy" asp-route-id="@lot.ID">Buy</a>
+            }
         </div>
     </div>
 

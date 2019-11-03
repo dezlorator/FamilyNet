@@ -21,6 +21,7 @@ using System;
 using FamilyNet.Encoders;
 using FamilyNet.Controllers;
 using FamilyNet.IdentityHelpers;
+using FamilyNet.Downloader.URLBuilders;
 
 namespace FamilyNet
 {
@@ -64,25 +65,12 @@ namespace FamilyNet
                 options.Cookie.IsEssential = true;
             });
 
-            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
-            services.AddTransient<ServerDataDownloader<ChildDTO>, ServerChildrenDownloader>();
-            services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
-            services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();
-            services.AddTransient<ServerSimpleDataDownloader<DonationItemDTO>, ServerDonationItemsDownloader>();
-            services.AddTransient<ServerSimpleDataDownloader<CategoryDTO>, ServerCategoriesDownloader>();
-            services.AddTransient<ServerDataDownloader<ChildrenHouseDTO>, ServerChildrenHouseDownloader>();
-            services.AddTransient<ServerDataDownloader<RepresentativeDTO>, ServerRepresentativesDownloader>();
-            services.AddTransient<ServerSimpleDataDownloader<RoleDTO>, ServerRoleDownloader>();
-            services.AddTransient<ServerSimpleDataDownloader<UserDTO>, ServerUserDownloader>();
-            services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
-            services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
-            services.AddTransient<IJWTEncoder, JWTEncoder>();
-            services.AddTransient<ServerChildrenHouseDownloader>();
-            services.AddTransient<ServerAddressDownloader>();
-            services.AddTransient<ServerLocationDownloader>();
-            services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
-            services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
-            services.AddTransient<ServerDataDownloader<AuctionLotDTO>, ServerAuctionLotDownloader>();
+            #region URLBuildres
+
+            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
+            services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
+            services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
+            services.AddTransient<IURLCategoriesBuilder, URLCategoriesBuilder>();
             services.AddTransient<IURLAuctionLotBuilder, URLAuctionLotBuilder>();
             services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
@@ -90,12 +78,39 @@ namespace FamilyNet
             services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
+            services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
+            services.AddTransient<IURLPurchaseBuilder, URLPurchaseBuilder>();
+
+            #endregion
+
+            #region ServerDataDownloader
+
+            services.AddTransient<ServerDataDownloader<ChildDTO>, ServerChildrenDownloader>();
+            services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<DonationItemDTO>, ServerDonationItemsDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<CategoryDTO>, ServerCategoriesDownloader>();
+            services.AddTransient<ServerDataDownloader<ChildrenHouseDTO>, ServerChildrenHouseDownloader>();
+            services.AddTransient<ServerChildrenHouseDownloader>();
+            services.AddTransient<ServerDataDownloader<RepresentativeDTO>, ServerRepresentativesDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<RoleDTO>, ServerRoleDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<UserDTO>, ServerUserDownloader>();
+            services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
+            services.AddTransient<ServerAddressDownloader>();
+            services.AddTransient<ServerLocationDownloader>();
+            services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
+            services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
+            services.AddTransient<ServerDataDownloader<AuctionLotDTO>, ServerAuctionLotDownloader>();
             services.AddTransient<IIdentityInformationExtractor, IdentityInformationExtractor>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
-            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
-            services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
-            services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
-            services.AddTransient<IURLCategoriesBuilder, URLCategoriesBuilder>();
+            services.AddTransient<ServerSimpleDataDownloader<PurchaseDTO>, ServerPurchaseDownloader>();
+
+            #endregion
+
+            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));            
+            services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
+            services.AddTransient<IJWTEncoder, JWTEncoder>();
+
 
             services.Configure<CookiePolicyOptions>(options =>
             {
