@@ -10,6 +10,7 @@ using Microsoft.Extensions.Localization;
 using FamilyNet.Downloader;
 using DataTransferObjects;
 using Microsoft.AspNetCore.Http;
+using FamilyNet.Encoders;
 
 namespace FamilyNet.Controllers
 {
@@ -20,10 +21,7 @@ namespace FamilyNet.Controllers
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IAuthorizeCreater _authorizeCreater;
         private readonly string _headerToken = "Bearer";
-
-        #endregion
-
-        #region ctor
+        private readonly IJWTEncoder _encoder;
 
         #endregion
 
@@ -32,10 +30,12 @@ namespace FamilyNet.Controllers
         public AccountController(IIdentity unitOfWork,
                                 IStringLocalizer<HomeController> localizer,
                                 IStringLocalizer<SharedResource> sharedLocalizer,
-                                IAuthorizeCreater authorizeCreater): base(unitOfWork)
+                                IAuthorizeCreater authorizeCreater,
+                                IJWTEncoder encoder) : base(unitOfWork)
         {
             _localizer = localizer;
             _authorizeCreater = authorizeCreater;
+            _encoder = encoder;
         }
 
         #endregion
@@ -159,7 +159,12 @@ namespace FamilyNet.Controllers
 
                 if (result.Success)
                 {
+                    var claims = _encoder.GetTokenData(result.Token);
+                    HttpContext.Session.SetString("id", claims.UserId.ToString());
+                    HttpContext.Session.SetString("email", claims.Email);
+                    HttpContext.Session.SetString("roles", String.Join(",", claims.Roles));
                     HttpContext.Session.SetString(_headerToken, result.Token);
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -174,7 +179,7 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Logout()
         {
-            HttpContext.Session.SetString(_headerToken, String.Empty);
+            HttpContext.Session.Clear();
             GetViewData();
             return RedirectToAction("Index", "Home");
         }

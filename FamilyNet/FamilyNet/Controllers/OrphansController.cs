@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.IO;
 using FamilyNet.StreamCreater;
+using FamilyNet.Encoders;
 
 namespace FamilyNet.Controllers
 {
