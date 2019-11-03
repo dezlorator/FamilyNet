@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
@@ -15,10 +14,11 @@ using Newtonsoft.Json;
 using System.Net;
 using System.IO;
 using FamilyNet.StreamCreater;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
-    public class VolunteersController : BaseController
+    public class VolunteersController : Controller
     {
         #region private fields
 
@@ -30,19 +30,19 @@ namespace FamilyNet.Controllers
         private readonly string _apiPath = "api/v1/volunteers";
         private readonly string _apiAddressPath = "api/v1/address";
         private readonly IFileStreamCreater _streamCreater;
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
 
         #endregion
 
         #region ctor
 
-        public VolunteersController(IUnitOfWorkAsync unitOfWork,
-                                 IStringLocalizer<VolunteersController> localizer,
+        public VolunteersController(IStringLocalizer<VolunteersController> localizer,
                                  ServerDataDownloader<VolunteerDTO> downLoader,
                                  IServerAddressDownloader addressDownloader,
                                  IURLVolunteersBuilder URLVolunteersBuilder,
                                  IURLAddressBuilder URLAddressBuilder,
-                                 IFileStreamCreater streamCreater)
-            : base(unitOfWork)
+                                 IFileStreamCreater streamCreater,
+                                 IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _downloader = downLoader;
@@ -50,6 +50,7 @@ namespace FamilyNet.Controllers
             _URLVolunteersBuilder = URLVolunteersBuilder;
             _URLAddressBuilder = URLAddressBuilder;
             _streamCreater = streamCreater;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -93,6 +94,8 @@ namespace FamilyNet.Controllers
                 EmailID = volunteer.EmailID,
                 Rating = volunteer.Rating
             });
+
+            GetViewData();
 
             return View(selectedVolunteers);
         }
@@ -178,12 +181,15 @@ namespace FamilyNet.Controllers
                 Rating = volunteerDTO.Rating,
             };
 
+            GetViewData();
+
             return View(volunteer);
         }
 
         public async Task<IActionResult> Create()
         {
-            await Check();
+            GetViewData();
+
             return View();
         }
 
@@ -224,6 +230,8 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            GetViewData();
+
             return Redirect("/Volunteers/Index");
         }
 
@@ -232,13 +240,6 @@ namespace FamilyNet.Controllers
             if (id == null)
             {
                 return NotFound();
-            }
-
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
             }
 
             var url = _URLVolunteersBuilder.GetById(_apiPath, id.Value);
@@ -289,6 +290,8 @@ namespace FamilyNet.Controllers
 
             volunteerDTO.Address = addressDTO;
 
+            GetViewData();
+
             return View(volunteerDTO);
         }
 
@@ -337,6 +340,8 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            GetViewData();
+
             return Redirect("/Volunteers/Index");
         }
 
@@ -372,6 +377,8 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
+            GetViewData();
+
             return View(id.Value);
         }
 
@@ -396,6 +403,8 @@ namespace FamilyNet.Controllers
             {
                 return Redirect("/Home/Error");
             }
+
+            GetViewData();
 
             return Redirect("/Volunteers/Index");
         }
@@ -452,7 +461,15 @@ namespace FamilyNet.Controllers
                 Rating = volunteer.Rating
             });
 
+            GetViewData();
+
             return View(selectedVolunteers);
+        }
+
+        private void GetViewData()
+        {
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
         }
     }
 }

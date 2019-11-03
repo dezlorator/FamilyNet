@@ -4,7 +4,7 @@ using System;
 
 namespace FamilyNet.Models
 {
-    public class AuctionLot : IEntity
+    public class AuctionLot
     {
         public int ID { get; set; }
 

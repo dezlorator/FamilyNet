@@ -30,6 +30,7 @@ namespace FamilyNetServer.Models.EntityFramework
             Location = new EFRepository<Location>(cont);
             CharityMakers = new EFRepository<CharityMaker>(cont);
             Donations = new EFRepository<Donation>(cont);
+            Quests = new EFRepository<Quest>(cont);
             Orphanages = new OrphanageRepositoryAsync(cont);
             Orphans = new EFRepository<Orphan>(cont);
             DonationItems = new EFRepository<DonationItem>(cont);
@@ -54,6 +55,7 @@ namespace FamilyNetServer.Models.EntityFramework
         public IOrphanageRepository Orphanages { get; set; }
 
         public IRepository<Address> Address { get; set; }
+
         public IRepository<Location> Location { get; set; }
 
         public IRepository<CharityMaker> CharityMakers { get; set; }
@@ -68,6 +70,8 @@ namespace FamilyNetServer.Models.EntityFramework
 
         public IRepository<Orphan> Orphans { get; set; }
         public IRepository<Availability> Availabilities { get; set; }
+        public IRepository<Quest> Quests { get; set; }
+
         public IUserValidator<ApplicationUser> UserValidator { get; set; }
 
         public IPasswordValidator<ApplicationUser> PasswordValidator { get; set; }

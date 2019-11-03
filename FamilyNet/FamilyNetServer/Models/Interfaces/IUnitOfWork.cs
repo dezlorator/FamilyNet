@@ -2,7 +2,7 @@
 
 namespace FamilyNetServer.Models.Interfaces
 {
-    public interface IUnitOfWork : IIdentityAsync
+    public interface IUnitOfWork : IIdentity
     {
         IRepository<Address> Address { get; }
         IRepository<Location> Location { get; }
@@ -14,6 +14,7 @@ namespace FamilyNetServer.Models.Interfaces
         IRepository<Orphan> Orphans { get; }
         IRepository<BaseItemType> BaseItemTypes { get; }
         IRepository<DonationItem> DonationItems { get; }
+        IRepository<Quest> Quests { get; set; }
         IRepository<Availability> Availabilities { get; }
 
         DbSet<TypeBaseItem> TypeBaseItems { get; set; }// TODO : rewrite this

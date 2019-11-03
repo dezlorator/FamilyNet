@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
@@ -13,14 +11,15 @@ using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
-    public class DonationsController : BaseController
+    public class DonationsController : Controller
     {
         #region private fields
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<DonationsController> _localizer;
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloader;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloaderCategories;
@@ -39,16 +38,15 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public DonationsController(IUnitOfWorkAsync unitOfWork,
-                                 IStringLocalizer<DonationsController> localizer,
+        public DonationsController(IStringLocalizer<DonationsController> localizer,
                                  ServerSimpleDataDownloader<DonationDetailDTO> downloader,
                                  ServerSimpleDataDownloader<CategoryDTO> downloaderCategories,
                                  ServerSimpleDataDownloader<DonationItemDTO> downloaderItems,
                                  ServerDataDownloader<ChildrenHouseDTO> serverChildrenHouseDownloader,
                                  IURLDonationsBuilder uRLDonationsBuilder,
                                  IURLDonationItemsBuilder uRLDonationItemsBuilder,
-                                 IURLChildrenHouseBuilder uRLChildrenHouseBuilder)
-            : base(unitOfWork)
+                                 IURLChildrenHouseBuilder uRLChildrenHouseBuilder,
+                                 IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _downloader = downloader;
@@ -58,11 +56,11 @@ namespace FamilyNet.Controllers
             _URLDonationsBuilder = uRLDonationsBuilder;
             _URLDonationItemsBuilder = uRLDonationItemsBuilder;
             _URLChildrenHouseBuilder = uRLChildrenHouseBuilder;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
 
-        [AllowAnonymous]
         public async Task<IActionResult> Index(int orphanageId)
         {
             var url = _URLDonationsBuilder.GetAllWithFilter(_apiPath,
@@ -120,7 +118,6 @@ namespace FamilyNet.Controllers
             return View(donations);
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -184,11 +181,8 @@ namespace FamilyNet.Controllers
             return View(donation);
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create()
         {
-            await Check();
-
             var urlOrphanages = _URLChildrenHouseBuilder.GetAllWithFilter(_apiOrphanagesPath, new OrphanageSearchModel(), SortStateOrphanages.NameAsc);
             var orphanagesList = await _downloaderOrphanages.GetAllAsync(urlOrphanages, HttpContext.Session);
             ViewBag.ListOfOrphanages = orphanagesList;
@@ -199,11 +193,15 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create(DonationViewModel model)
         {
             var url = _URLDonationItemsBuilder.CreatePost(_apiDonationItemsPath);
             var msg = await _downloaderItems.CreatePostAsync(url, model.DonationItem, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -217,6 +215,11 @@ namespace FamilyNet.Controllers
             url = _URLDonationsBuilder.CreatePost(_apiPath);
             msg = await _downloader.CreatePostAsync(url, model.Donation, HttpContext.Session);
 
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (msg.StatusCode != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
@@ -228,20 +231,11 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
-            }
-
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-
-            if (checkResult)
-            {
-                return check;
             }
 
             var urlDonation = _URLDonationsBuilder.GetById(_apiPath, id.Value);
@@ -286,11 +280,12 @@ namespace FamilyNet.Controllers
                 DonationItem = item
             };
 
+            GetViewData();
+
             return View(model);
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Edit(int id, DonationViewModel model)
         {
             if (id != model.Donation.ID)
@@ -318,6 +313,11 @@ namespace FamilyNet.Controllers
                 msg = await _downloaderItems.CreatePutAsync(url, model.DonationItem, HttpContext.Session);
             }
 
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
@@ -329,20 +329,11 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditStatus(int? id)
         {
             if (id == null)
             {
                 return NotFound();
-            }
-
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-
-            if (checkResult)
-            {
-                return check;
             }
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id.Value);
@@ -372,7 +363,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditStatus(int id, DonationDetailDTO donationDTO) //TODO: completely remake
         {
             if (id != donationDTO.ID)
@@ -388,15 +378,21 @@ namespace FamilyNet.Controllers
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
             var msg = await _downloader.CreatePutAsync(url, donationDTO, HttpContext.Session);
 
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
+
             return Redirect("/Donations/Index");
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -436,7 +432,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
@@ -446,6 +441,11 @@ namespace FamilyNet.Controllers
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
             var msg = await _downloader.DeleteAsync(url, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (msg.StatusCode != HttpStatusCode.OK)
             {
@@ -464,6 +464,8 @@ namespace FamilyNet.Controllers
                 Type = await GetTypeByIdAsync(typeId)
             };
 
+            GetViewData();
+
             return typeBaseItem;
         }
 
@@ -479,12 +481,16 @@ namespace FamilyNet.Controllers
                 Name = category.Name,
             };
 
+            GetViewData();
+
             return newCategory;
         }
 
         private void GetViewData()
         {
             ViewData["DonationsList"] = _localizer["DonationsList"];
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
         }
     }
 }

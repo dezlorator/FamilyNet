@@ -9,6 +9,7 @@ using FamilyNetServer.Filters;
 using FamilyNetServer.Validators;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -20,42 +21,25 @@ namespace FamilyNetServer.Controllers.API
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDonationItemValidator _donationItemValidator;
-        private readonly IDonationItemsFilter _donationItemsFilter;
         private readonly ILogger<DonationItemsController> _logger;
 
         #endregion
 
         public DonationItemsController(IUnitOfWork unitOfWork,
                                   IDonationItemValidator donationItemValidator,
-                                  IDonationItemsFilter donationItemsFilter,
                                   ILogger<DonationItemsController> logger)
         {
             _unitOfWork = unitOfWork;
             _donationItemValidator = donationItemValidator;
-            _donationItemsFilter = donationItemsFilter;
             _logger = logger;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]int rows,
-                                          [FromQuery]int page,
-                                          [FromQuery]string name,
-                                          [FromQuery]float minPrice,
-                                          [FromQuery]float maxPrice,
-                                          [FromQuery]string category
-                                   )
+        public IActionResult GetAll()
         {
             var donationItems = _unitOfWork.DonationItems.GetAll().Where(b => !b.IsDeleted);
-            donationItems = _donationItemsFilter.GetDonationItems(donationItems, name, minPrice, maxPrice, category);
-
-            if (rows != 0 && page != 0)
-            {
-                _logger.LogInformation("Paging were used");
-                donationItems = donationItems.
-                    Skip((page - 1) * rows).Take(rows);
-            }
 
             if (donationItems == null)
             {
@@ -108,6 +92,7 @@ namespace FamilyNetServer.Controllers.API
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]DonationItemDTO donationItemDTO)
@@ -153,6 +138,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Volunteer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]DonationItemDTO donationItemDTO)
@@ -184,6 +170,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)

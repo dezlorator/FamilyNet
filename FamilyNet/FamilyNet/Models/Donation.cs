@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FamilyNet.Models
 {
-    public class Donation : IEntity
+    public class Donation
     {
         public int ID { get; set; }
 
@@ -18,10 +18,6 @@ namespace FamilyNet.Models
         public bool IsRequest { get; set; }
 
         public int? CharityMakerID { get; set; }
-
-        public virtual int? VolunteerID { get; set; }
-
-        public virtual Volunteer Volunteer { get; set; }
 
         [Display(Name = "Филантроп")]
         public virtual CharityMaker CharityMaker { get; set; }

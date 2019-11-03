@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Downloader;
 using System.Net.Http;
@@ -13,13 +12,15 @@ using System.Net;
 using System.IO;
 using FamilyNet.StreamCreater;
 using DataTransferObjects;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
-    public class CharityMakersController : BaseController
+    public class CharityMakersController : Controller
     {
         #region private
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IURLCharityMakerBuilder _urlBilder;
         private readonly ServerDataDownloader<CharityMakerDTO> _serverDownloader;
         private readonly string _apiPath = "api/v1/charityMakers";
@@ -31,24 +32,24 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        #region  ctor
+        #region ctor
 
-        public CharityMakersController(IUnitOfWorkAsync unitOfWork,
-                IURLCharityMakerBuilder urlCharityMakerBuilder,
+        public CharityMakersController(IURLCharityMakerBuilder urlCharityMakerBuilder,
                 ServerDataDownloader<CharityMakerDTO> downloader,
                 IFileStreamCreater streamCreator,
                 IURLAddressBuilder urlAdressBuilder,
-                IServerAddressDownloader addressDownloader) : base(unitOfWork)
+                IServerAddressDownloader addressDownloader,
+                IIdentityInformationExtractor identityInformationExtactor)
         {
             _urlBilder = urlCharityMakerBuilder;
             _serverDownloader = downloader;
             _streamCreator = streamCreator;
             _urlAdressBuilder = urlAdressBuilder;
             _serverAddressDownloader = addressDownloader;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
-
 
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
@@ -89,6 +90,9 @@ namespace FamilyNet.Controllers
                 EmailID = charMaker.EmailID,
                 Rating = charMaker.Rating
             });
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
 
             return View(charityMaker);
         }
@@ -171,13 +175,17 @@ namespace FamilyNet.Controllers
                 Rating = charityMakerDTO.Rating,
             };
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return View(charityMaker);
         }
 
 
         public async Task<IActionResult> Create()
         {
-            await Check();
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
             return View();
         }
 
@@ -218,6 +226,9 @@ namespace FamilyNet.Controllers
                 return Redirect(_pathToErrorView);
                 //TODO: log
             }
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
 
             return Redirect("/charityMakers/Index");
         }
@@ -277,6 +288,9 @@ namespace FamilyNet.Controllers
             charityMakerDTO.AddressDTO.Street = addressDTO.Street;
             charityMakerDTO.AddressDTO.House = addressDTO.House;
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return View(charityMakerDTO);
         }
 
@@ -324,6 +338,9 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return Redirect("/charityMakers/Index");
         }
 
@@ -359,6 +376,9 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return View(charityMakerDTO);
         }
 
@@ -385,10 +405,13 @@ namespace FamilyNet.Controllers
                 return Redirect(_pathToErrorView);
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return Redirect("/charityMakers/Index");
         }
 
-        
+
         public async Task<IActionResult> Table()
         {
             var url = _urlBilder.CreatePost(_apiPath);
@@ -437,6 +460,9 @@ namespace FamilyNet.Controllers
                 EmailID = charityMaker.EmailID,
                 Rating = charityMaker.Rating,
             });
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
 
             return View(charityMakers);
         }

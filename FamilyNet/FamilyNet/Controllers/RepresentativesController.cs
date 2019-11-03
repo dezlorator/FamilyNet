@@ -12,6 +12,7 @@ using FamilyNet.Models.ViewModels;
 using FamilyNet.Downloader;
 using FamilyNet.StreamCreater;
 using DataTransferObjects;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
@@ -26,8 +27,7 @@ namespace FamilyNet.Controllers
         private readonly string _apiPath = "api/v1/representatives";
         private readonly string _apiChildrenHousesPath = "api/v1/childrenhouse";
         private readonly IFileStreamCreater _streamCreater;
-
-
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
 
         #endregion
 
@@ -37,13 +37,15 @@ namespace FamilyNet.Controllers
                                          IURLChildrenHouseBuilder URLChildrenHouseBuilder,
                                          ServerDataDownloader<RepresentativeDTO> downloader,
                                          ServerDataDownloader<ChildrenHouseDTO> childrenHouseDownloader,
-                                         IFileStreamCreater streamCreater)
+                                         IFileStreamCreater streamCreater,
+                                         IIdentityInformationExtractor identityInformationExtactor)
         {
             _URLRepresentativeBuilder = urlRepresentativeBuilder;
             _URLChildrenHouseBuilder = URLChildrenHouseBuilder;
             _representativesDownLoader = downloader;
             _childrenHouseDownloader = childrenHouseDownloader;
             _streamCreater = streamCreater;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -90,6 +92,8 @@ namespace FamilyNet.Controllers
                 EmailID = r.EmailID,
                 Rating = r.Rating
             });
+
+            GetViewData();
 
             return View(representatives);
         }
@@ -143,6 +147,8 @@ namespace FamilyNet.Controllers
                 Rating = representativeDTO.Rating,
             };
 
+            GetViewData();
+
             return View(representative);
         }
 
@@ -169,6 +175,8 @@ namespace FamilyNet.Controllers
             {
                 return Redirect("/Home/Error");
             }
+
+            GetViewData();
 
             return View();
         }
@@ -210,6 +218,8 @@ namespace FamilyNet.Controllers
             {
                 return Redirect("/Home/Error");
             }
+
+            GetViewData();
 
             return RedirectToAction(nameof(Index));
         }
@@ -253,6 +263,8 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
+
             return View(representativeDTO);
         }
 
@@ -285,6 +297,8 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
                 //TODO: log
             }
+
+            GetViewData();
 
             return RedirectToAction(nameof(Index));
         }
@@ -321,6 +335,8 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
+            GetViewData();
+
             return View(representativeDTO);
         }
 
@@ -340,7 +356,15 @@ namespace FamilyNet.Controllers
                 return Redirect("Home/Error");
             }
 
+            GetViewData();
+
             return RedirectToAction(nameof(Index));
+        }
+
+        private void GetViewData()
+        {
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                                 ViewData);
         }
 
         #endregion

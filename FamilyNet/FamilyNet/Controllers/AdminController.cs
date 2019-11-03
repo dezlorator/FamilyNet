@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.Identity;
 using FamilyNet.Models.Interfaces;
@@ -13,6 +12,7 @@ using FamilyNet.Downloader;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
@@ -20,14 +20,21 @@ namespace FamilyNet.Controllers
     {
         ServerSimpleDataDownloader<UserDTO> _downloader;
         private readonly string _apiPath = "http://localhost:53605/api/v1/users/";
-        public AdminController(IUnitOfWorkAsync unitOfWork, ServerSimpleDataDownloader<UserDTO> downloader)
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
+
+        public AdminController(IIdentity unitOfWork, 
+                               ServerSimpleDataDownloader<UserDTO> downloader,
+                               IIdentityInformationExtractor identityInformationExtactor)
                               : base(unitOfWork)
         {
             _downloader = downloader;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         public async Task<IActionResult> Index()
         {
+            GetViewData();
+
             var url = _apiPath;
             IEnumerable<UserDTO> userDTO = null;
 
@@ -48,8 +55,6 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-
-
             var users = userDTO.Select(user => new ApplicationUser()
             {
                 Id = user.Id,
@@ -60,11 +65,19 @@ namespace FamilyNet.Controllers
 
             return View(users);
         }
-        public ViewResult Create() => View();
+
+        public ViewResult Create()
+        {
+            GetViewData();
+
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create(UserDTO model)
         {
+            GetViewData();
+
             if (ModelState.IsValid)
             {
                 return View(model);
@@ -83,6 +96,8 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> DeleteAsync(string id)
         {
+            GetViewData();
+
             if (id == null)
             {
                 return NotFound();
@@ -107,12 +122,15 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+
             return RedirectToAction("Index");
         }
 
 
         public async Task<IActionResult> Edit(string id)
         {
+            GetViewData();
+
             ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(id);
             if (user != null)
             {
@@ -195,6 +213,9 @@ namespace FamilyNet.Controllers
             {
                 ModelState.AddModelError("", "User Not Found");
             }
+
+            GetViewData();
+
             return View(us);
         }
 
@@ -206,12 +227,10 @@ namespace FamilyNet.Controllers
             }
         }
 
-        public IActionResult SeedData()
+        private void GetViewData()
         {
-            SeedData seedData = new SeedData(_unitOfWork);
-            seedData.EnsurePopulated();
-
-            return Redirect("/Home/Index");
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
         }
     }
 }
