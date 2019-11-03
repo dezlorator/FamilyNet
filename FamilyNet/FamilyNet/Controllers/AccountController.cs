@@ -11,6 +11,7 @@ using FamilyNet.Downloader;
 using DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 using FamilyNet.Encoders;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
@@ -18,6 +19,7 @@ namespace FamilyNet.Controllers
     {
         #region private fields
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IAuthorizeCreater _authorizeCreater;
         private readonly string _headerToken = "Bearer";
@@ -31,11 +33,14 @@ namespace FamilyNet.Controllers
                                 IStringLocalizer<HomeController> localizer,
                                 IStringLocalizer<SharedResource> sharedLocalizer,
                                 IAuthorizeCreater authorizeCreater,
-                                IJWTEncoder encoder) : base(unitOfWork)
+                                IJWTEncoder encoder,
+                                IIdentityInformationExtractor identityInformationExtactor)
+            : base(unitOfWork)
         {
             _localizer = localizer;
             _authorizeCreater = authorizeCreater;
             _encoder = encoder;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -44,6 +49,7 @@ namespace FamilyNet.Controllers
         public IActionResult Register()
         {
             GetViewData();
+
             var allRoles = _unitOfWork.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
             {
@@ -79,7 +85,7 @@ namespace FamilyNet.Controllers
                     PersonType = GetPersonType(model.YourDropdownSelectedValue),
                     PersonID = null
                 };
-                // добавляем пользователя.
+
                 var result = await _unitOfWork.UserManager.CreateAsync(user, model.Password);
 
                 await _unitOfWork.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
@@ -110,7 +116,7 @@ namespace FamilyNet.Controllers
                     }
                 }
             }
-
+            GetViewData();
             return View(model);
 
         }
@@ -118,6 +124,7 @@ namespace FamilyNet.Controllers
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
+            GetViewData();
             if (userId == null || code == null)
             {
                 return View("Error");
@@ -172,6 +179,7 @@ namespace FamilyNet.Controllers
                     ModelState.AddModelError("", "Неправильный логин и (или) пароль");
                 }
             }
+            GetViewData();
             return View(model);
         }
 
@@ -193,6 +201,8 @@ namespace FamilyNet.Controllers
         public IActionResult GetDetails()
         {
             var url = Url.Action("Details", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
+
+            GetViewData();
             return Redirect(url);
         }
 
@@ -212,6 +222,9 @@ namespace FamilyNet.Controllers
             {
                 return GetRedirect(GetCurrentUserAsync().Result.PersonType.ToString(), "Create");
             }
+
+            GetViewData();
+
             return View();
         }
 
@@ -254,6 +267,9 @@ namespace FamilyNet.Controllers
         private void GetViewData()
         {
             ViewData["CharityMakers"] = _localizer["CharityMakers"];
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                           ViewData);
         }
     }
 }

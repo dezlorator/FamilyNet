@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.IO;
 using FamilyNet.StreamCreater;
-using FamilyNet.Encoders;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
@@ -21,6 +21,7 @@ namespace FamilyNet.Controllers
     {
         #region private fields
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly ServerDataDownloader<ChildrenHouseDTO> _childrenHouseDownloader;
         private readonly IStringLocalizer<OrphansController> _localizer;
         private readonly ServerDataDownloader<ChildDTO> _childrenDownloader;
@@ -39,7 +40,8 @@ namespace FamilyNet.Controllers
                                  ServerDataDownloader<ChildrenHouseDTO> childrenHouseDownloader,
                                  IURLChildrenBuilder URLChildrenBuilder,
                                  IURLChildrenHouseBuilder URLChildrenHouseBuilder,
-                                 IFileStreamCreater streamCreater)
+                                 IFileStreamCreater streamCreater,
+                                 IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _childrenDownloader = childrenDownloader;
@@ -47,6 +49,7 @@ namespace FamilyNet.Controllers
             _URLChildrenBuilder = URLChildrenBuilder;
             _URLChildrenHouseBuilder = URLChildrenHouseBuilder;
             _streamCreater = streamCreater;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -192,6 +195,8 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            GetViewData();
+
             return Redirect("/Orphans/Index");
         }
 
@@ -287,6 +292,8 @@ namespace FamilyNet.Controllers
             {
                 return Redirect("/Home/Error");
             }
+
+            GetViewData();
 
             return Redirect("/Orphans/Index");
         }
@@ -416,6 +423,9 @@ namespace FamilyNet.Controllers
         private void GetViewData()
         {
             ViewData["OrphansList"] = _localizer["OrphansList"];
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                                 ViewData);
         }
     }
 }

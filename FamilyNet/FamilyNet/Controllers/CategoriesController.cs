@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
@@ -18,6 +18,7 @@ namespace FamilyNet.Controllers
     {
         #region private fields
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<CategoriesController> _localizer;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloader;
         private readonly IURLCategoriesBuilder _URLBuilder;
@@ -29,11 +30,13 @@ namespace FamilyNet.Controllers
 
         public CategoriesController(IStringLocalizer<CategoriesController> localizer,
                                     ServerSimpleDataDownloader<CategoryDTO> downloader,
-                                    IURLCategoriesBuilder uRLBuilder)
+                                    IURLCategoriesBuilder uRLBuilder,
+                                    IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _downloader = downloader;
             _URLBuilder = uRLBuilder;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -65,6 +68,8 @@ namespace FamilyNet.Controllers
                 ID = category.ID,
                 Name = category.Name
             });
+
+            GetViewData();
 
             return View(categories);
         }
@@ -156,6 +161,8 @@ namespace FamilyNet.Controllers
         private void GetViewData()
         {
             ViewData["CategoriesList"] = _localizer["CategoriesList"];
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
         }
     }
 }

@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using System.IO;
 using FamilyNet.Models.ViewModels;
 using Microsoft.Extensions.Localization;
@@ -14,6 +13,7 @@ using FamilyNet.StreamCreater;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
@@ -21,6 +21,7 @@ namespace FamilyNet.Controllers
     {
         #region Private fields
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<OrphansController> _localizer;
         private readonly ServerChildrenHouseDownloader _childrenHouseDownloader;
         private readonly ServerAddressDownloader _addressDownLoader;
@@ -55,7 +56,8 @@ namespace FamilyNet.Controllers
                                 ServerSimpleDataDownloader<DonationItemDTO> donationItems,
                                 IURLDonationItemsBuilder URLDonationItem,
                                 IURLDonationsBuilder URLDonation,
-                                ServerSimpleDataDownloader<DonationDetailDTO> donation)
+                                ServerSimpleDataDownloader<DonationDetailDTO> donation,
+                                IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _streamCreater = streamCreater;
@@ -69,6 +71,7 @@ namespace FamilyNet.Controllers
             _URLDonationItem = URLDonationItem;
             _URLDonation = URLDonation;
             _donation = donation;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -506,6 +509,8 @@ namespace FamilyNet.Controllers
                 House = address.House
             };
 
+            GetViewData();
+
             return newAddress;
         }
 
@@ -521,6 +526,8 @@ namespace FamilyNet.Controllers
                 MapCoordX = location.MapCoordX,
                 MapCoordY = location.MapCoordY
             };
+
+            GetViewData();
 
             return newLocation;
         }
@@ -539,6 +546,9 @@ namespace FamilyNet.Controllers
             ViewData["Address"] = _localizer["Address"];
             ViewData["From"] = _localizer["From"];
             @ViewData["ListOrphanages"] = _localizer["ListOrphanages"];
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                                 ViewData);
         }
 
         #endregion

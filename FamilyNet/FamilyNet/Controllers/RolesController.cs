@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
@@ -14,18 +13,24 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
 using FamilyNet.Models.Identity;
+using FamilyNet.IdentityHelpers;
+
 namespace FamilyNet.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class RolesController : Controller
     {
-        ServerSimpleDataDownloader<RoleDTO> _downloader;
+        private readonly ServerSimpleDataDownloader<RoleDTO> _downloader;
         private readonly IIdentity _unitOfWork;
         private readonly string _apiPath = "http://localhost:53605/api/v1/roles/";
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
 
-        public RolesController(IIdentity unitOfWork, ServerSimpleDataDownloader<RoleDTO> downloader)
+        public RolesController(IIdentity unitOfWork, 
+                               ServerSimpleDataDownloader<RoleDTO> downloader,
+                               IIdentityInformationExtractor identityInformationExtactor)
         {
             _downloader = downloader;
+            _unitOfWork = unitOfWork;
+            _identityInformationExtactor = identityInformationExtactor;
         }
         public async Task<IActionResult> Index()
         {
@@ -53,7 +58,10 @@ namespace FamilyNet.Controllers
             {   Id = role.ID,
                 Name = role.Name
             });
-          
+
+            GetViewData();
+
+
             return View(roles);
         }
         
@@ -80,6 +88,8 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
                 //TODO: log
             }
+
+            GetViewData();
 
             return Redirect("/Roles/Index");
         
@@ -113,6 +123,8 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
+
             return RedirectToAction("Index");
         }
 
@@ -136,6 +148,8 @@ namespace FamilyNet.Controllers
                 };
                 return View(model);
             }
+
+            GetViewData();
 
             return NotFound();
         }
@@ -162,8 +176,15 @@ namespace FamilyNet.Controllers
                 return RedirectToAction("UserList");
             }
 
+            GetViewData();
+
             return NotFound();
         }
 
+        private void GetViewData()
+        {
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+        }
     }
 }
