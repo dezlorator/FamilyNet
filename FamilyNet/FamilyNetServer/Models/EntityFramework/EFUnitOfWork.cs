@@ -45,6 +45,8 @@ namespace FamilyNetServer.Models.EntityFramework
             RoleManager = roleManager;
             BaseItemTypes = new EFRepository<BaseItemType>(cont);
             TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
+            Purchases = new EFRepository<Purchase>(cont);
+            AuctionLots = new EFRepository<AuctionLot>(cont);
         }
 
         #endregion
@@ -87,6 +89,10 @@ namespace FamilyNetServer.Models.EntityFramework
         public IRepository<DonationItem> DonationItems { get; set; }
 
         public IRepository<BaseItemType> BaseItemTypes { get; set; }
+
+        public IRepository<Purchase> Purchases { get; set; }
+
+        public IRepository<AuctionLot> AuctionLots { get; set; }
 
         #endregion
 

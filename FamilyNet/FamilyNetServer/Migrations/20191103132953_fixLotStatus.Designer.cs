@@ -4,14 +4,16 @@ using FamilyNetServer.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191103132953_fixLotStatus")]
+    partial class fixLotStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -267,29 +269,6 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("Orphanages");
                 });
 
-            modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description");
-
-                    b.Property<int?>("DonationID");
-
-                    b.Property<int>("Status");
-
-                    b.Property<int?>("VolunteerID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DonationID");
-
-                    b.HasIndex("VolunteerID");
-
-                    b.ToTable("Quests");
-                });
-
             modelBuilder.Entity("FamilyNetServer.Models.Purchase", b =>
                 {
                     b.Property<int>("ID")
@@ -513,17 +492,6 @@ namespace FamilyNetServer.Migrations
                     b.HasOne("FamilyNetServer.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationID");
-                });
-
-            modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>
-                {
-                    b.HasOne("FamilyNetServer.Models.Donation", "Donation")
-                        .WithMany()
-                        .HasForeignKey("DonationID");
-
-                    b.HasOne("FamilyNetServer.Models.Volunteer", "Volunteer")
-                        .WithMany()
-                        .HasForeignKey("VolunteerID");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Purchase", b =>

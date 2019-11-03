@@ -10,7 +10,27 @@ namespace FamilyNet.IdentityHelpers
         {
             var roles = session.GetString("roles");
             var admin = "Admin";
-            var role = roles != null ? roles.Contains(admin) ? admin : String.Empty : String.Empty;
+            var orphan = "Orphan";
+            var representative = "Representative";
+            var volunteer = "Volunteer";
+            var charityMaker = "CharityMaker";
+            var role = roles != null && roles.Contains(admin) ? admin : String.Empty;
+            if(role == "")
+            {
+                role = roles != null && roles.Contains(orphan) ? orphan : String.Empty;
+            }
+            if (role == "")
+            {
+                role = roles != null && roles.Contains(representative) ? representative : String.Empty;
+            }
+            if (role == "")
+            {
+                role = roles != null && roles.Contains(volunteer) ? volunteer : String.Empty;
+            }
+            if (role == "")
+            {
+                role = roles != null && roles.Contains(charityMaker) ? charityMaker : String.Empty;
+            }
             viewData["role"] = role;
 
             var email = session.GetString("email");

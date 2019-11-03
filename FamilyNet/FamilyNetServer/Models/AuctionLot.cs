@@ -1,4 +1,5 @@
-﻿using FamilyNetServer.Models.Interfaces;
+﻿using FamilyNetServer.Enums;
+using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 
@@ -8,11 +9,13 @@ namespace FamilyNetServer.Models
     {
         public int ID { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime DateStart { get; set; }
+
+        public DateTime DateEnd { get; set; }
 
         public int? AuctionLotItemID { get; set; }
 
-        public virtual AuctionLotItem AuctionLotItem {get;set;}
+        public virtual AuctionLotItem AuctionLotItem { get; set; }
 
         public int? OrphanID { get; set; }
 
@@ -20,5 +23,11 @@ namespace FamilyNetServer.Models
 
         [BindNever]
         public bool IsDeleted { get; set; } = false;
+
+        public string Avatar { get; set; }
+
+        public int Quantity { get; set; }
+
+        public AuctionLotStatus Status { get; set; }
     }
 }
