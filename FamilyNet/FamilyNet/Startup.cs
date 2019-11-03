@@ -16,6 +16,11 @@ using FamilyNet.Configuration;
 using FamilyNet.Downloader;
 using DataTransferObjects;
 using FamilyNet.StreamCreater;
+using FamilyNet.HttpHandlers;
+using System;
+using FamilyNet.Encoders;
+using FamilyNet.Controllers;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet
 {
@@ -32,12 +37,9 @@ namespace FamilyNet
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IFileStreamCreater, FileStreamCreater>();
+            services.AddTransient<IAuthorizeCreater, AuthorizeCreater>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
-            //services.AddTransient<FamilyNetPhoneValidator>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration["Data:FamilyNet:ConnectionString"]));
             services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
             services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
@@ -53,6 +55,15 @@ namespace FamilyNet
             .AddUserManager<ApplicationUserManager>()
             .AddDefaultTokenProviders();
 
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<ServerDataDownloader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
@@ -65,10 +76,12 @@ namespace FamilyNet
             services.AddTransient<ServerSimpleDataDownloader<UserDTO>, ServerUserDownloader>();
             services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
-
+            services.AddTransient<IJWTEncoder, JWTEncoder>();
             services.AddTransient<ServerChildrenHouseDownloader>();
             services.AddTransient<ServerAddressDownloader>();
             services.AddTransient<ServerLocationDownloader>();
+            services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
+            services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<ServerDataDownloader<AuctionLotDTO>, ServerAuctionLotDownloader>();
             services.AddTransient<IURLAuctionLotBuilder, URLAuctionLotBuilder>();
             services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
@@ -77,8 +90,7 @@ namespace FamilyNet
             services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
-
-
+            services.AddTransient<IIdentityInformationExtractor, IdentityInformationExtractor>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
@@ -92,12 +104,13 @@ namespace FamilyNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddTransient<IUnitOfWorkAsync, EFUnitOfWorkAsync>();
+            services.AddTransient<IIdentity, EFUnitOfWork>();
+            services.AddTransient<IHttpAuthorizationHandler, HttpAuthorizationHandler>();
+
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc()
                 .AddViewLocalization(
                 Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
-            //    opts => { opts.ResourcesPath = "Resources"; })
                 .AddDataAnnotationsLocalization();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -134,6 +147,7 @@ namespace FamilyNet
             });
 
             app.UseStaticFiles();
+            app.UseSession();
             app.UseCookiePolicy();
             app.UseAuthentication();
 

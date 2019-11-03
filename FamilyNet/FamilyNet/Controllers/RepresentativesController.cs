@@ -6,51 +6,53 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Downloader;
 using FamilyNet.StreamCreater;
 using DataTransferObjects;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
-    public class RepresentativesController : BaseController
+    public class RepresentativesController : Controller
     {
         #region private fields
 
-        private readonly ServerDataDownloader<RepresentativeDTO> _downLoader;
+        private readonly ServerDataDownloader<ChildrenHouseDTO> _childrenHouseDownloader;
+        private readonly ServerDataDownloader<RepresentativeDTO> _representativesDownLoader;
         private readonly IURLRepresentativeBuilder _URLRepresentativeBuilder;
+        private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
         private readonly string _apiPath = "api/v1/representatives";
+        private readonly string _apiChildrenHousesPath = "api/v1/childrenhouse";
         private readonly IFileStreamCreater _streamCreater;
-
-
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
 
         #endregion
+
         #region Ctor
 
-        public RepresentativesController(IUnitOfWorkAsync unitOfWork,
-            IURLRepresentativeBuilder urlRepresentativeBuilder,
-            ServerDataDownloader<RepresentativeDTO> downloader,
-            IFileStreamCreater streamCreater) : base(unitOfWork)
+        public RepresentativesController(IURLRepresentativeBuilder urlRepresentativeBuilder,
+                                         IURLChildrenHouseBuilder URLChildrenHouseBuilder,
+                                         ServerDataDownloader<RepresentativeDTO> downloader,
+                                         ServerDataDownloader<ChildrenHouseDTO> childrenHouseDownloader,
+                                         IFileStreamCreater streamCreater,
+                                         IIdentityInformationExtractor identityInformationExtactor)
         {
             _URLRepresentativeBuilder = urlRepresentativeBuilder;
-            _downLoader = downloader;
+            _URLChildrenHouseBuilder = URLChildrenHouseBuilder;
+            _representativesDownLoader = downloader;
+            _childrenHouseDownloader = childrenHouseDownloader;
             _streamCreater = streamCreater;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
 
         #region Methods
 
-        // GET: Representatives
-        [AllowAnonymous]
-        public async Task<IActionResult> Index(int id,
+        public async Task<IActionResult> Index(int id, 
             PersonSearchModel searchModel)
         {
             var url = _URLRepresentativeBuilder
@@ -60,7 +62,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativesDTO = await _downLoader.GetAllAsync(url);
+                representativesDTO = await _representativesDownLoader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -91,11 +93,12 @@ namespace FamilyNet.Controllers
                 Rating = r.Rating
             });
 
+            GetViewData();
+
             return View(representatives);
         }
 
-        // GET: Representatives/Details/5
-        [AllowAnonymous]
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -108,7 +111,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _downLoader.GetByIdAsync(url);
+                representativeDTO = await _representativesDownLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -144,19 +147,36 @@ namespace FamilyNet.Controllers
                 Rating = representativeDTO.Rating,
             };
 
+            GetViewData();
+
             return View(representative);
         }
 
-        [Authorize(Roles = "Admin, Representative")]
-        // GET: Representatives/Create
+  
         public async Task<IActionResult> Create()
         {
-            await Check();
+            var urlChildrenHouse = _URLChildrenHouseBuilder.GetAllWithFilter(_apiChildrenHousesPath,
+                                                                            new OrphanageSearchModel(),
+                                                                            SortStateOrphanages.NameAsc);
+            try
+            {
+                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse, HttpContext.Session);
+                ViewBag.ListOfOrphanages = childrenHouses;
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
 
-            List<Orphanage> orphanages = await _unitOfWorkAsync.Orphanages.GetAll()
-                .OrderBy(o => o.Name).ToListAsync();
-
-            ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
+            GetViewData();
 
             return View();
         }
@@ -168,7 +188,6 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,Rating,Avatar,ChildrenHouseID")]
         RepresentativeDTO representativeDTO)
         {
@@ -185,45 +204,51 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.CreatePost(_apiPath);
-            var status = await _downLoader.СreatePostAsync(url, representativeDTO,
+            var status = await _representativesDownLoader.CreatePostAsync(url, representativeDTO,
                                                  stream,
-                                                 representativeDTO.Avatar.FileName);
+                                                 representativeDTO.Avatar.FileName,
+                                                 HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
+
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Representatives/Edit/5
-        [Authorize(Roles = "Admin, Representative")]
+       
         public async Task<IActionResult> Edit(int? id)
         {
-
-            List<Orphanage> orphanages = _unitOfWorkAsync.Orphanages.GetAll()
-                .OrderBy(o => o.Name).ToList();
-            ViewBag.Orphanages = new SelectList(orphanages, "ID", "Name");
-
-
             if (id == null)
             {
                 return NotFound();
             }
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
-            }
 
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id.Value);
+            var urlChildrenHouse = _URLChildrenHouseBuilder
+                .GetAllWithFilter(_apiChildrenHousesPath,
+                                  new OrphanageSearchModel(),
+                                  SortStateOrphanages.NameAsc);
+
+
+
+
+
             RepresentativeDTO representativeDTO = null;
 
             try
             {
-                representativeDTO = await _downLoader.GetByIdAsync(url);
+                representativeDTO = await _representativesDownLoader.GetByIdAsync(url, HttpContext.Session);
+                var childrenHouses = await _childrenHouseDownloader.GetAllAsync(urlChildrenHouse, HttpContext.Session);
+                ViewBag.ListOfOrphanages = childrenHouses;
             }
             catch (ArgumentNullException)
             {
@@ -238,6 +263,8 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
+
             return View(representativeDTO);
         }
 
@@ -246,7 +273,6 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Representative")]
         public async Task<IActionResult> Edit(int id, RepresentativeDTO representativeDTO)
         {
             if (id != representativeDTO.ID)
@@ -262,8 +288,9 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.СreatePutAsync(url, representativeDTO,
-                                                            stream, representativeDTO.Avatar?.FileName);
+            var status = await _representativesDownLoader.CreatePutAsync(url, representativeDTO,
+                                                            stream, representativeDTO.Avatar?.FileName,
+                                                            HttpContext.Session);
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -271,11 +298,11 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            GetViewData();
+
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Representatives/Delete/5
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -288,7 +315,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                representativeDTO = await _downLoader.GetByIdAsync(url);
+                representativeDTO = await _representativesDownLoader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -308,13 +335,13 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
+            GetViewData();
+
             return View(representativeDTO);
         }
 
-        // POST: Representatives/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
@@ -322,14 +349,22 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
             var url = _URLRepresentativeBuilder.GetById(_apiPath, id);
-            var status = await _downLoader.DeleteAsync(url);
+            var status = await _representativesDownLoader.DeleteAsync(url, HttpContext.Session);
 
             if (status != HttpStatusCode.OK)
             {
                 return Redirect("Home/Error");
             }
 
+            GetViewData();
+
             return RedirectToAction(nameof(Index));
+        }
+
+        private void GetViewData()
+        {
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                                 ViewData);
         }
 
         #endregion

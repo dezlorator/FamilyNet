@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Downloader;
 using System.Net.Http;
@@ -14,15 +12,15 @@ using System.Net;
 using System.IO;
 using FamilyNet.StreamCreater;
 using DataTransferObjects;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize]
-    public class CharityMakersController : BaseController
+    public class CharityMakersController : Controller
     {
-
         #region private
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IURLCharityMakerBuilder _urlBilder;
         private readonly ServerDataDownloader<CharityMakerDTO> _serverDownloader;
         private readonly string _apiPath = "api/v1/charityMakers";
@@ -34,22 +32,25 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        public CharityMakersController(IUnitOfWorkAsync unitOfWork,
-                IURLCharityMakerBuilder urlCharityMakerBuilder,
+        #region ctor
+
+        public CharityMakersController(IURLCharityMakerBuilder urlCharityMakerBuilder,
                 ServerDataDownloader<CharityMakerDTO> downloader,
                 IFileStreamCreater streamCreator,
                 IURLAddressBuilder urlAdressBuilder,
-                IServerAddressDownloader addressDownloader) : base (unitOfWork)
+                IServerAddressDownloader addressDownloader,
+                IIdentityInformationExtractor identityInformationExtactor)
         {
             _urlBilder = urlCharityMakerBuilder;
             _serverDownloader = downloader;
             _streamCreator = streamCreator;
             _urlAdressBuilder = urlAdressBuilder;
             _serverAddressDownloader = addressDownloader;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
-        // GET: CharityMakers
-        [AllowAnonymous]
+        #endregion
+
         public async Task<IActionResult> Index(int id, PersonSearchModel searchModel)
         {
             var url = _urlBilder.GetAllWithFilter(_apiPath,
@@ -59,7 +60,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                charityMakerContainer = await _serverDownloader.GetAllAsync(url);
+                charityMakerContainer = await _serverDownloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -90,11 +91,13 @@ namespace FamilyNet.Controllers
                 Rating = charMaker.Rating
             });
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return View(charityMaker);
         }
 
-        // GET: CharityMakers/Details/5
-        [AllowAnonymous]
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -107,7 +110,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                charityMakerDTO = await _serverDownloader.GetByIdAsync(url);
+                charityMakerDTO = await _serverDownloader.GetByIdAsync(url, HttpContext.Session);
 
             }
             catch (ArgumentNullException)
@@ -128,7 +131,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                adderessDTO = await _serverAddressDownloader.GetByIdAsync(addressUrl);
+                adderessDTO = await _serverAddressDownloader.GetByIdAsync(addressUrl, HttpContext.Session);
 
             }
             catch (ArgumentNullException)
@@ -172,14 +175,17 @@ namespace FamilyNet.Controllers
                 Rating = charityMakerDTO.Rating,
             };
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return View(charityMaker);
         }
 
-        // GET: CharityMakers/Create
-        [Authorize(Roles = "Admin, CharityMaker")]
+
         public async Task<IActionResult> Create()
         {
-            await Check();
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
             return View();
         }
 
@@ -188,7 +194,6 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, CharityMaker")]
         public async Task<IActionResult> Create(CharityMakerDTO charityMakerDTO)
         {
             if (!ModelState.IsValid)
@@ -203,13 +208,18 @@ namespace FamilyNet.Controllers
 
             var addressUrl = _urlAdressBuilder.CreatePost(_pathToAdressApi);
             var status1 = await _serverAddressDownloader.CreatePostAsync(addressUrl,
-                                                        charityMakerDTO.AddressDTO);
+                                                        charityMakerDTO.AddressDTO,
+                                                        HttpContext.Session);
 
             charityMakerDTO.AdressID = status1.Content.ReadAsAsync<AddressDTO>().Result.ID;
             var url = _urlBilder.CreatePost(_apiPath);
-            var status = await _serverDownloader.СreatePostAsync(url, charityMakerDTO,
-                                                             stream, charityMakerDTO.Avatar.FileName);
-
+            var status = await _serverDownloader.CreatePostAsync(url, charityMakerDTO,
+                                                             stream, charityMakerDTO.Avatar.FileName,
+                                                             HttpContext.Session);
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.Created)
             {
@@ -217,11 +227,12 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return Redirect("/charityMakers/Index");
         }
 
-        // GET: CharityMakers/Edit/5
-        [Authorize(Roles = "Admin, CharityMaker")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -229,19 +240,12 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var check = CheckById((int)id).Result;
-            var checkResult = check != null;
-            if (checkResult)
-            {
-                return check;
-            }
-
             var url = _urlBilder.GetById(_apiPath, id.Value);
             CharityMakerDTO charityMakerDTO = null;
 
             try
             {
-                charityMakerDTO = await _serverDownloader.GetByIdAsync(url);
+                charityMakerDTO = await _serverDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -261,7 +265,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                addressDTO = await _serverAddressDownloader.GetByIdAsync(adressUrl);
+                addressDTO = await _serverAddressDownloader.GetByIdAsync(adressUrl, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -284,6 +288,9 @@ namespace FamilyNet.Controllers
             charityMakerDTO.AddressDTO.Street = addressDTO.Street;
             charityMakerDTO.AddressDTO.House = addressDTO.House;
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return View(charityMakerDTO);
         }
 
@@ -292,7 +299,6 @@ namespace FamilyNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, CharityMaker")]
         public async Task<IActionResult> Edit(int id, CharityMakerDTO charityMakerDTO)
         {
             if (id != charityMakerDTO.ID)
@@ -313,12 +319,18 @@ namespace FamilyNet.Controllers
             }
 
             var url = _urlBilder.GetById(_apiPath, id);
-            var status = await _serverDownloader.СreatePutAsync(url, charityMakerDTO,
-                                                            stream, charityMakerDTO.Avatar?.FileName);
+            var status = await _serverDownloader.CreatePutAsync(url, charityMakerDTO,
+                                                            stream, charityMakerDTO.Avatar?.FileName,
+                                                            HttpContext.Session);
 
             var addressUrl = _urlAdressBuilder.GetById(_pathToAdressApi, charityMakerDTO.AdressID);
-            var status1 = await _serverAddressDownloader.CreatePutAsync(addressUrl, 
-                                                            charityMakerDTO.AddressDTO);
+            var status1 = await _serverAddressDownloader.CreatePutAsync(addressUrl,
+                                                            charityMakerDTO.AddressDTO, HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -326,11 +338,12 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return Redirect("/charityMakers/Index");
         }
 
-        // GET: CharityMakers/Delete/5
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -343,7 +356,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                charityMakerDTO = await _serverDownloader.GetByIdAsync(url);
+                charityMakerDTO = await _serverDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -363,13 +376,15 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return View(charityMakerDTO);
         }
 
-       
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
@@ -378,18 +393,25 @@ namespace FamilyNet.Controllers
             }
 
             var url = _urlBilder.GetById(_apiPath, id);
-            var status = await _serverDownloader.DeleteAsync(url);
+            var status = await _serverDownloader.DeleteAsync(url, HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status != HttpStatusCode.OK)
             {
                 return Redirect(_pathToErrorView);
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
             return Redirect("/charityMakers/Index");
         }
 
-        // GET: CharityMakers/Table
-        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Table()
         {
             var url = _urlBilder.CreatePost(_apiPath);
@@ -400,8 +422,8 @@ namespace FamilyNet.Controllers
 
             try
             {
-                charityMakerContainer = await _serverDownloader.GetAllAsync(url);
-                addressDTOContainer = await _serverAddressDownloader.GetAllAsync(adderssUrl);
+                charityMakerContainer = await _serverDownloader.GetAllAsync(url, HttpContext.Session);
+                addressDTOContainer = await _serverAddressDownloader.GetAllAsync(adderssUrl, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -438,6 +460,9 @@ namespace FamilyNet.Controllers
                 EmailID = charityMaker.EmailID,
                 Rating = charityMaker.Rating,
             });
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
 
             return View(charityMakers);
         }

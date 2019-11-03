@@ -1,36 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using FamilyNetServer.Models;
-using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using FamilyNetServer.Models.ViewModels;
 
 namespace FamilyNetServer.Controllers
-{
-    
+{    
     public class AccountController : BaseController
     {
+        #region feilds
+
         private readonly IStringLocalizer<HomeController> _localizer;
 
-        public AccountController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<HomeController> localizer, IStringLocalizer<SharedResource> sharedLocalizer) : base(unitOfWork, sharedLocalizer)
+        #endregion
+
+        #region ctor
+
+        public AccountController(IUnitOfWork unitOfWork,
+                                 IStringLocalizer<HomeController> localizer,
+                                 IStringLocalizer<SharedResource> sharedLocalizer)
+            : base(unitOfWork, sharedLocalizer)
         {
             _localizer = localizer;
         }
+
+        #endregion
 
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
         {
             GetViewData();
-            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
             {
                 Text = item.Name,
@@ -49,7 +54,7 @@ namespace FamilyNetServer.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             GetViewData();
-            var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
             {
                 Text = item.Name,
@@ -67,14 +72,14 @@ namespace FamilyNetServer.Controllers
                     PersonID = null
                 };
                 // добавляем пользователя.
-                var result = await _unitOfWorkAsync.UserManager.CreateAsync(user, model.Password);
+                var result = await _unitOfWork.UserManager.CreateAsync(user, model.Password);
 
-                await _unitOfWorkAsync.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
+                await _unitOfWork.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
 
                 if (result.Succeeded)
                 {
 
-                    var code = await _unitOfWorkAsync.UserManager.GenerateEmailConfirmationTokenAsync(user);
+                    var code = await _unitOfWork.UserManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action(
                         "ConfirmEmail",
                         "Account",
@@ -110,15 +115,15 @@ namespace FamilyNetServer.Controllers
             {
                 return View("Error");
             }
-            var user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if(user == null)
             {
                 return View("Error");
             }
-            var result = await _unitOfWorkAsync.UserManager.ConfirmEmailAsync(user, code);
+            var result = await _unitOfWork.UserManager.ConfirmEmailAsync(user, code);
             if (result.Succeeded)
             {
-                await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
+                await _unitOfWork.SignInManager.SignInAsync(user, false);
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -128,69 +133,7 @@ namespace FamilyNetServer.Controllers
         }
        
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
-        {
-            GetViewData();
-            return View(new LoginViewModel { ReturnUrl = returnUrl });
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-            GetViewData();
-            if (ModelState.IsValid)
-            {
-                ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    if(!await _unitOfWorkAsync.UserManager.IsEmailConfirmedAsync(user))
-                    {
-                        ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
-                        return View(model);
-                    }
-                    await _unitOfWorkAsync.SignInManager.SignOutAsync();
-                    Microsoft.AspNetCore.Identity.SignInResult result =
-                            await _unitOfWorkAsync.SignInManager.PasswordSignInAsync(
-                                user, model.Password, model.RememberMe, false);
-                    if (result.Succeeded)
-                    {
-                        if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                        {
-                            return Redirect(model.ReturnUrl);
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index", "Home");
-                        }
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Неправильный логин и (или) пароль");
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Такого пользователя не существует, зарегистрируйтесь, пожалуйста!");
-                }
-            }
-            return View(model);
-        }
-
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            // удаляем аутентификационные куки
-            await _unitOfWorkAsync.SignInManager.SignOutAsync();
-            GetViewData();
-            return RedirectToAction("Index", "Home");
-        }
-
+      
         [AllowAnonymous]
         public IActionResult AccessDenied()
         {

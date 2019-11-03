@@ -4,22 +4,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
-    public class CategoriesController : BaseController
+    public class CategoriesController : Controller
     {
-
         #region private fields
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<CategoriesController> _localizer;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloader;
         private readonly IURLCategoriesBuilder _URLBuilder;
@@ -29,20 +28,19 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public CategoriesController(IUnitOfWorkAsync unitOfWork,
-                                    IStringLocalizer<CategoriesController> localizer,
+        public CategoriesController(IStringLocalizer<CategoriesController> localizer,
                                     ServerSimpleDataDownloader<CategoryDTO> downloader,
-                                    IURLCategoriesBuilder uRLBuilder)
-            : base(unitOfWork)
+                                    IURLCategoriesBuilder uRLBuilder,
+                                    IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _downloader = downloader;
             _URLBuilder = uRLBuilder;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
 
-        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var url = _URLBuilder.GetAll(_apiPath);
@@ -50,7 +48,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                categoryDTO = await _downloader.GetAllAsync(url);
+                categoryDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -71,13 +69,13 @@ namespace FamilyNet.Controllers
                 Name = category.Name
             });
 
+            GetViewData();
+
             return View(categories);
         }
 
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create()
         {
-            await Check();
             GetViewData();
 
             return View();
@@ -85,11 +83,10 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Orphan")]
         public async Task<IActionResult> Create(CategoryDTO category)
         {
             var url = _URLBuilder.CreatePost(_apiPath);
-            var msg = await _downloader.CreatePostAsync(url, category);
+            var msg = await _downloader.CreatePostAsync(url, category, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -102,7 +99,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Categories/Index");
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -115,7 +111,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                categoryDTO = await _downloader.GetByIdAsync(url);
+                categoryDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -142,7 +138,6 @@ namespace FamilyNet.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (id <= 0)
@@ -151,7 +146,7 @@ namespace FamilyNet.Controllers
             }
 
             var url = _URLBuilder.GetById(_apiPath, id);
-            var msg = await _downloader.DeleteAsync(url);
+            var msg = await _downloader.DeleteAsync(url, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.OK)
             {
@@ -166,6 +161,8 @@ namespace FamilyNet.Controllers
         private void GetViewData()
         {
             ViewData["CategoriesList"] = _localizer["CategoriesList"];
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
         }
     }
 }

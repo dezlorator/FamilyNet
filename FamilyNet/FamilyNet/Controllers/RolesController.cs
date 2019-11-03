@@ -4,32 +4,33 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using FamilyNet.Models;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
-using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
-using System.IO;
-using FamilyNet.StreamCreater;
 using FamilyNet.Models.Identity;
+using FamilyNet.IdentityHelpers;
+
 namespace FamilyNet.Controllers
 {
-    [Authorize(Roles = "Admin")]
-    public class RolesController : BaseController
+    public class RolesController : Controller
     {
-        ServerSimpleDataDownloader<RoleDTO> _downloader;
+        private readonly ServerSimpleDataDownloader<RoleDTO> _downloader;
+        private readonly IIdentity _unitOfWork;
         private readonly string _apiPath = "http://localhost:53605/api/v1/roles/";
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
 
-        public RolesController(IUnitOfWorkAsync unitOfWork, ServerSimpleDataDownloader<RoleDTO> downloader) : base(unitOfWork)
+        public RolesController(IIdentity unitOfWork, 
+                               ServerSimpleDataDownloader<RoleDTO> downloader,
+                               IIdentityInformationExtractor identityInformationExtactor)
         {
             _downloader = downloader;
+            _unitOfWork = unitOfWork;
+            _identityInformationExtactor = identityInformationExtactor;
         }
         public async Task<IActionResult> Index()
         {
@@ -38,7 +39,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                rolesDTO = await _downloader.GetAllAsync(url);
+                rolesDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -53,13 +54,13 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-
-
             var roles = rolesDTO.Select(role => new IdentityRole()
             {   Id = role.ID,
                 Name = role.Name
             });
-          
+
+            GetViewData();
+
 
             return View(roles);
         }
@@ -75,13 +76,20 @@ namespace FamilyNet.Controllers
             }
 
             var url = _apiPath;
-            var status = await _downloader.CreatePostAsync(url, role);
+            var status = await _downloader.CreatePostAsync(url, role, HttpContext.Session);
+
+            if (status.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (status.StatusCode != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
                 //TODO: log
             }
+
+            GetViewData();
 
             return Redirect("/Roles/Index");
         
@@ -99,7 +107,7 @@ namespace FamilyNet.Controllers
             
             try
             {
-                var status = await _downloader.DeleteAsync(url);
+                var status = await _downloader.DeleteAsync(url, HttpContext.Session);
 
             }
             catch (ArgumentNullException)
@@ -115,20 +123,22 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
+
             return RedirectToAction("Index");
         }
 
-        public IActionResult UserList() => View(_unitOfWorkAsync.UserManager.Users);
+        public IActionResult UserList() => View(_unitOfWork.UserManager.Users);
 
         public async Task<IActionResult> Edit(string userId)
         {
             // получаем пользователя
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await _unitOfWorkAsync.UserManager.GetRolesAsync(user);
-                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+                var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
+                var allRoles = _unitOfWork.RoleManager.Roles.ToList();
                 ChangeRoleViewModel model = new ChangeRoleViewModel
                 {
                     UserId = user.Id,
@@ -139,33 +149,42 @@ namespace FamilyNet.Controllers
                 return View(model);
             }
 
+            GetViewData();
+
             return NotFound();
         }
         [HttpPost]
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {
             // получаем пользователя
-            ApplicationUser user = await _unitOfWorkAsync.UserManager.FindByIdAsync(userId);
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await _unitOfWorkAsync.UserManager.GetRolesAsync(user);
+                var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
                 // получаем все роли
-                var allRoles = _unitOfWorkAsync.RoleManager.Roles.ToList();
+                var allRoles = _unitOfWork.RoleManager.Roles.ToList();
                 // получаем список ролей, которые были добавлены
                 var addedRoles = roles.Except(userRoles);
                 // получаем роли, которые были удалены
                 var removedRoles = userRoles.Except(roles);
 
-                await _unitOfWorkAsync.UserManager.AddToRolesAsync(user, addedRoles);
+                await _unitOfWork.UserManager.AddToRolesAsync(user, addedRoles);
 
-                await _unitOfWorkAsync.UserManager.RemoveFromRolesAsync(user, removedRoles);
+                await _unitOfWork.UserManager.RemoveFromRolesAsync(user, removedRoles);
 
                 return RedirectToAction("UserList");
             }
 
+            GetViewData();
+
             return NotFound();
         }
 
+        private void GetViewData()
+        {
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+        }
     }
 }

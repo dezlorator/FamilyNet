@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using FamilyNetServer.Configuration;
 using FamilyNetServer.Filters.FilterParameters;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -24,7 +25,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IFileUploader _fileUploader;
         private readonly IVolunteerValidator _volunteerValidator;
         private readonly IFilterConditionsVolunteers _filterConditions;
@@ -36,7 +37,7 @@ namespace FamilyNetServer.Controllers.API
         #region ctor
 
         public VolunteersController(IFileUploader fileUploader,
-                                  IUnitOfWorkAsync unitOfWork,
+                                  IUnitOfWork unitOfWork,
                                   IVolunteerValidator volunteerValidator,
                                   IFilterConditionsVolunteers filterConditions,
                                   IOptionsSnapshot<ServerURLSettings> setings,
@@ -111,6 +112,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]VolunteerDTO volunteerDTO)
@@ -158,6 +160,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Volunteer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]VolunteerDTO volunteerDTO)
@@ -198,6 +201,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)

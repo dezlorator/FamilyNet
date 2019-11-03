@@ -9,7 +9,7 @@ using DataTransferObjects;
 
 namespace FamilyNet.Models
 {
-    public class CharityMaker : Person, IAddress
+    public class CharityMaker : Person
     {
         public virtual ICollection<Donation> Donations { get; set; }
 

@@ -25,6 +25,7 @@ namespace FamilyNetServer.Models.EntityFramework
         public DbSet<Orphanage> Orphanages { get; set; }
         public DbSet<Donation> Donations { get; set; }
         public DbSet<TypeBaseItem> TypeBaseItems { get; set; }
+        public DbSet<Quest> Quests { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
 
         public DbSet<AuctionLot> AuctionLot { get; set; }

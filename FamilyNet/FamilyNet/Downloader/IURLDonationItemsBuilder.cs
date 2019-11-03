@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace FamilyNet.Downloader
+﻿namespace FamilyNet.Downloader
 {
     public interface IURLDonationItemsBuilder
     {
@@ -11,7 +6,10 @@ namespace FamilyNet.Downloader
                                 string Name, float minPrice,
                                 float maxPrice, string category);
 
+        string GetAll(string api);
+
         string GetById(string api, int id);
+
         string CreatePost(string api);
     }
 }

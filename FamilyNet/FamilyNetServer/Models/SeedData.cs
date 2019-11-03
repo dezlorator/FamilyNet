@@ -7,9 +7,9 @@ namespace FamilyNetServer.Models
 {
     public class SeedData
     {
-        protected IUnitOfWorkAsync _unitOfWorkAsync;
+        protected IUnitOfWork _unitOfWorkAsync;
 
-        public SeedData(IUnitOfWorkAsync unitOfWork)
+        public SeedData(IUnitOfWork unitOfWork)
         {
             _unitOfWorkAsync = unitOfWork;
         }

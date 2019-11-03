@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FamilyNet.Models.Identity;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -11,22 +8,29 @@ namespace FamilyNet.Controllers
 {
     public class BaseController : Controller
     {
-        protected IUnitOfWorkAsync _unitOfWorkAsync;
+        #region fields
+
+        protected IIdentity _unitOfWork;
         protected IStringLocalizer<SharedResource> _sharedLocalizer;
 
+        #endregion
 
-        public BaseController(IUnitOfWorkAsync unitOfWork)
+        #region ctor
+
+        public BaseController(IIdentity unitOfWork)
         {
-            _unitOfWorkAsync = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
 
-        public BaseController(IUnitOfWorkAsync unitOfWork, IStringLocalizer<SharedResource> sharedLocalizer)
+        #endregion
+
+        public BaseController(IIdentity unitOfWork, IStringLocalizer<SharedResource> sharedLocalizer)
         {
-            _unitOfWorkAsync = unitOfWork;
+            _unitOfWork = unitOfWork;
             _sharedLocalizer = sharedLocalizer;
         }
 
-        protected Task<ApplicationUser> GetCurrentUserAsync() => _unitOfWorkAsync.UserManager.GetUserAsync(HttpContext.User);
+        protected Task<ApplicationUser> GetCurrentUserAsync() => _unitOfWork.UserManager.GetUserAsync(HttpContext.User);
 
         protected async Task Check() // TODO : rewrite name
         {

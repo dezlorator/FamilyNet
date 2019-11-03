@@ -6,6 +6,7 @@ using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _repository;
+        private readonly IUnitOfWork _repository;
         private readonly IFileUploader _fileUploader;
         private readonly IValidator<ChildrenHouseDTO> _childrenHouseValidator;
         private readonly IFilterConditionsChildrenHouse _filterConditions;
@@ -35,8 +36,8 @@ namespace FamilyNetServer.Controllers.API
         #region ctor
 
         public ChildrenHouseController(IFileUploader fileUploader,
-                                  IUnitOfWorkAsync repo,
-                                   IValidator<ChildrenHouseDTO> childrenHouseValidator,
+                                  IUnitOfWork repo,
+                                  IValidator<ChildrenHouseDTO> childrenHouseValidator,
                                   IFilterConditionsChildrenHouse filterConditions,
                                   IOptionsSnapshot<ServerURLSettings> setings,
                                   ILogger<ChildrenHouseController> logger)
@@ -51,6 +52,7 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,6 +102,7 @@ namespace FamilyNetServer.Controllers.API
             return Ok(childrenDTO);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -128,8 +131,9 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]        
         public async Task<IActionResult> Create([FromForm]ChildrenHouseDTO childrenHousesDTO)
         {
             if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
@@ -157,7 +161,6 @@ namespace FamilyNetServer.Controllers.API
                 Avatar = pathPhoto,
             };
 
-
             await _repository.Orphanages.Create(childrenHouse);
             _repository.SaveChangesAsync();
 
@@ -171,6 +174,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]ChildrenHouseDTO childrenHouseDTO)
@@ -209,6 +213,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute]int id)
@@ -236,6 +241,5 @@ namespace FamilyNetServer.Controllers.API
 
             return Ok();
         }
-
     }
 }

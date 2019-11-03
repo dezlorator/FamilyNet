@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FamilyNet.Models
 {
-    public class Donation : IEntity
+    public class Donation
     {
         public int ID { get; set; }
 
