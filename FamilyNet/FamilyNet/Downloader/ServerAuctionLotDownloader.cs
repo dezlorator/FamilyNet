@@ -1,4 +1,6 @@
 ﻿using DataTransferObjects;
+using FamilyNet.HttpHandlers;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +13,12 @@ namespace FamilyNet.Downloader
 {
     public class ServerAuctionLotDownloader : ServerDataDownloader<AuctionLotDTO>
     {
-        public override async Task<HttpStatusCode> СreatePostAsync(string url, AuctionLotDTO dto, Stream file, string fileName)
+        public ServerAuctionLotDownloader(IHttpAuthorizationHandler authorizationHandler)
+            : base(authorizationHandler) { }
+
+
+        public override async Task<HttpStatusCode> CreatePostAsync(string url, AuctionLotDTO dto, 
+            Stream file, string fileName, ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -19,7 +26,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, file, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PostAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 
@@ -32,7 +39,8 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        public override async Task<HttpStatusCode> СreatePutAsync(string url, AuctionLotDTO dto, Stream file, string fieName)
+        public override async Task<HttpStatusCode> CreatePutAsync(string url, AuctionLotDTO dto,
+            Stream file, string fieName, ISession session)
         {
             var statusCode = HttpStatusCode.BadRequest;
 
@@ -40,7 +48,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 BuildMultipartFormData(dto, file, formDataContent);
-
+                _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PutAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using DataTransferObjects;
 using FamilyNet.Downloader;
+using FamilyNet.IdentityHelpers;
 using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.StreamCreater;
@@ -37,6 +38,8 @@ namespace FamilyNet.Controllers
         private readonly IURLChildrenBuilder _URLChildrenBuilder;
         private readonly string _apiChildrenPath = "api/v1/children";
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
+
         #endregion
 
         #region Ctor
@@ -49,7 +52,8 @@ namespace FamilyNet.Controllers
              ServerDataDownloader<RepresentativeDTO> representativesDownLoader,
              IURLRepresentativeBuilder URLRepresentativeBuilder,
              ServerDataDownloader<ChildDTO> childrenDownloader,
-              IURLChildrenBuilder URLChildrenBuilder)
+              IURLChildrenBuilder URLChildrenBuilder,
+              IIdentityInformationExtractor identityInformationExtactor)
         {
             _auctionLotDownloader = auctionLotDownloader;
             _URLAuctionLotBuilder = URLAuctionLotBuilder;
@@ -60,13 +64,14 @@ namespace FamilyNet.Controllers
             _URLRepresentativeBuilder = URLRepresentativeBuilder;
             _childrenDownloader = childrenDownloader;
             _URLChildrenBuilder = URLChildrenBuilder;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
 
         #region ActionMethods
 
-        [AllowAnonymous]
+
         public async Task<IActionResult> All()
         {
             var url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
@@ -74,7 +79,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                auctionLots = await _auctionLotDownloader.GetAllAsync(url);
+                auctionLots = await _auctionLotDownloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -102,10 +107,12 @@ namespace FamilyNet.Controllers
                 AuctionLotItem = GetItem(fair.AuctionLotItemID.Value).Result
             });
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
+
             return View(crafts);
         }
 
-        [Authorize(Roles = "Orphan")]
         public  ActionResult MyCrafts(int orphanId = 7)
         {
             var url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
@@ -113,7 +120,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                auctionLots =  _auctionLotDownloader.GetAllAsync(url).Result.Where(lot =>lot.Status !="Approved" && lot.OrphanID == orphanId);
+                auctionLots =  _auctionLotDownloader.GetAllAsync(url, HttpContext.Session).Result.Where(lot =>lot.Status !="Approved" && lot.OrphanID == orphanId);
             }
             catch (ArgumentNullException)
             {
@@ -141,10 +148,12 @@ namespace FamilyNet.Controllers
                 AuctionLotItem = GetItem(fair.AuctionLotItemID.Value).Result
             });
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
+
             return View(crafts);
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id) 
         {
             if (id == null)
@@ -157,7 +166,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                auctionLot = await _auctionLotDownloader.GetByIdAsync(url);
+                auctionLot = await _auctionLotDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -190,23 +199,27 @@ namespace FamilyNet.Controllers
                 AuctionLotItem = GetItem(auctionLot.AuctionLotItemID.Value).Result
             };
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
 
             return View(craft);
         }
 
-        // GET: Orphanages/Create
-        [Authorize(Roles = "Orphan")]
-        public IActionResult Create() => View( new AuctionLotCreateViewModel());
+        public IActionResult Create()
+        {
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
 
-        // POST: Orphanages/Create
+            return  View(new AuctionLotCreateViewModel());
+        }
+
         [Microsoft.AspNetCore.Mvc.HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Orphan")]
         public async Task<IActionResult> Create(AuctionLotCreateViewModel model)
         {
             model.AuctionLot.OrphanID = 7;
             var url = _URLDonationItem.CreatePost(_apiDonationItemsPath);
-            var msg = await _donationItemsDownloader.CreatePostAsync(url, model.Item);
+            var msg = await _donationItemsDownloader.CreatePostAsync(url, model.Item, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -225,19 +238,21 @@ namespace FamilyNet.Controllers
             model.AuctionLot.AuctionLotItemID = itemDTO.ID;
 
             url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
-            var msg2 = await _auctionLotDownloader.СreatePostAsync(url, model.AuctionLot, stream, model.AuctionLot.Avatar.FileName);
+            var msg2 = await _auctionLotDownloader.CreatePostAsync(url, model.AuctionLot, stream, model.AuctionLot.Avatar.FileName, HttpContext.Session);
 
             if (msg2 != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
 
             return Redirect("/AuctionLot/All");
         }
 
         // GET: Orphanages/Edit/5
-        [Authorize(Roles = "Orphan")]
+    
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -250,9 +265,9 @@ namespace FamilyNet.Controllers
             DonationItemDTO itemDTO = null;
             try
             {
-                auctionLot = await _auctionLotDownloader.GetByIdAsync(url);
+                auctionLot = await _auctionLotDownloader.GetByIdAsync(url, HttpContext.Session);
                 url = _URLDonationItem.GetById(_apiDonationItemsPath, auctionLot.AuctionLotItemID.Value);
-                itemDTO = await _donationItemsDownloader.GetByIdAsync(url);
+                itemDTO = await _donationItemsDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -275,13 +290,16 @@ namespace FamilyNet.Controllers
                 Item = itemDTO
             };
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
+
             return View(model);
         }
 
         // POST: Orphanages/Edit/5
         [Microsoft.AspNetCore.Mvc.HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Orphan")]
+ 
         public async Task<IActionResult> Edit(int id, AuctionLotCreateViewModel model) //TODO: Check change id position
         {
             if (id != model.AuctionLot.ID)
@@ -303,7 +321,7 @@ namespace FamilyNet.Controllers
 
             var url = _URLDonationItem.GetById(_apiDonationItemsPath, model.AuctionLot.AuctionLotItemID.Value);
 
-            var msg = await _donationItemsDownloader.CreatePutAsync(url, model.Item);
+            var msg = await _donationItemsDownloader.CreatePutAsync(url, model.Item, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
@@ -313,8 +331,8 @@ namespace FamilyNet.Controllers
 
             url = _URLAuctionLotBuilder.GetById(_apiAuctionLotPath, id);
             model.AuctionLot.Status = "UnApproved";
-            var status = await _auctionLotDownloader.СreatePutAsync(url, model.AuctionLot,
-                                                            stream, model.AuctionLot.Avatar?.FileName);
+            var status = await _auctionLotDownloader.CreatePutAsync(url, model.AuctionLot,
+                                                            stream, model.AuctionLot.Avatar?.FileName, HttpContext.Session);
 
             if (status != HttpStatusCode.NoContent)
             {
@@ -322,11 +340,13 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
+
             return RedirectToAction("MyCrafts");
         }
 
 
-        [Authorize(Roles = "Orphan")]
         public async Task<IActionResult> Delete(int id)
         {
 
@@ -334,7 +354,7 @@ namespace FamilyNet.Controllers
             AuctionLotDTO auctionLotDTO = null;
             try
             {
-                auctionLotDTO = await _auctionLotDownloader.GetByIdAsync(url);
+                auctionLotDTO = await _auctionLotDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -346,34 +366,35 @@ namespace FamilyNet.Controllers
             }
 
             url = _URLAuctionLotBuilder.GetById(_apiAuctionLotPath, auctionLotDTO.ID);
-            var auctionStatus = await _auctionLotDownloader.DeleteAsync(url);
+            var auctionStatus = await _auctionLotDownloader.DeleteAsync(url, HttpContext.Session);
             if (auctionStatus != HttpStatusCode.OK)
             {
                 return Redirect("/Home/Error");
             }
 
             url = _URLDonationItem.GetById(_apiDonationItemsPath, auctionLotDTO.AuctionLotItemID.Value);
-            var itemStatus = await _donationItemsDownloader.DeleteAsync(url);
+            var itemStatus = await _donationItemsDownloader.DeleteAsync(url, HttpContext.Session);
             if (itemStatus.StatusCode != HttpStatusCode.OK)
             {
                 return Redirect("/Home/Error");
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
 
             return RedirectToAction("MyCrafts");
         }
 
 
-        [Authorize(Roles = "Representative")]
         public async Task<IActionResult> ConfirmCrafts()
         {
             int currnetReprId = 1;
 
             var url = _URLRepresentativeBuilder.GetById(_apiRepresentativesPath, currnetReprId);
-            var representative = await _representativesDownLoader.GetByIdAsync(url);
+            var representative = await _representativesDownLoader.GetByIdAsync(url, HttpContext.Session);
 
             url = _URLChildrenBuilder.GetAllWithFilter(_apiChildrenPath, new PersonSearchModel(), representative.ChildrenHouseID);
-            var orphans = await _childrenDownloader.GetAllAsync(url);
+            var orphans = await _childrenDownloader.GetAllAsync(url, HttpContext.Session);
            
 
             url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
@@ -381,7 +402,7 @@ namespace FamilyNet.Controllers
 
             try
             {
-                auctionLots = await _auctionLotDownloader.GetAllAsync(url);
+                auctionLots = await _auctionLotDownloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -413,21 +434,24 @@ namespace FamilyNet.Controllers
               });
                 lots.Add(crafts);
             }
-            
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
+
             return View(lots);
         }
 
-        [Authorize(Roles = "Representative")]
+
         public async Task<IActionResult> Confirm(int id)
         {          
             var url = _URLAuctionLotBuilder.GetById(_apiAuctionLotPath, id);
             try
             {
-                var auctionLotDTO = await _auctionLotDownloader.GetByIdAsync(url);
+                var auctionLotDTO = await _auctionLotDownloader.GetByIdAsync(url, HttpContext.Session);
 
                 auctionLotDTO.Status = "Approved";
 
-                var msg = await _auctionLotDownloader.СreatePutAsync(url, auctionLotDTO, null, null);
+                var msg = await _auctionLotDownloader.CreatePutAsync(url, auctionLotDTO, null, null, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -442,20 +466,22 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
+
             return Redirect("/AuctionLot/ConfirmCrafts");
         }
 
-        [Authorize(Roles = "Representative")]
         public async Task<IActionResult> Decline(int id)
         {
             var url = _URLAuctionLotBuilder.GetById(_apiAuctionLotPath, id);
             try
             {
-                var auctionLotDTO = await _auctionLotDownloader.GetByIdAsync(url);
+                var auctionLotDTO = await _auctionLotDownloader.GetByIdAsync(url, HttpContext.Session);
 
                 auctionLotDTO.Status = "Declined";
 
-                var msg = await _auctionLotDownloader.СreatePutAsync(url, auctionLotDTO, null, null);
+                var msg = await _auctionLotDownloader.CreatePutAsync(url, auctionLotDTO, null, null, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -469,6 +495,9 @@ namespace FamilyNet.Controllers
             {
                 return Redirect("/Home/Error");
             }
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
 
             return Redirect("/AuctionLot/ConfirmCrafts");
         }
@@ -480,7 +509,7 @@ namespace FamilyNet.Controllers
         private async Task<AuctionLotItem> GetItem(int id)
         {
             var urlItems = _URLDonationItem.GetById(_apiDonationItemsPath, id);
-            var item = await _donationItemsDownloader.GetByIdAsync(urlItems);
+            var item = await _donationItemsDownloader.GetByIdAsync(urlItems, HttpContext.Session);
 
             return new AuctionLotItem
             {

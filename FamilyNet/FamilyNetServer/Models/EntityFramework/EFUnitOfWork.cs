@@ -45,8 +45,8 @@ namespace FamilyNetServer.Models.EntityFramework
             RoleManager = roleManager;
             BaseItemTypes = new EFRepository<BaseItemType>(cont);
             TypeBaseItems = cont.TypeBaseItems; // TODO : rewrite this
-            Purchases = new EFRepositoryAsync<Purchase>(cont);
-            AuctionLots = new EFRepositoryAsync<AuctionLot>(cont);
+            Purchases = new EFRepository<Purchase>(cont);
+            AuctionLots = new EFRepository<AuctionLot>(cont);
         }
 
         #endregion
@@ -90,9 +90,9 @@ namespace FamilyNetServer.Models.EntityFramework
 
         public IRepository<BaseItemType> BaseItemTypes { get; set; }
 
-        public IAsyncRepository<Purchase> Purchases { get; set; }
+        public IRepository<Purchase> Purchases { get; set; }
 
-        public IAsyncRepository<AuctionLot> AuctionLots { get; set; }
+        public IRepository<AuctionLot> AuctionLots { get; set; }
 
         #endregion
 

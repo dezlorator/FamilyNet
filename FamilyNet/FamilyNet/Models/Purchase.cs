@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Models
 {
-    public class Purchase : IEntity
+    public class Purchase 
     {
         public int ID { get; set; }
 

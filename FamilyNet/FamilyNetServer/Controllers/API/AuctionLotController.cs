@@ -9,6 +9,7 @@ using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _repository;
+        private readonly IUnitOfWork _repository;
         private readonly IFileUploader _fileUploader;
         private readonly IValidator<AuctionLotDTO> _auctionValidator;
         private readonly ILogger<AuctionLotController> _logger;
@@ -32,7 +33,7 @@ namespace FamilyNetServer.Controllers.API
 
         #region ctor
 
-        public AuctionLotController(IUnitOfWorkAsync repo, 
+        public AuctionLotController(IUnitOfWork repo, 
             IFileUploader fileUploader,
             IValidator<AuctionLotDTO> auctionValidator,
             ILogger<AuctionLotController> logger,
@@ -48,6 +49,7 @@ namespace FamilyNetServer.Controllers.API
         #endregion
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll()
@@ -84,6 +86,7 @@ namespace FamilyNetServer.Controllers.API
 
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
@@ -113,6 +116,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Roles = "Orphan")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AuctionLotDTO auctionDTO)
@@ -158,6 +162,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Orphan, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AuctionLotDTO auctionDTO)
@@ -201,6 +206,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Orphan")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute]int id)

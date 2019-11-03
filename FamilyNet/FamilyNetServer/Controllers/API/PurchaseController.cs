@@ -19,7 +19,7 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly IUnitOfWorkAsync _repository;
+        private readonly IUnitOfWork _repository;
         private readonly IValidator<PurchaseDTO> _purchaseValidator;
         private readonly ILogger<PurchaseController> _logger;
 
@@ -27,7 +27,7 @@ namespace FamilyNetServer.Controllers.API
 
         #region ctor
 
-        public PurchaseController(IUnitOfWorkAsync repo,
+        public PurchaseController(IUnitOfWork repo,
             IValidator<PurchaseDTO> auctionValidator,
             ILogger<PurchaseController> logger)
         {
