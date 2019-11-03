@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Controllers.API
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class QuestsController : ControllerBase
     {
