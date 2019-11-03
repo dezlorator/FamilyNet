@@ -72,25 +72,6 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("AuctionLot");
                 });
 
-            modelBuilder.Entity("FamilyNetServer.Models.Availability", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<DateTime>("FromHour");
-
-                    b.Property<TimeSpan>("VolunteerHours");
-
-                    b.Property<string>("VolunteerID");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Availabilities");
-                });
-
             modelBuilder.Entity("FamilyNetServer.Models.BaseItem", b =>
                 {
                     b.Property<int>("ID")
@@ -188,8 +169,6 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<int>("Status");
 
-                    b.Property<int?>("VolunteerID");
-
                     b.HasKey("ID");
 
                     b.HasIndex("CharityMakerID");
@@ -199,8 +178,6 @@ namespace FamilyNetServer.Migrations
                         .HasFilter("[DonationItemID] IS NOT NULL");
 
                     b.HasIndex("OrphanageID");
-
-                    b.HasIndex("VolunteerID");
 
                     b.ToTable("Donations");
                 });
@@ -436,10 +413,6 @@ namespace FamilyNetServer.Migrations
                     b.HasOne("FamilyNetServer.Models.Orphanage", "Orphanage")
                         .WithMany("Donations")
                         .HasForeignKey("OrphanageID");
-
-                    b.HasOne("FamilyNetServer.Models.Volunteer", "Volunteer")
-                        .WithMany("Donations")
-                        .HasForeignKey("VolunteerID");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Orphan", b =>
