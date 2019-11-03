@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using DataTransferObjects;
+using FamilyNet.Models;
 using FamilyNetServer.Factories;
-using FamilyNetServer.Models.Identity;
+using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -19,6 +19,7 @@ namespace FamilyNetServer.Controllers.API
 
         private readonly ITokenFactory _tokenFactory;
         private readonly ILogger<AuthenticationController> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
         #endregion
 
@@ -31,6 +32,7 @@ namespace FamilyNetServer.Controllers.API
         {
             _tokenFactory = tokenFactory;
             _logger = logger;
+            _unitOfWork = unitOfWork;
         }
 
         #endregion
@@ -65,13 +67,20 @@ namespace FamilyNetServer.Controllers.API
                 _logger.LogError(msg);
                 return BadRequest(msg);
             }
-                        
+
             var roles = await _unitOfWork.UserManager.GetRolesAsync(user).ConfigureAwait(false);
             var token = new TokenDTO() { Token = _tokenFactory.Create(user, roles) };
             _logger.LogInformation("User " + credentialsDTO.Email + " has token " +
                 token.Token);
 
             return Created("", token);
+        }
+
+        [HttpGet]
+        public void SeedData()
+        {
+            var seedData = new SeedData(_unitOfWork);
+            seedData.EnsurePopulated();
         }
     }
 }

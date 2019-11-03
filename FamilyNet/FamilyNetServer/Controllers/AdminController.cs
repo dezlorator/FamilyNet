@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using FamilyNetServer.Models;
 using FamilyNetServer.Models.ViewModels;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -175,14 +174,6 @@ namespace FamilyNetServer.Controllers
             {
                 ModelState.AddModelError("", error.Description);
             }
-        }
-
-        public IActionResult SeedData()
-        {
-            SeedData seedData = new SeedData(_unitOfWork);
-            seedData.EnsurePopulated();
-
-            return Redirect("/Home/Index");
         }
     }
 }
