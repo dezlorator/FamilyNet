@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNetServer.Enums
+namespace DataTransferObjects.Enums
 {
-    public enum ReceiverRole
+    public enum UserRole
     {
-        CharityMaker = 1,
+        Defauklt,
+        CharityMaker,
         Volunteer,
         Child,
         Representative
