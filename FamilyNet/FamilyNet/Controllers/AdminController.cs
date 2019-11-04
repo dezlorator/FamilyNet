@@ -1,16 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using FamilyNet.Models;
-using FamilyNet.Models.ViewModels;
-using FamilyNet.Models.Identity;
-using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using DataTransferObjects;
 using FamilyNet.Downloader;
-using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
@@ -18,7 +12,6 @@ using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         #region fields
@@ -75,15 +68,8 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var users = userDTO.Select(user => new ApplicationUser()
-            {
-                Id = user.Id,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber
-            });
-
             GetViewData();
-            return View(users);
+            return View(userDTO);
         }
         public ViewResult Create()
         {

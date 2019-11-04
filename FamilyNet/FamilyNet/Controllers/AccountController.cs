@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models.ViewModels;
-using FamilyNet.Models.Identity;
-using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using FamilyNet.Downloader;
@@ -15,11 +13,11 @@ using FamilyNet.IdentityHelpers;
 using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
-
+using FamilyNet.Enums;
 
 namespace FamilyNet.Controllers
 {
-    public class AccountController : BaseController
+    public class AccountController : Controller
     {
         #region private fields
 
@@ -41,8 +39,7 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public AccountController(IIdentity unitOfWork,
-                                IStringLocalizer<HomeController> localizer,
+        public AccountController(IStringLocalizer<HomeController> localizer,
                                 IStringLocalizer<SharedResource> sharedLocalizer,
                                 IAuthorizeCreater authorizeCreater,
                                 IJWTEncoder encoder,
@@ -51,7 +48,6 @@ namespace FamilyNet.Controllers
                                 ServerSimpleDataDownloader<RoleDTO> rolesDownloader,
                                 IURLRegistrationBuilder registrationBuilder,
                                 IURLRolesBuilder rolesBuilder)
-            : base(unitOfWork)
         {
             _localizer = localizer;
             _authorizeCreater = authorizeCreater;
@@ -67,7 +63,7 @@ namespace FamilyNet.Controllers
         [HttpGet]
         public async Task<IActionResult> Register()
         {
-            
+
             var urlRoles = _rolesBuilder.GetAll(_apiRolesPath);
             IEnumerable<RoleDTO> roles = null;
 
@@ -126,34 +122,8 @@ namespace FamilyNet.Controllers
                 }
             }
             return View(model);
-
-
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        //{
-        //    GetViewData();
-        //    if (userId == null || code == null)
-        //    {
-        //        return View("Error");
-        //    }
-        //    var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
-        //    if (user == null)
-        //    {
-        //        return View("Error");
-        //    }
-        //    var result = await _unitOfWork.UserManager.ConfirmEmailAsync(user, code);
-        //    if (result.Succeeded)
-        //    {
-        //        await _unitOfWork.SignInManager.SignInAsync(user, false);
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //    else
-        //    {
-        //        return View("Error");
-        //    }
-        //}
 
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
@@ -179,6 +149,7 @@ namespace FamilyNet.Controllers
                     HttpContext.Session.SetString("id", claims.UserId.ToString());
                     HttpContext.Session.SetString("email", claims.Email);
                     HttpContext.Session.SetString("roles", String.Join(",", claims.Roles));
+                    HttpContext.Session.SetString("personId", claims.PersonId.ToString());
                     HttpContext.Session.SetString(_headerToken, result.Token);
 
                     return RedirectToAction("Index", "Home");
@@ -209,9 +180,10 @@ namespace FamilyNet.Controllers
 
         public IActionResult GetDetails()
         {
-            var id =HttpContext.Session.GetString("id");
+            var id = HttpContext.Session.GetString("id");
             var role = HttpContext.Session.GetString("roles");
-            var url = Url.Action("Details", role + "s", new { id = GetCurrentUserAsync().Result.PersonID });
+            var personId = HttpContext.Session.GetString("personId");
+            var url = Url.Action("Details", role + "s", new { id = personId });
 
             GetViewData();
             return Redirect(url);
@@ -219,7 +191,9 @@ namespace FamilyNet.Controllers
 
         public IActionResult AccountEdits()
         {
-            var url = Url.Action("Edit", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
+            var personId = HttpContext.Session.GetString("personId");
+            var role = HttpContext.Session.GetString("roles");
+            var url = Url.Action("Edit", role + "s", new { id = personId });
             return Redirect(url);
         }
 
