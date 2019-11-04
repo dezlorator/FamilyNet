@@ -12,6 +12,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
 using FamilyNet.IdentityHelpers;
+using FamilyNet.Enums;
 
 namespace FamilyNet.Controllers
 {
