@@ -3,11 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataTransferObjects;
 
 namespace FamilyNetServer.Validators
 {
     public interface IFeedbackValidator
     {
-        bool IsValid(Feedback feedback, ref string errorMessage);
+        bool IsValid(FeedbackDTO feedback, ref string errorMessage);
     }
 }

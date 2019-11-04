@@ -223,7 +223,7 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
-            if (id <= 0)
+            if (id < 0)
             {
                 _logger.LogError("Wrong id - {0}", id);
                 return BadRequest();

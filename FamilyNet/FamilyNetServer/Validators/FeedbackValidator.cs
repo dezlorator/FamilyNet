@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FamilyNetServer.Models;
+using DataTransferObjects;
 
 namespace FamilyNetServer.Validators
 {
@@ -13,7 +14,7 @@ namespace FamilyNetServer.Validators
         private const string TIME_NOT_SET = "Time field is null";
         private const string RATING_IS_OUT_OF_RANGE = "Rating must be bigger than -10 and lesser than 10";
         #endregion
-        public bool IsValid(Feedback feedback, ref string errorMessage)
+        public bool IsValid(FeedbackDTO feedback, ref string errorMessage)
         {
             if(string.IsNullOrEmpty(feedback.Message))
             {
