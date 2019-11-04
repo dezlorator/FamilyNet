@@ -5,6 +5,8 @@ using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,15 +21,19 @@ namespace FamilyNetServer.Controllers.API
 
         private readonly IUnitOfWork _repository;
         private readonly IValidator<AddressDTO> _addressValidator;
+        private readonly ILogger<AddressController> _logger;
+
 
         #endregion
 
         #region ctor
 
-        public AddressController(IUnitOfWork repository, IValidator<AddressDTO> addressValidator)
-        {            
-            _repository = repository;
+        public AddressController(IUnitOfWork repo, IValidator<AddressDTO> addressValidator,
+            ILogger<AddressController> logger)
+        {
+            _repository = repo;
             _addressValidator = addressValidator;
+            _logger = logger;
         }
 
         #endregion
@@ -41,6 +47,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (address == null)
             {
+                _logger.LogError("No address in database");
                 return BadRequest();
             }
 
@@ -61,6 +68,7 @@ namespace FamilyNetServer.Controllers.API
                 addressDTO.Add(childrenHouseDTO);
             }
 
+            _logger.LogInformation("Returned address list");
             return Ok(addressDTO);
         }
 
@@ -74,6 +82,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (addresses == null)
             {
+                _logger.LogError($"No address with id #{id} in database");
                 return BadRequest();
             }
 
@@ -87,6 +96,7 @@ namespace FamilyNetServer.Controllers.API
                 House = addresses.House
             };
 
+            _logger.LogInformation($"Returned address #{id}");
             return Ok(addressDTO);
         }
 
@@ -98,6 +108,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_addressValidator.IsValid(addressDTO))
             {
+                _logger.LogError("Invalid address");
                 return BadRequest();
             }
 
@@ -116,6 +127,8 @@ namespace FamilyNetServer.Controllers.API
 
             addressDTO.ID = address.ID;
 
+            _logger.LogInformation($"Created address with id #{address.ID}");
+
             return Created(addressDTO.ID.ToString(), addressDTO);
         }
 
@@ -127,6 +140,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (!_addressValidator.IsValid(addressDTO))
             {
+                _logger.LogError("Invalid address");
                 return BadRequest();
             }
 
@@ -145,6 +159,7 @@ namespace FamilyNetServer.Controllers.API
 
             _repository.Address.Update(address);
             _repository.SaveChangesAsync();
+            _logger.LogInformation($"Edited address with id #{address.ID}");
 
             return NoContent();
         }
@@ -157,6 +172,7 @@ namespace FamilyNetServer.Controllers.API
         {
             if (id <= 0)
             {
+                _logger.LogError("No address in database");
                 return BadRequest();
             }
 
@@ -164,6 +180,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (address == null)
             {
+                _logger.LogError("No address in database");
                 return BadRequest();
             }
 
@@ -171,6 +188,8 @@ namespace FamilyNetServer.Controllers.API
 
             _repository.Address.Update(address);
             _repository.SaveChangesAsync();
+
+            _logger.LogInformation($"Deleted address with id #{address.ID}");
 
             return Ok();
         }

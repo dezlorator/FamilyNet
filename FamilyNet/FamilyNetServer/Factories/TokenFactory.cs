@@ -35,6 +35,7 @@ namespace FamilyNetServer.Factories
 
             var cliams = new List<Claim>();
             cliams.Add(new Claim(ClaimTypes.Name, user.Id));
+            cliams.Add(new Claim(ClaimTypes.Email, user.Email));
             roles.ToList().ForEach(r => cliams.Add(new Claim(ClaimTypes.Role, r)));
 
             var tokenDescriptor = new SecurityTokenDescriptor

@@ -16,6 +16,11 @@
     <None Remove="Resources\OrphanagesController\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\20191031195314_fair.cs" />
+    <Compile Remove="Migrations\20191031195314_fair.Designer.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="FontAwesome" Version="4.7.0" />

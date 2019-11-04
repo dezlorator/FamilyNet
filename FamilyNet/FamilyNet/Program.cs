@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace FamilyNet
 {
@@ -13,6 +14,7 @@ namespace FamilyNet
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseDefaultServiceProvider(options =>
                     options.ValidateScopes = false)
                 .Build();

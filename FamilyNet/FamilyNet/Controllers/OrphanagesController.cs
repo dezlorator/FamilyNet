@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using System.IO;
 using FamilyNet.Models.ViewModels;
 using Microsoft.Extensions.Localization;
@@ -14,13 +13,15 @@ using FamilyNet.StreamCreater;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
-    public class OrphanagesController : BaseController
+    public class OrphanagesController : Controller
     {
         #region Private fields
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<OrphansController> _localizer;
         private readonly ServerChildrenHouseDownloader _childrenHouseDownloader;
         private readonly ServerAddressDownloader _addressDownLoader;
@@ -33,20 +34,30 @@ namespace FamilyNet.Controllers
         private readonly string _apiLocationPath = "api/v1/location";
         private readonly IFileStreamCreater _streamCreater;
 
+        private readonly ServerSimpleDataDownloader<DonationItemDTO> _donationItems;
+        private readonly IURLDonationItemsBuilder _URLDonationItem;
+        private readonly string _apiDonationItemsPath = "api/v1/donationItems";
+        private readonly IURLDonationsBuilder _URLDonation;
+        private readonly ServerSimpleDataDownloader<DonationDetailDTO> _donation;
+        private readonly string _apiDonationPath = "api/v1/donations";
+
         #endregion
 
         #region Ctor
 
-        public OrphanagesController(IUnitOfWorkAsync unitOfWork,
-                                IStringLocalizer<OrphansController> localizer,
+        public OrphanagesController(IStringLocalizer<OrphansController> localizer,
                                 ServerChildrenHouseDownloader downLoader,
                                 IURLChildrenHouseBuilder URLChildrenHouseBuilder,
                                 IFileStreamCreater streamCreater,
                                 IURLAddressBuilder URLAddressBuilder,
                                 ServerAddressDownloader addressDownLoader,
                                 ServerLocationDownloader locationDownLoader,
-                                IURLLocationBuilder URLLocationBuilder)
-           : base(unitOfWork)
+                                IURLLocationBuilder URLLocationBuilder,
+                                ServerSimpleDataDownloader<DonationItemDTO> donationItems,
+                                IURLDonationItemsBuilder URLDonationItem,
+                                IURLDonationsBuilder URLDonation,
+                                ServerSimpleDataDownloader<DonationDetailDTO> donation,
+                                IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _streamCreater = streamCreater;
@@ -56,6 +67,11 @@ namespace FamilyNet.Controllers
             _childrenHouseDownloader = downLoader;
             _addressDownLoader = addressDownLoader;
             _locationDownLoader = locationDownLoader;
+            _donationItems = donationItems;
+            _URLDonationItem = URLDonationItem;
+            _URLDonation = URLDonation;
+            _donation = donation;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -434,13 +450,21 @@ namespace FamilyNet.Controllers
         {
             ViewData["TypeHelp"] = typeHelp;
             IEnumerable<Orphanage> list = new List<Orphanage>();
-            if (typeHelp != null)
-                list = _unitOfWork.Orphanages.Get(
-                    orp => orp.Donations.Where(
-                        donat => donat.DonationItem.TypeBaseItem.Where(
-                            donatitem => donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
-                            Count() > 0 && donat.IsRequest).
-                        Count() > 0);
+            if(typeHelp != null)
+            {
+                //var url = _URLDonationItem.GetAllWithFilter(_apiDonationItemsPath, "", 0, 0, typeHelp);
+                //var items = _donationItems.GetAllAsync(url);
+                //foreach(var item in items.Result)
+                //{
+                //    //var url = _URLDonation.
+                //}
+            }
+            //list = _unitOfWorkAsync.Orphanages.Get(
+            //    orp => orp.Donations.Where(
+            //        donat => donat.DonationItem.TypeBaseItem.Where(
+            //            donatitem =>  donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
+            //            Count() > 0 && donat.IsRequest).
+            //        Count() > 0);
             GetViewData();
 
             return View("SearchResult", list);
@@ -485,6 +509,8 @@ namespace FamilyNet.Controllers
                 House = address.House
             };
 
+            GetViewData();
+
             return newAddress;
         }
 
@@ -500,6 +526,8 @@ namespace FamilyNet.Controllers
                 MapCoordX = location.MapCoordX,
                 MapCoordY = location.MapCoordY
             };
+
+            GetViewData();
 
             return newLocation;
         }
@@ -518,6 +546,9 @@ namespace FamilyNet.Controllers
             ViewData["Address"] = _localizer["Address"];
             ViewData["From"] = _localizer["From"];
             @ViewData["ListOrphanages"] = _localizer["ListOrphanages"];
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                                 ViewData);
         }
 
         #endregion

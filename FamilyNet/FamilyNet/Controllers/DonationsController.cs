@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
-using FamilyNet.Models.Interfaces;
 using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
@@ -12,20 +11,24 @@ using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
-    public class DonationsController : BaseController
+    public class DonationsController : Controller
     {
         #region private fields
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<DonationsController> _localizer;
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloader;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloaderCategories;
         private readonly ServerSimpleDataDownloader<DonationItemDTO> _downloaderItems;
-        private readonly ServerSimpleDataDownloader<ChildrenHouseDTO> _downloaderOrphanages;
+        private readonly ServerDataDownloader<ChildrenHouseDTO> _downloaderOrphanages;
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
+        private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
+
         private readonly string _apiPath = "api/v1/donations";
         private readonly string _apiCategoriesPath = "api/v1/categories";
         private readonly string _apiDonationItemsPath = "api/v1/donationItems";
@@ -35,21 +38,25 @@ namespace FamilyNet.Controllers
 
         #region ctor
 
-        public DonationsController(IUnitOfWorkAsync unitOfWork,
-                                 IStringLocalizer<DonationsController> localizer,
+        public DonationsController(IStringLocalizer<DonationsController> localizer,
                                  ServerSimpleDataDownloader<DonationDetailDTO> downloader,
                                  ServerSimpleDataDownloader<CategoryDTO> downloaderCategories,
                                  ServerSimpleDataDownloader<DonationItemDTO> downloaderItems,
+                                 ServerDataDownloader<ChildrenHouseDTO> serverChildrenHouseDownloader,
                                  IURLDonationsBuilder uRLDonationsBuilder,
-                                 IURLDonationItemsBuilder uRLDonationItemsBuilder)
-            : base(unitOfWork)
+                                 IURLDonationItemsBuilder uRLDonationItemsBuilder,
+                                 IURLChildrenHouseBuilder uRLChildrenHouseBuilder,
+                                 IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _downloader = downloader;
             _downloaderCategories = downloaderCategories;
             _downloaderItems = downloaderItems;
+            _downloaderOrphanages = serverChildrenHouseDownloader;
             _URLDonationsBuilder = uRLDonationsBuilder;
             _URLDonationItemsBuilder = uRLDonationItemsBuilder;
+            _URLChildrenHouseBuilder = uRLChildrenHouseBuilder;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -176,12 +183,8 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Create()
         {
-            await Check();
-
-            var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
-            ViewBag.ListOfDonationItems = donationItemsList;
-
-            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
+            var urlOrphanages = _URLChildrenHouseBuilder.GetAllWithFilter(_apiOrphanagesPath, new OrphanageSearchModel(), SortStateOrphanages.NameAsc);
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(urlOrphanages, HttpContext.Session);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -194,6 +197,11 @@ namespace FamilyNet.Controllers
         {
             var url = _URLDonationItemsBuilder.CreatePost(_apiDonationItemsPath);
             var msg = await _downloaderItems.CreatePostAsync(url, model.DonationItem, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
 
             if (msg.StatusCode != HttpStatusCode.Created)
             {
@@ -261,7 +269,7 @@ namespace FamilyNet.Controllers
             var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
             ViewBag.ListOfDonationItems = donationItemsList;
 
-            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiOrphanagesPath, HttpContext.Session);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -271,6 +279,8 @@ namespace FamilyNet.Controllers
                 Donation = donation,
                 DonationItem = item
             };
+
+            GetViewData();
 
             return View(model);
         }
@@ -291,11 +301,6 @@ namespace FamilyNet.Controllers
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
             var msg = await _downloader.CreatePutAsync(url, model.Donation, HttpContext.Session);
 
-            if (msg.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                return Redirect("/Account/Login");
-            }
-
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
@@ -307,6 +312,7 @@ namespace FamilyNet.Controllers
                 url = _URLDonationItemsBuilder.GetById(_apiDonationItemsPath, model.Donation.DonationItemID.Value);
                 msg = await _downloaderItems.CreatePutAsync(url, model.DonationItem, HttpContext.Session);
             }
+
             if (msg.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return Redirect("/Account/Login");
@@ -350,9 +356,6 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var donationsList = _unitOfWork.Donations.GetAll().ToList();
-            ViewBag.ListOfDonations = donationsList;
-
             GetViewData();
 
             return View(donationDTO);
@@ -360,7 +363,7 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditStatus(int id, DonationDetailDTO donationDTO)
+        public async Task<IActionResult> EditStatus(int id, DonationDetailDTO donationDTO) //TODO: completely remake
         {
             if (id != donationDTO.ID)
             {
@@ -384,6 +387,8 @@ namespace FamilyNet.Controllers
             {
                 return Redirect("/Home/Error");
             }
+
+            GetViewData();
 
             return Redirect("/Donations/Index");
         }
@@ -437,6 +442,11 @@ namespace FamilyNet.Controllers
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
             var msg = await _downloader.DeleteAsync(url, HttpContext.Session);
 
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (msg.StatusCode != HttpStatusCode.OK)
             {
                 return Redirect("/Home/Error");
@@ -454,6 +464,8 @@ namespace FamilyNet.Controllers
                 Type = await GetTypeByIdAsync(typeId)
             };
 
+            GetViewData();
+
             return typeBaseItem;
         }
 
@@ -469,12 +481,16 @@ namespace FamilyNet.Controllers
                 Name = category.Name,
             };
 
+            GetViewData();
+
             return newCategory;
         }
 
         private void GetViewData()
         {
             ViewData["DonationsList"] = _localizer["DonationsList"];
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
         }
     }
 }

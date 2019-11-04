@@ -18,7 +18,6 @@ using FamilyNetServer.ConfigurationServices;
 using FamilyNetServer.Configuration;
 using FamilyNetServer.Factories;
 using DataTransferObjects;
-using NLog;
 using Microsoft.Extensions.Logging;
 using FamilyNetServer.Controllers.API;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
@@ -50,6 +49,12 @@ namespace FamilyNetServer
             services.AddTransient<IUnitOfWork, EFUnitOfWork>();
             services.AddTransient<ILogger<CharityMakersController>, Logger<CharityMakersController>>();
             services.AddTransient<ILogger<VolunteersController>, Logger<VolunteersController>>();
+            services.AddTransient<ILogger<AddressController>, Logger<AddressController>>();
+            services.AddTransient<ILogger<ChildrenHouseController>, Logger<ChildrenHouseController>>();
+            services.AddTransient<ILogger<LocationController>, Logger<LocationController>>();
+            services.AddTransient<ILogger<AuctionLotController>, Logger<AuctionLotController>>();
+            services.AddTransient<ILogger<PurchaseController>, Logger<PurchaseController>>();
+            services.AddTransient<ILogger<QuestsController>, Logger<QuestsController>>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
             services.AddTransient<IVolunteerValidator, VolunteerValidator>();
@@ -63,12 +68,15 @@ namespace FamilyNetServer
             services.AddTransient<IFilterConditionsChildrenHouse, FilterConditionChildrenHouse>();
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IValidator<AddressDTO>, AddressValidator>();
+            services.AddTransient<IValidator<AuctionLotDTO>, AuctionLotValidator>();
             services.AddTransient<IValidator<ChildrenHouseDTO>, ChildrenHouseValidator>();
+            services.AddTransient<IValidator<PurchaseDTO>, PurchaseValidator>();
             services.AddTransient<ICategoryValidator, CategoryValidator>();
             services.AddTransient<IDonationItemValidator, DonationItemValidator>();
             services.AddTransient<IDonationValidator, DonationValidator>();
-            services.AddTransient<IDonationItemsFilter, DonationItemsFilter>();
             services.AddTransient<IDonationsFilter, DonationsFilter>();
+            services.AddTransient<IQuestValidator, QuestValidator>();
+            services.AddTransient<IQuestsFilter, QuestsFilter>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>

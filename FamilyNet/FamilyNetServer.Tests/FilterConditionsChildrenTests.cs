@@ -1,10 +1,13 @@
 ﻿using FamilyNetServer.Filters;
 using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+
 
 namespace FamilyNetServer.Tests
 {
@@ -92,7 +95,8 @@ namespace FamilyNetServer.Tests
                 child1, child2, child3, child4, child5
             }.AsQueryable();
 
-            _filter = new FilterConditionsChildren();
+            var mockLogger = new Mock<ILogger<FilterConditionsChildren>>();
+            _filter = new FilterConditionsChildren(mockLogger.Object);
         }
 
         [Test]
