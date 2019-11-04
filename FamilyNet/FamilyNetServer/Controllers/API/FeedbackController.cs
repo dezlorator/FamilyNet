@@ -131,16 +131,13 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            var userId = HttpContext.Session.GetString("id");
-            // how to get info about this user???
-
             string photoPath = string.Empty;
 
             if(feedbackDTO.Image != null)
             {
                 var fileName = feedbackDTO.Time.ToString();
 
-                photoPath = _fileUploader.CopyFileToServer(fileName,
+                photoPath = _settings.Value.ServerURL + _fileUploader.CopyFileToServer(fileName,
                     nameof(DirectoryUploadName.Feedback), feedbackDTO.Image);
                 _logger.LogInformation(string.Format("{0} - this path to photo was created", photoPath));
             }
@@ -148,13 +145,14 @@ namespace FamilyNetServer.Controllers.API
             var feedback = new Feedback()
             {
                 DonationId = feedbackDTO.DonationId,
-                Image = _settings.Value.ServerURL + photoPath,
+                Image = photoPath,
                 Message = feedbackDTO.Message,
                 Rating = feedbackDTO.Rating,
                 ReceiverId = feedbackDTO.ReceiverId,
                 ReceiverRole = feedbackDTO.ReceiverRole,
-                Time = feedbackDTO.Time
-                //Sender didn`t set
+                Time = feedbackDTO.Time,
+                SenderId = feedbackDTO.SenderId,
+                SenderRole = feedbackDTO.SenderRole
             };
 
             await _feedbackRepository.Create(feedback);

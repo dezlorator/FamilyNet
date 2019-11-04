@@ -8,6 +8,7 @@
         Representatives,
         ChildrenHouses,
         Auction,
-        Feedback
+        Feedback,
+        avatars
     }
 }

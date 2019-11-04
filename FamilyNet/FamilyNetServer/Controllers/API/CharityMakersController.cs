@@ -124,7 +124,6 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, CharityMaker")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm] CharityMakerDTO charityMakerDTO)
@@ -143,7 +142,7 @@ namespace FamilyNetServer.Controllers.API
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
                 pathPhoto = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.CharityMaker), charityMakerDTO.Avatar);
+                        "avatars", charityMakerDTO.Avatar);
                 _logger.LogInformation(string.Format("{0} - this path to photo was created", pathPhoto));
             }
 
