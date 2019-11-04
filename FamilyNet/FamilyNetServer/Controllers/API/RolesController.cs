@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNetServer.Controllers.API
 {
-    [Authorize(Roles = "Admin")]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class RolesController : ControllerBase

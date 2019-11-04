@@ -21,6 +21,8 @@ namespace FamilyNet.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
+        #region fields
+
         ServerSimpleDataDownloader<UserDTO> _downloader;
         private readonly IURLUsersBuilder _usersBuilder;
         private readonly string _apiUsersPath = "api/v1/users";
@@ -30,7 +32,11 @@ namespace FamilyNet.Controllers
         private readonly string _apiRolesPath = "api/v1/roles";
 
         private readonly IIdentityInformationExtractor _identityInformationExtactor;
- 
+
+        #endregion
+
+        #region ctor
+
         public AdminController(ServerSimpleDataDownloader<UserDTO> downloader,
                               ServerSimpleDataDownloader<RoleDTO> rolesDownloader, 
                               IIdentityInformationExtractor identityInformationExtactor,
@@ -42,6 +48,10 @@ namespace FamilyNet.Controllers
             _usersBuilder = usersBuilder;
             _rolesBuilder = rolesBuilder;
         }
+
+        #endregion
+
+        #region methods
 
         public async Task<IActionResult> Index()
         {
@@ -207,5 +217,7 @@ namespace FamilyNet.Controllers
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                            ViewData);
         }
+
+        #endregion
     }
 }

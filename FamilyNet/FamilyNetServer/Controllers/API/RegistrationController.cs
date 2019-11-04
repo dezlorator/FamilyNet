@@ -52,7 +52,7 @@ namespace FamilyNetServer.Controllers.API
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RegisterAsync([FromForm]RegistrationDTO model)
+        public async Task<IActionResult> Register([FromForm]RegistrationDTO model)
         {
            
             var allRoles = _unitOfWork.RoleManager.Roles.ToList();

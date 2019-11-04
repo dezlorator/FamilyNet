@@ -53,7 +53,7 @@ namespace FamilyNet.Downloader
             }
             if (dto.Phone != null)
             {
-                formDataContent.Add(new StringContent(dto.Phone.ToString()), "PhoneNumber");
+                formDataContent.Add(new StringContent(dto.Phone.ToString()), "Phone");
             }
             if (dto.Password != null)
             {
@@ -61,11 +61,11 @@ namespace FamilyNet.Downloader
             }
             if (dto.PasswordConfirm != null)
             {
-                formDataContent.Add(new StringContent(dto.PasswordConfirm.ToString()), "Password");
+                formDataContent.Add(new StringContent(dto.PasswordConfirm.ToString()), "PasswordConfirm");
             }
             if (dto.YourDropdownSelectedValue != null)
             {
-                formDataContent.Add(new StringContent(dto.YourDropdownSelectedValue.ToString()), "Role");
+                formDataContent.Add(new StringContent(dto.YourDropdownSelectedValue.ToString()), "YourDropdownSelectedValue");
             }
         }
     }
