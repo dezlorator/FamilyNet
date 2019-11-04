@@ -2,6 +2,7 @@
 using FamilyNet.Models.Identity;
 using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
 namespace FamilyNet.Controllers
@@ -30,7 +31,7 @@ namespace FamilyNet.Controllers
             _sharedLocalizer = sharedLocalizer;
         }
 
-        protected Task<ApplicationUser> GetCurrentUserAsync() => _unitOfWork.UserManager.GetUserAsync(HttpContext.User);
+        protected Task<ApplicationUser> GetCurrentUserAsync() => _unitOfWork.UserManager.FindByIdAsync(HttpContext.Session.GetString("id"));
 
         protected async Task Check() // TODO : rewrite name
         {

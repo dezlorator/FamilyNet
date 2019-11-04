@@ -76,13 +76,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 VolunteerID = volunteerId.Value,
                 VolunteerHours = availabilityDTO.VolunteerHours,
-                FromHour = new DateTime(availabilityDTO.Date.Year,
-                                        availabilityDTO.Date.Month,
-                                        availabilityDTO.Date.Day,
-                                        availabilityDTO.FromHour.Hour,
-                                        availabilityDTO.FromHour.Minute,
-                                        availabilityDTO.FromHour.Second
-                                       )
+                FromHour = availabilityDTO.FromHour.AddDays((double)availabilityDTO.DayOfWeek-1)
             };
 
             await _unitOfWork.Availabilities.Create(availability);

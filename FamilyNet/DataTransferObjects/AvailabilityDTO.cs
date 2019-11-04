@@ -9,6 +9,7 @@ namespace DataTransferObjects
     {
         public int ID { get; set; }
         //public int VolunteerID { get; set; }
+        public DayOfWeek DayOfWeek { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

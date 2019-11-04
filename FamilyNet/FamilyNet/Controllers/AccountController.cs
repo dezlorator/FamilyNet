@@ -267,7 +267,6 @@ namespace FamilyNet.Controllers
         private void GetViewData()
         {
             ViewData["CharityMakers"] = _localizer["CharityMakers"];
-
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                            ViewData);
         }

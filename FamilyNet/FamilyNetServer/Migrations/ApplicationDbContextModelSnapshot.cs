@@ -57,11 +57,19 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<int?>("AuctionLotItemID");
 
-                    b.Property<DateTime>("Date");
+                    b.Property<string>("Avatar");
+
+                    b.Property<DateTime>("DateEnd");
+
+                    b.Property<DateTime>("DateStart");
 
                     b.Property<bool>("IsDeleted");
 
                     b.Property<int?>("OrphanID");
+
+                    b.Property<int>("Quantity");
+
+                    b.Property<int>("Status");
 
                     b.HasKey("ID");
 
@@ -274,6 +282,31 @@ namespace FamilyNetServer.Migrations
                     b.HasIndex("LocationID");
 
                     b.ToTable("Orphanages");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.Purchase", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AuctionLotId");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<float>("Paid");
+
+                    b.Property<int>("Quantity");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AuctionLotId");
+
+                    b.ToTable("Purchases");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>
@@ -501,6 +534,14 @@ namespace FamilyNetServer.Migrations
                     b.HasOne("FamilyNetServer.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationID");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.Purchase", b =>
+                {
+                    b.HasOne("FamilyNetServer.Models.AuctionLot", "AuctionLot")
+                        .WithMany()
+                        .HasForeignKey("AuctionLotId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>

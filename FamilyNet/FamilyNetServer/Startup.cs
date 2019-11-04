@@ -49,6 +49,8 @@ namespace FamilyNetServer
             services.AddTransient<ILogger<AddressController>, Logger<AddressController>>();
             services.AddTransient<ILogger<ChildrenHouseController>, Logger<ChildrenHouseController>>();
             services.AddTransient<ILogger<LocationController>, Logger<LocationController>>();
+            services.AddTransient<ILogger<AuctionLotController>, Logger<AuctionLotController>>();
+            services.AddTransient<ILogger<PurchaseController>, Logger<PurchaseController>>();
             services.AddTransient<ILogger<QuestsController>, Logger<QuestsController>>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
@@ -63,7 +65,9 @@ namespace FamilyNetServer
             services.AddTransient<IFilterConditionsChildrenHouse, FilterConditionChildrenHouse>();
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IValidator<AddressDTO>, AddressValidator>();
+            services.AddTransient<IValidator<AuctionLotDTO>, AuctionLotValidator>();
             services.AddTransient<IValidator<ChildrenHouseDTO>, ChildrenHouseValidator>();
+            services.AddTransient<IValidator<PurchaseDTO>, PurchaseValidator>();
             services.AddTransient<ICategoryValidator, CategoryValidator>();
             services.AddTransient<IDonationItemValidator, DonationItemValidator>();
             services.AddTransient<IDonationValidator, DonationValidator>();
