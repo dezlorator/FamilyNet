@@ -42,7 +42,12 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll(DateTime date)
         {
-            var availabilities = _unitOfWork.Availabilities.GetAll().Where(a => a.FromHour >= DateTime.Now);
+            var userId = User.FindFirst(ClaimTypes.Name)?.Value;
+            var volunteerId = _unitOfWork.UserManager.FindByIdAsync(userId)
+                            .Result.PersonID;
+
+            var availabilities = _unitOfWork.Availabilities.GetAll()
+                .Where(a => a.VolunteerID == volunteerId && a.FromHour >= DateTime.Now);
 
             if (availabilities == null)
             {
@@ -51,8 +56,9 @@ namespace FamilyNetServer.Controllers.API
             var availabilitiesDTO = availabilities.Select(a =>
             new AvailabilityDTO()
             {
-                Date = a.FromHour,
-                FromHour = a.FromHour
+                FromHour = a.FromHour,
+                DayOfWeek = a.FromHour.DayOfWeek,
+                VolunteerHours = a.VolunteerHours,
             });
 
             return Ok(availabilitiesDTO);

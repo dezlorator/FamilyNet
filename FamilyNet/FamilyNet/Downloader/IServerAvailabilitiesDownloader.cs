@@ -11,6 +11,9 @@ namespace FamilyNet.Downloader
 {
     public interface IServerAvailabilitiesDownloader
     {
+        Task<IEnumerable<AvailabilityDTO>> GetAllAsync(string url,
+                                                    ISession session);
+
         Task<HttpStatusCode> CreatePostAsync(string url, AvailabilityDTO dto, ISession session);
     }
 }

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using FamilyNet.IdentityHelpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace FamilyNet.Controllers
 {
@@ -26,8 +29,31 @@ namespace FamilyNet.Controllers
             _identityInformationExtactor = identityInformationExtactor;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+           var url = _URLAvailabilitiesBuilder
+                .GetAll(_apiPath);
+
+            IEnumerable<AvailabilityDTO> availabilitiesDTO = null;
+
+            try
+            {
+                //representativesDTO = await _availabilitiesDownLoader.GetAllAsync(url, HttpContext.Session);
+                availabilitiesDTO = await _availabilitiesDownLoader.GetAllAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
             GetViewData();
             return View();
         }

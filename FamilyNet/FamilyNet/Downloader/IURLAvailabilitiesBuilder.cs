@@ -7,6 +7,9 @@ namespace FamilyNet.Downloader
 {
     public interface IURLAvailabilitiesBuilder
     {
+        string GetAll(string api);
         string CreatePost(string api);
     }
+
+
 }

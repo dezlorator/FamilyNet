@@ -1,6 +1,7 @@
 ﻿using DataTransferObjects;
 using FamilyNet.HttpHandlers;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +19,40 @@ namespace FamilyNet.Downloader
         public ServerAvailabilitiesDownloader(IHttpAuthorizationHandler authorizationHandler)
         {
             _authorizationHandler = authorizationHandler;
+        }
+
+        public async Task<IEnumerable<AvailabilityDTO>> GetAllAsync(string url,
+                                                     ISession session)
+        {
+            List<AvailabilityDTO> objs = null;
+
+            try
+            {
+                HttpResponseMessage response = null;
+
+                using (var httpClient = new HttpClient())
+                {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
+                    response = await httpClient.GetAsync(url);
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                objs = JsonConvert.DeserializeObject<List<AvailabilityDTO>>(json);
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            return objs;
         }
 
         public async Task<HttpStatusCode> CreatePostAsync(string url,

@@ -20,6 +20,12 @@ namespace FamilyNet.Downloader
             _options = options;
         }
 
+        public string GetAll(string api)
+        {
+           
+            return _options.Value.ServerURL + api;
+        }
+
         public string CreatePost(string api)
         {
             return _options.Value.ServerURL + api;
