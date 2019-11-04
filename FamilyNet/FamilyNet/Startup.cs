@@ -82,9 +82,11 @@ namespace FamilyNet
             services.AddTransient<ServerLocationDownloader>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
+            services.AddTransient<ServerDataDownloader<AuctionLotDTO>, ServerAuctionLotDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<RegistrationDTO>, ServerRegistrationDownloader>();
+            services.AddTransient<IURLAuctionLotBuilder, URLAuctionLotBuilder>();
             services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
-            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
             services.AddTransient<IURLAddressBuilder, URLAddressBuilder>();
             services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
@@ -95,6 +97,10 @@ namespace FamilyNet
             services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
             services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
             services.AddTransient<IURLCategoriesBuilder, URLCategoriesBuilder>();
+            services.AddTransient<IURLRolesBuilder, URLRolesBuilder>();
+            services.AddTransient<IURLRegistrationBuilder, URLRegistrationBuilder>();
+            services.AddTransient<IURLUsersBuilder, URLUsersBuilder>();
+
 
             services.Configure<CookiePolicyOptions>(options =>
             {

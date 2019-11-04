@@ -1,10 +1,10 @@
-﻿@model FamilyNet.Models.ViewModels.EditViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model DataTransferObjects.UserDTO
 
-<div class="bg-primary m-1 p-1"><h4>Edit User</h4></div>
-
-<div asp-validation-summary="All" class="text-danger"></div>
+<h2>Изменение ролей для пользователя @Model.</h2>
 
 <form asp-action="Edit" method="post">
+    <input type="hidden" name="userId" value="@Model.Id" />
     <div class="form-group">
         <label asp-for="Id"></label>
         <input asp-for="Id" class="form-control" disabled />
@@ -21,6 +21,13 @@
         <label for="password">Password</label>
         <input name="password" type="password" class="form-control" />
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <div class="form-group">
+        @foreach (var role in ViewBag.AllRoles)
+        {
+            <input type="checkbox" name="roles" value="@role.Name"
+                   @(Model.Roles.Contains(role.Name) ? "checked=\"checked\"" : "") />@role.Name <br />
+            }
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+
 </form>

@@ -1,0 +1,58 @@
+﻿@model FamilyNet.Models.ViewModels.AuctionLotCreateViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewData["Title"] = "Create";
+}
+    <form asp-action="Create" enctype="multipart/form-data">
+        <div class="container">
+            <div class="row my-2">
+                <div class="col-lg-8 order-lg-2">
+                    <div class="tab-content py-4">
+                        <div class="tab-pane active" id="profile">
+                            <h5 class="mb-3">@ViewData["Profile"]</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>@Html.DisplayNameFor(model => model.Item.Name):</b>
+                                    <input asp-for="Item.Name" class="form-control" />
+                                    <p>
+                                        <b>@Html.DisplayNameFor(model => model.Item.Price):</b>
+                                        <input asp-for="Item.Price" class="form-control" />
+                                    </p>
+                                    <p>
+                                        <b>@Html.DisplayNameFor(model => model.AuctionLot.DateStart)</b>
+                                        <input asp-for="AuctionLot.DateStart" class="form-control" />
+                                    </p>
+                                    <p>
+                                        <b>@Html.DisplayNameFor(model => model.AuctionLot.DateEnd)</b>
+                                        <input asp-for="AuctionLot.DateEnd" class="form-control" />
+                                    </p>
+                                    <p>
+                                        <b>@Html.DisplayNameFor(model => model.AuctionLot.Quantity)</b>
+                                        <input asp-for="AuctionLot.Quantity" class="form-control" />
+                                    </p>
+                                    <p>
+                                        <b>@Html.DisplayNameFor(model => model.Item.Description)</b>
+                                        <textarea asp-for="Item.Description" class="form-control"></textarea>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 order-lg-1 text-center">
+                    <label asp-for="AuctionLot.Avatar" class="control-label"></label>
+                    <input asp-for="AuctionLot.Avatar" type="file" name="AuctionLot.Avatar" class="form-control" />
+                    <span asp-validation-for="AuctionLot.Avatar" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Create" class="btn btn-success" />
+    </form>
+        <div>
+            <a asp-action="All" asp-controller="AuctionLot" type="submit" class="btn btn-info">Back</a>
+        </div>
+
+

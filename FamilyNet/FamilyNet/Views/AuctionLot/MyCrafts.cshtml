@@ -1,0 +1,30 @@
+﻿@model IEnumerable<FamilyNet.Models.AuctionLot>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>
+    Fair
+</h1>
+<a asp-action="Create" asp-controller="AuctionLot" class="btn btn-primary float-right"><i class="fas fa-plus"></i></a>
+@foreach (var lot in Model)
+{
+    <div class="card" style="width: 18rem;">
+        <img src="@Url.Content(lot.Avatar)" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">@lot.AuctionLotItem.Name</h5>
+            <p class="card-text">@lot.AuctionLotItem.Description</p>
+            <p class="card-text"><b>Status:</b>@lot.Status </p>
+            <div>
+                <a asp-action="Edit" asp-route-id="@lot.ID" style="padding-left: 30px; padding-right: 30px;" class="btn btn-sm btn-warning"><i class="far fa-edit"></i></a>
+                <a asp-action="Details" asp-route-id="@lot.ID" style="padding-left: 30px; padding-right: 30px;" class="btn btn-sm btn-info"><i class="fas fa-info fa-fw"></i></a>
+                <a asp-action="Delete" asp-route-id="@lot.ID" style="padding-left: 30px; padding-right: 30px;" class="btn btn-sm btn-danger">
+                    <i class="far fa-trash-alt fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+}

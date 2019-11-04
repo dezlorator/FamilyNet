@@ -1,11 +1,11 @@
-﻿using FamilyNetServer.DTO;
-using FamilyNetServer.Models.Interfaces;
+﻿using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Models.Identity;
 using System.Linq;
+using DataTransferObjects;
 
 
 
@@ -55,7 +55,7 @@ namespace FamilyNetServer.Controllers.API
                 Id = user.Id,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Roles = userRoles.ToArray()
+                Roles = userRoles.ToList()
             };
             return Ok(userDTO);
         }

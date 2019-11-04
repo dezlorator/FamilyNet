@@ -62,7 +62,10 @@ namespace FamilyNet.Downloader
             }
             if (dto.Roles != null)
             {
-                formDataContent.Add(new StringContent(dto.Roles.ToString()), "Role");
+                foreach (var role in dto.Roles)
+                {
+                    formDataContent.Add(new StringContent(role.ToString()), "Roles");
+                }
             }
         }
     }

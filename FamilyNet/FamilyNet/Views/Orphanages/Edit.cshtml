@@ -25,7 +25,6 @@
             <div class="form-group">
                 <input asp-for="ChildrenHouse.Avatar" type="file" name="ChildrenHouse.Avatar" class="form-control" />
                 <span asp-validation-for="ChildrenHouse.Avatar" class="text-danger"></span>
-                <label> Поддержка только *.jpg</label>
             </div>
             <div class="form-group">
                 <label asp-for="ChildrenHouse.Name" class="control-label"></label>
@@ -62,11 +61,6 @@
                 <input asp-for="ChildrenHouse.Rating" type="number" class="form-control" />
                 <span asp-validation-for="ChildrenHouse.Rating" class="text-danger"></span>
             </div>
-            @*<div class="form-group">
-            <label asp-for="ChildrenHouse.Avatar" class="control-label"></label>
-            <input asp-for="ChildrenHouse.Avatar" class="form-control" />
-            <span asp-validation-for="ChildrenHouse.Avatar" class="text-danger"></span>
-        </div>*@
             <div class="form-group">
                 <input type="submit" value="@ViewData["SaveChanges"]" class="btn btn-success" />
             </div>
