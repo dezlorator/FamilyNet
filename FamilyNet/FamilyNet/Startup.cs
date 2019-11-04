@@ -99,6 +99,7 @@ namespace FamilyNet
             services.AddTransient<IURLCategoriesBuilder, URLCategoriesBuilder>();
             services.AddTransient<IURLRolesBuilder, URLRolesBuilder>();
             services.AddTransient<IURLRegistrationBuilder, URLRegistrationBuilder>();
+            services.AddTransient<IURLUsersBuilder, URLUsersBuilder>();
 
 
             services.Configure<CookiePolicyOptions>(options =>
