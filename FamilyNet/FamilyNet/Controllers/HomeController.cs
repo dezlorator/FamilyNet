@@ -12,6 +12,8 @@ using DataTransferObjects;
 using System;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
@@ -27,6 +29,7 @@ namespace FamilyNet.Controllers
         private readonly IURLAddressBuilder _URLAddressBuilder;
         private readonly string _apiPath = "api/v1/childrenHouse";
         private readonly string _apiAddressPath = "api/v1/address";
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
 
         #endregion
 
@@ -38,7 +41,8 @@ namespace FamilyNet.Controllers
                               IURLChildrenHouseBuilder URLChildrenHouseBuilder,
                               ServerChildrenHouseDownloader downLoader,
                               IURLAddressBuilder URLAddressBuilder,
-                              ServerAddressDownloader addressDownLoader)
+                              ServerAddressDownloader addressDownLoader,
+                              IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _hostingEnvironment = environment;
@@ -46,6 +50,7 @@ namespace FamilyNet.Controllers
             _URLChildrenHouseBuilder = URLChildrenHouseBuilder;
             _URLAddressBuilder = URLAddressBuilder;
             _addressDownLoader = addressDownLoader;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -91,7 +96,7 @@ namespace FamilyNet.Controllers
             });
 
             ViewData["Best"] = orphanages;
-            GetViewData();
+            GetViewData();         
 
             return View();
         }
@@ -100,6 +105,11 @@ namespace FamilyNet.Controllers
         {
             var url = _URLAddressBuilder.GetById(_apiAddressPath, id);
             var address = await _addressDownLoader.GetByIdAsync(url, HttpContext.Session);
+            
+            if (address == null)
+            {
+                return null;
+            }
 
             var newAddress = new Address()
             {
@@ -144,6 +154,9 @@ namespace FamilyNet.Controllers
             ViewData["Description2"] = _localizer["Description2"];
             ViewData["ThirdSlideComment"] = _localizer["ThirdSlideComment"];
             ViewData["Description3"] = _localizer["Description3"];
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                                 ViewData);
         }
     }
 }

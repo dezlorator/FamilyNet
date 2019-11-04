@@ -1,6 +1,8 @@
-﻿using FamilyNet.Models.Interfaces;
+﻿using FamilyNet.Models.Identity;
+using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace FamilyNet.Models
 {
@@ -8,7 +10,9 @@ namespace FamilyNet.Models
     {
         public int ID { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime DateStart { get; set; }
+
+        public DateTime DateEnd { get; set; }
 
         public int? AuctionLotItemID { get; set; }
 
@@ -20,5 +24,11 @@ namespace FamilyNet.Models
 
         [BindNever]
         public bool IsDeleted { get; set; } = false;
+
+        public string Avatar { get; set; }
+
+        public int Quantity { get; set; }
+
+        public string Status { get; set; }
     }
 }

@@ -19,6 +19,8 @@ using FamilyNet.StreamCreater;
 using FamilyNet.HttpHandlers;
 using System;
 using FamilyNet.Encoders;
+using FamilyNet.Controllers;
+using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet
 {
@@ -80,14 +82,15 @@ namespace FamilyNet
             services.AddTransient<ServerLocationDownloader>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
+            services.AddTransient<ServerDataDownloader<AuctionLotDTO>, ServerAuctionLotDownloader>();
+            services.AddTransient<IURLAuctionLotBuilder, URLAuctionLotBuilder>();
             services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
-            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
             services.AddTransient<IURLAddressBuilder, URLAddressBuilder>();
             services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
-
+            services.AddTransient<IIdentityInformationExtractor, IdentityInformationExtractor>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();

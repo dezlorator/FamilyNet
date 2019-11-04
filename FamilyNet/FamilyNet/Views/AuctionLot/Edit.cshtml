@@ -1,0 +1,65 @@
+﻿@model FamilyNet.Models.ViewModels.AuctionLotCreateViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewData["Title"] = "Edit";
+}
+<form asp-action="Edit" enctype="multipart/form-data"  asp-route-id="@Model.AuctionLot.ID">
+    <div class="container">
+        <div class="row my-2">
+            <div class="col-lg-8 order-lg-2">
+                <div class="tab-content py-4">
+                    <div class="tab-pane active" id="profile">
+                        <h5 class="mb-3">@ViewData["Profile"]</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="hidden" asp-for="AuctionLot.ID" />
+                                <input type="hidden" asp-for="AuctionLot.OrphanID" />
+                                <input type="hidden" asp-for="AuctionLot.AuctionLotItemID" />
+                                <input type="hidden" asp-for="Item.ID" />
+                                <b>@Html.DisplayNameFor(model => model.Item.Name):</b>
+                                <input asp-for="Item.Name" class="form-control" value="@Model.Item.Name" />
+                                <p>
+                                    <b>@Html.DisplayNameFor(model => model.Item.Price):</b>
+                                    <input asp-for="Item.Price" class="form-control" value="@Model.Item.Price" />
+                                </p>
+                                <p>
+                                    <label class="control-label"><b>Start:</b></label>
+                                    <input asp-for="@Model.AuctionLot.DateStart" class="form-control" />
+                                    <span asp-validation-for="@Model.AuctionLot.DateStart" class="text-danger"></span>
+                                </p>
+                                <p>
+                                    <label asp-for="@Model.AuctionLot.DateEnd" class="control-label"><b>End:</b></label>
+                                    <input asp-for="@Model.AuctionLot.DateEnd" class="form-control" />
+                                    <span asp-validation-for="@Model.AuctionLot.DateEnd" class="text-danger"></span>
+                                </p>
+                                <p>
+                                    <b>@Html.DisplayNameFor(model => model.AuctionLot.Quantity)</b>
+                                    <input asp-for="AuctionLot.Quantity" class="form-control" value="@Model.AuctionLot.Quantity" />
+                                </p>
+                                <p>
+                                    <b>@Html.DisplayNameFor(model => model.Item.Description)</b>
+                                    <textarea asp-for="Item.Description" class="form-control" value="@Model.Item.Description"></textarea>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 order-lg-1 text-center">
+                <label asp-for="AuctionLot.Avatar" class="control-label"></label>
+                <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content(Model.AuctionLot.PhotoParth)" alt="">
+                <input asp-for="AuctionLot.Avatar" type="file" name="AuctionLot.Avatar" class="form-control" />
+                <span asp-validation-for="AuctionLot.Avatar" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <input type="submit" value="Edit" class="btn btn-success" asp-route-id="@Model.AuctionLot.ID"/>
+</form>
+<div>
+    <a asp-action="All" asp-controller="AuctionLot" type="submit" class="btn btn-info">Back</a>
+</div>
+
+
