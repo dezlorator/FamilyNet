@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace FamilyNet.Downloader
 {
-    public class URLDonationsBuilder: IURLDonationsBuilder
+    public class URLQuestsBuilder : IURLQuestsBuilder
     {
         #region private fields
 
@@ -15,7 +15,7 @@ namespace FamilyNet.Downloader
 
         #region ctor
 
-        public URLDonationsBuilder(IOptionsSnapshot<ServerURLSettings> options)
+        public URLQuestsBuilder(IOptionsSnapshot<ServerURLSettings> options)
         {
             _options = options;
         }

@@ -1,9 +1,9 @@
 ﻿namespace FamilyNet.Downloader
 {
-    public interface IURLDonationsBuilder
+    interface IURLQuestsBuilder
     {
         string GetAllWithFilter(string api,
-                               string forSearch);
+                       string forSearch);
 
         string GetById(string api, int id);
         string CreatePost(string api);
