@@ -29,6 +29,8 @@ namespace FamilyNetServer.Models.EntityFramework
         public DbSet<Purchase> Purchases { get; set; }
 
         public DbSet<AuctionLot> AuctionLot { get; set; }
+        public DbSet<ChildrenActivity> Activities { get; set; }
+        public DbSet<Award> Awards { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -4,14 +4,16 @@ using FamilyNetServer.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191103180530_Awards")]
+    partial class Awards
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,8 +93,6 @@ namespace FamilyNetServer.Migrations
                     b.Property<DateTime>("Date");
 
                     b.Property<string>("Description");
-
-                    b.Property<bool>("IsDeleted");
 
                     b.Property<string>("Name");
 
@@ -189,8 +189,6 @@ namespace FamilyNetServer.Migrations
                     b.Property<int?>("ChildID");
 
                     b.Property<string>("Description");
-
-                    b.Property<bool>("IsDeleted");
 
                     b.Property<string>("Name");
 
