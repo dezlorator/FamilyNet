@@ -64,6 +64,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 feedbackDTO.Add(new FeedbackDTO
                 {
+                    ID = feedback.ID,
                     DonationId = feedback.DonationId,
                     ImagePath = _settings.Value.ServerURL + feedback.Image,
                     Message = feedback.Message,
@@ -103,6 +104,7 @@ namespace FamilyNetServer.Controllers.API
 
             var feedbackDTO = new FeedbackDTO()
             {
+                ID = feedback.ID,
                 DonationId = feedback.DonationId,
                 ImagePath = _settings.Value.ServerURL + feedback.Image,
                 Message = feedback.Message,
@@ -135,9 +137,9 @@ namespace FamilyNetServer.Controllers.API
 
             if(feedbackDTO.Image != null)
             {
-                var fileName = feedbackDTO.Time.ToString();
+                var fileName = DateTime.Now.Ticks.ToString();
 
-                photoPath = _settings.Value.ServerURL + _fileUploader.CopyFileToServer(fileName,
+                photoPath = _fileUploader.CopyFileToServer(fileName,
                     nameof(DirectoryUploadName.Feedback), feedbackDTO.Image);
                 _logger.LogInformation(string.Format("{0} - this path to photo was created", photoPath));
             }
@@ -145,7 +147,7 @@ namespace FamilyNetServer.Controllers.API
             var feedback = new Feedback()
             {
                 DonationId = feedbackDTO.DonationId,
-                Image = photoPath,
+                Image = _settings.Value.ServerURL + photoPath,
                 Message = feedbackDTO.Message,
                 Rating = feedbackDTO.Rating,
                 ReceiverId = feedbackDTO.ReceiverId,
