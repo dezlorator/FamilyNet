@@ -195,8 +195,8 @@ namespace FamilyNetServer.Controllers.API
             
             if(feedbackDTO.Image != null)
             {
-                var fileName = feedbackDTO.Time.ToString();
-                feedback.Image = _fileUploader.CopyFileToServer(fileName,
+                var fileName = DateTime.Now.Ticks.ToString();
+                feedback.Image = _settings.Value.ServerURL + _fileUploader.CopyFileToServer(fileName,
                     nameof(DirectoryUploadName.Feedback), feedbackDTO.Image);
                 _logger.LogInformation(string.Format("{0} - this path to photo was created",
                 feedback.Image));
