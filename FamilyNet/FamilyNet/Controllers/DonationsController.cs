@@ -57,10 +57,10 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        public async Task<IActionResult> Index(int orphanageId)
+        public async Task<IActionResult> Index(string forSearch)
         {
             var url = _URLDonationsBuilder.GetAllWithFilter(_apiPath,
-                                                            orphanageId);
+                                                            forSearch);
             IEnumerable<DonationDTO> donationDTO = null;
 
             try
