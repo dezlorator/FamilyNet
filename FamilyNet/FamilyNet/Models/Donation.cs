@@ -1,4 +1,5 @@
-﻿using FamilyNet.Models.Interfaces;
+﻿using FamilyNet.Enums;
+using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.ComponentModel.DataAnnotations;

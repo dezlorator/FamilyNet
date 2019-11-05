@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using FamilyNetServer.DTO;
+using DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 
 
@@ -52,7 +52,7 @@ namespace FamilyNetServer.Controllers.API
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RegisterAsync([FromForm]RegistrationDTO model)
+        public async Task<IActionResult> Register([FromForm]RegistrationDTO model)
         {
            
             var allRoles = _unitOfWork.RoleManager.Roles.ToList();

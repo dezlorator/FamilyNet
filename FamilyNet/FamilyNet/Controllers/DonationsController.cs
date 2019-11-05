@@ -11,6 +11,8 @@ using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using FamilyNet.IdentityHelpers;
+using FamilyNet.Enums;
 
 namespace FamilyNet.Controllers
 {
@@ -18,6 +20,7 @@ namespace FamilyNet.Controllers
     {
         #region private fields
 
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<DonationsController> _localizer;
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloader;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloaderCategories;
@@ -43,7 +46,8 @@ namespace FamilyNet.Controllers
                                  ServerDataDownloader<ChildrenHouseDTO> serverChildrenHouseDownloader,
                                  IURLDonationsBuilder uRLDonationsBuilder,
                                  IURLDonationItemsBuilder uRLDonationItemsBuilder,
-                                 IURLChildrenHouseBuilder uRLChildrenHouseBuilder)
+                                 IURLChildrenHouseBuilder uRLChildrenHouseBuilder,
+                                 IIdentityInformationExtractor identityInformationExtactor)
         {
             _localizer = localizer;
             _downloader = downloader;
@@ -53,6 +57,7 @@ namespace FamilyNet.Controllers
             _URLDonationsBuilder = uRLDonationsBuilder;
             _URLDonationItemsBuilder = uRLDonationItemsBuilder;
             _URLChildrenHouseBuilder = uRLChildrenHouseBuilder;
+            _identityInformationExtactor = identityInformationExtactor;
         }
 
         #endregion
@@ -276,6 +281,8 @@ namespace FamilyNet.Controllers
                 DonationItem = item
             };
 
+            GetViewData();
+
             return View(model);
         }
 
@@ -382,6 +389,8 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            GetViewData();
+
             return Redirect("/Donations/Index");
         }
 
@@ -456,6 +465,8 @@ namespace FamilyNet.Controllers
                 Type = await GetTypeByIdAsync(typeId)
             };
 
+            GetViewData();
+
             return typeBaseItem;
         }
 
@@ -471,12 +482,16 @@ namespace FamilyNet.Controllers
                 Name = category.Name,
             };
 
+            GetViewData();
+
             return newCategory;
         }
 
         private void GetViewData()
         {
             ViewData["DonationsList"] = _localizer["DonationsList"];
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
         }
     }
 }

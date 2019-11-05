@@ -25,13 +25,13 @@
             <div class="modal-content">
                 <div class="img-thumbnail">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="@Url.Content("~/avatars/"+@bestofthree.Avatar)" width="1200" height="800" class="img-responsive" alt="">
+                    <img src="@Url.Content(@bestofthree?.Avatar)" width="1200" height="800" class="img-responsive" alt="">
                 </div>
                 <div class="modal-content">
                     <div class="row">
                         <div class="col-md-6">
                             <h5 class="card-title">Дом: @bestofthree.Name</h5>
-                            <p class="card-text">Адрес @bestofthree?.Adress?.Country @bestofthree?.Adress?.City @bestofthree?.Adress?.Region @bestofthree?.Adress?.Street @bestofthree?.Adress?.House</p>
+                            <p class="card-text">Адрес @bestofthree.Adress?.Country @bestofthree.Adress?.City @bestofthree.Adress?.Region @bestofthree.Adress?.Street @bestofthree.Adress?.House</p>
                         </div>
                         <div class="col-md-6 text-center">
                             <button type="button" style="margin-top:5%" class="btn btn-primary">Отозваться</button>

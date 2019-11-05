@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Controllers.API
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class QuestsController : ControllerBase
     {
@@ -27,9 +27,9 @@ namespace FamilyNetServer.Controllers.API
         #endregion
 
         public QuestsController(IUnitOfWork unitOfWork,
-                                   IQuestValidator questValidator,
-                                   IQuestsFilter questsFilter,
-                                   ILogger<QuestsController> logger)
+                                IQuestValidator questValidator,
+                                IQuestsFilter questsFilter,
+                                ILogger<QuestsController> logger)
         {
             _unitOfWork = unitOfWork;
             _questValidator = questValidator;

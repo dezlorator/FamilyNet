@@ -1,0 +1,21 @@
+﻿@model List<IEnumerable<AuctionLot>>
+@{
+    ViewData["Title"] = "ConfirmCrafts";
+}
+
+<h1>ConfirmCrafts</h1>
+@foreach (var orphanCrafts in Model)
+{
+    @foreach (var craft in orphanCrafts)
+     {
+        <div class="card" style="width: 18rem;">
+            <img src="@Url.Content(craft.Avatar)" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">@craft.AuctionLotItem.Name</h5>
+                <p class="card-text">@craft.AuctionLotItem.Description</p>
+                <a asp-action="Details" asp-controller="AuctionLot" asp-route-id="@craft.ID" class="btn btn-primary">More details</a>
+            </div>
+        </div>
+     }
+}
+

@@ -1,4 +1,4 @@
-﻿using FamilyNetServer.DTO;
+﻿using DataTransferObjects;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyNetServer.Controllers.API
 {
-    [Authorize(Roles = "Admin")]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class RolesController : ControllerBase

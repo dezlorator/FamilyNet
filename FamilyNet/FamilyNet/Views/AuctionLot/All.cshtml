@@ -1,0 +1,22 @@
+﻿@model IEnumerable<FamilyNet.Models.AuctionLot>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>
+    Fair
+</h1>
+@foreach (var lot in Model)
+{
+    <div class="card" style="width: 18rem;">
+        <img src="@Url.Content(lot.Avatar)" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">@lot.AuctionLotItem.Name</h5>
+            <p class="card-text">@lot.AuctionLotItem.Description</p>
+            <a asp-action="Details" asp-controller="AuctionLot" asp-route-id="@lot.ID" class="btn btn-primary">More details</a>
+        </div>
+    </div>
+
+}
