@@ -55,7 +55,101 @@ namespace FamilyNet.Controllers
             }
 
             GetViewData();
-            return View();
+            return View(availabilitiesDTO);
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var url = _URLAvailabilitiesBuilder.GetById(_apiPath, id.Value);
+            AvailabilityDTO availabilityDTO = null;
+
+            try
+            {
+                availabilityDTO = await _availabilitiesDownLoader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (availabilityDTO == null)
+            {
+                return NotFound();
+            }
+
+            GetViewData();
+
+            return View(availabilityDTO);
+        }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var url = _URLAvailabilitiesBuilder.GetById(_apiPath, id.Value);
+
+            AvailabilityDTO availabilityDTO = null;
+
+            try
+            {
+                availabilityDTO = await _availabilitiesDownLoader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return View(availabilityDTO);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, AvailabilityDTO availabilityDTO)
+        {
+            if (id != availabilityDTO.ID)
+            {
+                return NotFound();
+            }
+
+            var url = _URLAvailabilitiesBuilder.GetById(_apiPath, id);
+            var status = await _availabilitiesDownLoader.CreatePutAsync(url, availabilityDTO,
+                                                            HttpContext.Session);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
+            GetViewData();
+
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Create()
@@ -84,6 +178,27 @@ namespace FamilyNet.Controllers
             {
                 return Redirect("/Home/Error");
             }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+            var url = _URLAvailabilitiesBuilder.GetById(_apiPath, id);
+            var status = await _availabilitiesDownLoader.DeleteAsync(url, HttpContext.Session);
+
+            if (status != HttpStatusCode.OK)
+            {
+                return Redirect("Home/Error");
+            }
+
+            GetViewData();
 
             return RedirectToAction(nameof(Index));
         }

@@ -1,14 +1,13 @@
-﻿@*@model  DataTransferObjects.AvailabilityDTO*@
+﻿@model IEnumerable<AvailabilityDTO>
 
 @{
     ViewData["Title"] = "Index";
-    var Model = new List<AvailabilityDTO>();
-    Model.Add(new AvailabilityDTO());
 }
 
 <table class="table table-striped table-bordered table-sm">
     <tr>
         <th>Date</th>
+        <th>Day of week</th>
         <th class="text-right">Free from hour</th>
         <th class="text-center">During</th>
         <th class="text-center">Action</th>
@@ -17,13 +16,15 @@
     {
         <tr>
             @*<td class="text-right">@item.ID</td>*@
-            <td>@item.Date</td>
-            <td class="text-right">@item.FromHour</td>
+            <td class="text-right">@item.FromHour.Date.ToString("dd-MM-yyyy")</td>
+<td class="text-right">@item.DayOfWeek</td>
+            <td class="text-right">@item.FromHour.TimeOfDay</td>
             <td class="text-right">@item.VolunteerHours</td>
             <td class="text-center">
-                <form asp-action="Delete" method="post">
+                <form asp-action="Delete" method="post"
+                      asp-route-id="@item.ID">
                     <a asp-action="Edit" class="btn btn-sm btn-warning"
-                       asp-route-productId="@item.ID">
+                       asp-route-id="@item.ID">
                         Редактировать
                     </a>
                     <input type="hidden" name="ID" value="@item.ID" />

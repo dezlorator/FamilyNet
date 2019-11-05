@@ -24,7 +24,7 @@ namespace FamilyNet.Downloader
         public async Task<IEnumerable<AvailabilityDTO>> GetAllAsync(string url,
                                                      ISession session)
         {
-            List<AvailabilityDTO> objs = null;
+            List<AvailabilityDTO> availabilities = null;
 
             try
             {
@@ -37,7 +37,7 @@ namespace FamilyNet.Downloader
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
-                objs = JsonConvert.DeserializeObject<List<AvailabilityDTO>>(json);
+                availabilities = JsonConvert.DeserializeObject<List<AvailabilityDTO>>(json);
             }
             catch (ArgumentNullException)
             {
@@ -52,7 +52,7 @@ namespace FamilyNet.Downloader
                 throw;
             }
 
-            return objs;
+            return availabilities;
         }
 
         public async Task<HttpStatusCode> CreatePostAsync(string url,
@@ -64,7 +64,7 @@ namespace FamilyNet.Downloader
             using (var formDataContent = new MultipartFormDataContent())
             {
                 _authorizationHandler.AddTokenBearer(session, httpClient);
-                BuildMultipartFprmData(dto, formDataContent);
+                BuildMultipartFormData(dto, formDataContent);
                 var msg = await httpClient.PostAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
             }
@@ -72,8 +72,88 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        private static void BuildMultipartFprmData(AvailabilityDTO dto,
-                                                   MultipartFormDataContent formDataContent)
+        public async Task<AvailabilityDTO> GetByIdAsync(string url, ISession session)
+        {
+            AvailabilityDTO availability = null;
+
+            try
+            {
+                HttpResponseMessage response = null;
+
+                using (var httpClient = new HttpClient())
+                {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
+                    response = await httpClient.GetAsync(url);
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                availability = JsonConvert.DeserializeObject<AvailabilityDTO>(json);
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            return availability;
+        }
+
+        public async Task<HttpStatusCode> CreatePutAsync(string url,
+                                                            AvailabilityDTO dto,
+                                                            ISession session)
+        {
+            var statusCode = HttpStatusCode.BadRequest;
+
+            using (var httpClient = new HttpClient())
+            using (var formDataContent = new MultipartFormDataContent())
+            {
+                BuildMultipartFormData(dto, formDataContent);
+                _authorizationHandler.AddTokenBearer(session, httpClient);
+                var msg = await httpClient.PutAsync(url, formDataContent);
+                statusCode = msg.StatusCode;
+            }
+
+            return statusCode;
+        }
+
+        public async Task<HttpStatusCode> DeleteAsync(string url,
+                                                     ISession session)
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
+                    response = await httpClient.DeleteAsync(url);
+                }
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            return response.StatusCode;
+        }
+
+        private static void BuildMultipartFormData(AvailabilityDTO dto,
+                                               MultipartFormDataContent formDataContent)
         {
 
             if (dto.ID > 0)

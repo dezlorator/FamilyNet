@@ -13,7 +13,15 @@ namespace FamilyNet.Downloader
     {
         Task<IEnumerable<AvailabilityDTO>> GetAllAsync(string url,
                                                     ISession session);
+        Task<AvailabilityDTO> GetByIdAsync(string url, ISession session);
 
-        Task<HttpStatusCode> CreatePostAsync(string url, AvailabilityDTO dto, ISession session);
+        Task<HttpStatusCode> CreatePostAsync(string url, AvailabilityDTO dto,
+                                                    ISession session);
+
+        Task<HttpStatusCode> CreatePutAsync(string url, AvailabilityDTO dto,
+                                                    ISession session);
+
+        Task<HttpStatusCode> DeleteAsync(string url, ISession session);
+
     }
 }

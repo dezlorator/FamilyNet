@@ -30,5 +30,10 @@ namespace FamilyNet.Downloader
         {
             return _options.Value.ServerURL + api;
         }
+
+        public string GetById(string api, int id)
+        {
+            return _options.Value.ServerURL + api + "/" + id;
+        }
     }
 }
