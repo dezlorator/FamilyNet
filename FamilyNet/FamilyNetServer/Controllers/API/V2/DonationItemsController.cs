@@ -5,15 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using FamilyNetServer.Models;
-using FamilyNetServer.Filters;
 using FamilyNetServer.Validators;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V2
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v2/[controller]")]
     [ApiController]
     public class DonationItemsController : ControllerBase
     {
@@ -95,7 +94,7 @@ namespace FamilyNetServer.Controllers.API
         [Authorize(Roles = "Admin, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]DonationItemDTO donationItemDTO)
+        public async Task<IActionResult> Create([FromBody]DonationItemDTO donationItemDTO)
         {
             if (!_donationItemValidator.IsValid(donationItemDTO))
             {
@@ -141,7 +140,7 @@ namespace FamilyNetServer.Controllers.API
         [Authorize(Roles = "Admin, Volunteer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit(int id, [FromForm]DonationItemDTO donationItemDTO)
+        public async Task<IActionResult> Edit(int id, [FromBody]DonationItemDTO donationItemDTO)
         {
             if (!_donationItemValidator.IsValid(donationItemDTO))
             {

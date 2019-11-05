@@ -1,17 +1,15 @@
 ﻿using DataTransferObjects;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
-using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]

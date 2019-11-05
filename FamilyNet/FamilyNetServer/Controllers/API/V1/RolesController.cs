@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles ="Admin")]
     public class RolesController : ControllerBase
     {
         #region private fields
@@ -19,10 +20,14 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
+        #region ctor
+
         public RolesController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
+
+        #endregion
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]

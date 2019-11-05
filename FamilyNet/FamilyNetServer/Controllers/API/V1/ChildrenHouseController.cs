@@ -16,9 +16,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
+    [ApiVersion("1")]
     [ApiController]
     public class ChildrenHouseController : ControllerBase
     {

@@ -15,7 +15,7 @@ using FamilyNetServer.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]

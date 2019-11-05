@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V2
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v2/[controller]")]
     [ApiController]
     public class AddressController : ControllerBase
     {
@@ -104,7 +103,7 @@ namespace FamilyNetServer.Controllers.API
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
+        public async Task<IActionResult> Create([FromBody]AddressDTO addressDTO)
         {
             if (!_addressValidator.IsValid(addressDTO))
             {
@@ -136,7 +135,7 @@ namespace FamilyNetServer.Controllers.API
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AddressDTO addressDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]AddressDTO addressDTO)
         {
             if (!_addressValidator.IsValid(addressDTO))
             {
