@@ -238,6 +238,7 @@ namespace FamilyNet.Controllers
             model.AuctionLot.AuctionLotItemID = itemDTO.ID;
 
             url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
+            model.AuctionLot.Status = "UnApproved";
             var msg2 = await _auctionLotDownloader.CreatePostAsync(url, model.AuctionLot, stream, model.AuctionLot.Avatar.FileName, HttpContext.Session);
 
             if (msg2 != HttpStatusCode.Created)
