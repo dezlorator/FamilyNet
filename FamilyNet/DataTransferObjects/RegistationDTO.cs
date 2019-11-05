@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
-
-namespace FamilyNetServer.DTO
+namespace DataTransferObjects
 {
     public class RegistrationDTO
     {

@@ -105,6 +105,11 @@ namespace FamilyNet.Controllers
         {
             var url = _URLAddressBuilder.GetById(_apiAddressPath, id);
             var address = await _addressDownLoader.GetByIdAsync(url, HttpContext.Session);
+            
+            if (address == null)
+            {
+                return null;
+            }
 
             var newAddress = new Address()
             {
