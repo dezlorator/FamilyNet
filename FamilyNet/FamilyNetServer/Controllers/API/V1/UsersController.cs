@@ -6,10 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Models.Identity;
 using System.Linq;
 using DataTransferObjects;
+using Microsoft.AspNetCore.Authorization;
 
-
-
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]
@@ -21,14 +20,19 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
+        #region ctor
+
         public UsersController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
+        #endregion
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = "Admin, Orphan, Volunteer, CharityMaker, Representative")]
         public IActionResult Get()
         {
             var users = _unitOfWork.UserManager.Users;
@@ -39,6 +43,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = "Admin, Orphan, Volunteer, CharityMaker, Representative")]
         public async Task<IActionResult> GetAsync(string id)
         {
             var user = await _unitOfWork.UserManager.FindByIdAsync(id);
@@ -88,6 +93,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(id);
@@ -108,6 +114,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = "Admin, Orphan, Volunteer, CharityMaker, Representative")]
         public async Task<IActionResult> EditAsync(string id, UserDTO us)
         {
             ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(us.Id);
