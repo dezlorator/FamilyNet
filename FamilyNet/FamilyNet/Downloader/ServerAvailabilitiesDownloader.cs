@@ -138,7 +138,7 @@ namespace FamilyNet.Downloader
             }
             catch (ArgumentNullException)
             {
-                throw;
+                throw; //TO-DO Log
             }
             catch (HttpRequestException)
             {

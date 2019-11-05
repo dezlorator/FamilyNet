@@ -17,10 +17,12 @@ namespace DataTransferObjects
 
         [DataType(DataType.Time)]
         [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime FromHour { get; set; }
+        public DateTime FromHour { get; set; } //Time
 
         [DataType(DataType.Time)]
         //[DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        public TimeSpan VolunteerHours { get; set; }
+        public TimeSpan VolunteerHours { get; set; } //duration
+
+        //TO-DO: add Date prop
     }
 }

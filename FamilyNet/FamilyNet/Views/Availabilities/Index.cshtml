@@ -8,7 +8,7 @@
     <tr>
         <th>Date</th>
         <th>Day of week</th>
-        <th class="text-right">Free from hour</th>
+        <th class="text-left">Free from hour</th>
         <th class="text-center">During</th>
         <th class="text-center">Action</th>
     </tr>
@@ -16,10 +16,10 @@
     {
         <tr>
             @*<td class="text-right">@item.ID</td>*@
-            <td class="text-right">@item.FromHour.Date.ToString("dd-MM-yyyy")</td>
-<td class="text-right">@item.DayOfWeek</td>
-            <td class="text-right">@item.FromHour.TimeOfDay</td>
-            <td class="text-right">@item.VolunteerHours</td>
+            <td class="text-left">@item.FromHour.Date.ToString("dd-MM-yyyy")</td>
+<td class="text-left">@item.DayOfWeek</td>
+            <td class="text-left">@item.FromHour.TimeOfDay</td>
+            <td class="text-center">@item.VolunteerHours</td>
             <td class="text-center">
                 <form asp-action="Delete" method="post"
                       asp-route-id="@item.ID">

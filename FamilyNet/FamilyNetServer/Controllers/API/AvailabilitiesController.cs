@@ -47,7 +47,8 @@ namespace FamilyNetServer.Controllers.API
                             .Result.PersonID;
 
             var availabilities = _unitOfWork.Availabilities.GetAll()
-                .Where(a => a.VolunteerID == volunteerId && a.FromHour > DateTime.Now);
+                .Where(a => a.VolunteerID == volunteerId && a.FromHour > DateTime.Now)
+                .OrderBy(a => a.FromHour);
 
             if (availabilities == null)
             {
