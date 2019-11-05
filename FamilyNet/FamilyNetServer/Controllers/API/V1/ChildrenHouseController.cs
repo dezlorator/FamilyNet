@@ -19,7 +19,6 @@ using System.Threading.Tasks;
 namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
-    [ApiVersion("1")]
     [ApiController]
     public class ChildrenHouseController : ControllerBase
     {

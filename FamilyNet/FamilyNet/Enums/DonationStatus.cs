@@ -1,6 +1,9 @@
-﻿public enum DonationStatus
+﻿namespace FamilyNet.Enums
 {
-    Sended = 1,
-    Aproved,
-    Taken,
+    public enum DonationStatus
+    {
+        Sended = 1,
+        Aproved,
+        Taken,
+    }
 }
