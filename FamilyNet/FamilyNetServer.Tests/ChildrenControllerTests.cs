@@ -1,6 +1,6 @@
 ﻿using DataTransferObjects;
 using FamilyNetServer.Configuration;
-using FamilyNetServer.Controllers.API;
+using FamilyNetServer.Controllers.API.V1;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;

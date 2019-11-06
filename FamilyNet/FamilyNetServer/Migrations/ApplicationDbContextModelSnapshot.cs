@@ -277,6 +277,10 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<bool>("IsDeleted");
 
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Status");
+
                     b.Property<float>("Paid");
 
                     b.Property<int>("Quantity");
