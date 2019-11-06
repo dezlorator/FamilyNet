@@ -67,6 +67,8 @@ namespace FamilyNet
             services.AddTransient<IURLRolesBuilder, URLRolesBuilder>();
             services.AddTransient<IURLRegistrationBuilder, URLRegistrationBuilder>();
             services.AddTransient<IURLUsersBuilder, URLUsersBuilder>();
+            services.AddTransient<IURLQuestsBuilder, URLQuestsBuilder>();
+            services.AddTransient<ServerSimpleDataDownloader<QuestDTO>, ServerQuestsDownloader>();
 
             services.AddTransient<IHttpAuthorizationHandler, HttpAuthorizationHandler>();
 

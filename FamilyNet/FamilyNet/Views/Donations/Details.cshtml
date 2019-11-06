@@ -14,11 +14,11 @@
                 <div class="tab-pane active" id="profile">
                     <div class="row">
                         <div class="col-md-6">
-                            <b>@Html.DisplayNameFor(model => model.DonationItem.TypeBaseItem):</b>                            
-                                @foreach (var t in Model.DonationItem.TypeBaseItem)
-                                {
-                                    @t.Type.Name
-                                }                          
+                            <b>@Html.DisplayNameFor(model => model.DonationItem.TypeBaseItem):</b>
+                            @foreach (var t in Model.DonationItem.TypeBaseItem)
+                            {
+                                @t.Type.Name
+                            }
                             <p>
                                 <b>@Html.DisplayNameFor(model => model.DonationItem.Name):</b>
                                 @Html.DisplayFor(model => model.DonationItem.Name)
@@ -46,11 +46,19 @@
                     </div>
                 </div>
             </div>
-        </div>       
+        </div>
     </div>
 </div>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-warning"> <i class="fas fa-edit"></i>Редактировать</a> |
+    <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-warning">Редактировать</a>
     <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
+    @if (true || User.IsInRole("CharityMaker") || User.IsInRole("Admin"))
+    {
+        <br/><br/>
+        <label for="Name">Нужна помощь волонтера</label>
+        <input id="NeedHelp" name="NeedHelp" type="checkbox" value="true" />
+        <input name="NeedHelp" type="hidden" value="false" />
+        <a asp-action="Donate" class="btn btn-primary">Пожертвовать</a>
+    }
 </div>

@@ -27,23 +27,74 @@ namespace FamilyNet.Controllers
         private readonly ServerSimpleDataDownloader<DonationItemDTO> _downloaderItems;
         private readonly ServerDataDownloader<ChildrenHouseDTO> _downloaderOrphanages;
 
-
-        private readonly IURLQuestsBuilder _URLQuestsBuilder;
+        private readonly IURLQuestsBuilder _URLBuilder;
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
         private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
 
-        private readonly string _apiPath = "api/v1/donations";
+        private readonly string _apiPath = "api/v1/quests";
         private readonly string _apiCategoriesPath = "api/v1/categories";
         private readonly string _apiDonationItemsPath = "api/v1/donationItems";
         private readonly string _apiOrphanagesPath = "api/v1/childrenHouse";
 
         #endregion
+        public QuestsController(IStringLocalizer<QuestsController> localizer,
+                                 ServerSimpleDataDownloader<QuestDTO> downloader,
+                                 ServerSimpleDataDownloader<DonationItemDTO> downloaderItems,
+                                 ServerDataDownloader<ChildrenHouseDTO> serverChildrenHouseDownloader,
+                                 IURLQuestsBuilder uRLQuestsBuilder,
+                                 IURLDonationsBuilder uRLDonationsBuilder,
+                                 IURLDonationItemsBuilder uRLDonationItemsBuilder,
+                                 IURLChildrenHouseBuilder uRLChildrenHouseBuilder,
+                                 IIdentityInformationExtractor identityInformationExtactor)
+        {
+            _localizer = localizer;
+            _downloader = downloader;
+            _downloaderItems = downloaderItems;
+            _downloaderOrphanages = serverChildrenHouseDownloader;
+            _URLBuilder = uRLQuestsBuilder;
+            _URLDonationsBuilder = uRLDonationsBuilder;
+            _URLDonationItemsBuilder = uRLDonationItemsBuilder;
+            _URLChildrenHouseBuilder = uRLChildrenHouseBuilder;
+            _identityInformationExtactor = identityInformationExtactor;
+        }
 
         // GET: /<controller>/
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string forSearch, string status)
         {
-            return View();
+            var url = _URLBuilder.GetAllWithFilter(_apiPath,
+                                                   forSearch, status);
+
+            IEnumerable<QuestDTO> questsDTO;
+
+            try
+            {
+                questsDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return View(questsDTO);
+        }
+
+        private void GetViewData()
+        {
+            ViewData["QuestsList"] = _localizer["QuestsList"];
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                                 ViewData);
         }
     }
 }

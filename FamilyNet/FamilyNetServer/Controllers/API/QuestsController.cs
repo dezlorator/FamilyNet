@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -42,10 +41,18 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult GetAll([FromQuery]int rows,
                                    [FromQuery]int page,
-                                   [FromQuery]string forSearch)
+                                   [FromQuery]string forSearch,
+                                   [FromQuery]string status = "ToDo")
         {
             var quests = _unitOfWork.Quests.GetAll().Where(c => !c.IsDeleted);
-            quests = _questsFilter.GetQuests(quests, forSearch);
+
+            if (!System.Enum.TryParse(status, out QuestStatus questStatus))
+            {
+                _logger.LogError("Bad request. Could not parse status. ");
+                return BadRequest();
+            }
+
+            quests = _questsFilter.GetQuests(quests, forSearch, questStatus);
 
             if (rows != 0 && page != 0)
             {
@@ -69,7 +76,7 @@ namespace FamilyNetServer.Controllers.API
                     Name = d.Name,
                     DonationID = d.DonationID,
                     OrphanageID = d.Donation.OrphanageID,
-                    DonationItemID = d.Donation.DonationItemID,
+                    OrphanageName = d.Donation.Orphanage.Name,
                     CharityMakerID = d.Donation.CharityMakerID,
                     VolunteerID = d.VolunteerID
                 }).ToList();
@@ -98,7 +105,6 @@ namespace FamilyNetServer.Controllers.API
                 Name = quest.Name,
                 DonationID = quest.DonationID,
                 OrphanageID = quest.Donation.OrphanageID,
-                DonationItemID = quest.Donation.DonationItemID,
                 CharityMakerID = quest.Donation.CharityMakerID,
                 VolunteerID = quest.VolunteerID
             };
@@ -166,7 +172,6 @@ namespace FamilyNetServer.Controllers.API
             {
                 Name = questDTO.Name,
                 Description = questDTO.Description,
-                VolunteerID = questDTO.VolunteerID,
                 DonationID = questDTO.DonationID
             };
 

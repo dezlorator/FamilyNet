@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using System.Net;
 using FamilyNet.IdentityHelpers;
 using FamilyNet.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace FamilyNet.Controllers
 {
@@ -66,11 +67,11 @@ namespace FamilyNet.Controllers
         {
             var url = _URLDonationsBuilder.GetAllWithFilter(_apiPath,
                                                             forSearch);
-            IEnumerable<DonationDTO> donationDTO = null;
+            IEnumerable<DonationDTO> donationsDTO;
 
             try
             {
-                donationDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
+                donationsDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -85,38 +86,12 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var donations = donationDTO.Select(donation => new Donation()
-            {
-                ID = donation.ID,
-
-                Orphanage = new Orphanage()
-                {
-                    Name = donation.OrphanageName,
-
-                    Adress = new Address()
-                    {
-                        City = donation.City,
-                    }
-                },
-
-                DonationItem = new DonationItem()
-                {
-                    Name = donation.ItemName,
-                    Description = donation.ItemDescription,
-                    TypeBaseItem = donation.Types.Select(async t => await GetTypeBaseItemsAsync(t))
-                                                                          .Select(t => t.Result)
-                                                                          .Where(i => i != null)
-                                                                          .ToList()
-                },
-
-                LastDateWhenStatusChanged = donation.LastDateWhenStatusChanged,
-
-                Status = (DonationStatus)Enum.Parse(typeof(DonationStatus), donation.Status, true)
-            });
+            //    var categoriesList = await _downloaderCategories.GetAllAsync(_apiCategoriesPath, HttpContext.Session);
+            ViewBag.CategoriesList = null;
 
             GetViewData();
 
-            return View(donations);
+            return View(donationsDTO);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -394,6 +369,38 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
+        public async Task<IActionResult> Donate(int id, DonationDetailDTO donationDTO, bool NeedHelp)
+        {
+            if (id != donationDTO.ID)
+            {
+                return NotFound();
+            }
+
+            var userId = HttpContext.Session.GetString("id");
+            donationDTO.CharityMakerID = HttpContext.Session.GetInt32(userId);
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, id);
+            var msg = await _downloader.CreatePutAsync(url, donationDTO, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if (msg.StatusCode != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            if (NeedHelp)
+            {
+                return Redirect("/Quests/Create");
+            }
+
+            return Redirect("/Quests/");
+        }
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

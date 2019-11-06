@@ -27,12 +27,12 @@ namespace FamilyNet.Downloader
         {
             var queryParams = new Dictionary<string, string>();
 
-            if (string.IsNullOrEmpty(forSearch))
+            if (!string.IsNullOrEmpty(forSearch))
             {
                 queryParams.Add("forSearch", forSearch);
             }
 
-            return QueryHelpers.AddQueryString(_options.Value.ServerURL + api,
+            return QueryHelpers.AddQueryString(_options.Value.ServerURL + api +"/",
                                                 queryParams);
         }
 
