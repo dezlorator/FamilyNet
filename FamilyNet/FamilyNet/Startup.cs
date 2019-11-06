@@ -13,6 +13,8 @@ using FamilyNet.HttpHandlers;
 using FamilyNet.Encoders;
 using FamilyNet.IdentityHelpers;
 using FamilyNet.Downloader.URLBuilders;
+using System;
+using Microsoft.AspNetCore.Http;
 
 namespace FamilyNet
 {
@@ -54,6 +56,9 @@ namespace FamilyNet
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
             services.AddTransient<IURLPurchaseBuilder, URLPurchaseBuilder>();
+            services.AddTransient<IURLRegistrationBuilder, URLRegistrationBuilder>();
+            services.AddTransient<IURLUsersBuilder, URLUsersBuilder>();
+            services.AddTransient<IURLRolesBuilder, URLRolesBuilder>();
 
             #endregion
 

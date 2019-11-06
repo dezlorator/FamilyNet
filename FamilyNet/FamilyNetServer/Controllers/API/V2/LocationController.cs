@@ -96,51 +96,49 @@ namespace FamilyNetServer.Controllers.API.V2
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]AddressDTO addressDTO)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Create([FromBody]LocationDTO locationDTO)
         {
-            if (!_addressValidator.IsValid(addressDTO))
+            if (locationDTO == null)
             {
-                _logger.LogError("Invalid address data");
+                _logger.LogError("LocationDTO is null");
                 return BadRequest();
             }
 
-            bool IsLocationNotNull = GetCoordProp(addressDTO, out var coord);
-            Location location = null;
-            if (IsLocationNotNull)
+            if (!locationDTO.IsValid)
             {
-                location = new Location()
-                {
-                    MapCoordX = coord.Item1,
-                    MapCoordY = coord.Item2,
-                };
+                _logger.LogInformation("Deleted location");
 
-            }
-            else
-            {
-                _logger.LogError("Invalid address data");
-                return BadRequest();
+                return NotFound();
             }
 
-            await _repository.Location.Create(location);
+            var loc = new Location
+            {
+                MapCoordX = locationDTO.MapCoordX,
+                MapCoordY = locationDTO.MapCoordY,
+            };
+
+            await _repository.Location.Create(loc);
             _repository.SaveChangesAsync();
 
-            _logger.LogInformation($"Created location with id #{location.ID}");
+            _logger.LogInformation($"Created location with id #{loc.ID}");
             
-            return Created("api/v1/childrenHouse/" + location.ID, location);
+            return Created("api/v1/locaiton/" + loc.ID, loc);
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]AddressDTO addressDTO)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]LocationDTO locationDTO)
         {
-            if (!_addressValidator.IsValid(addressDTO))
+            if (locationDTO == null)
             {
-                _logger.LogError("Invalid address data");
+                _logger.LogError("LocationDTO is null");
                 return BadRequest();
             }
 
@@ -151,17 +149,15 @@ namespace FamilyNetServer.Controllers.API.V2
                 return BadRequest();
             }
 
-            bool IsLocationNotNull = GetCoordProp(addressDTO, out var coord);
-            if (IsLocationNotNull)
+            
+            if (!locationDTO.IsValid)
             {
-                location.MapCoordX = coord.Item1;
-                location.MapCoordY = coord.Item2;
-            }
-            else
-            {
-                _logger.LogInformation("Invalid address data");
+                _logger.LogInformation("Deleted location");
                 location.IsDeleted = true;
+
+                return NotFound();
             }
+           
             _repository.Location.Update(location);
             _repository.SaveChangesAsync();
 
@@ -171,7 +167,7 @@ namespace FamilyNetServer.Controllers.API.V2
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute]int id)
@@ -200,33 +196,6 @@ namespace FamilyNetServer.Controllers.API.V2
             return Ok();
         }
 
-        private bool GetCoordProp(AddressDTO addressDTO, out Tuple<float?, float?> result)
-        {
-            result = null;
-            bool forOut = false;
-
-            var nominatim = new Nominatim.API.Geocoders.ForwardGeocoder();
-            var d = nominatim.Geocode(new Nominatim.API.Models.ForwardGeocodeRequest()
-            {
-                Country = addressDTO.Country,
-                State = addressDTO.Region,
-                City = addressDTO.City,
-                StreetAddress = String.Concat(addressDTO.Street, " ", addressDTO.House)
-            });
-
-            //TODO:some validation for search
-            if (d != null)
-            {
-                if (d.Result.Count() != 0)
-                {
-                    float? X = (float)d.Result[0].Latitude;
-                    float? Y = (float)d.Result[0].Longitude;
-
-                    result = new Tuple<float?, float?>(X, Y);
-                    forOut = true;
-                }
-            }
-            return forOut;
-        }
+        
     }
 }

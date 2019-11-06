@@ -14,5 +14,6 @@ namespace DataTransferObjects
 
         public float? MapCoordY { get; set; }
 
+        public bool IsValid { get; set; } = true;
     }
 }
