@@ -77,8 +77,7 @@ namespace FamilyNet.Downloader
             }
 
             formDataContent.Add(new StringContent(dto.AuctionLotItemID.ToString()), "AuctionLotItemID");
-            formDataContent.Add(new StringContent(dto.DateEnd.ToString()), "DateEnd");
-            formDataContent.Add(new StringContent(dto.DateStart.ToString()), "DateStart");
+            formDataContent.Add(new StringContent(dto.DateStart.ToString()), "DateAdded");
             formDataContent.Add(new StringContent(dto.OrphanID.ToString()), "OrphanID");
             formDataContent.Add(new StringContent(dto.Quantity.ToString()), "Quantity");
             formDataContent.Add(new StringContent(dto.Status.ToString()), "Status");

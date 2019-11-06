@@ -31,11 +31,6 @@
                                     <span asp-validation-for="@Model.AuctionLot.DateStart" class="text-danger"></span>
                                 </p>
                                 <p>
-                                    <label asp-for="@Model.AuctionLot.DateEnd" class="control-label"><b>End:</b></label>
-                                    <input asp-for="@Model.AuctionLot.DateEnd" class="form-control" />
-                                    <span asp-validation-for="@Model.AuctionLot.DateEnd" class="text-danger"></span>
-                                </p>
-                                <p>
                                     <b>@Html.DisplayNameFor(model => model.AuctionLot.Quantity)</b>
                                     <input asp-for="AuctionLot.Quantity" class="form-control" value="@Model.AuctionLot.Quantity" />
                                 </p>
