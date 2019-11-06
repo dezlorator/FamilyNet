@@ -7,10 +7,9 @@ namespace DataTransferObjects.Enums
 {
     public enum UserRole
     {
-        Defauklt,
+        Default,
         CharityMaker,
         Volunteer,
-        Child,
         Representative
     }
 }

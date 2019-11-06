@@ -6,6 +6,7 @@ using FamilyNetServer.Models;
 using FamilyNetServer.Models.EntityFramework;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NLog;
@@ -16,6 +17,7 @@ using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Enums;
 using Microsoft.AspNetCore.Authorization;
+using DataTransferObjects.Enums;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -120,7 +122,24 @@ namespace FamilyNetServer.Controllers.API
             return Ok(feedbackDTO);
         }
 
+        //[HttpGet]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public async Task<IActionResult> GetAllPersonByRole([FromForm]UserRole role, [FromForm]int donationId)
+        //{
+        //    IEnumerable<Person> persons;
+        //    switch(role)
+        //    {
+        //        case UserRole.CharityMaker:
+        //        {
+        //            var charityMakersId = 
+        //            break;
+        //        }
+        //    }
+        //}
+
         [HttpPost]
+        [Authorize(Roles ="Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm] FeedbackDTO feedbackDTO)
@@ -132,6 +151,8 @@ namespace FamilyNetServer.Controllers.API
                 _logger.LogError(errorMessage);
                 return BadRequest();
             }
+
+            var accessToken = Request.Headers["Authorization"];
 
             string photoPath = string.Empty;
 
@@ -167,7 +188,7 @@ namespace FamilyNetServer.Controllers.API
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit(int id, FeedbackDTO feedbackDTO)
+        public async Task<IActionResult> Edit(int id, [FromForm]FeedbackDTO feedbackDTO)
         {
             if(id < 0)
             {
