@@ -4,14 +4,16 @@ using FamilyNetServer.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191106143034_removeDateEnd")]
+    partial class removeDateEnd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,37 +190,6 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("Donations");
                 });
 
-            modelBuilder.Entity("FamilyNetServer.Models.Feedback", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("DonationId");
-
-                    b.Property<string>("Image");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Message");
-
-                    b.Property<double>("Rating");
-
-                    b.Property<int?>("ReceiverId");
-
-                    b.Property<int>("ReceiverRole");
-
-                    b.Property<int?>("SenderId");
-
-                    b.Property<int>("SenderRole");
-
-                    b.Property<DateTime>("Time");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Feedback");
-                });
-
             modelBuilder.Entity("FamilyNetServer.Models.Location", b =>
                 {
                     b.Property<int>("ID")
@@ -307,10 +278,6 @@ namespace FamilyNetServer.Migrations
                     b.Property<DateTime>("Date");
 
                     b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("Status");
 
                     b.Property<float>("Paid");
 

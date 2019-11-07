@@ -1,0 +1,52 @@
+﻿@model FamilyNet.Models.ViewModels.PurchaseBuyViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewData["Title"] = "Buy";
+}
+    <form asp-action="Confirm" enctype="multipart/form-data">
+        <div class="container">
+            <div class="row my-2">
+                <div class="col-lg-8 order-lg-2">
+                    <div class="tab-content py-4">
+                        <div class="tab-pane active" id="profile">
+                            <h5 class="mb-3">@ViewData["Profile"]</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="hidden" asp-for="AuctionLot.ID" />
+                                    <input type="hidden" asp-for="AuctionLot.AuctionLotItemID" />
+                                    <input type="hidden" asp-for="AuctionLot.OrphanID" />
+                                    <b>@Html.DisplayNameFor(model => model.Item.Name):</b>
+                                    @Html.DisplayFor(model => model.Item.Name)
+                                    <p>
+                                        <b>@Html.DisplayNameFor(model => model.Item.Price):</b>
+                                        @Html.DisplayFor(model => model.Item.Price)
+                                    </p>
+                                    <p>
+                                       <i> @Model.AuctionLot.Quantity crafts are available </i>
+                                    </p>
+                                    <input type="hidden" asp-for="AuctionLot.ID" />
+                                    <input type="hidden" asp-for="AuctionLot.Quantity" />
+                                    <input type="hidden" asp-for="Purchase.UserId" />
+                                    <input type="hidden" asp-for="Purchase.AuctionLotId" />
+                                    <input type="hidden" asp-for="Item.Price" />
+                                    <b>@Html.DisplayNameFor(model => model.Purchase.Quantity):</b>
+                                    <input asp-for="Purchase.Quantity" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 order-lg-1 text-center">
+                    <img class="mx-auto img-fluid img-circle d-block" src="@Url.Content(Model.AuctionLot.PhotoParth)" alt="">
+                </div>
+            </div>
+        </div>
+
+        <input type="submit" value="Buy" class="btn btn-success" />
+    </form>
+    <div>
+        <a asp-action="Details" asp-controller="AuctionLot" asp-route-id="@Model.AuctionLot.ID" class="btn btn-info">Back</a>
+    </div>
