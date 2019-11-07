@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using FamilyNetLogs.ViewModels;
 using FamilyNetLogs.Database;
 using System.Linq;
-using FamilyNetLogs.PagingHelper;
+
 
 namespace FamilyNetLogs.Controllers
 {
@@ -16,16 +16,18 @@ namespace FamilyNetLogs.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int page = 1)
+        [Route("/{page}")]
+        public IActionResult Index(int page = 1, int rows = 6)
         {
             var logsPageInfo = new LogsPageInfo
             {
                 CurrentPage = page,
+                PageSize = 6,
                 Count = _context.Log.Count()
             };
 
             var logs = _context.Log.Skip((logsPageInfo.CurrentPage - 1) * logsPageInfo.PageSize)
-                .Take(logsPageInfo.PageSize);            
+                .Take(logsPageInfo.PageSize);
 
             var model = new LogsViewModel()
             {

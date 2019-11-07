@@ -194,10 +194,14 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
             if (status != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
-                //TODO: log
             }
 
             GetViewData();

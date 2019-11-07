@@ -1,5 +1,4 @@
 ﻿using FamilyNetLogs.Models;
-using FamilyNetLogs.PagingHelper;
 using System.Collections.Generic;
 
 namespace FamilyNetLogs.ViewModels
