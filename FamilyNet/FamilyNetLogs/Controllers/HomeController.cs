@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using FamilyNetLogs.ViewModels;
 using FamilyNetLogs.Database;
 using System.Linq;
-
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using ReflectionIT.Mvc.Paging;
+using FamilyNetLogs.Models;
+using System;
 
 namespace FamilyNetLogs.Controllers
 {
@@ -16,24 +20,26 @@ namespace FamilyNetLogs.Controllers
             _context = context;
         }
 
-        [Route("/{page}")]
-        public IActionResult Index(int page = 1, int rows = 6)
+        public async Task<IActionResult> Index(string userId, string level,
+                                               int page = 1, int rows = 6)
         {
-            var logsPageInfo = new LogsPageInfo
-            {
-                CurrentPage = page,
-                PageSize = 6,
-                Count = _context.Log.Count()
-            };
+            ViewData["userFilter"] = userId;
+            ViewData["levelFilter"] = level;
 
-            var logs = _context.Log.Skip((logsPageInfo.CurrentPage - 1) * logsPageInfo.PageSize)
-                .Take(logsPageInfo.PageSize);
+            var logs = _context.Log.AsNoTracking();
 
-            var model = new LogsViewModel()
+            if (!String.IsNullOrEmpty(userId))
             {
-                Logs = logs,
-                LogsPageInfo = logsPageInfo
-            };
+                logs = logs.Where(l => l.UserId == userId);
+            }
+
+            if (!String.IsNullOrEmpty(level))
+            {
+                logs = logs.Where(l => l.Level.Contains(level));
+            }
+
+            var model = await PagingList.CreateAsync(logs.OrderBy(l => l.Id),
+                rows, page);
 
             return View(model);
         }

@@ -1,47 +1,59 @@
-﻿@model LogsViewModel
-@using FamilyNetLogs.ViewModels
+﻿@model PagingList<Log>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *,ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="table-responsive">
-    <table class="table table-bordered table-sm" style="width:80%">
-        <thead>
-            <tr>
-                <th>Logged</th>
-                <th>Level</th>
-                <th>Message</th>
-                <th>Call</th>
-                <th>User Id</th>
-                <th>JSON</th>
-                <th>Exception</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var log in Model.Logs)
-            {
-                <tr>
-                    <td>@log.Logged</td>
-                    <td>@log.Level</td>
-                    <td>@log.Message</td>
-                    <td>@log.CallSite</td>
-                    <td>@log.UserId</td>
-                    <td>@log.JSON</td>
-                    <td>@log.Exception</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <div class="fixed-bottom">
-        <ul class="pagination">
-            @for (var i = 1; i <= Model.LogsPageInfo.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.LogsPageInfo.CurrentPage ? "active" : "")">
-                    <a asp-action="Index" asp-controller="Home" asp-route-page="@i" class="page-link">@i</a>
-                </li>
-            }
-        </ul>
-    </div>
+<div>
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Find by user: <input type="text" name="userId" value="@ViewData["userFilter"]" />
+                Find by level: <input type="text" name="level" value="@ViewData["levelFilter"]" />
+                <input type="submit" value="Search" class="btn btn-default" /> |
+                <a asp-action="Index">Back to Full List</a>
+            </p>
+        </div>
+    </form>
 </div>
+
+<table class="table">
+
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm" style="width:80%">
+            <thead>
+                <tr>
+                    <th>Logged</th>
+                    <th>Level</th>
+                    <th>Message</th>
+                    <th>Call</th>
+                    <th>User Id</th>
+                    <th>JSON</th>
+                    <th>Exception</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model)
+                {
+                    <tr>
+                        <td>@log.Logged</td>
+                        <td>@log.Level</td>
+                        <td>@log.Message</td>
+                        <td>@log.CallSite</td>
+                        <td>@log.UserId</td>
+                        <td>@log.JSON</td>
+                        <td>@log.Exception</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="fixed-bottom">
+            <nav aria-label="Logs">
+                @await this.Component.InvokeAsync("Pager", new { pagingList = this.Model })
+            </nav>
+        </div>
+    </div>
 

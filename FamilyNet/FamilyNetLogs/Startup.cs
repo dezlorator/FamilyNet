@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ReflectionIT.Mvc.Paging;
 
 namespace FamilyNetLogs
 {
@@ -22,6 +23,7 @@ namespace FamilyNetLogs
             services.AddDbContext<FamilyNetLogsContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("FamilyNetLogsConnectionString")));
             services.AddMvc();
+            services.AddPaging();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
