@@ -15,7 +15,7 @@ namespace FamilyNetLogs.Database
             modelBuilder.Entity<Log>(entity =>
             {
                 entity.Property(e => e.CallSite).HasMaxLength(256);
-
+                entity.Property(e => e.UserId).HasMaxLength(50);
                 entity.Property(e => e.Exception).HasColumnType("text");
 
                 entity.Property(e => e.Level)

@@ -4,15 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
-using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
-using FamilyNet.Models.Identity;
 using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers

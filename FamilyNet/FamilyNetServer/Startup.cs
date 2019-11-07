@@ -19,7 +19,7 @@ using FamilyNetServer.Configuration;
 using FamilyNetServer.Factories;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
-using FamilyNetServer.Controllers.API;
+using FamilyNetServer.Controllers.API.V1;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace FamilyNetServer
@@ -45,6 +45,7 @@ namespace FamilyNetServer
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IUnitOfWork, EFUnitOfWork>();
             services.AddTransient<ILogger<CharityMakersController>, Logger<CharityMakersController>>();
+            services.AddTransient<ILogger<ChildrenController>, Logger<ChildrenController>>();
             services.AddTransient<ILogger<VolunteersController>, Logger<VolunteersController>>();
             services.AddTransient<ILogger<AddressController>, Logger<AddressController>>();
             services.AddTransient<ILogger<ChildrenHouseController>, Logger<ChildrenHouseController>>();

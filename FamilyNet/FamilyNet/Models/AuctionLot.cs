@@ -1,8 +1,5 @@
-﻿using FamilyNet.Models.Identity;
-using FamilyNet.Models.Interfaces;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace FamilyNet.Models
 {

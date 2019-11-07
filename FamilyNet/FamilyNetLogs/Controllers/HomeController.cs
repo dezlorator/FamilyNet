@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using FamilyNetLogs.ViewModels;
 using FamilyNetLogs.Database;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using FamilyNetLogs.PagingHelper;
 
 namespace FamilyNetLogs.Controllers
 {
@@ -16,10 +16,24 @@ namespace FamilyNetLogs.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index(int page = 1)
         {
-            var logs = await _context.Log.ToListAsync();
-            return View(logs);
+            var logsPageInfo = new LogsPageInfo
+            {
+                CurrentPage = page,
+                Count = _context.Log.Count()
+            };
+
+            var logs = _context.Log.Skip((logsPageInfo.CurrentPage - 1) * logsPageInfo.PageSize)
+                .Take(logsPageInfo.PageSize);            
+
+            var model = new LogsViewModel()
+            {
+                Logs = logs,
+                LogsPageInfo = logsPageInfo
+            };
+
+            return View(model);
         }
 
         public IActionResult Error()

@@ -16,7 +16,7 @@ namespace FamilyNetServer
             Logger logger = null;
             try
             {
-                logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+                logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
                 logger.Debug("init main");
                 BuildWebHost(args).Run();
             }

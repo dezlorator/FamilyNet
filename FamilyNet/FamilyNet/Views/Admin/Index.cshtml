@@ -1,4 +1,5 @@
-﻿@model IEnumerable<FamilyNet.Models.Identity.ApplicationUser>
+﻿@model IEnumerable<UserDTO>
+@using DataTransferObjects
 
 <div class="bg-primary m-1 p-1 text-white"><h4>User Accounts</h4></div>
 
@@ -12,7 +13,7 @@
     }
     else
     {
-        foreach (FamilyNet.Models.Identity.ApplicationUser user in Model)
+        foreach (var user in Model)
         {
             <tr>
                 <td>@user.Id</td>

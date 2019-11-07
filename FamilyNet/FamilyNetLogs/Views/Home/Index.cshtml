@@ -1,5 +1,5 @@
-﻿@model IEnumerable<Log>
-@using FamilyNetLogs.Models
+﻿@model LogsViewModel
+@using FamilyNetLogs.ViewModels
 
 @{
     ViewData["Title"] = "Home Page";
@@ -14,22 +14,42 @@
                 <th>Message</th>
                 <th>Logger</th>
                 <th>Call</th>
+                <th>User Id</th>
+                <th>JSON</th>
                 <th>Exception</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var log in Model)
+            @foreach (var log in Model.Logs)
             {
                 <tr>
                     <td>@log.Logged</td>
                     <td>@log.Level</td>
                     <td>@log.Message</td>
-                    <td>@log.Logger</td>
+                    <td></td>
                     <td>@log.CallSite</td>
+                    <td>@log.UserId</td>
+                    <td>@log.JSON</td>
                     <td>@log.Exception</td>
                 </tr>
             }
         </tbody>
     </table>
+    <div>
+        @*<div page-model="@Model.LogsPageInfo" page-action="Index" page-classes-enabled="true"
+             page-class="btn" page-class-normal="btn-secondary"
+             page-class-selected="btn-primary" page-url-
+             class="btn-group m-1">
+        </div>*@
+
+        <ul class="pagination">
+            @for (var i = 1; i <= Model.LogsPageInfo.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.LogsPageInfo.CurrentPage ? "active" : "")">
+                    <a asp-action="Index" asp-controller="Home" asp-route-page="@i" class="page-link">@i</a>
+                </li>
+            }
+        </ul>
+    </div>
 </div>
 

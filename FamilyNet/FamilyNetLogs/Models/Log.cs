@@ -10,6 +10,8 @@ namespace FamilyNetLogs.Models
         public string Message { get; set; }
         public string Logger { get; set; }
         public string CallSite { get; set; }
+        public string UserId { get; set; }
+        public string JSON { get; set; }
         public string Exception { get; set; }
     }
 }

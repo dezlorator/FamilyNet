@@ -15,8 +15,7 @@ using DataTransferObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
-using System;
-using FamilyNetServer.Enums;
+using FamilyNetServer.Controllers.API.V1;
 
 namespace FamilyNetServer.Tests
 {

@@ -1,10 +1,9 @@
-﻿using FamilyNetServer.Models;
-using FamilyNetServer.Models.Interfaces;
+﻿using FamilyNetServer.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 
 
-namespace FamilyNet.Models
+namespace FamilyNetServer.Models
 {
     public class SeedData
     {
