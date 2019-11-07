@@ -21,6 +21,8 @@ using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using FamilyNetServer.Controllers.API.V1;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using FamilyNetServer.Controllers.API;
+using FamilyNetServer.EnumConvertor;
 
 namespace FamilyNetServer
 {
@@ -42,6 +44,7 @@ namespace FamilyNetServer
             services.AddIdentityService();
             services.AddTransient<ITokenFactory, TokenFactory>();
             services.AddAuthorizationService(Configuration);
+            services.AddTransient<IConvertUserRole, ConvertUserRole>();
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<EFRepository<Feedback>, FeedbackRepository>();
             services.AddTransient<ILogger<FeedbackController>, Logger<FeedbackController>>();

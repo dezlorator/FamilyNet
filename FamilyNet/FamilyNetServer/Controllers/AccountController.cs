@@ -7,6 +7,7 @@ using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using FamilyNetServer.Models.ViewModels;
+using DataTransferObjects.Enums;
 
 namespace FamilyNetServer.Controllers
 {    

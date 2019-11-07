@@ -6,18 +6,16 @@ using FamilyNetServer.Models;
 using FamilyNetServer.Models.EntityFramework;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NLog;
 using DataTransferObjects;
 using Microsoft.Extensions.Options;
 using FamilyNetServer.Configuration;
-using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Enums;
 using Microsoft.AspNetCore.Authorization;
 using DataTransferObjects.Enums;
+using FamilyNetServer.EnumConvertor;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -31,21 +29,25 @@ namespace FamilyNetServer.Controllers.API
         private readonly IFeedbackValidator _validator;
         private readonly IFileUploader _fileUploader;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
+        private readonly IConvertUserRole _userRoleConvertor;
         #endregion
 
         public FeedbackController(EFRepository<Feedback> feedbackRepository,
             ILogger<FeedbackController> logger, IFeedbackValidator validator,
             IOptionsSnapshot<ServerURLSettings> settings,
-            IFileUploader fileUploader)
+            IFileUploader fileUploader,
+            IConvertUserRole userRoleConvertor)
         {
             _feedbackRepository = feedbackRepository;
             _logger = logger;
             _validator = validator;
             _settings = settings;
             _fileUploader = fileUploader;
+            _userRoleConvertor = userRoleConvertor;
         }
 
         [HttpGet("donation/{donationId}")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetByDonationId(int donationId)
@@ -85,6 +87,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
@@ -122,24 +125,8 @@ namespace FamilyNetServer.Controllers.API
             return Ok(feedbackDTO);
         }
 
-        //[HttpGet]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public async Task<IActionResult> GetAllPersonByRole([FromForm]UserRole role, [FromForm]int donationId)
-        //{
-        //    IEnumerable<Person> persons;
-        //    switch(role)
-        //    {
-        //        case UserRole.CharityMaker:
-        //        {
-        //            var charityMakersId = 
-        //            break;
-        //        }
-        //    }
-        //}
-
         [HttpPost]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "CharityMaker, Volunteer, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm] FeedbackDTO feedbackDTO)
@@ -152,7 +139,18 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
-            var accessToken = Request.Headers["Authorization"];
+            //how it will be better???
+            var claims = HttpContext.User.Claims.ToList();
+            int senderId = Convert.ToInt32(claims[2].Value);
+            var senderRole = _userRoleConvertor.ConvertFromString(claims[3].Value);
+
+            if(!_validator.CheckPermission(senderRole, feedbackDTO.ReceiverRole))
+            {
+                _logger.LogError(string.Format("User with id - {0} have no permission to leave" +
+                    "feedback about {1}", claims[0].Value, nameof(feedbackDTO.ReceiverRole)));
+                //what should I return
+                return BadRequest();
+            }
 
             string photoPath = string.Empty;
 
@@ -174,8 +172,8 @@ namespace FamilyNetServer.Controllers.API
                 ReceiverId = feedbackDTO.ReceiverId,
                 ReceiverRole = feedbackDTO.ReceiverRole,
                 Time = feedbackDTO.Time,
-                SenderId = feedbackDTO.SenderId,
-                SenderRole = feedbackDTO.SenderRole
+                SenderId = senderId,
+                SenderRole = senderRole
             };
 
             await _feedbackRepository.Create(feedback);
@@ -186,6 +184,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "CharityMaker, Volunteer, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]FeedbackDTO feedbackDTO)
@@ -198,7 +197,27 @@ namespace FamilyNetServer.Controllers.API
 
             var feedback = await _feedbackRepository.GetById(id);
 
-            if(feedback == null)
+            var claims = HttpContext.User.Claims.ToList();
+            int editorId = Convert.ToInt32(claims[2].Value);
+            var editorRole = _userRoleConvertor.ConvertFromString(claims[3].Value);
+
+            if (!_validator.CheckPermission(editorRole, feedbackDTO.ReceiverRole))
+            {
+                _logger.LogError(string.Format("User with id - {0} have no permission to edit" +
+                    "feedback about {1}", claims[0].Value, nameof(feedbackDTO.ReceiverRole)));
+                //what should I return
+                return BadRequest();
+            }
+
+            if ((feedback.SenderId != editorId) || (feedback.SenderRole != editorRole))
+            {
+                _logger.LogError(string.Format("User with such id - {0} have no rights to " +
+                                 "delete comment with id - {1}", claims[0].Value, feedback.ID));
+                //What should I return
+                return BadRequest();
+            }
+
+            if (feedback == null)
             {
                 _logger.LogError(string.Format("No feedback found with such id - {0}",
                 id));
@@ -208,10 +227,6 @@ namespace FamilyNetServer.Controllers.API
             feedback.DonationId = feedbackDTO.DonationId;
             feedback.Message = feedbackDTO.Message;
             feedback.Rating = feedbackDTO.Rating;
-            feedback.ReceiverId = feedbackDTO.ReceiverId;
-            feedback.ReceiverRole = feedbackDTO.ReceiverRole;
-            feedback.SenderId = feedbackDTO.SenderId;
-            feedback.SenderRole = feedbackDTO.SenderRole;
             feedback.Time = feedbackDTO.Time;
             
             if(feedbackDTO.Image != null)
@@ -231,7 +246,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CharityMaker, Volunteer, Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
@@ -244,7 +259,20 @@ namespace FamilyNetServer.Controllers.API
 
             var feedback = await _feedbackRepository.GetById(id);
 
-            if(feedback == null)
+            var claims = HttpContext.User.Claims.ToList();
+            int editorId = Convert.ToInt32(claims[2].Value);
+            var editorRole = _userRoleConvertor.ConvertFromString(claims[3].Value);
+
+            if ((editorRole != UserRole.Admin) && ((feedback.SenderId != editorId) 
+                || (feedback.SenderRole != editorRole)))
+            {
+                _logger.LogError(string.Format("User with such id - {0} have no rights to " +
+                    "delete comment with id - {1}", claims[0].Value, feedback.ID));
+                //What should I return
+                return BadRequest();
+            }
+
+            if (feedback == null)
             {
                 _logger.LogError(string.Format("No feedback found with such id - {0}",
                  id));

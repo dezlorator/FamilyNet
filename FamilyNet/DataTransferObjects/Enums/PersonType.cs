@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
 namespace DataTransferObjects.Enums
 {
-    public enum UserRole
+    public enum PersonType
     {
         User,
         CharityMaker,
         Volunteer,
         Orphan,
-        Representative,
-        Admin
+        Representative
+
     }
 }
