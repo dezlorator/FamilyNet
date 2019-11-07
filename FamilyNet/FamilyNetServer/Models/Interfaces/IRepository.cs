@@ -23,8 +23,6 @@ namespace FamilyNetServer.Models.Interfaces
 
         void AddRange(IEnumerable<TEntity> entities);
 
-        //void AddRange(params TEntity[] entities);
-
         Task SaveChangesAsync();
 
         bool Any(int id);
