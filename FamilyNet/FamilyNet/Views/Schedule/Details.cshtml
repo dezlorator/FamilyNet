@@ -1,0 +1,32 @@
+﻿@model DataTransferObjects.AvailabilityDTO
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Просмотр</h2>
+<form method="put" asp-controller="Availabilities" asp-action="Create">
+    @*<div asp-validation-summary="ModelOnly"></div>*@
+    <div>
+        <label asp-for="DayOfWeek"></label><br />
+        <select asp-for="DayOfWeek" asp-items="Html.GetEnumSelectList<DayOfWeek>()">
+            <option value="">Choose a day</option>
+        </select>
+        @*<input asp-for="Date" asp-format= "{0:yyyy-MM-dd}" />*@
+        @*<span asp-validation-for="Email"></span>*@
+    </div>
+    <div>
+        <label asp-for="StartTime"></label><br />
+        <input asp-for="StartTime" asp-format="{HH:mm}" />
+        @*<span asp-validation-for="Phone"></span>*@
+    </div>
+    <div>
+        <label asp-for="VolunteerHours.TotalHours"></label><br />
+        <input asp-for="VolunteerHours" asp-format="{HH:mm}">
+        @*<span asp-validation-for="Password"></span>*@
+    </div>
+    <div>
+        <input type="submit" value="Подтвердить" />
+    </div>
+</form>
+
