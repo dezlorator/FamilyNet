@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using FamilyNet.IdentityHelpers;
+using FamilyNet.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -31,8 +32,8 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Index()
         {
-           var url = _URLAvailabilitiesBuilder
-                .GetAll(_apiPath);
+            var url = _URLAvailabilitiesBuilder
+                 .GetAll(_apiPath);
 
             IEnumerable<AvailabilityDTO> availabilitiesDTO = null;
 
@@ -55,7 +56,67 @@ namespace FamilyNet.Controllers
             }
 
             GetViewData();
-            return View(availabilitiesDTO);
+
+            //var grouped = availabilitiesDTO.GroupBy(a => new { a.DayOfWeek, a.FromHour.TimeOfDay },
+            //    (key, group) => new { Key1 = key.DayOfWeek, Key2 = key.TimeOfDay, DTOList = group });
+
+            //var grouped = availabilitiesDTO.GroupBy(a => new Keys { DayOfWeek = a.DayOfWeek, FromHour = a.FromHour.TimeOfDay });
+            var hours = availabilitiesDTO.Select(a => a.FromHour.TimeOfDay).Distinct().OrderBy(t => t);
+            var vm = new ScheduleViewModel
+            {
+                Days = availabilitiesDTO.Select(a => a.DayOfWeek).Distinct().OrderBy(d => d),
+                Hours = availabilitiesDTO.Select(a => a.FromHour.TimeOfDay).Distinct().OrderBy(t => t),
+                Date = availabilitiesDTO.Select(a => a.FromHour),
+                //AvailabilityDTOList = availabilitiesDTO.GroupBy(a => a.FromHour.TimeOfDay).OrderBy(g => g.Key)
+                 //Sunday = availabilitiesDTO.Where(a => a.DayOfWeek == DayOfWeek.Sunday).OrderBy(a => a.FromHour.TimeOfDay),
+                 //Monday = availabilitiesDTO.Where(a => a.DayOfWeek == DayOfWeek.Monday).OrderBy(a => a.FromHour.TimeOfDay),
+                 //Tuesday = availabilitiesDTO.Where(a => a.DayOfWeek == DayOfWeek.Tuesday).OrderBy(a => a.FromHour.TimeOfDay),
+                 //Wednesday = availabilitiesDTO.Where(a => a.DayOfWeek == DayOfWeek.Wednesday).OrderBy(a => a.FromHour.TimeOfDay),
+                 //Thursday = availabilitiesDTO.Where(a => a.DayOfWeek == DayOfWeek.Thursday).OrderBy(a => a.FromHour.TimeOfDay),
+                 //Friday = availabilitiesDTO.Where(a => a.DayOfWeek == DayOfWeek.Friday).OrderBy(a => a.FromHour.TimeOfDay),
+                 //Saturday = availabilitiesDTO.Where(a => a.DayOfWeek == DayOfWeek.Saturday).OrderBy(a => a.FromHour.TimeOfDay),
+                 Sorted = new Dictionary<TimeSpan, IEnumerable<AvailabilityDTO>> ()
+            };
+
+            foreach (var h in vm.Hours)
+            {
+                vm.Sorted.Add(h, availabilitiesDTO
+                .Where(a => a.FromHour.TimeOfDay == h)
+                .OrderBy(a => a.FromHour.TimeOfDay));
+            }
+            //vm.Sorted.Add(DayOfWeek.Sunday, availabilitiesDTO
+            //    .Where(a => a.DayOfWeek == DayOfWeek.Sunday)
+            //    .OrderBy(a => a.FromHour.TimeOfDay));
+            // vm.Sorted.Add(DayOfWeek.Monday, availabilitiesDTO
+            //    .Where(a => a.DayOfWeek == DayOfWeek.Monday)
+            //    .OrderBy(a => a.FromHour.TimeOfDay));
+            //vm.Sorted.Add(DayOfWeek.Tuesday, availabilitiesDTO
+            //    .Where(a => a.DayOfWeek == DayOfWeek.Tuesday)
+            //    .OrderBy(a => a.FromHour.TimeOfDay));
+            //vm.Sorted.Add(DayOfWeek.Wednesday, availabilitiesDTO
+            //    .Where(a => a.DayOfWeek == DayOfWeek.Wednesday)
+            //    .OrderBy(a => a.FromHour.TimeOfDay));
+            //vm.Sorted.Add(DayOfWeek.Thursday, availabilitiesDTO
+            //    .Where(a => a.DayOfWeek == DayOfWeek.Thursday)
+            //    .OrderBy(a => a.FromHour.TimeOfDay));
+            //vm.Sorted.Add(DayOfWeek.Friday, availabilitiesDTO
+            //    .Where(a => a.DayOfWeek == DayOfWeek.Friday)
+            //    .OrderBy(a => a.FromHour.TimeOfDay));
+            //vm.Sorted.Add(DayOfWeek.Saturday, availabilitiesDTO
+            //    .Where(a => a.DayOfWeek == DayOfWeek.Saturday)
+            //    .OrderBy(a => a.FromHour.TimeOfDay));
+
+            //var grouped = availabilitiesDTO
+            //    .
+            //.OrderBy(a => a.Key)
+            //.Select(k => new Keys()
+            //{ 
+            //DayOfWeek = k.Key.DayOfWeek,
+            //FromHour = k.Key.FromHour,
+            //AvailabilityDTOs = k.ToList()
+            //}).ToList();
+
+            return View(vm);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -159,7 +220,7 @@ namespace FamilyNet.Controllers
         }
 
         [HttpPost]
-         public async Task<IActionResult> Create(AvailabilityDTO availabilityDTO)
+        public async Task<IActionResult> Create(AvailabilityDTO availabilityDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -183,7 +244,7 @@ namespace FamilyNet.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)

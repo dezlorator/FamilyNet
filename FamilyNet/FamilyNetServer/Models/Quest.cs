@@ -13,5 +13,7 @@ namespace FamilyNetServer.Models
         public string Description { get; set; }
         public QuestStatus Status { get; set; } = QuestStatus.ToDo;
         public bool IsDeleted { get; set; }
+        //duration
+        //startTime
     }
 }
