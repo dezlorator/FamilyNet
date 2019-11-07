@@ -17,7 +17,7 @@ namespace DataTransferObjects
 
         [DataType(DataType.Time)]
         [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime FromHour { get; set; } //Time
+        public DateTime StartTime { get; set; } //Time
 
         [DataType(DataType.Time)]
         //[DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]

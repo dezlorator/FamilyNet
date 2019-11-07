@@ -47,9 +47,8 @@ namespace FamilyNetServer.Controllers.API
                             .Result.PersonID;
 
             var availabilities = _unitOfWork.Availabilities.GetAll()
-                .Where(a => a.VolunteerID == volunteerId && a.FromHour > DateTime.Now)
-                .OrderBy(a => a.FromHour);
-                /*.OrderBy(a => a.FromHour).GroupBy(a => a.FromHour.DayOfWeek)*/;
+                .Where(a => a.VolunteerID == volunteerId && a.Date > DateTime.Now)
+                .OrderBy(a => a.Date);
 
             if (availabilities == null)
             {
@@ -59,8 +58,8 @@ namespace FamilyNetServer.Controllers.API
             new AvailabilityDTO()
             {
                 ID = a.ID,
-                FromHour = a.FromHour,
-                DayOfWeek = a.FromHour.DayOfWeek,
+                StartTime = a.Date,
+                DayOfWeek = a.Date.DayOfWeek,
                 VolunteerHours = a.VolunteerHours,
             });
 
@@ -82,8 +81,8 @@ namespace FamilyNetServer.Controllers.API
             var availabilityDTO = new AvailabilityDTO()
             {
                 ID = availability.ID,
-                FromHour = availability.FromHour,
-                DayOfWeek = availability.FromHour.DayOfWeek,
+                StartTime = availability.Date,
+                DayOfWeek = availability.Date.DayOfWeek,
                 VolunteerHours = availability.VolunteerHours
             };
 
@@ -108,7 +107,7 @@ namespace FamilyNetServer.Controllers.API
                 VolunteerID = volunteerId.Value,
                 VolunteerHours = availabilityDTO.VolunteerHours,
                 //FromHour = availabilityDTO.FromHour.AddDays((double)availabilityDTO.DayOfWeek-1)
-                FromHour = availabilityDTO.FromHour.AddDays(diff)
+                Date = availabilityDTO.StartTime.AddDays(diff)
             };
         
             await _unitOfWork.Availabilities.Create(availability);
@@ -138,7 +137,7 @@ namespace FamilyNetServer.Controllers.API
             }
             var diff = adjustDate(availabilityDTO);
 
-            availability.FromHour = availabilityDTO.FromHour.AddDays(diff);
+            availability.Date = availabilityDTO.StartTime.AddDays(diff);
             availability.VolunteerHours = availabilityDTO.VolunteerHours;
 
             _unitOfWork.Availabilities.Update(availability);
@@ -182,7 +181,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (diff == 0)
             {
-                var timeDiff = availabilityDTO.FromHour.TimeOfDay < DateTime.Now.TimeOfDay;
+                var timeDiff = availabilityDTO.StartTime.TimeOfDay < DateTime.Now.TimeOfDay;
                 diff += (timeDiff) ? 7 : 0;
             }
 

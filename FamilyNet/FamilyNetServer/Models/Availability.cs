@@ -11,9 +11,8 @@ namespace FamilyNetServer.Models
         public int VolunteerID { get; set; }
 
         [DataType(DataType.Date)]
-        [Column("FromHour", TypeName = "SmallDateTime")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime FromHour { get; set; }
+        public DateTime Date { get; set; }
 
         [DataType(DataType.Time)]
         [Column(TypeName = "time")]

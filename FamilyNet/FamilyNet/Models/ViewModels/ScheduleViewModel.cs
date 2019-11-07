@@ -12,14 +12,5 @@ namespace FamilyNet.Models.ViewModels
         public IEnumerable<TimeSpan> Hours { get; set; }
         public IEnumerable<DateTime> Date { get; set; }
         public IDictionary<TimeSpan, IEnumerable<AvailabilityDTO>> Sorted { get; set; }
-        //public IEnumerable<AvailabilityDTO> Sunday { get; set; }
-        //public IEnumerable<AvailabilityDTO> Monday { get; set; }
-        //public IEnumerable<AvailabilityDTO> Tuesday { get; set; }
-        //public IEnumerable<AvailabilityDTO> Wednesday { get; set; }
-        //public IEnumerable<AvailabilityDTO> Thursday { get; set; }
-        //public IEnumerable<AvailabilityDTO> Friday { get; set; }
-        //public IEnumerable<AvailabilityDTO> Saturday { get; set; }
-
-        //public IEnumerable<IGrouping<TimeSpan,AvailabilityDTO>> AvailabilityDTOList {get; set;}
     }
 }

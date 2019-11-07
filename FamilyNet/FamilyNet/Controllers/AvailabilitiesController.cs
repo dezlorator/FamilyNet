@@ -39,7 +39,6 @@ namespace FamilyNet.Controllers
 
             try
             {
-                //representativesDTO = await _availabilitiesDownLoader.GetAllAsync(url, HttpContext.Session);
                 availabilitiesDTO = await _availabilitiesDownLoader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
@@ -57,16 +56,11 @@ namespace FamilyNet.Controllers
 
             GetViewData();
 
-            //var grouped = availabilitiesDTO.GroupBy(a => new { a.DayOfWeek, a.FromHour.TimeOfDay },
-            //    (key, group) => new { Key1 = key.DayOfWeek, Key2 = key.TimeOfDay, DTOList = group });
-
-            //var grouped = availabilitiesDTO.GroupBy(a => new Keys { DayOfWeek = a.DayOfWeek, FromHour = a.FromHour.TimeOfDay });
-            var hours = availabilitiesDTO.Select(a => a.FromHour.TimeOfDay).Distinct().OrderBy(t => t);
             var vm = new ScheduleViewModel
             {
                 Days = availabilitiesDTO.Select(a => a.DayOfWeek).Distinct().OrderBy(d => d),
-                Hours = availabilitiesDTO.Select(a => a.FromHour.TimeOfDay).Distinct().OrderBy(t => t),
-                Date = availabilitiesDTO.Select(a => a.FromHour),
+                Hours = availabilitiesDTO.Select(a => a.StartTime.TimeOfDay).Distinct().OrderBy(t => t),
+                //Date = availabilitiesDTO.Select(a => a.FromHour),
                 //AvailabilityDTOList = availabilitiesDTO.GroupBy(a => a.FromHour.TimeOfDay).OrderBy(g => g.Key)
                  //Sunday = availabilitiesDTO.Where(a => a.DayOfWeek == DayOfWeek.Sunday).OrderBy(a => a.FromHour.TimeOfDay),
                  //Monday = availabilitiesDTO.Where(a => a.DayOfWeek == DayOfWeek.Monday).OrderBy(a => a.FromHour.TimeOfDay),
@@ -81,8 +75,8 @@ namespace FamilyNet.Controllers
             foreach (var h in vm.Hours)
             {
                 vm.Sorted.Add(h, availabilitiesDTO
-                .Where(a => a.FromHour.TimeOfDay == h)
-                .OrderBy(a => a.FromHour.TimeOfDay));
+                .Where(a => a.StartTime.TimeOfDay == h)
+                .OrderBy(a => a.StartTime.TimeOfDay));
             }
             //vm.Sorted.Add(DayOfWeek.Sunday, availabilitiesDTO
             //    .Where(a => a.DayOfWeek == DayOfWeek.Sunday)

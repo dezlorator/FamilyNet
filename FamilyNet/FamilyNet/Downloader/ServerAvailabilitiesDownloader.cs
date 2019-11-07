@@ -163,7 +163,7 @@ namespace FamilyNet.Downloader
 
             //formDataContent.Add(new StringContent(dto.Date.ToString()), "Date");
             formDataContent.Add(new StringContent(dto.DayOfWeek.ToString()), "DayOfWeek");
-            formDataContent.Add(new StringContent(dto.FromHour.ToString()), "FromHour");
+            formDataContent.Add(new StringContent(dto.StartTime.ToString()), "StartTime");
             formDataContent.Add(new StringContent(dto.VolunteerHours.ToString()), "VolunteerHours");
         }
     }
