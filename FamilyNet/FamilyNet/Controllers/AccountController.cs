@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models.ViewModels;
-using FamilyNet.Models.Identity;
-using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using FamilyNet.Downloader;
@@ -12,10 +10,14 @@ using DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 using FamilyNet.Encoders;
 using FamilyNet.IdentityHelpers;
+using System.Collections.Generic;
+using System.Net.Http;
+using Newtonsoft.Json;
+using FamilyNet.Enums;
 
 namespace FamilyNet.Controllers
 {
-    public class AccountController : BaseController
+    public class AccountController : Controller
     {
         #region private fields
 
@@ -25,126 +27,103 @@ namespace FamilyNet.Controllers
         private readonly string _headerToken = "Bearer";
         private readonly IJWTEncoder _encoder;
 
+        private readonly ServerSimpleDataDownloader<RegistrationDTO> _registrationDownloader;
+        private readonly IURLRegistrationBuilder _registrationBuilder;
+        private readonly string _apiRegistrationPath = "api/v1/registration";
+
+        private readonly ServerSimpleDataDownloader<RoleDTO> _rolesDownloader;
+        private readonly IURLRolesBuilder _rolesBuilder;
+        private readonly string _apiRolesPath = "api/v1/roles";
+
         #endregion
 
         #region ctor
 
-        public AccountController(IIdentity unitOfWork,
-                                IStringLocalizer<HomeController> localizer,
+        public AccountController(IStringLocalizer<HomeController> localizer,
                                 IStringLocalizer<SharedResource> sharedLocalizer,
                                 IAuthorizeCreater authorizeCreater,
                                 IJWTEncoder encoder,
-                                IIdentityInformationExtractor identityInformationExtactor)
-            : base(unitOfWork)
+                                IIdentityInformationExtractor identityInformationExtactor,
+                                ServerSimpleDataDownloader<RegistrationDTO> registrationDownloader,
+                                ServerSimpleDataDownloader<RoleDTO> rolesDownloader,
+                                IURLRegistrationBuilder registrationBuilder,
+                                IURLRolesBuilder rolesBuilder)
         {
             _localizer = localizer;
             _authorizeCreater = authorizeCreater;
             _encoder = encoder;
             _identityInformationExtactor = identityInformationExtactor;
+            _registrationDownloader = registrationDownloader;
+            _rolesDownloader = rolesDownloader;
+            _rolesBuilder = rolesBuilder;
+            _registrationBuilder = registrationBuilder;
         }
 
         #endregion
-
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
-            GetViewData();
 
-            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
-            var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
+            var urlRoles = _rolesBuilder.GetAll(_apiRolesPath);
+            IEnumerable<RoleDTO> roles = null;
+
+            roles = await _rolesDownloader.GetAllAsync(urlRoles, HttpContext.Session);
+
+            var yourDropdownList = new SelectList(roles.Select(item => new SelectListItem
             {
                 Text = item.Name,
                 Value = item.Name
             }).ToList(), "Value", "Text");
-            var viewModel = new RegisterViewModel()
+            var viewModel = new RegistrationDTO()
             {
                 // The Dropdownlist values
                 YourDropdownList = yourDropdownList
             };
+            GetViewData();
             return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegistrationDTO model)
         {
+
             GetViewData();
-            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
-            var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
+
+            var urlRoles = _rolesBuilder.GetAll(_apiRolesPath);
+            IEnumerable<RoleDTO> rolesDTO = null;
+
+            rolesDTO = await _rolesDownloader.GetAllAsync(urlRoles, HttpContext.Session);
+            var url = _registrationBuilder.Register(_apiRegistrationPath);
+            var yourDropdownList = new SelectList(rolesDTO.Select(item => new SelectListItem
             {
                 Text = item.Name,
                 Value = item.Name
             }).ToList(), "Value", "Text");
+
             model.YourDropdownList = yourDropdownList;
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser
+                try
                 {
-                    Email = model.Email,
-                    UserName = model.Email,
-                    PhoneNumber = model.Phone,
-                    PersonType = GetPersonType(model.YourDropdownSelectedValue),
-                    PersonID = null
-                };
-
-                var result = await _unitOfWork.UserManager.CreateAsync(user, model.Password);
-
-                await _unitOfWork.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
-
-                if (result.Succeeded)
-                {
-
-                    var code = await _unitOfWork.UserManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action(
-                        "ConfirmEmail",
-                        "Account",
-                        new { userId = user.Id, code = code },
-                        protocol: HttpContext.Request.Scheme);
-                    EmailService emailService = new EmailService();
-                    await emailService.SendEmailAsync(model.Email, "Confirm your account",
-                        $"Подтвердите регистрацию, перейдя по ссылке: <a href='{callbackUrl}'>link</a>");
-
-
+                    var result = _registrationDownloader.CreatePostAsync(url, model, HttpContext.Session);
                     return Content("Для завершения регистрации проверьте электронную почту и перейдите по ссылке, указанной в письме");
-                    //await _unitOfWorkAsync.SignInManager.SignInAsync(user, false);
-                    //return RedirectToAction("Index", "Home");
                 }
-                else
+                catch (ArgumentNullException)
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
+                    return Redirect("/Home/Error");
+                }
+                catch (HttpRequestException)
+                {
+                    return Redirect("/Home/Error");
+                }
+                catch (JsonException)
+                {
+                    return Redirect("/Home/Error");
                 }
             }
-            GetViewData();
             return View(model);
-
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        {
-            GetViewData();
-            if (userId == null || code == null)
-            {
-                return View("Error");
-            }
-            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return View("Error");
-            }
-            var result = await _unitOfWork.UserManager.ConfirmEmailAsync(user, code);
-            if (result.Succeeded)
-            {
-                await _unitOfWork.SignInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                return View("Error");
-            }
-        }
 
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
@@ -170,6 +149,7 @@ namespace FamilyNet.Controllers
                     HttpContext.Session.SetString("id", claims.UserId.ToString());
                     HttpContext.Session.SetString("email", claims.Email);
                     HttpContext.Session.SetString("roles", String.Join(",", claims.Roles));
+                    HttpContext.Session.SetString("personId", claims.PersonId.ToString());
                     HttpContext.Session.SetString(_headerToken, result.Token);
 
                     return RedirectToAction("Index", "Home");
@@ -200,7 +180,10 @@ namespace FamilyNet.Controllers
 
         public IActionResult GetDetails()
         {
-            var url = Url.Action("Details", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
+            var id = HttpContext.Session.GetString("id");
+            var role = HttpContext.Session.GetString("roles");
+            var personId = HttpContext.Session.GetString("personId");
+            var url = Url.Action("Details", role + "s", new { id = personId });
 
             GetViewData();
             return Redirect(url);
@@ -208,19 +191,23 @@ namespace FamilyNet.Controllers
 
         public IActionResult AccountEdits()
         {
-            var url = Url.Action("Edit", GetCurrentUserAsync().Result.PersonType.ToString() + "s", new { id = GetCurrentUserAsync().Result.PersonID });
+            var personId = HttpContext.Session.GetString("personId");
+            var role = HttpContext.Session.GetString("roles");
+            var url = Url.Action("Edit", role + "s", new { id = personId });
             return Redirect(url);
         }
 
         public IActionResult PersonalRoom()
         {
-            if (GetCurrentUserAsync().Result.PersonType == PersonType.User)
+            var role = HttpContext.Session.GetString("roles");
+            if (GetPersonType(role) == PersonType.User)
             {
                 RedirectToAction("Index", "Home");
             }
-            if (!GetCurrentUserAsync().Result.HasPerson)
+            if (GetPersonType(role) != PersonType.User)
             {
-                return GetRedirect(GetCurrentUserAsync().Result.PersonType.ToString(), "Create");
+                var url = Url.Action(role + "s", "Create");
+                return Redirect(url);
             }
 
             GetViewData();
@@ -266,7 +253,6 @@ namespace FamilyNet.Controllers
 
         private void GetViewData()
         {
-            ViewData["CharityMakers"] = _localizer["CharityMakers"];
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                            ViewData);
         }
