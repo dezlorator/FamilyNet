@@ -45,6 +45,7 @@ namespace FamilyNetServer
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IUnitOfWork, EFUnitOfWork>();
             services.AddTransient<EFRepository<ChildrenActivity>, ChildrenActivityRepository>();
+            services.AddTransient<EFRepository<Award>, AwardRepository>();
             services.AddTransient<ILogger<CharityMakersController>, Logger<CharityMakersController>>();
             services.AddTransient<ILogger<VolunteersController>, Logger<VolunteersController>>();
             services.AddTransient<ILogger<AddressController>, Logger<AddressController>>();

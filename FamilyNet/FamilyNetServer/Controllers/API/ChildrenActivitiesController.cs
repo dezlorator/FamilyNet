@@ -27,6 +27,7 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly EFRepository<ChildrenActivity> _activityRepository;
+        private readonly EFRepository<Award> _awardRepository;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
         private readonly ILogger<ChildrenActivitiesController> _logger;
         private readonly IUnitOfWork _unitOfWork;
@@ -37,12 +38,14 @@ namespace FamilyNetServer.Controllers.API
         #region ctor
 
         public ChildrenActivitiesController(EFRepository<ChildrenActivity> activityRepository,
+                                  EFRepository<Award> awardRepository,
                                   IUnitOfWork unitOfWork,
                                   IOptionsSnapshot<ServerURLSettings> setings,
                                   ILogger<ChildrenActivitiesController> logger,
                                   IChildrenActivityValidator childrenActivityValidator)
         {
             _activityRepository = activityRepository;
+            _awardRepository = awardRepository;
             _unitOfWork = unitOfWork;
             _settings = setings;
             _logger = logger;
@@ -82,13 +85,12 @@ namespace FamilyNetServer.Controllers.API
             return Ok(childrenActivityDTO);
         }
 
-        [HttpGet("{childId}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get(int childId)
+        public async Task<IActionResult> Get(int id)
         {
-            var activity = _activityRepository.GetAll()
-                    .FirstOrDefault(a => a.Child.ID == childId);
+            var activity = await _activityRepository.GetById(id);
 
             if (activity == null)
             {
@@ -114,7 +116,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Representative")]
+       // [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]ChildrenActivityDTO childrenActivityDTO)
@@ -137,14 +139,19 @@ namespace FamilyNetServer.Controllers.API
                 Child = await _unitOfWork.Orphans.GetById(childrenActivityDTO.ChildID)   
             };
 
+            if (childrenActivity.Child == null)
+            {
+                return BadRequest();
+            }
+
             await _activityRepository.Create(childrenActivity);
             await _activityRepository.SaveChangesAsync();
 
-            return Created("api/v1/childrenActivities/" + childrenActivity.ID, childrenActivityDTO);
+            return Created("api/v1/childrenActivities/" + childrenActivity.ID, new ChildrenActivityDTO());
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin, Representative")]
+       // [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]ChildrenActivityDTO childrenActivityDTO)
@@ -163,14 +170,32 @@ namespace FamilyNetServer.Controllers.API
 
             childrenActivity.Name = childrenActivityDTO.Name;
             childrenActivity.Description = childrenActivityDTO.Description;
-            childrenActivity.Awards = childrenActivityDTO.Awards.Select(aw => new Award
+
+            foreach (var a in childrenActivityDTO.Awards)
             {
-                Name = aw.Name,
-                Description = aw.Description,
-                Date = aw.Date
-            }).ToList();
+                var award = await _awardRepository.GetById(a.ID);
+
+                if(award!=null)
+                {
+                    award.Name = a.Name;
+                    award.Description = a.Description;
+                    award.Date = a.Date;
+
+                    _awardRepository.Update(award);
+                }
+                else
+                {
+                    childrenActivity.Awards.Add(new Award
+                    {
+                        Name = a.Name,
+                        Description = a.Description,
+                        Date = a.Date
+                    });
+                }
+            }
 
             _activityRepository.Update(childrenActivity);
+            await _awardRepository.SaveChangesAsync();
             await _activityRepository.SaveChangesAsync();
 
             return NoContent();
