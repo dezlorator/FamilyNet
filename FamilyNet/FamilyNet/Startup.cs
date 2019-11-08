@@ -1,15 +1,8 @@
-﻿using FamilyNet.Models.EntityFramework;
-using FamilyNet.Models.Interfaces;
-using FamilyNet.Models.Identity;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity;
-using FamilyNet.Infrastructure;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using FamilyNet.Configuration;
@@ -17,10 +10,11 @@ using FamilyNet.Downloader;
 using DataTransferObjects;
 using FamilyNet.StreamCreater;
 using FamilyNet.HttpHandlers;
-using System;
 using FamilyNet.Encoders;
-using FamilyNet.Controllers;
 using FamilyNet.IdentityHelpers;
+using FamilyNet.Downloader.URLBuilders;
+using System;
+using Microsoft.AspNetCore.Http;
 
 namespace FamilyNet
 {
@@ -37,24 +31,7 @@ namespace FamilyNet
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IFileStreamCreater, FileStreamCreater>();
-            services.AddTransient<IAuthorizeCreater, AuthorizeCreater>();
-            services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetPasswordValidator>();
-            services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetUserValidator>();
-            services.AddDbContext<ApplicationIdentityDbContext>(options =>
-                options.UseSqlServer(Configuration["Data:FamilyNetIdentity:ConnectionString"]));
-            services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
-            {
-                opts.User.RequireUniqueEmail = true;
-                opts.Password.RequiredLength = 6;
-                opts.Password.RequireNonAlphanumeric = false;
-                opts.Password.RequireLowercase = true;
-                opts.Password.RequireUppercase = true;
-                opts.Password.RequireDigit = true;
-
-            }).AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-            .AddUserManager<ApplicationUserManager>()
-            .AddDefaultTokenProviders();
-
+            services.AddTransient<IAuthorizeCreater, AuthorizeCreater>();           
             services.AddDistributedMemoryCache();
 
             services.AddSession(options =>
@@ -64,25 +41,46 @@ namespace FamilyNet
                 options.Cookie.IsEssential = true;
             });
 
-            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
+            #region URLBuildres
+
+            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
+            services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
+            services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
+            services.AddTransient<IURLCategoriesBuilder, URLCategoriesBuilder>();
+            services.AddTransient<IURLAuctionLotBuilder, URLAuctionLotBuilder>();
+            services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
+            services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
+            services.AddTransient<IURLAddressBuilder, URLAddressBuilder>();
+            services.AddTransient<IURLRepresentativeBuilder, URLRepresentativesBuilder>();
+            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
+            services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
+            services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
+            services.AddTransient<IURLPurchaseBuilder, URLPurchaseBuilder>();
+            services.AddTransient<IURLRegistrationBuilder, URLRegistrationBuilder>();
+            services.AddTransient<IURLUsersBuilder, URLUsersBuilder>();
+            services.AddTransient<IURLRolesBuilder, URLRolesBuilder>();
+
+            #endregion
+
+            #region ServerDataDownloader
+
             services.AddTransient<ServerDataDownloader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationItemDTO>, ServerDonationItemsDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<CategoryDTO>, ServerCategoriesDownloader>();
             services.AddTransient<ServerDataDownloader<ChildrenHouseDTO>, ServerChildrenHouseDownloader>();
+            services.AddTransient<ServerChildrenHouseDownloader>();
             services.AddTransient<ServerDataDownloader<RepresentativeDTO>, ServerRepresentativesDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<RoleDTO>, ServerRoleDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<UserDTO>, ServerUserDownloader>();
             services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
-            services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
-            services.AddTransient<IJWTEncoder, JWTEncoder>();
-            services.AddTransient<ServerChildrenHouseDownloader>();
             services.AddTransient<ServerAddressDownloader>();
             services.AddTransient<ServerLocationDownloader>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<ServerDataDownloader<AuctionLotDTO>, ServerAuctionLotDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<RegistrationDTO>, ServerRegistrationDownloader>();
             services.AddTransient<IURLAuctionLotBuilder, URLAuctionLotBuilder>();
             services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();
@@ -92,10 +90,14 @@ namespace FamilyNet
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
             services.AddTransient<IIdentityInformationExtractor, IdentityInformationExtractor>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
-            services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
-            services.AddTransient<IURLDonationsBuilder, URLDonationsBuilder>();
-            services.AddTransient<IURLDonationItemsBuilder, URLDonationItemsBuilder>();
-            services.AddTransient<IURLCategoriesBuilder, URLCategoriesBuilder>();
+            services.AddTransient<ServerSimpleDataDownloader<PurchaseDTO>, ServerPurchaseDownloader>();
+
+            #endregion
+
+            services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));            
+            services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
+            services.AddTransient<IJWTEncoder, JWTEncoder>();
+
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -104,7 +106,6 @@ namespace FamilyNet
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddTransient<IIdentity, EFUnitOfWork>();
             services.AddTransient<IHttpAuthorizationHandler, HttpAuthorizationHandler>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");

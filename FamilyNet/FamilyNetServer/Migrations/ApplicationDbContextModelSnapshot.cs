@@ -59,9 +59,7 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<string>("Avatar");
 
-                    b.Property<DateTime>("DateEnd");
-
-                    b.Property<DateTime>("DateStart");
+                    b.Property<DateTime>("DateAdded");
 
                     b.Property<bool>("IsDeleted");
 
@@ -322,6 +320,10 @@ namespace FamilyNetServer.Migrations
                     b.Property<DateTime>("Date");
 
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Status");
 
                     b.Property<float>("Paid");
 
