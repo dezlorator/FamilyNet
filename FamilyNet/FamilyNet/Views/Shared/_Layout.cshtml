@@ -80,28 +80,25 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Donations" asp-action="Index">Потребности</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="All">Fair</a>
-                        </li>
+                        @if (role.Length>1)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="All">Fair</a>
+                            </li>
+                        }
                         @if (role == "Orphan")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="MyCrafts">My crafts</a>
                             </li>
                         }
-                        @if (role == "Representative")
-                        {
+                        @if(role == "Representative")
+                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="ConfirmCrafts">Crafts to confirm</a>
                             </li>
                         }
-                        @if (role == "CharityMaker" || role == "Volunteer")
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">My purchases</a>
-                            </li>
-                        }
-                        @if (role.Length > 1)
+                        @if (role.Length>1)
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

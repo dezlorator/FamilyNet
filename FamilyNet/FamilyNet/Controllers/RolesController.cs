@@ -4,46 +4,37 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using FamilyNet.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
+using FamilyNet.Models.ViewModels;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using FamilyNet.Models.Identity;
 using FamilyNet.IdentityHelpers;
 
 namespace FamilyNet.Controllers
 {
     public class RolesController : Controller
     {
-        #region fields
-
         private readonly ServerSimpleDataDownloader<RoleDTO> _downloader;
-        private readonly IURLRolesBuilder _URLRolesBuilder;
-        private readonly string _apiPath = "api/v1/roles";
-
+        private readonly IIdentity _unitOfWork;
+        private readonly string _apiPath = "http://localhost:53605/api/v1/roles/";
         private readonly IIdentityInformationExtractor _identityInformationExtactor;
 
-        #endregion
-
-        #region ctor
-
-        public RolesController(ServerSimpleDataDownloader<RoleDTO> downloader,
-                               IIdentityInformationExtractor identityInformationExtactor,
-                               IURLRolesBuilder urlRolesBuilder)
+        public RolesController(IIdentity unitOfWork, 
+                               ServerSimpleDataDownloader<RoleDTO> downloader,
+                               IIdentityInformationExtractor identityInformationExtactor)
         {
             _downloader = downloader;
+            _unitOfWork = unitOfWork;
             _identityInformationExtactor = identityInformationExtactor;
-            _URLRolesBuilder = urlRolesBuilder;
         }
-
-        #endregion
-
-        #region methods
-
         public async Task<IActionResult> Index()
         {
-            var url = _URLRolesBuilder.GetAll(_apiPath);
+            var url = _apiPath;
             IEnumerable<RoleDTO> rolesDTO = null;
 
             try
@@ -69,24 +60,22 @@ namespace FamilyNet.Controllers
             });
 
             GetViewData();
+
+
             return View(roles);
         }
-
-        public IActionResult Create() 
-        {
-            GetViewData();
-            return View();
-        }
-       
+        
+        public IActionResult Create() => View();
         [HttpPost]
         public async Task<IActionResult> Create(RoleDTO role)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(role);
             }
 
-            var url = _URLRolesBuilder.CreatePost(_apiPath);
+            var url = _apiPath;
             var status = await _downloader.CreatePostAsync(url, role, HttpContext.Session);
 
             if (status.StatusCode == HttpStatusCode.Unauthorized)
@@ -103,7 +92,9 @@ namespace FamilyNet.Controllers
             GetViewData();
 
             return Redirect("/Roles/Index");
+        
         }
+
         
         public async Task<IActionResult> DeleteAsync(string id)
         {
@@ -112,7 +103,7 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var url =_URLRolesBuilder.Delete(_apiPath,id);
+            var url = _apiPath+id;
             
             try
             {
@@ -137,12 +128,63 @@ namespace FamilyNet.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult UserList() => View(_unitOfWork.UserManager.Users);
+
+        public async Task<IActionResult> Edit(string userId)
+        {
+            // получаем пользователя
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                // получем список ролей пользователя
+                var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
+                var allRoles = _unitOfWork.RoleManager.Roles.ToList();
+                ChangeRoleViewModel model = new ChangeRoleViewModel
+                {
+                    UserId = user.Id,
+                    UserEmail = user.Email,
+                    UserRoles = userRoles,
+                    AllRoles = allRoles
+                };
+                return View(model);
+            }
+
+            GetViewData();
+
+            return NotFound();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(string userId, List<string> roles)
+        {
+            // получаем пользователя
+            ApplicationUser user = await _unitOfWork.UserManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                // получем список ролей пользователя
+                var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
+                // получаем все роли
+                var allRoles = _unitOfWork.RoleManager.Roles.ToList();
+                // получаем список ролей, которые были добавлены
+                var addedRoles = roles.Except(userRoles);
+                // получаем роли, которые были удалены
+                var removedRoles = userRoles.Except(roles);
+
+                await _unitOfWork.UserManager.AddToRolesAsync(user, addedRoles);
+
+                await _unitOfWork.UserManager.RemoveFromRolesAsync(user, removedRoles);
+
+                return RedirectToAction("UserList");
+            }
+
+            GetViewData();
+
+            return NotFound();
+        }
+
         private void GetViewData()
         {
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                             ViewData);
         }
-
-        #endregion
     }
 }

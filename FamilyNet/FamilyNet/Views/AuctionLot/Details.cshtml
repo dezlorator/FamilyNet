@@ -61,10 +61,7 @@
     <a class="btn btn-info" asp-area="" asp-controller="AuctionLot" asp-action="Confirm" asp-route-id="@Model.ID">Confirm</a>
     <a class="btn btn-danger" asp-area="" asp-controller="AuctionLot" asp-action="Decline" asp-route-id="@Model.ID">Decline</a>
 }
-@if (role == "CharityMaker" || role == "Volunteer")
-{
-    <a class="btn btn-dark" asp-area="" asp-controller="Purchase" asp-action="Buy" asp-route-id="@Model.ID">Buy</a>
-}
+
 <div>
     <a asp-action="All" asp-controller="AuctionLot" type="submit" class="btn btn-info">Back</a>
 </div>

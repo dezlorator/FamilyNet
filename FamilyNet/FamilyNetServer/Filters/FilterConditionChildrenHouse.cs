@@ -12,8 +12,7 @@ namespace FamilyNetServer.Filters
         {
             if (!String.IsNullOrEmpty(name))
             {
-                childrenHouses = childrenHouses.Where(c => c.Name.ToUpper().Contains(name.ToUpper()) 
-                || Contains(c.Adress, address));
+                childrenHouses = childrenHouses.Where(c => c.Name.Contains(name));
             }
 
             if (rating > 0.0)
@@ -23,8 +22,7 @@ namespace FamilyNetServer.Filters
 
             if (!String.IsNullOrEmpty(address))
             {
-                childrenHouses = childrenHouses.Where(c => Contains(c.Adress, address) 
-                || c.Name.ToUpper().Contains(name.ToUpper()));
+                childrenHouses = childrenHouses.Where(c => Contains(c.Adress, address));
             }
 
             return childrenHouses;

@@ -13,7 +13,10 @@ namespace DataTransferObjects
         public string Email { get; set; }
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
-        public int PersonID { get; set; }
-        public List<string> Roles { get; set; }
+        public string[] Roles { get; set; }
+
+        [Required]
+        [Display(Name = "Выберите свою роль")]
+        public string YourDropdownSelectedValue { get; set; }
     }
 }

@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using DataTransferObjects;
 using FamilyNet.Downloader;
-using FamilyNet.Enums;
 using FamilyNet.IdentityHelpers;
 using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
-using FamilyNet.Models.ViewModels.AuctionLot;
 using FamilyNet.StreamCreater;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -40,13 +38,7 @@ namespace FamilyNet.Controllers
         private readonly IURLChildrenBuilder _URLChildrenBuilder;
         private readonly string _apiChildrenPath = "api/v1/children";
 
-        private readonly ServerChildrenHouseDownloader _childrenHouseDownloader;
-        private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
-        private readonly string _apiChildrenHousePath = "api/v1/childrenHouse";
-
         private readonly IIdentityInformationExtractor _identityInformationExtactor;
-
-        private readonly int _pageSize = 3;
 
         #endregion
 
@@ -61,9 +53,7 @@ namespace FamilyNet.Controllers
              IURLRepresentativeBuilder URLRepresentativeBuilder,
              ServerDataDownloader<ChildDTO> childrenDownloader,
               IURLChildrenBuilder URLChildrenBuilder,
-              IIdentityInformationExtractor identityInformationExtactor,
-              ServerChildrenHouseDownloader childrenHouseDownloader,
-              IURLChildrenHouseBuilder URLChildrenHouseBuilder)
+              IIdentityInformationExtractor identityInformationExtactor)
         {
             _auctionLotDownloader = auctionLotDownloader;
             _URLAuctionLotBuilder = URLAuctionLotBuilder;
@@ -75,8 +65,6 @@ namespace FamilyNet.Controllers
             _childrenDownloader = childrenDownloader;
             _URLChildrenBuilder = URLChildrenBuilder;
             _identityInformationExtactor = identityInformationExtactor;
-            _childrenHouseDownloader = childrenHouseDownloader;
-            _URLChildrenHouseBuilder = URLChildrenHouseBuilder;
         }
 
         #endregion
@@ -84,7 +72,7 @@ namespace FamilyNet.Controllers
         #region ActionMethods
 
 
-        public async Task<IActionResult> All(int page = 1, string name="", string sort="", string start ="", string end ="")
+        public async Task<IActionResult> All()
         {
             var url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
             IEnumerable<AuctionLotDTO> auctionLots = null;
@@ -110,6 +98,7 @@ namespace FamilyNet.Controllers
             {
                 ID = fair.ID,
                 DateStart = fair.DateStart,
+                DateEnd = fair.DateEnd,
                 Avatar = fair.PhotoParth,
                 OrphanID = fair.OrphanID,
                 Quantity = fair.Quantity,
@@ -120,28 +109,8 @@ namespace FamilyNet.Controllers
 
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                          ViewData);
-            if(!Enum.TryParse<SortState>(sort, true, out var sortState))
-            {
-                sortState = SortState.NameAsc;
-            }
 
-            if(!float.TryParse(start, out var priceStart))
-            {
-                priceStart = 0;
-            }
-            if (!float.TryParse(end, out var priceEnd))
-            {
-                priceEnd = 0;
-            }
-
-            var model = new AuctionLotAllViewModel
-            {
-                AuctionLots = GetFiltered(crafts, priceStart, priceEnd, name, page, sortState, out var count),
-                PageViewModel = new AuctionLotPageViewModel(count, page, 3),
-                FilterViewModel = new AuctionLotFilterModel {  SelectedName = name,  StartPrice= start, EndPrice = end }
-            };
-
-            return View(model);
+            return View(crafts);
         }
 
         public  ActionResult MyCrafts(int orphanId = 7)
@@ -170,6 +139,7 @@ namespace FamilyNet.Controllers
             {
                 ID = fair.ID,
                 DateStart = fair.DateStart,
+                DateEnd = fair.DateEnd,
                 Avatar = fair.PhotoParth,
                 OrphanID = fair.OrphanID,
                 Quantity = fair.Quantity,
@@ -220,6 +190,7 @@ namespace FamilyNet.Controllers
             {
                 ID = auctionLot.ID,
                 DateStart = auctionLot.DateStart,
+                DateEnd = auctionLot.DateEnd,
                 Avatar = auctionLot.PhotoParth,
                 OrphanID = auctionLot.OrphanID,
                 Quantity = auctionLot.Quantity,
@@ -267,7 +238,6 @@ namespace FamilyNet.Controllers
             model.AuctionLot.AuctionLotItemID = itemDTO.ID;
 
             url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
-            model.AuctionLot.Status = "UnApproved";
             var msg2 = await _auctionLotDownloader.CreatePostAsync(url, model.AuctionLot, stream, model.AuctionLot.Avatar.FileName, HttpContext.Session);
 
             if (msg2 != HttpStatusCode.Created)
@@ -454,6 +424,7 @@ namespace FamilyNet.Controllers
               {
                         ID = fair.ID,
                         DateStart = fair.DateStart,
+                        DateEnd = fair.DateEnd,
                         Avatar = fair.PhotoParth,
                         OrphanID = fair.OrphanID,
                         Quantity = fair.Quantity,
@@ -529,48 +500,6 @@ namespace FamilyNet.Controllers
                                                          ViewData);
 
             return Redirect("/AuctionLot/ConfirmCrafts");
-        }
-
-
-        private IEnumerable<AuctionLot> GetFiltered(IEnumerable<AuctionLot> lots, float start, float end, string name, int page,
-            SortState sortOrder, out int count)
-        {            
-           
-            if (start >0.0)
-            {
-                lots = lots.Where(o => o.AuctionLotItem.Price > start);
-            }
-
-            if (end > 0.0)
-            {
-                lots = lots.Where(o => o.AuctionLotItem.Price < end);
-            }
-
-            if (!String.IsNullOrEmpty(name))
-            {
-                lots = lots.Where(o => o.AuctionLotItem.Name.Contains(name));
-            }
-
-            // сортировка
-            switch (sortOrder)
-            {
-                case SortState.NameDesc:
-                    lots = lots.OrderByDescending(s => s.AuctionLotItem.Name);
-                    break;
-                case SortState.PriceAsc:
-                    lots = lots.OrderBy(s => s.AuctionLotItem.Price);
-                    break;
-                case SortState.PriceDesc:
-                    lots = lots.OrderByDescending(s => s.AuctionLotItem.Price);
-                    break;
-            }
-
-            //paging
-            count = lots.Count();
-
-            lots = lots.Skip((page - 1) * _pageSize).Take(_pageSize);
-
-            return lots;
         }
 
         #endregion

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerRegistrationDownloader : ServerSimpleDataDownloader<RegistrationDTO>
+    public class ServerRegistrationDownloader : ServerSimpleDataDownloader<UserDTO>
     {
         public ServerRegistrationDownloader(IHttpAuthorizationHandler authorizationHandler)
         :base(authorizationHandler){}
 
         public override async Task<HttpResponseMessage> CreatePostAsync(string url,
-                                                               RegistrationDTO dto, ISession session)
+                                                               UserDTO dto, ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -29,7 +29,7 @@ namespace FamilyNet.Downloader
         }
 
         public override async Task<HttpResponseMessage> CreatePutAsync(string url,
-                                                                  RegistrationDTO dto, ISession session)
+                                                                  UserDTO dto, ISession session)
         {
             HttpResponseMessage msg = null;
 
@@ -44,28 +44,24 @@ namespace FamilyNet.Downloader
             return msg;
         }
 
-        private static void BuildMultipartFormData(RegistrationDTO dto,
+        private static void BuildMultipartFormData(UserDTO dto,
                                                    MultipartFormDataContent formDataContent)
         {
             if (dto.Email != null)
             {
                 formDataContent.Add(new StringContent(dto.Email.ToString()), "Email");
             }
-            if (dto.Phone != null)
+            if (dto.PhoneNumber != null)
             {
-                formDataContent.Add(new StringContent(dto.Phone.ToString()), "Phone");
+                formDataContent.Add(new StringContent(dto.PhoneNumber.ToString()), "PhoneNumber");
             }
             if (dto.Password != null)
             {
                 formDataContent.Add(new StringContent(dto.Password.ToString()), "Password");
             }
-            if (dto.PasswordConfirm != null)
+            if (dto.Roles != null)
             {
-                formDataContent.Add(new StringContent(dto.PasswordConfirm.ToString()), "PasswordConfirm");
-            }
-            if (dto.YourDropdownSelectedValue != null)
-            {
-                formDataContent.Add(new StringContent(dto.YourDropdownSelectedValue.ToString()), "YourDropdownSelectedValue");
+                formDataContent.Add(new StringContent(dto.Roles.ToString()), "Role");
             }
         }
     }
