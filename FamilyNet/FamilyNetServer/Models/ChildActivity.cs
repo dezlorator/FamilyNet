@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.Models
 {
-    public class ChildrenActivity : IEntity
+    public class ChildActivity : IEntity
     {
         public int ID { get; set; }
         [Display(Name = "Название")]

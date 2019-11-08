@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.Models.EntityFramework
 {
-    public class ChildrenActivityRepository : EFRepository<ChildrenActivity>
+    public class ChildrenActivityRepository : EFRepository<ChildActivity>
     {
         #region fields
 

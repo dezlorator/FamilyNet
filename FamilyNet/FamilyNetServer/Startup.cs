@@ -44,7 +44,7 @@ namespace FamilyNetServer
             services.AddAuthorizationService(Configuration);
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IUnitOfWork, EFUnitOfWork>();
-            services.AddTransient<EFRepository<ChildrenActivity>, ChildrenActivityRepository>();
+            services.AddTransient<EFRepository<ChildActivity>, ChildrenActivityRepository>();
             services.AddTransient<EFRepository<Award>, AwardRepository>();
             services.AddTransient<ILogger<CharityMakersController>, Logger<CharityMakersController>>();
             services.AddTransient<ILogger<VolunteersController>, Logger<VolunteersController>>();
@@ -74,7 +74,7 @@ namespace FamilyNetServer
             services.AddTransient<ICategoryValidator, CategoryValidator>();
             services.AddTransient<IDonationItemValidator, DonationItemValidator>();
             services.AddTransient<IDonationValidator, DonationValidator>();
-            services.AddTransient<IChildrenActivityValidator, ChildrenActivityValidator>();
+            services.AddTransient<IChildActivityValidator, ChildActivityValidator>();
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IQuestValidator, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();

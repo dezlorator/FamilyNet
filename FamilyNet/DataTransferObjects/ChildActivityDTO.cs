@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataTransferObjects
 {
-    public class ChildrenActivityDTO
+    public class ChildActivityDTO
     {
         public int ID { get; set; }
         public string Name { get; set; }

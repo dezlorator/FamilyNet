@@ -3,9 +3,9 @@ using System;
 
 namespace FamilyNetServer.Validators
 {
-    public class ChildrenActivityValidator : IChildrenActivityValidator
+    public class ChildActivityValidator : IChildActivityValidator
     {
-        public bool IsValid(ChildrenActivityDTO childrenActivityDTO)
+        public bool IsValid(ChildActivityDTO childrenActivityDTO)
         {
             if (String.IsNullOrEmpty(childrenActivityDTO.Name) ||
                 String.IsNullOrEmpty(childrenActivityDTO.Description))

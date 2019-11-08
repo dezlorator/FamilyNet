@@ -26,30 +26,27 @@ namespace FamilyNetServer.Controllers.API
     {
         #region private fields
 
-        private readonly EFRepository<ChildrenActivity> _activityRepository;
+        private readonly EFRepository<ChildActivity> _activityRepository;
         private readonly EFRepository<Award> _awardRepository;
-        private readonly IOptionsSnapshot<ServerURLSettings> _settings;
         private readonly ILogger<ChildrenActivitiesController> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IChildrenActivityValidator _childrenActivityValidator;
+        private readonly IChildActivityValidator _childActivityValidator;
 
         #endregion
 
         #region ctor
 
-        public ChildrenActivitiesController(EFRepository<ChildrenActivity> activityRepository,
+        public ChildrenActivitiesController(EFRepository<ChildActivity> activityRepository,
                                   EFRepository<Award> awardRepository,
                                   IUnitOfWork unitOfWork,
-                                  IOptionsSnapshot<ServerURLSettings> setings,
                                   ILogger<ChildrenActivitiesController> logger,
-                                  IChildrenActivityValidator childrenActivityValidator)
+                                  IChildActivityValidator childActivityValidator)
         {
             _activityRepository = activityRepository;
             _awardRepository = awardRepository;
             _unitOfWork = unitOfWork;
-            _settings = setings;
             _logger = logger;
-            _childrenActivityValidator = childrenActivityValidator;
+            _childActivityValidator = childActivityValidator;
         }
 
         #endregion
@@ -63,11 +60,13 @@ namespace FamilyNetServer.Controllers.API
 
             if (activities == null)
             {
+                _logger.LogInformation("Bad request[400]. Child activity wasn't found.");
+
                 return BadRequest();
             }
 
-            var childrenActivityDTO = activities.Select(a =>
-            new ChildrenActivityDTO()
+            var childActivityDTO = activities.Select(a =>
+            new ChildActivityDTO()
             {
                 ID = a.ID,
                 Name = a.Name,
@@ -82,7 +81,9 @@ namespace FamilyNetServer.Controllers.API
                 }).ToList()
             });
 
-            return Ok(childrenActivityDTO);
+            _logger.LogInformation("Return Ok[200]. List of children activities was sent");
+
+            return Ok(childActivityDTO);
         }
 
         [HttpGet("{id}")]
@@ -94,10 +95,12 @@ namespace FamilyNetServer.Controllers.API
 
             if (activity == null)
             {
+                _logger.LogError("Bad request[400]. Child activity wasn't found");
+
                 return BadRequest();
             }
 
-            var childrenActivityDTO = new ChildrenActivityDTO()
+            var childActivityDTO = new ChildActivityDTO()
             {
                 ID = activity.ID,
                 Name = activity.Name,
@@ -112,70 +115,82 @@ namespace FamilyNetServer.Controllers.API
                 }).ToList()
             };
 
-            return Ok(childrenActivityDTO);
+            _logger.LogInformation("Return Ok[200]. Child activity was sent.");
+
+            return Ok(childActivityDTO);
         }
 
         [HttpPost]
-       // [Authorize(Roles = "Admin, Representative")]
+        // [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]ChildrenActivityDTO childrenActivityDTO)
+        public async Task<IActionResult> Create([FromForm]ChildActivityDTO childActivityDTO)
         {
-            if (!_childrenActivityValidator.IsValid(childrenActivityDTO))
+            if (!_childActivityValidator.IsValid(childActivityDTO))
             {
+                _logger.LogError("Bad request[400]. ChildActivityDTO is not valid");
+
                 return BadRequest();
             }
 
-            var childrenActivity = new ChildrenActivity()
+            var childActivity = new ChildActivity()
             {
-                Name = childrenActivityDTO.Name,
-                Description = childrenActivityDTO.Description,
-                Awards = childrenActivityDTO.Awards.Select(aw => new Award
+                Name = childActivityDTO.Name,
+                Description = childActivityDTO.Description,
+                Awards = childActivityDTO.Awards.Select(aw => new Award
                 {
                     Name = aw.Name,
                     Description = aw.Description,
                     Date = aw.Date
                 }).ToList(),
-                Child = await _unitOfWork.Orphans.GetById(childrenActivityDTO.ChildID)   
+                Child = await _unitOfWork.Orphans.GetById(childActivityDTO.ChildID)
             };
 
-            if (childrenActivity.Child == null)
+            if (childActivity.Child == null)
             {
+                _logger.LogError("Bad request[400]. Child was not found by id");
+
                 return BadRequest();
             }
 
-            await _activityRepository.Create(childrenActivity);
+            await _activityRepository.Create(childActivity);
             await _activityRepository.SaveChangesAsync();
 
-            return Created("api/v1/childrenActivities/" + childrenActivity.ID, new ChildrenActivityDTO());
+            _logger.LogInformation("Return Created[201]. New child activity was added.");
+
+            return Created("api/v1/childrenActivities/" + childActivity.ID, new ChildActivityDTO());
         }
 
         [HttpPut("{id}")]
-       // [Authorize(Roles = "Admin, Representative")]
+        // [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]ChildrenActivityDTO childrenActivityDTO)
+        public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]ChildActivityDTO childActivityDTO)
         {
-            if (!_childrenActivityValidator.IsValid(childrenActivityDTO))
+            if (!_childActivityValidator.IsValid(childActivityDTO))
             {
+                _logger.LogError("Bad request[400]. ChildActivityDTO is not valid");
+
                 return BadRequest();
             }
 
-            var childrenActivity = await _activityRepository.GetById(childrenActivityDTO.ID);
+            var childActivity = await _activityRepository.GetById(childActivityDTO.ID);
 
-            if (childrenActivity == null)
+            if (childActivity == null)
             {
+                _logger.LogError("Bad request[400]. Child activity was not found by id");
+
                 return BadRequest();
             }
 
-            childrenActivity.Name = childrenActivityDTO.Name;
-            childrenActivity.Description = childrenActivityDTO.Description;
+            childActivity.Name = childActivityDTO.Name;
+            childActivity.Description = childActivityDTO.Description;
 
-            foreach (var a in childrenActivityDTO.Awards)
+            foreach (var a in childActivityDTO.Awards)
             {
                 var award = await _awardRepository.GetById(a.ID);
 
-                if(award!=null)
+                if (award != null)
                 {
                     award.Name = a.Name;
                     award.Description = a.Description;
@@ -185,7 +200,7 @@ namespace FamilyNetServer.Controllers.API
                 }
                 else
                 {
-                    childrenActivity.Awards.Add(new Award
+                    childActivity.Awards.Add(new Award
                     {
                         Name = a.Name,
                         Description = a.Description,
@@ -194,9 +209,11 @@ namespace FamilyNetServer.Controllers.API
                 }
             }
 
-            _activityRepository.Update(childrenActivity);
+            _activityRepository.Update(childActivity);
             await _awardRepository.SaveChangesAsync();
             await _activityRepository.SaveChangesAsync();
+
+            _logger.LogInformation("Return NoContent[204]. Child activity was updated.");
 
             return NoContent();
         }
@@ -209,25 +226,33 @@ namespace FamilyNetServer.Controllers.API
         {
             if (id <= 0)
             {
+                _logger.LogError("Bad request[400]. Argument id is not valid");
+
                 return BadRequest();
             }
 
-            var childrenActivity = await _activityRepository.GetById(id);
+            var childActivity = await _activityRepository.GetById(id);
 
-            if (childrenActivity == null)
+            if (childActivity == null)
             {
+                _logger.LogError("Bad request[400]. Chidren activity wasn't found.");
+
                 return BadRequest();
             }
 
-            childrenActivity.IsDeleted = true;
+            childActivity.IsDeleted = true;
 
-            foreach (var a in childrenActivity.Awards)
+            foreach (var a in childActivity.Awards)
             {
                 a.IsDeleted = true;
+
+                _logger.LogInformation("Award property IsDeleted was updated.");
             }
 
-            _activityRepository.Update(childrenActivity);
+            _activityRepository.Update(childActivity);
             await _activityRepository.SaveChangesAsync();
+
+            _logger.LogInformation("Return Ok[200]. Child activity property IsDeleted was updated.");
 
             return Ok();
         }
