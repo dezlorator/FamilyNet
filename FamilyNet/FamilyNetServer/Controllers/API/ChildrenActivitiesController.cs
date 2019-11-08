@@ -31,6 +31,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly ILogger<ChildrenActivitiesController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IChildActivityValidator _childActivityValidator;
+        private readonly IFilterConditionsChildrenActivities _filterConditions;
 
         #endregion
 
@@ -40,13 +41,15 @@ namespace FamilyNetServer.Controllers.API
                                   EFRepository<Award> awardRepository,
                                   IUnitOfWork unitOfWork,
                                   ILogger<ChildrenActivitiesController> logger,
-                                  IChildActivityValidator childActivityValidator)
+                                  IChildActivityValidator childActivityValidator,
+                                  IFilterConditionsChildrenActivities filterConditions,)
         {
             _activityRepository = activityRepository;
             _awardRepository = awardRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
             _childActivityValidator = childActivityValidator;
+            _filterConditions = filterConditions;
         }
 
         #endregion
@@ -54,9 +57,10 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery]FilterParemetersChildrenActivities filter)
         {
-            var activities = _activityRepository.GetAll();
+            var activities = _activityRepository.GetAll().Where(a => !a.IsDeleted);
+            activities = _filterConditions.GetChildrenActivities(activities, filter);
 
             if (activities == null)
             {
