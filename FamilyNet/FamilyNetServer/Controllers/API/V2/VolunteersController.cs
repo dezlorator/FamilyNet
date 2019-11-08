@@ -62,6 +62,8 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (volunteers == null)
             {
+                _logger.LogInformation("Bad request[400]. Volunteer wasn't found.");
+
                 return BadRequest();
             }
 
@@ -79,6 +81,8 @@ namespace FamilyNetServer.Controllers.API.V2
                 AddressID = v.AddressID
             });
 
+            _logger.LogInformation("Return Ok[200]. List of volunteers was sent");
+
             return Ok(volunteersDTO);
         }
 
@@ -91,6 +95,8 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (volunteer == null)
             {
+                _logger.LogError("Bad request[400]. Volunteer wasn't found");
+
                 return BadRequest();
             }
 
@@ -106,6 +112,8 @@ namespace FamilyNetServer.Controllers.API.V2
                 PhotoPath = _settings.Value.ServerURL + volunteer.Avatar,
                 AddressID = volunteer.AddressID
             };
+
+            _logger.LogInformation("Return Ok[200]. Volunteer was sent.");
 
             return Ok(volunteerDTO);
         }
@@ -150,12 +158,9 @@ namespace FamilyNetServer.Controllers.API.V2
 
             await _unitOfWork.Volunteers.Create(volunteer);
             _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("Return Created[201]. New volunteer was added.");
 
-            volunteerDTO.ID = volunteer.ID;
-            volunteerDTO.PhotoPath = volunteer.Avatar;
-            volunteerDTO.Avatar = null;
-
-            return Created("api/v1/volunteers/" + volunteer.ID, volunteerDTO);
+            return Created("api/v2/volunteers/" + volunteer.ID, new VolunteerDTO());
         }
 
         [HttpPut("{id}")]
@@ -166,6 +171,8 @@ namespace FamilyNetServer.Controllers.API.V2
         {
             if (!_volunteerValidator.IsValid(volunteerDTO))
             {
+                _logger.LogError("Bad request[400]. VolunteerDTO is not valid");
+
                 return BadRequest();
             }
 
@@ -195,6 +202,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
             _unitOfWork.Volunteers.Update(volunteer);
             _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("Return NoContent[204]. Volunteer was updated.");
 
             return NoContent();
         }
@@ -207,6 +215,8 @@ namespace FamilyNetServer.Controllers.API.V2
         {
             if (id <= 0)
             {
+                _logger.LogError("Bad request[400]. Argument id is not valid");
+
                 return BadRequest();
             }
 
@@ -214,6 +224,8 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (volunteer == null)
             {
+                _logger.LogError("Bad request[400]. Volunteer wasn't found.");
+
                 return BadRequest();
             }
 
@@ -221,6 +233,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
             _unitOfWork.Volunteers.Update(volunteer);
             _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("Return Ok[200]. Volunteer's property IsDelete was updated.");
 
             return Ok();
         }
