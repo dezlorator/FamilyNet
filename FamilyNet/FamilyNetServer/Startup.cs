@@ -45,6 +45,7 @@ namespace FamilyNetServer
             services.AddTransient<ITokenFactory, TokenFactory>();
             services.AddAuthorizationService(Configuration);
             services.AddTransient<IConvertUserRole, ConvertUserRole>();
+            services.AddTransient<ILogger<FioController>, Logger<FioController>>();
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<EFRepository<Feedback>, FeedbackRepository>();
             services.AddTransient<ILogger<FeedbackController>, Logger<FeedbackController>>();
