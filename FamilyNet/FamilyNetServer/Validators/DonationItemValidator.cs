@@ -3,7 +3,7 @@ using DataTransferObjects;
 
 namespace FamilyNetServer.Validators
 {
-    public class DonationItemValidator : IDonationItemValidator
+    public class DonationItemValidator : IValidator<DonationItemDTO>
     {
         public bool IsValid(DonationItemDTO itemDTO)
         {

@@ -68,11 +68,11 @@ namespace FamilyNetServer
             services.AddTransient<IValidator<AuctionLotDTO>, AuctionLotValidator>();
             services.AddTransient<IValidator<ChildrenHouseDTO>, ChildrenHouseValidator>();
             services.AddTransient<IValidator<PurchaseDTO>, PurchaseValidator>();
-            services.AddTransient<ICategoryValidator, CategoryValidator>();
-            services.AddTransient<IDonationItemValidator, DonationItemValidator>();
-            services.AddTransient<IDonationValidator, DonationValidator>();
+            services.AddTransient<IValidator<CategoryDTO>, CategoryValidator>();
+            services.AddTransient<IValidator<DonationItemDTO>, DonationItemValidator>();
+            services.AddTransient<IValidator<DonationDTO>, DonationValidator>();
             services.AddTransient<IDonationsFilter, DonationsFilter>();
-            services.AddTransient<IQuestValidator, QuestValidator>();
+            services.AddTransient<IValidator<QuestDTO>, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");

@@ -15,11 +15,11 @@ namespace FamilyNetServer.Filters
                 return quests.Where(q => q.Status == status);
             }
 
-            return quests.Where(d => (d.Donation.Orphanage.Name == filter
-                                || d.Donation.Orphanage.Adress.City == filter
-                                || d.Donation.Orphanage.Adress.Street == filter
-                                || d.Donation.DonationItem.Name == filter
-                                || d.Name == filter) && d.Status == status);
+            return quests.Where(d => (d.Donation.Orphanage.Name.Contains(filter)
+                                || d.Donation.Orphanage.Adress.City.Contains(filter)
+                                || d.Donation.Orphanage.Adress.Street.Contains(filter)
+                                || d.Donation.DonationItem.Name.Contains(filter)
+                                || d.Name.Contains(filter)) && d.Status == status);
         }
     }
 }

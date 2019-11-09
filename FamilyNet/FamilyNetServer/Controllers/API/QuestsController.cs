@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using FamilyNetServer.Models;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Validators;
 using DataTransferObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Controllers.API
@@ -19,14 +21,14 @@ namespace FamilyNetServer.Controllers.API
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IQuestValidator _questValidator;
+        private readonly IValidator<QuestDTO> _questValidator;
         private readonly IQuestsFilter _questsFilter;
         private readonly ILogger<QuestsController> _logger;
 
         #endregion
 
         public QuestsController(IUnitOfWork unitOfWork,
-                                IQuestValidator questValidator,
+                                IValidator<QuestDTO> questValidator,
                                 IQuestsFilter questsFilter,
                                 ILogger<QuestsController> logger)
         {
@@ -37,6 +39,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpGet]
+        [Authorize(Roles = "CharityMaker, Volunteer, Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult GetAll([FromQuery]int rows,
@@ -87,6 +90,7 @@ namespace FamilyNetServer.Controllers.API
 
         // GET: api/Quests/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "CharityMaker, Volunteer, Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
@@ -115,6 +119,7 @@ namespace FamilyNetServer.Controllers.API
 
         // PUT: api/Quests/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "CharityMaker, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]QuestDTO questDTO)
@@ -158,6 +163,7 @@ namespace FamilyNetServer.Controllers.API
 
         // POST: api/Quests
         [HttpPost]
+        [Authorize(Roles = "CharityMaker")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]QuestDTO questDTO)
@@ -184,6 +190,7 @@ namespace FamilyNetServer.Controllers.API
 
         // DELETE: api/Quests/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "CharityMaker, Representative")]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
