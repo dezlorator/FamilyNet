@@ -125,10 +125,10 @@ namespace FamilyNetServer.Controllers.API.V2
         }
 
         [HttpPost]
-        // [Authorize(Roles = "Admin, Representative")]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]ChildActivityDTO childActivityDTO)
+        public async Task<IActionResult> Create([FromBody]ChildActivityDTO childActivityDTO)
         {
             if (!_childActivityValidator.IsValid(childActivityDTO))
             {
@@ -166,10 +166,10 @@ namespace FamilyNetServer.Controllers.API.V2
         }
 
         [HttpPut("{id}")]
-        // [Authorize(Roles = "Admin, Representative")]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]ChildActivityDTO childActivityDTO)
+        public async Task<IActionResult> Edit([FromQuery]int id, [FromBody]ChildActivityDTO childActivityDTO)
         {
             if (!_childActivityValidator.IsValid(childActivityDTO))
             {
@@ -223,7 +223,7 @@ namespace FamilyNetServer.Controllers.API.V2
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
