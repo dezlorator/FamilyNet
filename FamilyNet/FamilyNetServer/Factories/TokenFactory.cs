@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using DataTransferObjects;
 
 namespace FamilyNetServer.Factories
 {
@@ -28,28 +29,34 @@ namespace FamilyNetServer.Factories
 
         #endregion
 
-        public string Create(ApplicationUser user, IList<string> roles)
+        public TokenDTO Create(ApplicationUser user, IList<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_JWTConfiguration.Secret);
 
             var cliams = new List<Claim>();
             cliams.Add(new Claim(ClaimTypes.Name, user.Id));
-            cliams.Add(new Claim(ClaimTypes.Email, user.Email));
-            cliams.Add(new Claim(ClaimTypes.NameIdentifier, user.PersonID.ToString()));
             roles.ToList().ForEach(r => cliams.Add(new Claim(ClaimTypes.Role, r)));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(cliams),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddMinutes(_JWTConfiguration.MinutesLife),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                                          SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token);
+            var tokenDTO = new TokenDTO()
+            {
+                Token = tokenHandler.WriteToken(token),
+                Roles = roles,
+                Email = user.Email,
+                PersonId = user.PersonID,
+                Id = user.Id
+            };
+            return tokenDTO;
         }
     }
 }

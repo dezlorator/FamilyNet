@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using FamilyNet.Downloader;
 using DataTransferObjects;
 using Microsoft.AspNetCore.Http;
-using FamilyNet.Encoders;
 using FamilyNet.IdentityHelpers;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -25,7 +24,6 @@ namespace FamilyNet.Controllers
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IAuthorizeCreater _authorizeCreater;
         private readonly string _headerToken = "Bearer";
-        private readonly IJWTEncoder _encoder;
 
         private readonly ServerSimpleDataDownloader<RegistrationDTO> _registrationDownloader;
         private readonly IURLRegistrationBuilder _registrationBuilder;
@@ -42,7 +40,6 @@ namespace FamilyNet.Controllers
         public AccountController(IStringLocalizer<HomeController> localizer,
                                 IStringLocalizer<SharedResource> sharedLocalizer,
                                 IAuthorizeCreater authorizeCreater,
-                                IJWTEncoder encoder,
                                 IIdentityInformationExtractor identityInformationExtactor,
                                 ServerSimpleDataDownloader<RegistrationDTO> registrationDownloader,
                                 ServerSimpleDataDownloader<RoleDTO> rolesDownloader,
@@ -51,7 +48,6 @@ namespace FamilyNet.Controllers
         {
             _localizer = localizer;
             _authorizeCreater = authorizeCreater;
-            _encoder = encoder;
             _identityInformationExtactor = identityInformationExtactor;
             _registrationDownloader = registrationDownloader;
             _rolesDownloader = rolesDownloader;
@@ -60,6 +56,7 @@ namespace FamilyNet.Controllers
         }
 
         #endregion
+
         [HttpGet]
         public async Task<IActionResult> Register()
         {
@@ -86,7 +83,6 @@ namespace FamilyNet.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegistrationDTO model)
         {
-
             GetViewData();
 
             var urlRoles = _rolesBuilder.GetAll(_apiRolesPath);
@@ -145,12 +141,16 @@ namespace FamilyNet.Controllers
 
                 if (result.Success)
                 {
-                    var claims = _encoder.GetTokenData(result.Token);
-                    HttpContext.Session.SetString("id", claims.UserId.ToString());
-                    HttpContext.Session.SetString("email", claims.Email);
-                    HttpContext.Session.SetString("roles", String.Join(",", claims.Roles));
-                    HttpContext.Session.SetString("personId", claims.PersonId.ToString());
-                    HttpContext.Session.SetString(_headerToken, result.Token);
+                    HttpContext.Session.SetString("id", result.Token.Id);
+                    HttpContext.Session.SetString("email", result.Token.Email);
+                    HttpContext.Session.SetString("roles", String.Join(",", result.Token.Roles));
+
+                    if (result.Token.PersonId != null)
+                    {
+                        HttpContext.Session.SetString("personId", result.Token.PersonId.ToString());
+                    }
+
+                    HttpContext.Session.SetString(_headerToken, result.Token.Token);
 
                     return RedirectToAction("Index", "Home");
                 }

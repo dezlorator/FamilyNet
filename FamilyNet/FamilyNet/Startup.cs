@@ -10,7 +10,6 @@ using FamilyNet.Downloader;
 using DataTransferObjects;
 using FamilyNet.StreamCreater;
 using FamilyNet.HttpHandlers;
-using FamilyNet.Encoders;
 using FamilyNet.IdentityHelpers;
 using FamilyNet.Downloader.URLBuilders;
 using System;
@@ -100,8 +99,6 @@ namespace FamilyNet
 
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));            
             services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
-            services.AddTransient<IJWTEncoder, JWTEncoder>();
-
 
             services.Configure<CookiePolicyOptions>(options =>
             {
