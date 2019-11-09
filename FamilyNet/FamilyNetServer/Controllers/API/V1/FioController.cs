@@ -32,37 +32,29 @@ namespace FamilyNetServer.Controllers.API.V1
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetById(int id, [FromForm]UserRole role)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetById(int id, [FromQuery]UserRole role)
         {
             Person person = null;
+
             switch (role)
             {
                 case UserRole.CharityMaker:
-                    {
-                        person = await _unitOfWork.CharityMakers.GetById(id);
-                        break;
-                    }
+                    person = await _unitOfWork.CharityMakers.GetById(id);
+                    break;
                 case UserRole.Orphan:
-                    {
-                        person = await _unitOfWork.Orphans.GetById(id);
-                        break;
-                    }
+                    person = await _unitOfWork.Orphans.GetById(id);
+                    break;
                 case UserRole.Representative:
-                    {
-                        person = await _unitOfWork.Representatives.GetById(id);
-                        break;
-                    }
+                    person = await _unitOfWork.Representatives.GetById(id);
+                    break;
                 case UserRole.Volunteer:
-                    {
-                        person = await _unitOfWork.Volunteers.GetById(id);
-                        break;
-                    }
+                    person = await _unitOfWork.Volunteers.GetById(id);
+                    break;
                 default:
-                    {
-                        _logger.LogWarning(string.Format("This role has no Fio {0}",
-                            nameof(role)));
-                        break;
-                    }
+                    _logger.LogWarning(string.Format("This role has no Fio {0}",
+                        nameof(role)));
+                    return Forbid();
             }
 
             var fioDTO = new FioDTO()

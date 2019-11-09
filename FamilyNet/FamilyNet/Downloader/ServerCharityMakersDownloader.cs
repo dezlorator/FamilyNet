@@ -22,7 +22,7 @@ namespace FamilyNet.Downloader
             using (var httpClient = new HttpClient())
             using (var formDataContent = new MultipartFormDataContent())
             {
-                BuildMultipartFprmData(dto, streamFile, fileName, formDataContent);
+                BuildMultipartFormData(dto, streamFile, fileName, formDataContent);
                 _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PostAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
@@ -44,7 +44,7 @@ namespace FamilyNet.Downloader
             using (var httpClient = new HttpClient())
             using (var formDataContent = new MultipartFormDataContent())
             {
-                BuildMultipartFprmData(dto, streamFile, fileName, formDataContent);
+                BuildMultipartFormData(dto, streamFile, fileName, formDataContent);
                 _authorizationHandler.AddTokenBearer(session, httpClient);
                 var msg = await httpClient.PutAsync(url, formDataContent);
                 statusCode = msg.StatusCode;
@@ -58,7 +58,7 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
-        private static void BuildMultipartFprmData(CharityMakerDTO dto,
+        private static void BuildMultipartFormData(CharityMakerDTO dto,
                                            Stream streamFile,
                                            string fileName,
                                            MultipartFormDataContent formDataContent)

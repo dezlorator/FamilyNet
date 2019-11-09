@@ -25,7 +25,8 @@ namespace FamilyNetServer.Validators
                 [UserRole.Admin] = new List<UserRole>(new List<UserRole> { UserRole.Volunteer,
                  UserRole.CharityMaker, UserRole.Representative}),
                 [UserRole.Representative] = new List<UserRole>(new List<UserRole> { UserRole.Volunteer }),
-                [UserRole.Volunteer] = new List<UserRole>(new List<UserRole> { UserRole.Representative })
+                [UserRole.Volunteer] = new List<UserRole>(new List<UserRole> { UserRole.Representative,
+                 UserRole.Volunteer})
             };
         }
 
@@ -53,7 +54,7 @@ namespace FamilyNetServer.Validators
         {
             if(!_userPermission.ContainsKey(sender))
             {
-                throw new ArgumentException("Wrong sender role");
+                return false;
             }
 
             if(!_userPermission[sender].Contains(receiver))

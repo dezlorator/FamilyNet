@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNet.Downloader
+namespace FamilyNet.Downloader.URLBuilders
 {
     public class URLFeedbackBuilder : IURLFeedbackBuilder
     {
@@ -25,7 +25,7 @@ namespace FamilyNet.Downloader
 
         public string GetByDonationId(string api, int donationId)
         {
-            return _options.Value.ServerURL + api + "/donation/" + donationId;
+            return _options.Value.ServerURL + api + "?donationId=" + donationId;
         }
 
         public string GetById(string api, int id)

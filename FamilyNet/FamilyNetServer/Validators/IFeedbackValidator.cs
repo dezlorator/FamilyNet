@@ -10,6 +10,7 @@ namespace FamilyNetServer.Validators
 {
     public interface IFeedbackValidator
     {
+        //вынести checkpermission в интерфейс
         bool CheckPermission(UserRole sender, UserRole receiver);
         bool IsValid(FeedbackDTO feedback, ref string errorMessage);
     }
