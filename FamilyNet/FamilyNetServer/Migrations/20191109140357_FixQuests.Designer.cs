@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191102125213_StatusAddedToQuests")]
-    partial class StatusAddedToQuests
+    [Migration("20191109140357_FixQuests")]
+    partial class FixQuests
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -59,11 +59,17 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<int?>("AuctionLotItemID");
 
-                    b.Property<DateTime>("Date");
+                    b.Property<string>("Avatar");
+
+                    b.Property<DateTime>("DateAdded");
 
                     b.Property<bool>("IsDeleted");
 
                     b.Property<int?>("OrphanID");
+
+                    b.Property<int>("Quantity");
+
+                    b.Property<int>("Status");
 
                     b.HasKey("ID");
 
@@ -72,6 +78,29 @@ namespace FamilyNetServer.Migrations
                     b.HasIndex("OrphanID");
 
                     b.ToTable("AuctionLot");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.Award", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ChildActivityID");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ChildActivityID");
+
+                    b.ToTable("Awards");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.BaseItem", b =>
@@ -149,6 +178,27 @@ namespace FamilyNetServer.Migrations
                         .HasFilter("[AddressID] IS NOT NULL");
 
                     b.ToTable("CharityMakers");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.ChildActivity", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ChildID");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ChildID");
+
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Donation", b =>
@@ -261,6 +311,31 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("Orphanages");
                 });
 
+            modelBuilder.Entity("FamilyNetServer.Models.Purchase", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AuctionLotId");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<float>("Paid");
+
+                    b.Property<int>("Quantity");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AuctionLotId");
+
+                    b.ToTable("Purchases");
+                });
+
             modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>
                 {
                     b.Property<int>("ID")
@@ -270,6 +345,10 @@ namespace FamilyNetServer.Migrations
                     b.Property<string>("Description");
 
                     b.Property<int?>("DonationID");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
 
                     b.Property<int>("Status");
 
@@ -385,6 +464,13 @@ namespace FamilyNetServer.Migrations
                         .HasForeignKey("OrphanID");
                 });
 
+            modelBuilder.Entity("FamilyNetServer.Models.Award", b =>
+                {
+                    b.HasOne("FamilyNetServer.Models.ChildActivity")
+                        .WithMany("Awards")
+                        .HasForeignKey("ChildActivityID");
+                });
+
             modelBuilder.Entity("FamilyNetServer.Models.BaseItemType", b =>
                 {
                     b.HasOne("FamilyNetServer.Models.BaseItemType", "Parent")
@@ -423,6 +509,13 @@ namespace FamilyNetServer.Migrations
                                 .HasForeignKey("FamilyNetServer.Models.FullName", "CharityMakerID")
                                 .OnDelete(DeleteBehavior.Cascade);
                         });
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.ChildActivity", b =>
+                {
+                    b.HasOne("FamilyNetServer.Models.Orphan", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildID");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Donation", b =>
@@ -482,6 +575,14 @@ namespace FamilyNetServer.Migrations
                     b.HasOne("FamilyNetServer.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationID");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.Purchase", b =>
+                {
+                    b.HasOne("FamilyNetServer.Models.AuctionLot", "AuctionLot")
+                        .WithMany()
+                        .HasForeignKey("AuctionLotId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>
