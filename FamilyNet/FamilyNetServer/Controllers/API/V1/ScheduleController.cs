@@ -23,14 +23,14 @@ namespace FamilyNetServer.Controllers.API
         #region private fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<AvailabilityDTO> _availabilityValidator;
+        private readonly IAvailabilityValidator _validator;
         //private readonly IFilterConditionsAvailability _filterConditions;
 
         #endregion
 
-        public ScheduleController(IUnitOfWork unitOfWork, IValidator<AvailabilityDTO> availabilityValidator)
+        public ScheduleController(IUnitOfWork unitOfWork, IAvailabilityValidator availabilityValidator)
         {
-            _availabilityValidator = availabilityValidator;
+            _validator = availabilityValidator;
             _unitOfWork = unitOfWork;
         }
 
@@ -91,6 +91,8 @@ namespace FamilyNetServer.Controllers.API
         }
 
         #endregion 
+
+        //Reserve(AvailabilityID id) ? deReserve()
 
         #region сравнение расписаний волонтера и мецената
 
@@ -165,21 +167,38 @@ namespace FamilyNetServer.Controllers.API
         [HttpPost]
         [Authorize(Roles = "Admin, Volunteer, CharityMaker")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AvailabilityDTO availabilityDTO)
         {
-            //TODO Validate Availability
-            //BadRequest
+            var diff = adjustDate(availabilityDTO);
 
+            availabilityDTO.StartTime = availabilityDTO.StartTime.AddDays(diff);
+
+            if (!_validator.IsValid(availabilityDTO))
+            {
+                return BadRequest();
+            }
+
+            var overlaps = _unitOfWork.Availabilities
+                .Get(a => _validator
+                .IsOverlaping(availabilityDTO, a)).Count();
+
+            if (overlaps > 0)
+            {
+                //TODO logg
+                return Conflict();
+            }
+     
             var user = identify();
 
-            var diff = adjustDate(availabilityDTO);
+            //var diff = adjustDate(dto);
 
             var availability = new Availability()
             {
                 PersonID = user.PersonID.Value,
                 FreeHours = availabilityDTO.FreeHours,
-                Date = availabilityDTO.StartTime.AddDays(diff),
+                Date = availabilityDTO.StartTime,
                 Role = user.PersonType,
             };
 
@@ -195,10 +214,24 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]AvailabilityDTO availabilityDTO)
         {
-            //if (!_representativeValidator.IsValid(availabilityDTO))
-            //{
-            //    return BadRequest();
-            //}
+            var diff = adjustDate(availabilityDTO);
+
+            availabilityDTO.StartTime = availabilityDTO.StartTime.AddDays(diff);
+
+            if (!_validator.IsValid(availabilityDTO))
+            {
+                return BadRequest();
+            }
+
+            var overlaps = _unitOfWork.Availabilities.Get(a => _validator
+                .IsOverlaping(availabilityDTO, a) && 
+                a.ID != availabilityDTO.ID).Count();
+
+            if (overlaps > 0)
+            {
+                //TODO logg
+                return Conflict();
+            }
 
             var availability = await _unitOfWork.Availabilities.GetById(availabilityDTO.ID);
 
@@ -206,9 +239,8 @@ namespace FamilyNetServer.Controllers.API
             {
                 return BadRequest();
             }
-            var diff = adjustDate(availabilityDTO);
 
-            availability.Date = availabilityDTO.StartTime.AddDays(diff);
+            availability.Date = availabilityDTO.StartTime;
             availability.FreeHours = availabilityDTO.FreeHours;
 
             _unitOfWork.Availabilities.Update(availability);

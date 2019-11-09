@@ -81,7 +81,7 @@ namespace FamilyNetServer
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IQuestValidator, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
-            services.AddTransient<IValidator<AvailabilityDTO>, AvailabilityValidator>();
+            services.AddTransient<IAvailabilityValidator, AvailabilityValidator>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>
