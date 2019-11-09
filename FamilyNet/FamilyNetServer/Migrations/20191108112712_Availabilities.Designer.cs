@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191107122425_renameAvailabilityColumn")]
-    partial class renameAvailabilityColumn
+    [Migration("20191108112712_Availabilities")]
+    partial class Availabilities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,9 +61,7 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<string>("Avatar");
 
-                    b.Property<DateTime>("DateEnd");
-
-                    b.Property<DateTime>("DateStart");
+                    b.Property<DateTime>("DateAdded");
 
                     b.Property<bool>("IsDeleted");
 
@@ -90,10 +88,16 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<TimeSpan>("VolunteerHours")
+                    b.Property<TimeSpan>("FreeHours")
                         .HasColumnType("time");
 
-                    b.Property<int>("VolunteerID");
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsReserved");
+
+                    b.Property<int>("PersonID");
+
+                    b.Property<int>("Role");
 
                     b.HasKey("ID");
 
@@ -208,6 +212,37 @@ namespace FamilyNetServer.Migrations
                     b.HasIndex("OrphanageID");
 
                     b.ToTable("Donations");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.Feedback", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DonationId");
+
+                    b.Property<string>("Image");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Message");
+
+                    b.Property<double>("Rating");
+
+                    b.Property<int?>("ReceiverId");
+
+                    b.Property<int>("ReceiverRole");
+
+                    b.Property<int?>("SenderId");
+
+                    b.Property<int>("SenderRole");
+
+                    b.Property<DateTime>("Time");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Feedback");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Location", b =>

@@ -83,9 +83,11 @@ namespace FamilyNet
             services.AddTransient<ServerChildrenHouseDownloader>();
             services.AddTransient<ServerAddressDownloader>();
             services.AddTransient<ServerLocationDownloader>();
+            services.AddTransient<ServerDataDownloader<FeedbackDTO>, ServerFeedbackDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<ServerDataDownloader<AuctionLotDTO>, ServerAuctionLotDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<RegistrationDTO>, ServerRegistrationDownloader>();
+            services.AddTransient<IURLFeedbackBuilder, URLFeedbackBuilder>();
             services.AddTransient<IURLAuctionLotBuilder, URLAuctionLotBuilder>();
             services.AddTransient<IURLLocationBuilder, URLLocationBuilder>();
             services.AddTransient<IURLChildrenHouseBuilder, URLChildrenHouseBuilder>();

@@ -180,6 +180,12 @@ namespace FamilyNet.Controllers
             {
                 return View(availabilityDTO);
             }
+            //AvailabilityDTO availabilityDTO = new AvailabilityDTO
+            //{
+            //    DayOfWeek = model.DayOfWeek,
+            //    StartTime = model.StartTime,
+            //    FreeHours = model.FreeHours
+            //};
             var url = _URLAvailabilitiesBuilder.CreatePost(_apiPath);
             var status = await _availabilitiesDownLoader.CreatePostAsync(url, availabilityDTO,
                                                  HttpContext.Session);
@@ -195,6 +201,7 @@ namespace FamilyNet.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        
         }
 
         [HttpPost, ActionName("Delete")]

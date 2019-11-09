@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Models.Identity;
+using DataTransferObjects.Enums;
 
 namespace FamilyNetServer.Models.Identity
 {

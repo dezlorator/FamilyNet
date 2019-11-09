@@ -21,6 +21,8 @@ using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using FamilyNetServer.Controllers.API.V1;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using FamilyNetServer.Controllers.API;
+using FamilyNetServer.EnumConvertor;
 
 namespace FamilyNetServer
 {
@@ -42,7 +44,11 @@ namespace FamilyNetServer
             services.AddIdentityService();
             services.AddTransient<ITokenFactory, TokenFactory>();
             services.AddAuthorizationService(Configuration);
+            services.AddTransient<IConvertUserRole, ConvertUserRole>();
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
+            services.AddTransient<EFRepository<Feedback>, FeedbackRepository>();
+            services.AddTransient<ILogger<FeedbackController>, Logger<FeedbackController>>();
+            services.AddTransient<IFeedbackValidator, FeedbackValidator>();
             services.AddTransient<IUnitOfWork, EFUnitOfWork>();
             services.AddTransient<ILogger<CharityMakersController>, Logger<CharityMakersController>>();
             services.AddTransient<ILogger<ChildrenController>, Logger<ChildrenController>>();
@@ -75,6 +81,7 @@ namespace FamilyNetServer
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IQuestValidator, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
+            services.AddTransient<IValidator<AvailabilityDTO>, AvailabilityValidator>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>

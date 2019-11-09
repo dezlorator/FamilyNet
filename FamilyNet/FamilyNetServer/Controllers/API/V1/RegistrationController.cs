@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using DataTransferObjects;
 using Microsoft.AspNetCore.Http;
-
+using DataTransferObjects.Enums;
 
 namespace FamilyNetServer.Controllers.API.V1
 {

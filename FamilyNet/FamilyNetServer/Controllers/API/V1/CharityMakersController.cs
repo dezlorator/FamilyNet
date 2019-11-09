@@ -124,7 +124,6 @@ namespace FamilyNetServer.Controllers.API.V1
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, CharityMaker")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm] CharityMakerDTO charityMakerDTO)
@@ -143,7 +142,7 @@ namespace FamilyNetServer.Controllers.API.V1
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
                 pathPhoto = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.CharityMaker), charityMakerDTO.Avatar);
+                        "avatars", charityMakerDTO.Avatar);
                 _logger.LogInformation(string.Format("{0} - this path to photo was created", pathPhoto));
             }
 
@@ -223,7 +222,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
-            if (id <= 0)
+            if (id < 0)
             {
                 _logger.LogError("Wrong id - {0}", id);
                 return BadRequest();

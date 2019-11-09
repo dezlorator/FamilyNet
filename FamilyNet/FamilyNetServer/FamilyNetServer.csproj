@@ -25,6 +25,14 @@
     <Compile Remove="Migrations\20191103225500_new.Designer.cs" />
     <Compile Remove="Migrations\20191107122217_renameAvailabilityColumn.cs" />
     <Compile Remove="Migrations\20191107122217_renameAvailabilityColumn.Designer.cs" />
+    <Compile Remove="Migrations\20191107223230_updateAvailability.cs" />
+    <Compile Remove="Migrations\20191107223230_updateAvailability.Designer.cs" />
+    <Compile Remove="Migrations\20191107223706_updateAvailability.cs" />
+    <Compile Remove="Migrations\20191107223706_updateAvailability.Designer.cs" />
+    <Compile Remove="Migrations\20191107224918_Availabilities.cs" />
+    <Compile Remove="Migrations\20191107224918_Availabilities.Designer.cs" />
+    <Compile Remove="Migrations\20191108001759_updateAvailabilities.cs" />
+    <Compile Remove="Migrations\20191108001759_updateAvailabilities.Designer.cs" />
   </ItemGroup>
 
 

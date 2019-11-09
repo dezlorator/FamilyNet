@@ -14,9 +14,12 @@ namespace FamilyNetServer.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    VolunteerID = table.Column<int>(nullable: false),
-                    FromHour = table.Column<DateTime>(nullable: false),
-                    VolunteerHours = table.Column<TimeSpan>(nullable: false)
+                    PersonID = table.Column<int>(nullable: false),
+                    Role = table.Column<int>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false),
+                    FreeHours = table.Column<TimeSpan>(type: "time", nullable: false),
+                    IsReserved = table.Column<bool>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

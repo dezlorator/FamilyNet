@@ -204,11 +204,11 @@ namespace FamilyNet.Controllers
             {
                 RedirectToAction("Index", "Home");
             }
-            if (GetPersonType(role) != PersonType.User)
-            {
-                var url = Url.Action(role + "s", "Create");
-                return Redirect(url);
-            }
+            //if (GetPersonType(role) != PersonType.User)
+            //{
+            //    var url = Url.Action(role + "s", "Create");
+            //    return Redirect(url);
+            //}
 
             GetViewData();
 
