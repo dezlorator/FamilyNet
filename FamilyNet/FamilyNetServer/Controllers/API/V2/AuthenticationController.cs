@@ -65,7 +65,7 @@ namespace FamilyNetServer.Controllers.API.V2
             }
                         
             var roles = await _unitOfWork.UserManager.GetRolesAsync(user).ConfigureAwait(false);
-            var token = new TokenDTO() { Token = _tokenFactory.Create(user, roles) };
+            var token = _tokenFactory.Create(user, roles);
             _logger.LogInformation("User " + credentialsDTO.Email + " has token " +
                 token.Token);
 
