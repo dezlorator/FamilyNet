@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNetServer.Controllers.API.V1
+namespace FamilyNetServer.Controllers.API.V2
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v2/[controller]")]
     [ApiController]
     public class PurchaseController : ControllerBase
     {
@@ -109,7 +109,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [Authorize(Roles = "CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]PurchaseDTO purchaseDTO)
+        public async Task<IActionResult> Create([FromBody]PurchaseDTO purchaseDTO)
         {
             if (!_purchaseValidator.IsValid(purchaseDTO))
             {
@@ -154,7 +154,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]PurchaseDTO purchaseDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]PurchaseDTO purchaseDTO)
         {
             if (!_purchaseValidator.IsValid(purchaseDTO))
             {
