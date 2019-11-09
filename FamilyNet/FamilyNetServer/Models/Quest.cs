@@ -1,4 +1,5 @@
 ﻿using FamilyNetServer.Models.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace FamilyNetServer.Models
 {
@@ -12,6 +13,7 @@ namespace FamilyNetServer.Models
         public virtual Volunteer Volunteer { get; set; }
         public string Description { get; set; }
         public QuestStatus Status { get; set; } = QuestStatus.ToDo;
-        public bool IsDeleted { get; set; }
+        [BindNever]
+        public bool IsDeleted { get; set; } = true;
     }
 }
