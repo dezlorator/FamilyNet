@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Подробности";
+    var role = ViewData["role"] as String;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -53,12 +54,12 @@
 <div>
     <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-warning">Редактировать</a>
     <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
-    @if (true || User.IsInRole("CharityMaker") || User.IsInRole("Admin"))
+    @if (role == "CharityMaker" || role == "Volunteer")
     {
-        <br/><br/>
+        <br /><br />
         <label for="Name">Нужна помощь волонтера</label>
         <input id="NeedHelp" name="NeedHelp" type="checkbox" value="true" />
-        <input name="NeedHelp" type="hidden" value="false" />
+        <input asp-name="NeedHelp" type="hidden" value="false" />
         <a asp-action="Donate" class="btn btn-primary">Пожертвовать</a>
     }
 </div>

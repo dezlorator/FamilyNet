@@ -91,8 +91,10 @@ namespace FamilyNet
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
             services.AddTransient<IIdentityInformationExtractor, IdentityInformationExtractor>();
+            services.AddTransient<IURLQuestsBuilder, URLQuestsBuilder>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<PurchaseDTO>, ServerPurchaseDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<QuestDTO>, ServerQuestsDownloader>();
 
             #endregion
 

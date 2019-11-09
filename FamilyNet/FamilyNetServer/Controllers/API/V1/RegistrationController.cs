@@ -53,15 +53,16 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromForm]RegistrationDTO model)
-        {
-           
+        {         
             var allRoles = _unitOfWork.RoleManager.Roles.ToList();
             var yourDropdownList = new SelectList(allRoles.Select(role => new SelectListItem
             {
                 Text = role.Name,
                 Value = role.Name
             }).ToList(), "Value", "Text");
+
             model.YourDropdownList = yourDropdownList;
+
             if (ModelState.IsValid)
             {
                 ApplicationUser user = new ApplicationUser

@@ -19,13 +19,13 @@ namespace FamilyNetServer.Controllers.API.V2
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDonationItemValidator _donationItemValidator;
+        private readonly IValidator<DonationItemDTO> _donationItemValidator;
         private readonly ILogger<DonationItemsController> _logger;
 
         #endregion
 
         public DonationItemsController(IUnitOfWork unitOfWork,
-                                  IDonationItemValidator donationItemValidator,
+                                  IValidator<DonationItemDTO> donationItemValidator,
                                   ILogger<DonationItemsController> logger)
         {
             _unitOfWork = unitOfWork;

@@ -376,8 +376,8 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var userId = HttpContext.Session.GetString("id");
-            donationDTO.CharityMakerID = HttpContext.Session.GetInt32(userId);
+            var userId = HttpContext.Session.Get("PersonId");
+            donationDTO.CharityMakerID = Convert.ToInt32(userId);
 
             var url = _URLDonationsBuilder.GetById(_apiPath, id);
             var msg = await _downloader.CreatePutAsync(url, donationDTO, HttpContext.Session);

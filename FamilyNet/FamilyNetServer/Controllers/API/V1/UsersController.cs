@@ -73,12 +73,14 @@ namespace FamilyNetServer.Controllers.API.V1
             {
                 return BadRequest();
             }
+
             var user = new ApplicationUser
             {
                 Email = userDTO.Email,
                 UserName = userDTO.Email,
                 PhoneNumber = userDTO.PhoneNumber
             };
+
             IdentityResult result
                        = await _unitOfWork.UserManager.CreateAsync(user, userDTO.Password);
             if (result.Succeeded)

@@ -95,6 +95,12 @@
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="ConfirmCrafts">Crafts to confirm</a>
                             </li>
                         }
+                        @if (role == "CharityMaker" || role == "Volunteer" || role == "Representative" || role == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Quests" asp-action="Index">Quests</a>
+                            </li>
+                        }
                         @if (role == "CharityMaker" || role == "Volunteer")
                         {
                             <li class="nav-item">
