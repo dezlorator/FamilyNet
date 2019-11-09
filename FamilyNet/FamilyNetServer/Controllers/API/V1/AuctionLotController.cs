@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]
@@ -68,8 +68,7 @@ namespace FamilyNetServer.Controllers.API
                 var auctionLotDTO = new AuctionLotDTO()
                 {
                     ID = lot.ID,
-                    DateStart = lot.DateStart,
-                    DateEnd = lot.DateEnd,
+                    DateStart = lot.DateAdded,
                     OrphanID = lot.OrphanID,
                     Quantity = lot.Quantity,
                     Status = lot.Status.ToString(),
@@ -102,8 +101,7 @@ namespace FamilyNetServer.Controllers.API
             var auctionDTO = new AuctionLotDTO()
             {
                 ID = auction.ID,
-                DateStart = auction.DateStart,
-                DateEnd = auction.DateEnd,
+                DateStart = auction.DateAdded,
                 OrphanID = auction.OrphanID,
                 Quantity = auction.Quantity,
                 Status = auction.Status.ToString(),
@@ -129,8 +127,7 @@ namespace FamilyNetServer.Controllers.API
 
             var auction = new AuctionLot()
             {
-                DateStart = auctionDTO.DateStart,
-                DateEnd = auctionDTO.DateEnd,
+                DateAdded = auctionDTO.DateStart,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
                 Status =  AuctionLotStatus.UnApproved,
@@ -181,8 +178,7 @@ namespace FamilyNetServer.Controllers.API
             }
 
             auction.AuctionLotItemID = auctionDTO.AuctionLotItemID;
-            auction.DateEnd = auctionDTO.DateEnd;
-            auction.DateStart = auctionDTO.DateStart;
+            auction.DateAdded = auctionDTO.DateStart;
             auction.OrphanID = auctionDTO.OrphanID;
             var status = AuctionLotStatus.UnApproved;
             Enum.TryParse(auctionDTO.Status,out status);

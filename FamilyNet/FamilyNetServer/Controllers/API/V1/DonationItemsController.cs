@@ -5,13 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using FamilyNetServer.Models;
-using FamilyNetServer.Filters;
 using FamilyNetServer.Validators;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]
@@ -92,7 +91,7 @@ namespace FamilyNetServer.Controllers.API
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Volunteer")]
+        [Authorize(Roles = "Admin, Volunteer, Orphan")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]DonationItemDTO donationItemDTO)
@@ -138,7 +137,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin, Volunteer")]
+        [Authorize(Roles = "Admin, Volunteer, Orphan")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]DonationItemDTO donationItemDTO)

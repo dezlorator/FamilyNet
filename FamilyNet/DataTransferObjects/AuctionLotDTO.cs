@@ -11,8 +11,6 @@ namespace DataTransferObjects
 
         public DateTime DateStart { get; set; }
 
-        public DateTime DateEnd { get; set; }
-
         public int? AuctionLotItemID { get; set; }
 
         public int? OrphanID { get; set; }

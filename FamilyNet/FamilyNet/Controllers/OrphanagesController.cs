@@ -167,7 +167,12 @@ namespace FamilyNet.Controllers
         }
 
 
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            GetViewData();
+
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

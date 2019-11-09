@@ -1,14 +1,12 @@
 ﻿using System.Threading.Tasks;
 using DataTransferObjects;
 using FamilyNetServer.Factories;
-using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]

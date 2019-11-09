@@ -16,9 +16,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V2
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v2/[controller]")]
     [ApiController]
     public class ChildrenHouseController : ControllerBase
     {
@@ -131,10 +131,10 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]        
-        public async Task<IActionResult> Create([FromForm]ChildrenHouseDTO childrenHousesDTO)
+        public async Task<IActionResult> Create([FromBody]ChildrenHouseDTO childrenHousesDTO)
         {
             if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
             {
@@ -174,10 +174,10 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]ChildrenHouseDTO childrenHouseDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]ChildrenHouseDTO childrenHouseDTO)
         {
             if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
             {
@@ -213,7 +213,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Adminб Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute]int id)

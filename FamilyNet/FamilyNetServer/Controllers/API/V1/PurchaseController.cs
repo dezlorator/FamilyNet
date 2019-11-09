@@ -1,8 +1,9 @@
 ﻿using DataTransferObjects;
 using FamilyNetServer.Models;
+using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Models.Interfaces;
-using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNetServer.Controllers.API
+namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]
@@ -39,6 +40,7 @@ namespace FamilyNetServer.Controllers.API
         #endregion
 
         [HttpGet]
+        [Authorize(Roles = "Admin,CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll()
@@ -54,6 +56,7 @@ namespace FamilyNetServer.Controllers.API
 
             foreach (var item in purchase)
             {
+
                 var purchaseDTO = new PurchaseDTO()
                 {
                     ID = item.ID,
@@ -61,7 +64,7 @@ namespace FamilyNetServer.Controllers.API
                     AuctionLotId = item.AuctionLotId,
                     Paid = item.Paid,
                     Quantity = item.Quantity,
-                    UserId = item.UserId
+                    UserId = item.UserId.ToString()
                 };
 
                 purchases.Add(purchaseDTO);
@@ -73,6 +76,7 @@ namespace FamilyNetServer.Controllers.API
 
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
@@ -92,14 +96,17 @@ namespace FamilyNetServer.Controllers.API
                 AuctionLotId = purchase.AuctionLotId,
                 Paid = purchase.Paid,
                 Quantity = purchase.Quantity,
-                UserId = purchase.UserId
+                UserId = purchase.UserId.ToString()
             };
 
             _logger.LogInformation($"Returned purchase #{id}");
             return Ok(purchaseDTO);
         }
 
+
+
         [HttpPost]
+        [Authorize(Roles = "CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]PurchaseDTO purchaseDTO)
@@ -110,18 +117,30 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
+            Guid.TryParse(purchaseDTO.UserId, out Guid userId);
             var purchase = new Purchase()
             {
                 Date = purchaseDTO.Date,
                 AuctionLotId = purchaseDTO.AuctionLotId,
                 Paid = purchaseDTO.Paid,
                 Quantity = purchaseDTO.Quantity,
-                UserId = purchaseDTO.UserId,
+                UserId = userId,
                 IsDeleted = false
             };
 
             await _repository.Purchases.Create(purchase);
             _repository.SaveChangesAsync();
+
+            var user = await _repository.UserManager.FindByIdAsync(purchase.UserId.ToString().ToUpper());
+
+            var emailSender = new EmailService();
+
+            await emailSender.SendEmailAsync(user.Email, "Buying crafts", "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
+                "<h3>Craft info:</h3>" +
+                $"<h4>Craft id:< {purchase.AuctionLotId}</h4>" +
+                $"<h4>Quantity: {purchase.Quantity}</h4>" +
+                $"<h4>To pay: {purchase.Paid}</h4>" +
+                "<h3>Orphanage representatives will contact you♥</h3>");
 
             purchaseDTO.ID = purchase.ID;
 
@@ -131,6 +150,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]PurchaseDTO purchaseDTO)
@@ -148,11 +168,13 @@ namespace FamilyNetServer.Controllers.API
                 return BadRequest();
             }
 
+            Guid.TryParse(purchaseDTO.UserId, out Guid userId);
+
             purchase.Date = purchaseDTO.Date;
             purchase.AuctionLotId = purchaseDTO.AuctionLotId;
             purchase.Paid = purchaseDTO.Paid;
             purchase.Quantity = purchaseDTO.Quantity;
-            purchase.UserId = purchaseDTO.UserId;
+            purchase.UserId = userId;
 
             _repository.Purchases.Update(purchase);
             _repository.SaveChangesAsync();
@@ -163,6 +185,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute]int id)
