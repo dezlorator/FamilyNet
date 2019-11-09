@@ -4,14 +4,16 @@ using FamilyNetServer.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191101182210_AddFeedback")]
+    partial class AddFeedback
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,17 +59,11 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<int?>("AuctionLotItemID");
 
-                    b.Property<string>("Avatar");
-
-                    b.Property<DateTime>("DateAdded");
+                    b.Property<DateTime>("Date");
 
                     b.Property<bool>("IsDeleted");
 
                     b.Property<int?>("OrphanID");
-
-                    b.Property<int>("Quantity");
-
-                    b.Property<int>("Status");
 
                     b.HasKey("ID");
 
@@ -208,10 +204,6 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<int>("ReceiverRole");
 
-                    b.Property<int?>("SenderId");
-
-                    b.Property<int>("SenderRole");
-
                     b.Property<DateTime>("Time");
 
                     b.HasKey("ID");
@@ -294,62 +286,6 @@ namespace FamilyNetServer.Migrations
                     b.HasIndex("LocationID");
 
                     b.ToTable("Orphanages");
-                });
-
-            modelBuilder.Entity("FamilyNetServer.Models.Purchase", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AuctionLotId");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("Status");
-
-                    b.Property<float>("Paid");
-
-                    b.Property<int>("Quantity");
-
-                    b.Property<Guid>("UserId");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("AuctionLotId");
-
-                    b.ToTable("Purchases");
-                });
-
-            modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description");
-
-                    b.Property<int?>("DonationID");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("Status");
-
-                    b.Property<int?>("VolunteerID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DonationID");
-
-                    b.HasIndex("VolunteerID");
-
-                    b.ToTable("Quests");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Representative", b =>
@@ -550,25 +486,6 @@ namespace FamilyNetServer.Migrations
                     b.HasOne("FamilyNetServer.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationID");
-                });
-
-            modelBuilder.Entity("FamilyNetServer.Models.Purchase", b =>
-                {
-                    b.HasOne("FamilyNetServer.Models.AuctionLot", "AuctionLot")
-                        .WithMany()
-                        .HasForeignKey("AuctionLotId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("FamilyNetServer.Models.Quest", b =>
-                {
-                    b.HasOne("FamilyNetServer.Models.Donation", "Donation")
-                        .WithMany()
-                        .HasForeignKey("DonationID");
-
-                    b.HasOne("FamilyNetServer.Models.Volunteer", "Volunteer")
-                        .WithMany()
-                        .HasForeignKey("VolunteerID");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Representative", b =>
