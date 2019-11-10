@@ -45,6 +45,8 @@ namespace FamilyNetServer
             services.AddAuthorizationService(Configuration);
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IUnitOfWork, EFUnitOfWork>();
+            services.AddTransient<EFRepository<ChildActivity>, ChildActivityRepository>();
+            services.AddTransient<EFRepository<Award>, AwardRepository>();
             services.AddTransient<ILogger<CharityMakersController>, Logger<CharityMakersController>>();
             services.AddTransient<ILogger<ChildrenController>, Logger<ChildrenController>>();
             services.AddTransient<ILogger<VolunteersController>, Logger<VolunteersController>>();
@@ -54,6 +56,7 @@ namespace FamilyNetServer
             services.AddTransient<ILogger<AuctionLotController>, Logger<AuctionLotController>>();
             services.AddTransient<ILogger<PurchaseController>, Logger<PurchaseController>>();
             services.AddTransient<ILogger<QuestsController>, Logger<QuestsController>>();
+            services.AddTransient<ILogger<Controllers.API.V2.ChildrenActivitiesController>, Logger<Controllers.API.V2.ChildrenActivitiesController>>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
             services.AddTransient<IVolunteerValidator, VolunteerValidator>();
@@ -61,6 +64,7 @@ namespace FamilyNetServer
             services.AddTransient<ICharityMakersSelection, CharityMakersSelection>();
             services.AddTransient<IFilterConditionsVolunteers, FilterConditionsVolunteers>();
             services.AddTransient<IFilterConditionsChildren, FilterConditionsChildren>();
+            services.AddTransient<IFilterConditionsChildrenActivities, FilterConditionsChildrenActivities>();
             services.AddTransient<IRepresentativeValidator, RepresentativeValidator>();
             services.AddTransient<IFilterConditionsRepresentatives, FilterConditionsRepresentatives>();
             services.AddTransient<IDonationsFilter, DonationsFilter>();
@@ -73,10 +77,11 @@ namespace FamilyNetServer
             services.AddTransient<ICategoryValidator, CategoryValidator>();
             services.AddTransient<IDonationItemValidator, DonationItemValidator>();
             services.AddTransient<IDonationValidator, DonationValidator>();
+            services.AddTransient<IChildActivityValidator, ChildActivityValidator>();
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IQuestValidator, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
-            services.AddTransient<ITokenSignatureExtractor, TokenSignatureExtractor>();
+            services.AddTransient<IIdentityExtractor, IdentityExtractor>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>

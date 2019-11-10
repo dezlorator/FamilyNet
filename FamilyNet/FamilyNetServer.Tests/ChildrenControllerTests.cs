@@ -3,6 +3,7 @@ using FamilyNetServer.Configuration;
 using FamilyNetServer.Controllers.API.V1;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Filters.FilterParameters;
+using FamilyNetServer.HttpHandlers;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Uploaders;
@@ -15,6 +16,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace FamilyNetServer.Tests
@@ -27,6 +29,7 @@ namespace FamilyNetServer.Tests
         private Mock<IFileUploader> _mockFileUploader;
         private Mock<IChildValidator> _mockChildValidator;
         private Mock<IFilterConditionsChildren> _mockFilterConditions;
+        private Mock<IIdentityExtractor> _mockTokenSignatureExtractor;
         private Mock<IOptionsSnapshot<ServerURLSettings>> _mockSettings;
         private ChildrenController controller;
 
@@ -42,13 +45,22 @@ namespace FamilyNetServer.Tests
             _mockFilterConditions = new Mock<IFilterConditionsChildren>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
             _mockChildValidator = new Mock<IChildValidator>();
-            var mockLogger = new Mock<ILogger<ChildrenController>>();
+            _mockTokenSignatureExtractor = new Mock<IIdentityExtractor>();
+
+            _mockTokenSignatureExtractor.Setup(m => m.GetSignature(It.IsAny<HttpContext>()))
+               .Returns(It.IsAny<string>());
+
+            _mockTokenSignatureExtractor.Setup(m => m.GetId(It.IsAny<ClaimsPrincipal>()))
+               .Returns(It.IsAny<string>());
+
+            var _mockLogger = new Mock<ILogger<ChildrenController>>();
             controller = new ChildrenController(_mockFileUploader.Object,
                                                 _mockUnitOfWork.Object,
                                                 _mockChildValidator.Object,
                                                 _mockFilterConditions.Object,
                                                 _mockSettings.Object,
-                                                mockLogger.Object);
+                                                _mockLogger.Object,
+                                                _mockTokenSignatureExtractor.Object);
         }
 
         #endregion
@@ -75,7 +87,6 @@ namespace FamilyNetServer.Tests
             _mockOrphanRepository.Setup(r => r.GetAll()).Returns(orphans);
 
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-
             var filter = It.IsAny<FilterParemetersChildren>();
             controller.GetAll(filter);
 
@@ -429,9 +440,9 @@ namespace FamilyNetServer.Tests
 
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
-                      
 
-                      
+
+
         [Test]
         public async Task ChildrenController_WithInValidChildDTOWithoutFile_ShouldNoatCallRepositoryUpdate()
         {

@@ -32,7 +32,7 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IFilterConditionsChildren _filterConditions;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
         private readonly ILogger<ChildrenController> _logger;
-        private readonly ITokenSignatureExtractor _tokenExtractor;
+        private readonly IIdentityExtractor _tokenExtractor;
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace FamilyNetServer.Controllers.API.V1
                                   IFilterConditionsChildren filterConditions,
                                   IOptionsSnapshot<ServerURLSettings> setings,
                                   ILogger<ChildrenController> logger,
-                                  ITokenSignatureExtractor tokenExtractor)
+                                  IIdentityExtractor tokenExtractor)
         {
             _fileUploader = fileUploader;
             _unitOfWork = unitOfWork;
@@ -140,7 +140,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]ChildDTO childDTO)
         {
-            var userId = User.Identity.Name;
+            var userId = _tokenExtractor.GetId(User);
             var token = _tokenExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info} {userId} {token}",
@@ -198,7 +198,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]ChildDTO childDTO)
         {
-            var userId = User.Identity.Name;
+            var userId = _tokenExtractor.GetId(User);
             var token = _tokenExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
@@ -256,7 +256,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
-            var userId = User.Identity.Name;
+            var userId = _tokenExtractor.GetId(User);
             var token = _tokenExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
