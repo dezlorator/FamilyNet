@@ -17,20 +17,17 @@ namespace FamilyNetLogs.Database
                 entity.Property(e => e.CallSite).HasMaxLength(256);
                 entity.Property(e => e.UserId).HasMaxLength(50);
                 entity.Property(e => e.Exception).HasColumnType("text");
-
-                entity.Property(e => e.Level)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                entity.Property(e => e.Exception).HasColumnType("text");
+                entity.Property(e => e.JSON).HasColumnType("text");
+                entity.Property(e => e.Token).HasColumnType("text");
+                entity.Property(e => e.Status).HasMaxLength(50);
+                entity.Property(e => e.Level).HasMaxLength(256);
+                entity.Property(e => e.Logger).HasMaxLength(256);
+                entity.Property(e => e.Info).HasMaxLength(256);
 
                 entity.Property(e => e.Logged)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.Logger).HasMaxLength(256);
-
-                entity.Property(e => e.Message)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
             });
         }
     }

@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTransferObjects", "Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyNetServer.Tests", "FamilyNetServer.Tests\FamilyNetServer.Tests.csproj", "{0DE0795D-1B28-4B1E-9B0F-165CE7815CEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyNetLogs", "FamilyNetLogs\FamilyNetLogs.csproj", "{F8207772-70A7-4522-86D4-61DFCE30F291}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyNetLogs", "FamilyNetLogs\FamilyNetLogs.csproj", "{F8207772-70A7-4522-86D4-61DFCE30F291}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

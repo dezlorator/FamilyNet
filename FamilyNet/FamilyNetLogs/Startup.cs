@@ -45,7 +45,7 @@ namespace FamilyNetLogs
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Logs}/{action=Index}/{id?}");
             });
         }
     }

@@ -21,6 +21,7 @@ using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using FamilyNetServer.Controllers.API.V1;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using FamilyNetServer.HttpHandlers;
 
 namespace FamilyNetServer
 {
@@ -75,6 +76,7 @@ namespace FamilyNetServer
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IQuestValidator, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
+            services.AddTransient<ITokenSignatureExtractor, TokenSignatureExtractor>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>
