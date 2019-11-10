@@ -4,6 +4,7 @@ using FamilyNetServer.Factories;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -39,21 +40,22 @@ namespace FamilyNetServer.Controllers.API.V1
         [Produces("application/json")]
         public async Task<IActionResult> Authentication([FromBody]CredentialsDTO credentialsDTO)
         {
-            _logger.LogInformation("Authentication method is called. Arguments password: " +
+            _logger.LogInformation("Endpoint Authentication/api/v1  [POST] was called. Arguments password: " +
                 credentialsDTO.Password + " email: " + credentialsDTO.Email);
+
             var user = await _unitOfWork.UserManager.FindByEmailAsync(credentialsDTO.Email);
 
             if (user == null)
             {
                 var msg = "Credentials are invalid!";
-                _logger.LogError(msg);
+                _logger.LogError("{info}{status}",msg, StatusCodes.Status400BadRequest);
                 return BadRequest(msg);
             }
 
             if (!await _unitOfWork.UserManager.IsEmailConfirmedAsync(user))
             {
                 var msg = "User's email was not confirmed!";
-                _logger.LogError(msg);
+                _logger.LogError("{info}{status}", msg, StatusCodes.Status400BadRequest);
                 return BadRequest(msg);
             }
 
@@ -62,14 +64,15 @@ namespace FamilyNetServer.Controllers.API.V1
             if (!result)
             {
                 var msg = "Credentials are invalid!";
-                _logger.LogError(msg);
+                _logger.LogError("{info}{status}", msg, StatusCodes.Status400BadRequest);
                 return BadRequest(msg);
             }
 
             var roles = await _unitOfWork.UserManager.GetRolesAsync(user).ConfigureAwait(false);
             var token = _tokenFactory.Create(user, roles);
-            _logger.LogInformation("User " + credentialsDTO.Email + " has token " +
-                token.Token);
+
+            _logger.LogInformation("{info}{status}{token}","Token was created ",
+                StatusCodes.Status201Created, token.Token);
 
             return Created("", token);
         }

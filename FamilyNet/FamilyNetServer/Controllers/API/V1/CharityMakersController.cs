@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +14,9 @@ using Microsoft.Extensions.Options;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNetServer.HttpHandlers;
+using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -23,21 +25,26 @@ namespace FamilyNetServer.Controllers.API.V1
     public class CharityMakersController : ControllerBase
     {
         #region private
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICharityMakersSelection _selection;
         private readonly ICharityMakerValidator _validator;
         private readonly IFileUploader _fileUploader;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
         private readonly ILogger<CharityMakersController> _logger;
+        private readonly IIdentityExtractor _identityExtractor;
 
         #endregion
 
-        #region ctro
+        #region ctor
+
         public CharityMakersController(IUnitOfWork unitOfWork,
-             ICharityMakersSelection selection, ICharityMakerValidator validator,
+             ICharityMakersSelection selection,
+             ICharityMakerValidator validator,
              IFileUploader fileUploader,
              IOptionsSnapshot<ServerURLSettings> settings,
-             ILogger<CharityMakersController> logger)
+             ILogger<CharityMakersController> logger,
+             IIdentityExtractor identityExtractor)
         {
             _unitOfWork = unitOfWork;
             _selection = selection;
@@ -45,6 +52,7 @@ namespace FamilyNetServer.Controllers.API.V1
             _fileUploader = fileUploader;
             _settings = settings;
             _logger = logger;
+            _identityExtractor = identityExtractor;
         }
 
         #endregion
@@ -52,44 +60,47 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]string name, [FromQuery] float rating,
+        public async Task<IActionResult> GetAll([FromQuery]string name, [FromQuery] float rating,
                                     [FromQuery]int rows, [FromQuery]int page)
         {
+            _logger.LogInformation("{info}",
+                  "Endpoint CharityMakers/api/v1 GetAll was called");
+
             var charityMakerContainer = _unitOfWork.CharityMakers.GetAll().Where(p => p.IsDeleted == false);
             charityMakerContainer = _selection.GetFiltered(charityMakerContainer, name, rating);
 
             if (rows > 0 && page > 0)
             {
-                _logger.LogInformation("Paging were used");
+                _logger.LogInformation("{info}", "Paging were used");
                 charityMakerContainer = charityMakerContainer.Skip(rows * page).Take(rows);
             }
 
             if (charityMakerContainer == null)
             {
-                _logger.LogError("Bad request. No charity maker found");
+                _logger.LogError("{info}{status}", "Charity maker was not found",
+                    StatusCodes.Status400BadRequest);
+
                 return BadRequest();
             }
 
-            var charityMakerDTO = new List<CharityMakerDTO>();
-
-            foreach (var charityMaker in charityMakerContainer)
+            var charityMakerDTO = await charityMakerContainer.Select(charityMaker =>
+            new CharityMakerDTO
             {
-                charityMakerDTO.Add(new CharityMakerDTO
-                {
-                    PhotoPath = _settings.Value.ServerURL + charityMaker.Avatar,
-                    Birthday = charityMaker.Birthday,
-                    EmailID = charityMaker.EmailID,
-                    ID = charityMaker.ID,
-                    Name = charityMaker.FullName.Name,
-                    Patronymic = charityMaker.FullName.Patronymic,
-                    Surname = charityMaker.FullName.Surname,
-                    Rating = charityMaker.Rating,
-                    AdressID = charityMaker.AddressID?? 0
-                });
+                PhotoPath = _settings.Value.ServerURL + charityMaker.Avatar,
+                Birthday = charityMaker.Birthday,
+                EmailID = charityMaker.EmailID,
+                ID = charityMaker.ID,
+                Name = charityMaker.FullName.Name,
+                Patronymic = charityMaker.FullName.Patronymic,
+                Surname = charityMaker.FullName.Surname,
+                Rating = charityMaker.Rating,
+                AdressID = charityMaker.AddressID ?? 0
+            }).ToListAsync();
 
-            }
+            _logger.LogInformation("{status}, {json}",
+                           StatusCodes.Status200OK,
+                           JsonConvert.SerializeObject(charityMakerDTO));
 
-            _logger.LogInformation("List of charity makers was sent");
             return Ok(charityMakerDTO);
         }
 
@@ -98,11 +109,16 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
         {
+            _logger.LogInformation("{info}",
+                 $"Endpoint CharityMakers/api/v1 GetById({id}) was called");
+
             var charityMaker = await _unitOfWork.CharityMakers.GetById(id);
 
             if (charityMaker == null)
             {
-                _logger.LogError("Bad request. No charity maker found");
+                _logger.LogError("{info}{status}", $"CharityMaker wasn't found [id:{id}]",
+                                   StatusCodes.Status400BadRequest);
+
                 return BadRequest();
             }
 
@@ -119,7 +135,10 @@ namespace FamilyNetServer.Controllers.API.V1
                 PhotoPath = _settings.Value.ServerURL + charityMaker.Avatar,
             };
 
-            _logger.LogInformation("Charity maker was sent");
+            _logger.LogInformation("{status},{json}",
+                           StatusCodes.Status200OK,
+                           JsonConvert.SerializeObject(charityMakerDTO));
+
             return Ok(charityMakerDTO);
         }
 
@@ -129,9 +148,16 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm] CharityMakerDTO charityMakerDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
             if (!_validator.IsValid(charityMakerDTO))
             {
-                _logger.LogError("Unfilled name, surname, patronymic, birthday or wrong id");
+                _logger.LogError("{status}{token}{userId}{info}",
+                   StatusCodes.Status400BadRequest,
+                   token, userId,
+                   "Unfilled name, surname, patronymic, birthday or wrong id");
+
                 return BadRequest();
             }
 
@@ -139,6 +165,8 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (charityMakerDTO.Avatar != null)
             {
+                _logger.LogInformation("{info}", "charityMakerDTO has file photo.");
+
                 var fileName = charityMakerDTO.Name + charityMakerDTO.Surname
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
@@ -167,7 +195,10 @@ namespace FamilyNetServer.Controllers.API.V1
             await _unitOfWork.CharityMakers.Create(charityMaker);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Charity maker was created");
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                           token, userId, StatusCodes.Status201Created,
+                           $"CharityMaker was saved [id:{charityMaker.ID}]");
+
             return Created("api/v1/charityMakers/" + charityMaker.ID, charityMaker);
         }
 
@@ -177,9 +208,18 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]CharityMakerDTO charityMakerDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint CharityMakers/api/v1 [PUT] was called", userId, token);
+
             if (!_validator.IsValid(charityMakerDTO))
             {
-                _logger.LogError("Unfilled name, surname, patronymic, birthday or wrong id");
+                _logger.LogError("{userId} {token} {status} {info}", userId, token,
+                    StatusCodes.Status400BadRequest.ToString(),
+                    "Unfilled name, surname, patronymic, birthday or wrong id");
+
                 return BadRequest();
             }
 
@@ -187,7 +227,11 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (charityMaker == null)
             {
-                _logger.LogError("Bad request. No charity maker found");
+                _logger.LogError("{status} {info} {userId} {token}",
+                                   StatusCodes.Status400BadRequest,
+                                   $"CharityMaker was not found [id:{id}]",
+                                   userId, token);
+
                 return BadRequest();
             }
 
@@ -201,6 +245,8 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (charityMakerDTO.Avatar != null)
             {
+                _logger.LogInformation("{info}", "CharityMakerDTO has file photo.");
+
                 var fileName = charityMakerDTO.Name + charityMakerDTO.Surname
                         + charityMakerDTO.Patronymic + DateTime.Now.Ticks;
 
@@ -213,19 +259,32 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.CharityMakers.Update(charityMaker);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Charity maker was successfully updated");
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                             token, userId, StatusCodes.Status204NoContent,
+                             $"CharityMaker was updated [id:{charityMaker.ID}]");
+
             return NoContent();
         }
-        
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+              "Endpoint CharityMakers/api/v1 [DELETE] was called", userId, token);
+
             if (id <= 0)
             {
-                _logger.LogError("Wrong id - {0}", id);
+                _logger.LogError("{status} {info} {userId} {token}",
+                   StatusCodes.Status400BadRequest,
+                   $"Argument id is not valid [id:{id}]",
+                   userId, token);
+
                 return BadRequest();
             }
 
@@ -233,7 +292,11 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (child == null)
             {
-                _logger.LogError("Bad request. No charity maker found");
+                _logger.LogError("{status} {info} {userId} {token}",
+                StatusCodes.Status400BadRequest,
+                $"Charity maker was not found [id:{id}]",
+                userId, token);
+
                 return BadRequest();
             }
 
@@ -242,7 +305,10 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.CharityMakers.Update(child);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Charity maker was deleted");
+            _logger.LogInformation("{status} {info} {userId} {token}",
+               StatusCodes.Status200OK,
+               $"CharityMaker.IsDelete was updated [id:{id}]",
+               userId, token);
             return Ok();
         }
     }

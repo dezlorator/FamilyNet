@@ -1,12 +1,14 @@
 ﻿using DataTransferObjects;
+using FamilyNetServer.HttpHandlers;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,18 +23,21 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IUnitOfWork _repository;
         private readonly IValidator<AddressDTO> _addressValidator;
         private readonly ILogger<AddressController> _logger;
-
+        private readonly IIdentityExtractor _identityExtractor;
 
         #endregion
 
         #region ctor
 
-        public AddressController(IUnitOfWork repo, IValidator<AddressDTO> addressValidator,
-            ILogger<AddressController> logger)
+        public AddressController(IUnitOfWork repo,
+                                 IValidator<AddressDTO> addressValidator,
+                                 ILogger<AddressController> logger,
+                                 IIdentityExtractor identityExtractor)
         {
             _repository = repo;
             _addressValidator = addressValidator;
             _logger = logger;
+            _identityExtractor = identityExtractor;
         }
 
         #endregion
@@ -40,34 +45,37 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation("{info}",
+                  "Endpoint Address/api/v1 GetAll was called");
+
             var address = _repository.Address.GetAll().Where(c => !c.IsDeleted);
 
             if (address == null)
             {
-                _logger.LogError("No address in database");
+                _logger.LogInformation("{status}{info}",
+               StatusCodes.Status400BadRequest,
+              "List of addresses is empty");
+
                 return BadRequest();
             }
 
-            var addressDTO = new List<AddressDTO>();
+            var addressDTO = await address.Select(adrs =>
+             new AddressDTO()
+             {
+                 ID = adrs.ID,
+                 Country = adrs.Country,
+                 Region = adrs.Region,
+                 City = adrs.City,
+                 House = adrs.House,
+                 Street = adrs.Street
+             }).ToListAsync();
 
-            foreach (var adrs in address)
-            {
-                var childrenHouseDTO = new AddressDTO()
-                {
-                    ID = adrs.ID,
-                    Country = adrs.Country,
-                    Region = adrs.Region,
-                    City = adrs.City,
-                    House = adrs.House,
-                    Street = adrs.Street
-                };
+            _logger.LogInformation("{status}, {json}",
+                StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(addressDTO));
 
-                addressDTO.Add(childrenHouseDTO);
-            }
-
-            _logger.LogInformation("Returned address list");
             return Ok(addressDTO);
         }
 
@@ -77,11 +85,16 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
         {
+            _logger.LogInformation("{info}",
+                  $"Endpoint Address/api/v1 GetById({id}) was called");
+
             var addresses = await _repository.Address.GetById(id);
 
             if (addresses == null)
             {
-                _logger.LogError($"No address with id #{id} in database");
+                _logger.LogError("{info}{status}", $"Address wasn't found. [id:{id}]",
+                                        StatusCodes.Status400BadRequest);
+
                 return BadRequest();
             }
 
@@ -95,7 +108,10 @@ namespace FamilyNetServer.Controllers.API.V1
                 House = addresses.House
             };
 
-            _logger.LogInformation($"Returned address #{id}");
+            _logger.LogInformation("{status},{json}",
+                            StatusCodes.Status200OK,
+                            JsonConvert.SerializeObject(addressDTO));
+
             return Ok(addressDTO);
         }
 
@@ -105,9 +121,18 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info} {userId} {token}",
+                "Endpoint Assress/api/v1 [POST] was called", userId, token);
+
             if (!_addressValidator.IsValid(addressDTO))
             {
-                _logger.LogError("Invalid address");
+                _logger.LogWarning("{status}{token}{userId}",
+                    StatusCodes.Status400BadRequest,
+                    token, userId);
+
                 return BadRequest();
             }
 
@@ -120,13 +145,14 @@ namespace FamilyNetServer.Controllers.API.V1
                 Street = addressDTO.Street
             };
 
-
             await _repository.Address.Create(address);
             _repository.SaveChangesAsync();
 
             addressDTO.ID = address.ID;
 
-            _logger.LogInformation($"Created address with id #{address.ID}");
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                           token, userId, StatusCodes.Status201Created,
+                           $"Address was saved [id:{address.ID}]");
 
             return Created(addressDTO.ID.ToString(), addressDTO);
         }
@@ -137,9 +163,19 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AddressDTO addressDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint Address/api/v1 [PUT] was called", userId, token);
+
             if (!_addressValidator.IsValid(addressDTO))
             {
-                _logger.LogError("Invalid address");
+                _logger.LogError("{userId}{token}{status}{info}",
+                   userId, token,
+                   StatusCodes.Status400BadRequest.ToString(),
+                   "address enity is invalid");
+
                 return BadRequest();
             }
 
@@ -147,6 +183,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (address == null)
             {
+                _logger.LogError("{status} {info} {userId} {token}",
+                   StatusCodes.Status400BadRequest, "Address was not found",
+                   userId, token);
+
                 return BadRequest();
             }
 
@@ -158,7 +198,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
             _repository.Address.Update(address);
             _repository.SaveChangesAsync();
-            _logger.LogInformation($"Edited address with id #{address.ID}");
+
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                 token, userId, StatusCodes.Status204NoContent,
+                 $"Address was updated [id:{address.ID}]");
 
             return NoContent();
         }
@@ -169,9 +212,19 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute]int id)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+               "Endpoint Address/api/v1 [DELETE] was called", userId, token);
+
             if (id <= 0)
             {
-                _logger.LogError("No address in database");
+                _logger.LogError("{status} {info} {userId} {token}",
+                  StatusCodes.Status400BadRequest,
+                  $"Argument id is not valid [id:{id}]",
+                  userId, token);
+
                 return BadRequest();
             }
 
@@ -179,7 +232,11 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (address == null)
             {
-                _logger.LogError("No address in database");
+                _logger.LogError("{status} {info} {userId} {token}",
+                StatusCodes.Status400BadRequest,
+                $"Address was not found [id:{id}]",
+                userId, token);
+
                 return BadRequest();
             }
 
@@ -188,8 +245,10 @@ namespace FamilyNetServer.Controllers.API.V1
             _repository.Address.Update(address);
             _repository.SaveChangesAsync();
 
-            _logger.LogInformation($"Deleted address with id #{address.ID}");
-
+            _logger.LogInformation("{status} {info} {userId} {token}",
+                           StatusCodes.Status200OK,
+                           $"Address.IsDelete was updated [id:{id}]",
+                           userId, token);
             return Ok();
         }
     }
