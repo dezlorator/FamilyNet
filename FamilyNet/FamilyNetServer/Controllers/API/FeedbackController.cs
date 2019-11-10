@@ -75,7 +75,7 @@ namespace FamilyNetServer.Controllers.API
                 {
                     ID = feedback.ID,
                     DonationId = feedback.DonationId,
-                    ImagePath = _settings.Value.ServerURL + feedback.Image,
+                    ImagePath = feedback.Image,
                     Message = feedback.Message,
                     Rating = feedback.Rating,
                     ReceiverId = feedback.ReceiverId,
@@ -116,7 +116,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 ID = feedback.ID,
                 DonationId = feedback.DonationId,
-                ImagePath = _settings.Value.ServerURL + feedback.Image,
+                ImagePath = feedback.Image,
                 Message = feedback.Message,
                 Rating = feedback.Rating,
                 ReceiverId = feedback.ReceiverId,
