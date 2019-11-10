@@ -148,7 +148,24 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
                 //TODO: log
             }
-          
+
+            url = _URLAuctionLotBuilder.GetById(_apiAuctionLotPath, model.Purchase.AuctionLotId);
+            var lot = await _auctionLotDownloader.GetByIdAsync(url, HttpContext.Session);
+
+            lot.Quantity -= model.Purchase.Quantity;
+            if(lot.Quantity == 0)
+            {
+                lot.Status = "Sold";
+            }
+            
+            var status = await _auctionLotDownloader.CreatePutAsync(url, lot, null, String.Empty, HttpContext.Session);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                          ViewData);
 
@@ -236,6 +253,7 @@ namespace FamilyNet.Controllers
 
             return View(viewModel);
         }
+
         #region Private Helpers
 
         private IEnumerable<PurchaseDTO> GetFiltered(IEnumerable<PurchaseDTO> purchase, 

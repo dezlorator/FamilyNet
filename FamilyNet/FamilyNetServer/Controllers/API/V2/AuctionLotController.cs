@@ -68,7 +68,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 var auctionLotDTO = new AuctionLotDTO()
                 {
                     ID = lot.ID,
-                    DateStart = lot.DateAdded,
+                    DateAdded = lot.DateAdded,
                     OrphanID = lot.OrphanID,
                     Quantity = lot.Quantity,
                     Status = lot.Status.ToString(),
@@ -101,7 +101,7 @@ namespace FamilyNetServer.Controllers.API.V2
             var auctionDTO = new AuctionLotDTO()
             {
                 ID = auction.ID,
-                DateStart = auction.DateAdded,
+                DateAdded = auction.DateAdded,
                 OrphanID = auction.OrphanID,
                 Quantity = auction.Quantity,
                 Status = auction.Status.ToString(),
@@ -127,7 +127,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
             var auction = new AuctionLot()
             {
-                DateAdded = auctionDTO.DateStart,
+                DateAdded = auctionDTO.DateAdded,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
                 Status =  AuctionLotStatus.UnApproved,
@@ -178,7 +178,7 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             auction.AuctionLotItemID = auctionDTO.AuctionLotItemID;
-            auction.DateAdded = auctionDTO.DateStart;
+            auction.DateAdded = auctionDTO.DateAdded;
             auction.OrphanID = auctionDTO.OrphanID;
             var status = AuctionLotStatus.UnApproved;
             Enum.TryParse(auctionDTO.Status,out status);

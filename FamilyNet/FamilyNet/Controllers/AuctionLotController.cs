@@ -84,9 +84,10 @@ namespace FamilyNet.Controllers
         #region ActionMethods
 
 
-        public async Task<IActionResult> All(int page = 1, string name="", string sort="", string start ="", string end ="")
+        public async Task<IActionResult> All(int page = 1, string name="", string sort="", float priceStart =0.0f, float priceEnd =0.0f)
         {
-            var url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
+            var url = _URLAuctionLotBuilder.GetAllWithFilter(_apiAuctionLotPath,
+                name, priceStart, priceEnd, sort, page, _pageSize);
             IEnumerable<AuctionLotDTO> auctionLots = null;
 
             try
@@ -106,10 +107,10 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var crafts = auctionLots.Where(lot => lot.Status == "Approved").Select(fair => new AuctionLot()
+            var crafts = auctionLots.Select(fair => new AuctionLot()
             {
                 ID = fair.ID,
-                DateStart = fair.DateStart,
+                DateStart = fair.DateAdded,
                 Avatar = fair.PhotoParth,
                 OrphanID = fair.OrphanID,
                 Quantity = fair.Quantity,
@@ -118,41 +119,28 @@ namespace FamilyNet.Controllers
                 AuctionLotItem = GetItem(fair.AuctionLotItemID.Value).Result
             });
 
-            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
-                                                         ViewData);
-            if(!Enum.TryParse<SortState>(sort, true, out var sortState))
-            {
-                sortState = SortState.NameAsc;
-            }
-
-            if(!float.TryParse(start, out var priceStart))
-            {
-                priceStart = 0;
-            }
-            if (!float.TryParse(end, out var priceEnd))
-            {
-                priceEnd = 0;
-            }
-
             var model = new AuctionLotAllViewModel
             {
-                AuctionLots = GetFiltered(crafts, priceStart, priceEnd, name, page, sortState, out var count),
-                PageViewModel = new AuctionLotPageViewModel(count, page, 3),
-                FilterViewModel = new AuctionLotFilterModel {  SelectedName = name,  StartPrice= start, EndPrice = end },
+                AuctionLots = crafts,
+                PageViewModel = new AuctionLotPageViewModel(_auctionLotDownloader.TotalItemsCount, page, 3),
+                FilterViewModel = new AuctionLotFilterModel {  SelectedName = name,  StartPrice= priceStart, EndPrice = priceEnd },
                 Sort = sort
             };
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                         ViewData);
 
             return View(model);
         }
 
-        public  ActionResult MyCrafts(int orphanId = 7)
+        public async Task<ActionResult> MyCrafts(int page = 1, int orphanId = 7)
         {
-            var url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
+            var url = _URLAuctionLotBuilder.GetAllOrphanCrafts(_apiAuctionLotPath, orphanId, page, _pageSize);
             IEnumerable<AuctionLotDTO> auctionLots = null;
 
             try
             {
-                auctionLots =  _auctionLotDownloader.GetAllAsync(url, HttpContext.Session).Result.Where(lot =>lot.Status !="Approved" && lot.OrphanID == orphanId);
+                auctionLots = await _auctionLotDownloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -170,7 +158,7 @@ namespace FamilyNet.Controllers
             var crafts = auctionLots.Select(fair => new AuctionLot()
             {
                 ID = fair.ID,
-                DateStart = fair.DateStart,
+                DateStart = fair.DateAdded,
                 Avatar = fair.PhotoParth,
                 OrphanID = fair.OrphanID,
                 Quantity = fair.Quantity,
@@ -181,8 +169,14 @@ namespace FamilyNet.Controllers
 
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                          ViewData);
+            var model = new AuctionLotAllViewModel
+            {
+                AuctionLots = crafts,
+                PageViewModel = new AuctionLotPageViewModel(_auctionLotDownloader.TotalItemsCount, page, _pageSize)
+            };
 
-            return View(crafts);
+        
+            return View(model);
         }
 
         public async Task<IActionResult> Details(int? id) 
@@ -220,7 +214,7 @@ namespace FamilyNet.Controllers
             var craft = new AuctionLot
             {
                 ID = auctionLot.ID,
-                DateStart = auctionLot.DateStart,
+                DateStart = auctionLot.DateAdded,
                 Avatar = auctionLot.PhotoParth,
                 OrphanID = auctionLot.OrphanID,
                 Quantity = auctionLot.Quantity,
@@ -282,8 +276,6 @@ namespace FamilyNet.Controllers
             return Redirect("/AuctionLot/All");
         }
 
-        // GET: Orphanages/Edit/5
-    
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -313,7 +305,10 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-
+            if(auctionLot == null || itemDTO == null)
+            {
+                return Redirect("/Home/Error");
+            }
 
             var model = new AuctionLotCreateViewModel
             {
@@ -327,11 +322,9 @@ namespace FamilyNet.Controllers
             return View(model);
         }
 
-        // POST: Orphanages/Edit/5
         [Microsoft.AspNetCore.Mvc.HttpPost]
         [ValidateAntiForgeryToken]
- 
-        public async Task<IActionResult> Edit(int id, AuctionLotCreateViewModel model) //TODO: Check change id position
+        public async Task<IActionResult> Edit(int id, AuctionLotCreateViewModel model)
         {
             if (id != model.AuctionLot.ID)
             {
@@ -357,7 +350,6 @@ namespace FamilyNet.Controllers
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
-                //TODO: log
             }
 
             url = _URLAuctionLotBuilder.GetById(_apiAuctionLotPath, id);
@@ -368,7 +360,6 @@ namespace FamilyNet.Controllers
             if (status != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
-                //TODO: log
             }
 
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
@@ -426,14 +417,28 @@ namespace FamilyNet.Controllers
 
             url = _URLChildrenBuilder.GetAllWithFilter(_apiChildrenPath, new PersonSearchModel(), representative.ChildrenHouseID);
             var orphans = await _childrenDownloader.GetAllAsync(url, HttpContext.Session);
-           
 
-            url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
-            IEnumerable<AuctionLotDTO> auctionLots = null;
+            var lots = new List<IEnumerable<AuctionLot>>();
 
             try
             {
-                auctionLots = await _auctionLotDownloader.GetAllAsync(url, HttpContext.Session);
+                foreach (var orphan in orphans)
+                {
+                    url = _URLAuctionLotBuilder.GetAllUnApproved(_apiAuctionLotPath, orphan.ID);
+                    var auctionLots = await _auctionLotDownloader.GetAllAsync(url, HttpContext.Session);
+                    var crafts = auctionLots.Select(fair => new AuctionLot()
+                    {
+                        ID = fair.ID,
+                        DateStart = fair.DateAdded,
+                        Avatar = fair.PhotoParth,
+                        OrphanID = fair.OrphanID,
+                        Quantity = fair.Quantity,
+                        Status = fair.Status,
+                        AuctionLotItemID = fair.AuctionLotItemID,
+                        AuctionLotItem = GetItem(fair.AuctionLotItemID.Value).Result
+                    });
+                    lots.Add(crafts);
+                }                
             }
             catch (ArgumentNullException)
             {
@@ -446,23 +451,6 @@ namespace FamilyNet.Controllers
             catch (JsonException)
             {
                 return Redirect("/Home/Error");
-            }
-
-            var lots = new List<IEnumerable<AuctionLot>>();
-            foreach(var orphan in orphans)
-            {
-              var crafts = auctionLots.Where(lot => lot.Status =="UnApproved" && lot.OrphanID == orphan.ID).Select(fair => new AuctionLot()
-              {
-                        ID = fair.ID,
-                        DateStart = fair.DateStart,
-                        Avatar = fair.PhotoParth,
-                        OrphanID = fair.OrphanID,
-                        Quantity = fair.Quantity,
-                        Status = fair.Status,
-                        AuctionLotItemID = fair.AuctionLotItemID,
-                        AuctionLotItem = GetItem(fair.AuctionLotItemID.Value).Result
-              });
-                lots.Add(crafts);
             }
 
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
@@ -511,7 +499,7 @@ namespace FamilyNet.Controllers
 
                 auctionLotDTO.Status = "Declined";
 
-                var msg = await _auctionLotDownloader.CreatePutAsync(url, auctionLotDTO, null, null, HttpContext.Session);
+                var msg = await _auctionLotDownloader.CreatePutAsync(url, auctionLotDTO, null, String.Empty, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -531,47 +519,7 @@ namespace FamilyNet.Controllers
 
             return Redirect("/AuctionLot/ConfirmCrafts");
         }
-
-
-        private IEnumerable<AuctionLot> GetFiltered(IEnumerable<AuctionLot> lots, float start, float end, string name, int page,
-            SortState sortOrder, out int count)
-        {            
-           
-            if (start >0.0)
-            {
-                lots = lots.Where(o => o.AuctionLotItem.Price > start);
-            }
-
-            if (end > 0.0)
-            {
-                lots = lots.Where(o => o.AuctionLotItem.Price < end);
-            }
-
-            if (!String.IsNullOrEmpty(name))
-            {
-                lots = lots.Where(o => o.AuctionLotItem.Name.Contains(name));
-            }
-
-            switch (sortOrder)
-            {
-                case SortState.NameDesc:
-                    lots = lots.OrderByDescending(s => s.AuctionLotItem.Name);
-                    break;
-                case SortState.PriceAsc:
-                    lots = lots.OrderBy(s => s.AuctionLotItem.Price);
-                    break;
-                case SortState.PriceDesc:
-                    lots = lots.OrderByDescending(s => s.AuctionLotItem.Price);
-                    break;
-            }
-
-            count = lots.Count();
-
-            lots = lots.Skip((page - 1) * _pageSize).Take(_pageSize);
-
-            return lots;
-        }
-
+      
         #endregion
 
         #region Private Helpers
@@ -589,7 +537,7 @@ namespace FamilyNet.Controllers
                 Description = item.Description
             };
         }
-
+     
         #endregion
     }
 }
