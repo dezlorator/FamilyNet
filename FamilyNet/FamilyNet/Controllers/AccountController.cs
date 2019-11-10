@@ -204,9 +204,10 @@ namespace FamilyNet.Controllers
             {
                 RedirectToAction("Index", "Home");
             }
-            if (GetPersonType(role) != PersonType.User)
+            var personId = HttpContext.Session.GetString("personId");
+            if (GetPersonType(role) != PersonType.User && (personId == String.Empty || personId == null))
             {
-                var url = Url.Action(role + "s", "Create");
+                var url = Url.Action("Create", role + "s");
                 return Redirect(url);
             }
 

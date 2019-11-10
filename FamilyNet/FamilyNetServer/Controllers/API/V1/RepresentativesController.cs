@@ -158,6 +158,11 @@ namespace FamilyNetServer.Controllers.API.V1
             representativeDTO.ID = representative.ID;
             representativeDTO.PhotoPath = representative.Avatar;
 
+            var user=await _unitOfWork.UserManager.GetUserAsync(HttpContext.User);
+            user.PersonID = representative.ID;
+            user.PersonType = Models.Identity.PersonType.Representative;
+            await _unitOfWork.UserManager.UpdateAsync(user);
+
             return Created("api/v1/{controller}/" + representative.ID, representativeDTO);
         }
 
