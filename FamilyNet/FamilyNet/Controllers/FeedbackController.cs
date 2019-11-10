@@ -33,8 +33,6 @@ namespace FamilyNet.Controllers
         private readonly string _pathToErrorView = "/Home/Error";
         private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private int _donationId;
-        private readonly IJWTEncoder _encoder;
-        private readonly IAuthorizeCreater _authorizeCreater;
         #endregion
 
         #region ctor
@@ -42,8 +40,7 @@ namespace FamilyNet.Controllers
             ServerDataDownloader<FeedbackDTO> feedbackDownloader,
             IFileStreamCreater streamCreator, IFioDownloader fioDownloader,
             IURLFioBuilder urlFioBuilder,
-            IIdentityInformationExtractor identityInformationExtactor,
-            IJWTEncoder encoder, IAuthorizeCreater authorizeCreater)
+            IIdentityInformationExtractor identityInformationExtactor)
         {
             _urlFeedbackBuilder = urlFeedbackBuilder;
             _feedbackDownloader = feedbackDownloader;
@@ -51,8 +48,6 @@ namespace FamilyNet.Controllers
             _fioDownloader = fioDownloader;
             _streamCreator = streamCreator;
             _identityInformationExtactor = identityInformationExtactor;
-            _encoder = encoder;
-            _authorizeCreater = authorizeCreater;
         }
         #endregion
 
