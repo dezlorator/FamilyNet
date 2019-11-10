@@ -1,8 +1,10 @@
-﻿namespace FamilyNet.HttpHandlers
+﻿using DataTransferObjects;
+
+namespace FamilyNet.HttpHandlers
 {
     public class AuthenticationResult
     {
         public bool Success { get; set; }
-        public string Token { get; set; }
+        public TokenDTO Token { get; set; }
     }
 }
