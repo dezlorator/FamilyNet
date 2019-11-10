@@ -14,6 +14,9 @@ using DataTransferObjects;
 using FamilyNetServer.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNetServer.HttpHandlers;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -28,6 +31,8 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IRepresentativeValidator _representativeValidator;
         private readonly IFilterConditionsRepresentatives _filterConditions;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
+        private readonly ILogger<RepresentativesController> _logger;
+        private readonly IIdentityExtractor _identityExtractor;
 
         private string _url
         {
@@ -45,14 +50,17 @@ namespace FamilyNetServer.Controllers.API.V1
                                   IUnitOfWork unitOfWork,
                                   IRepresentativeValidator representativeValidator,
                                   IFilterConditionsRepresentatives filterConditions,
-                                   IOptionsSnapshot<ServerURLSettings> settings)
+                                  IOptionsSnapshot<ServerURLSettings> settings,
+                                  IIdentityExtractor identityExtractor,
+                                  ILogger<RepresentativesController> logger)
         {
             _fileUploader = fileUploader;
             _unitOfWork = unitOfWork;
             _representativeValidator = representativeValidator;
             _filterConditions = filterConditions;
             _settings = settings;
-
+            _identityExtractor = identityExtractor;
+            _logger = logger;
         }
 
         #endregion
@@ -62,13 +70,21 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll([FromQuery] FilterParametersRepresentatives filter)
         {
+            _logger.LogInformation("{info}",
+                  "Endpoint Representatives/api/v1 GetAll was called");
+
             var representatives = _unitOfWork.Representatives.GetAll().Where(r => !r.IsDeleted);
             representatives = _filterConditions.GetRepresentatives(representatives, filter);
 
             if (representatives == null)
             {
+                _logger.LogInformation("{status}{info}",
+                   StatusCodes.Status400BadRequest,
+                   "List of Representatives is empty");
+
                 return BadRequest();
             }
+
             var representativesDTO = representatives.Select(r =>
             new RepresentativeDTO()
             {
@@ -83,6 +99,10 @@ namespace FamilyNetServer.Controllers.API.V1
                 Rating = r.Rating
             });
 
+            _logger.LogInformation("{status}, {json}",
+               StatusCodes.Status200OK,
+               JsonConvert.SerializeObject(representativesDTO));
+
             return Ok(representativesDTO);
         }
 
@@ -91,10 +111,16 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
         {
+            _logger.LogInformation("{info}",
+                 $"Endpoint Representatives/api/v1 GetById({id}) was called");
+
             var represenntative = await _unitOfWork.Representatives.GetById(id);
 
             if (represenntative == null)
             {
+                _logger.LogError("{info}{status}", $"Representative wasn't found [id:{id}]",
+                   StatusCodes.Status400BadRequest);
+
                 return BadRequest();
             }
 
@@ -111,6 +137,10 @@ namespace FamilyNetServer.Controllers.API.V1
                 PhotoPath = _settings.Value.ServerURL + represenntative.Avatar
             };
 
+            _logger.LogInformation("{status},{json}",
+               StatusCodes.Status200OK,
+               JsonConvert.SerializeObject(representativeDTO));
+
             return Ok(representativeDTO);
         }
 
@@ -120,8 +150,18 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]RepresentativeDTO representativeDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info} {userId} {token}",
+                "Endpoint Representatives/api/v1 [POST] was called", userId, token);
+
             if (!_representativeValidator.IsValid(representativeDTO))
             {
+                _logger.LogWarning("{status}{token}{userId}",
+                   StatusCodes.Status400BadRequest,
+                   token, userId);
+
                 return BadRequest();
             }
 
@@ -129,6 +169,8 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (representativeDTO.Avatar != null)
             {
+                _logger.LogInformation("{info}", "RepresentativeDTO has file photo.");
+
                 var fileName = representativeDTO.Name + representativeDTO.Surname
                         + representativeDTO.Patronymic + DateTime.Now.Ticks;
 
@@ -158,6 +200,10 @@ namespace FamilyNetServer.Controllers.API.V1
             representativeDTO.ID = representative.ID;
             representativeDTO.PhotoPath = representative.Avatar;
 
+            _logger.LogInformation("{token}{userId}{status}{info}",
+               token, userId, StatusCodes.Status201Created,
+               $"Representative was saved [id:{representative.ID}]");
+
             return Created("api/v1/{controller}/" + representative.ID, representativeDTO);
         }
 
@@ -167,8 +213,17 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]RepresentativeDTO representativeDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint Representatives/api/v1 [PUT] was called", userId, token);
+
             if (!_representativeValidator.IsValid(representativeDTO))
             {
+                _logger.LogError("{userId} {token} {status} {info}", userId, token,
+                    StatusCodes.Status400BadRequest.ToString(), "representativeDTO is invalid");
+
                 return BadRequest();
             }
 
@@ -176,6 +231,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (representative == null)
             {
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest, $"Representative was not found [id:{id}]",
+                    userId, token);
+
                 return BadRequest();
             }
 
@@ -189,6 +248,8 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (representativeDTO.Avatar != null)
             {
+                _logger.LogInformation("{info}", "representativeDTO has file photo.");
+
                 var fileName = representativeDTO.Name + representativeDTO.Surname
                         + representativeDTO.Patronymic + DateTime.Now.Ticks;
 
@@ -199,6 +260,10 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.Representatives.Update(representative);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                 token, userId, StatusCodes.Status204NoContent,
+                 $"Representative was updated [id:{representative.ID}]");
+
             return NoContent();
         }
 
@@ -208,8 +273,19 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+               "Endpoint Representatives/api/v1 [DELETE] was called", userId, token);
+
             if (id <= 0)
             {
+                _logger.LogError("{status} {info} {userId} {token}",
+                  StatusCodes.Status400BadRequest,
+                  $"Argument id is not valid [id:{id}]",
+                  userId, token);
+
                 return BadRequest();
             }
 
@@ -217,6 +293,11 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (representative == null)
             {
+                _logger.LogError("{status} {info} {userId} {token}",
+                 StatusCodes.Status400BadRequest,
+                 $"Representative was not found [id:{id}]",
+                 userId, token);
+
                 return BadRequest();
             }
 
@@ -225,6 +306,11 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.Representatives.Update(representative);
             _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation("{status} {info} {userId} {token}",
+               StatusCodes.Status200OK,
+               $"Representative.IsDelete was updated [id:{id}]",
+               userId, token);
+            
             return Ok();
         }
     }

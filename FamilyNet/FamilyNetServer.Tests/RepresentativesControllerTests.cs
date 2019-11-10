@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using FamilyNetServer.Controllers.API.V1;
+using FamilyNetServer.HttpHandlers;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Tests
 {
@@ -29,6 +31,8 @@ namespace FamilyNetServer.Tests
         private Mock<IRepository<Representative>> _mockRepresentatives;
         private Mock<IOptionsSnapshot<ServerURLSettings>> _mockSettings;
         private RepresentativesController _controller;
+        private Mock<IIdentityExtractor> _mockIdentityExtractor;
+        private Mock<ILogger<RepresentativesController>> _mockLogger;
 
         [SetUp]
         public virtual void SetUp()
@@ -39,11 +43,14 @@ namespace FamilyNetServer.Tests
             _mockValidator = new Mock<IRepresentativeValidator>();
             _mockRepresentatives = new Mock<IRepository<Representative>>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
+            _mockIdentityExtractor = new Mock<IIdentityExtractor>();
             _controller = new RepresentativesController(_mockFileUploader.Object,
                                                 _mockUnitOfWork.Object,
                                                 _mockValidator.Object,
                                                 _mockFilterConditions.Object,
-                                                _mockSettings.Object);
+                                                _mockSettings.Object,
+                                                _mockIdentityExtractor.Object,
+                                                _mockLogger.Object);
             _mockUnitOfWork.Setup(t => t.Representatives).Returns(_mockRepresentatives.Object);
         }
 

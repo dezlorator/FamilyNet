@@ -2,7 +2,6 @@
 using FamilyNetServer.Configuration;
 using FamilyNetServer.Controllers.API.V1;
 using FamilyNetServer.Filters;
-using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.HttpHandlers;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
@@ -14,8 +13,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -64,34 +61,6 @@ namespace FamilyNetServer.Tests
         }
 
         #endregion
-
-        [Test]
-        public void ChildrenController_WithFilter_ShouldReturnListOfChildren()
-        {
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-
-            var orphans = new List<Orphan>()
-            {
-                new Orphan()
-                {
-                    IsDeleted = false,
-                    FullName = new FullName()
-                    {
-                        Name = "Name",
-                        Patronymic= "Patronymic",
-                        Surname = "Surname"
-                    }
-                }
-            }.AsQueryable();
-
-            _mockOrphanRepository.Setup(r => r.GetAll()).Returns(orphans);
-
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            var filter = It.IsAny<FilterParemetersChildren>();
-            controller.GetAll(filter);
-
-            _mockOrphanRepository.Verify(m => m.GetAll(), Times.Once);
-        }
 
 
         [Test]

@@ -11,7 +11,7 @@ namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class RolesController : ControllerBase
     {
         #region private fields
@@ -35,7 +35,7 @@ namespace FamilyNetServer.Controllers.API.V1
         public IActionResult GetAllAsync()
         {
             var allRoles = _unitOfWork.RoleManager.Roles.ToList();
-           
+
             return Ok(allRoles);
         }
 
@@ -53,7 +53,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
                 _unitOfWork.SaveChangesAsync();
                 return Created("api/v1/roles/", roleDTO);
-                
+
             }
             else
             {
@@ -68,7 +68,8 @@ namespace FamilyNetServer.Controllers.API.V1
         {
             if (id != null)
             {
-                IdentityRole role = await _unitOfWork.RoleManager.FindByIdAsync(id);
+                var role = await _unitOfWork.RoleManager.FindByIdAsync(id);
+
                 if (role != null)
                 {
                     await _unitOfWork.RoleManager.DeleteAsync(role);
@@ -76,14 +77,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
                 _unitOfWork.SaveChangesAsync();
 
-
                 return Ok();
             }
-            else
-            {
-                return BadRequest();
-            }
+
+            return BadRequest();
         }
     }
-
 }
