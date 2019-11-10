@@ -162,7 +162,7 @@ namespace FamilyNetServer.Controllers.API.V2
             };
 
             await _repository.Orphanages.Create(childrenHouse);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             childrenHousesDTO.ID = childrenHouse.ID;
             childrenHousesDTO.PhotoPath = childrenHouse.Avatar;
@@ -205,7 +205,7 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             _repository.Orphanages.Update(childrenHouse);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Edited children house with id #{childrenHouse.ID}");
 
@@ -235,7 +235,7 @@ namespace FamilyNetServer.Controllers.API.V2
             childrenHouse.IsDeleted = true;
 
             _repository.Orphanages.Update(childrenHouse);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Deleted children house with id #{childrenHouse.ID}");
 

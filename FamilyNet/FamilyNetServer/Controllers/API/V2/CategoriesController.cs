@@ -112,7 +112,7 @@ namespace FamilyNetServer.Controllers.API.V2
             };
 
             await _unitOfWork.BaseItemTypes.Create(category);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: Created. Category was created");
 
@@ -141,7 +141,7 @@ namespace FamilyNetServer.Controllers.API.V2
             category.IsDeleted = true;
 
             _unitOfWork.BaseItemTypes.Update(category);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: OK. Category was deleted.");
 

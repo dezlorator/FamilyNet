@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using FamilyNetServer.Controllers.API.V1;
+using FamilyNetServer.HttpHandlers;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyNetServer.Tests
 {
@@ -29,6 +31,8 @@ namespace FamilyNetServer.Tests
         private Mock<IRepository<Representative>> _mockRepresentatives;
         private Mock<IOptionsSnapshot<ServerURLSettings>> _mockSettings;
         private RepresentativesController _controller;
+        private Mock<IIdentityExtractor> _mockIdentityExtractor;
+        private Mock<ILogger<RepresentativesController>> _mockLogger;
 
         [SetUp]
         public virtual void SetUp()
@@ -39,11 +43,14 @@ namespace FamilyNetServer.Tests
             _mockValidator = new Mock<IRepresentativeValidator>();
             _mockRepresentatives = new Mock<IRepository<Representative>>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
+            _mockIdentityExtractor = new Mock<IIdentityExtractor>();
             _controller = new RepresentativesController(_mockFileUploader.Object,
                                                 _mockUnitOfWork.Object,
                                                 _mockValidator.Object,
                                                 _mockFilterConditions.Object,
-                                                _mockSettings.Object);
+                                                _mockSettings.Object,
+                                                _mockIdentityExtractor.Object,
+                                                _mockLogger.Object);
             _mockUnitOfWork.Setup(t => t.Representatives).Returns(_mockRepresentatives.Object);
         }
 
@@ -71,7 +78,7 @@ namespace FamilyNetServer.Tests
 
             //Act
             _controller
-                .GetAll(It.IsAny<FilterParametersRepresentatives>());
+                .GetAllAsync(It.IsAny<FilterParametersRepresentatives>());
 
             //Assert
             _mockRepresentatives.Verify(repo => repo.GetAll(), Times.Once);
@@ -108,7 +115,7 @@ namespace FamilyNetServer.Tests
 
             //Act
             var result = _controller
-                .GetAll(filter);
+                .GetAllAsync(filter);
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -137,7 +144,7 @@ namespace FamilyNetServer.Tests
             _mockFilterConditions.Setup(f => f.GetRepresentatives(representatives, filter)).Returns(() => null);
 
             //Act
-            var result = _controller.GetAll(filter);
+            var result = _controller.GetAllAsync(filter);
 
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
@@ -312,7 +319,7 @@ namespace FamilyNetServer.Tests
             await _controller.Create(representativeDTO);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -408,7 +415,7 @@ namespace FamilyNetServer.Tests
             await _controller.Create(representativeDTO);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Never);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Never);
         }
 
         #endregion
@@ -562,7 +569,7 @@ namespace FamilyNetServer.Tests
             await _controller.Edit(It.IsAny<int>(), representativeDTO);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -727,7 +734,7 @@ namespace FamilyNetServer.Tests
             await _controller.Edit(It.IsAny<int>(), representativeDTO);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Never);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Never);
         }
 
         #endregion
@@ -816,7 +823,7 @@ namespace FamilyNetServer.Tests
             await _controller.Delete(id);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -871,7 +878,7 @@ namespace FamilyNetServer.Tests
             await _controller.Delete(id);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Never);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Never);
         }
 
         [Test]

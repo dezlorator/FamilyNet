@@ -153,7 +153,7 @@ namespace FamilyNetServer.Controllers.API.V2
             };
 
             await _unitOfWork.Representatives.Create(representative);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             representativeDTO.ID = representative.ID;
             representativeDTO.PhotoPath = representative.Avatar;
@@ -197,7 +197,7 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             _unitOfWork.Representatives.Update(representative);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             return NoContent();
         }
@@ -223,7 +223,7 @@ namespace FamilyNetServer.Controllers.API.V2
             representative.IsDeleted = true;
 
             _unitOfWork.Representatives.Update(representative);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             return Ok();
         }

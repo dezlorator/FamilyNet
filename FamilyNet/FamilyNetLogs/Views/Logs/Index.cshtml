@@ -1,0 +1,76 @@
+﻿@model PagingList<Log>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *,ReflectionIT.Mvc.Paging
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div style="margin-top:16px">
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                User Id: <input type="text" name="userId" value="@ViewData["userFilter"]" />
+                Level: <input type="text" name="level" value="@ViewData["levelFilter"]" />
+                Token: <input type="text" name="token" value="@ViewData["tokenFilter"]" />
+                <input type="submit" value="Search" class="btn btn-default" /> |
+                <a asp-action="Index">Back to Full List</a>
+            </p>
+        </div>
+    </form>
+</div>
+
+
+<div class="table-responsive">
+    <table class="table table-bordered table-sm" style="width:100%">
+        <thead>
+            <tr>
+                <th style="width:7%">Logged</th>
+                <th  style="width:5%">Http Status</th>
+                <th  style="width:7%">Level</th>
+                <th  style="width:8%">Info</th>
+                <th  style="width:20%">Call</th>
+                <th  style="width:10%">User Id</th>
+                <th  style="width:5%">JSON</th>
+                <th  style="width:15%">Token Signature</th>
+                <th style="width:23%">Exception</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td>@log.Logged</td>
+                    <td>@log.Status</td>
+                    <td>@log.Level</td>
+                    <td>@log.Info</td>
+                    <td>@log.CallSite</td>
+                    <td>@log.UserId</td>
+                    <td>
+                        @if (!String.IsNullOrEmpty(log.JSON))
+                        {
+                            @Html.ActionLink("JSON", "JSON", "Logs", new { id = log.Id }, null)
+                        }
+                        else
+                        {
+                            <p>-</p>
+                        }
+                    </td>
+                    <td>@log.Token</td>
+                    <td>
+                        @if (!String.IsNullOrEmpty(log.Exception))
+                        {
+                            @Html.ActionLink("Exception", "Exception", "Logs", new { id = log.Id }, null)
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="fixed-bottom">
+        <nav aria-label="Logs">
+            @await this.Component.InvokeAsync("Pager", new { pagingList = this.Model })
+        </nav>
+    </div>
+</div>
+
