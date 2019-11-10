@@ -1,25 +1,105 @@
-﻿@model  IEnumerable<PurchaseDTO>
-@{
+﻿@model FamilyNet.Models.ViewModels.Purchase.PurchaseAllViewModel
+@{ 
     ViewData["Title"] = "MyPurchases";
 }
+@{
+    var role = ViewData["role"] as String;
+    var userId = Model.FilterViewModel.UserId == null? String.Empty : Model.FilterViewModel.UserId;
+    var sort = Model.Sort == null? String.Empty : Model.Sort;
+    var q1 = Model.FilterViewModel.QuantityFrom == 0? 0 : Model.FilterViewModel.QuantityFrom;
+    var q2 = Model.FilterViewModel.QuantityTo == 0? 0 : Model.FilterViewModel.QuantityTo;
+    var p1 = Model.FilterViewModel.PaidFrom == 0.0? 0.0 : Model.FilterViewModel.PaidFrom;
+    var p2 = Model.FilterViewModel.PaidTo == 0.0? 0.0 : Model.FilterViewModel.PaidTo;
+    var craft = Model.FilterViewModel.CraftId == 0? 0 : Model.FilterViewModel.CraftId;
+    var date = DateTime.MinValue;
+}
+@if (role == "Admin")
+{
+    <h1>Purchases</h1>
+}
+else
+{
+    <h1>MyPurchases</h1>
+}
+<form method="get">
+    @if (role == "Admin")
+    {
+        <label>Search by user id:</label>
+        <input asp-for="@userId" class="form-control input-lg" />
+        <br />
+    }
+    <table class="table table-bordered" >
+        <tr class="table-info">
+            <th>Craft id</th>
+            <th>Date</th>
+            <th>Quantity from</th>
+            <th>Quantity to</th>
+        </tr>
+        <tbody>
+            <tr>
+                <td><input asp-for="@craft" /></td>
+                <td><input type="date" asp-for="@date" /></td>
+                <td><input asp-for="@q1" /></td>
+                <td><input asp-for="@q2" /></td>
+            </tr>
+        </tbody>
+        <tr class="table-info">
+            <th>Paid from</th>
+            <th>Paid to</th>
+            <th>Sort</th>
+        </tr>
+        <tbody>
+            <tr>
+                <td><input asp-for="@p1" /></td>
+                <td><input asp-for="@p2" /></td>
+                <td>
+                    <select asp-for="@sort">
+                        <option></option>
+                        <option>DateAsc</option>
+                        <option>DateDesc</option>
+                        <option>QuantityAsc</option>
+                        <option>QuantityDesc</option>
+                        <option>PaidAsc</option>
+                        <option>PaidDesc</option>
+                    </select>
+                </td>
 
-<h1>MyPurchases</h1>
+            </tr>
+        </tbody>
+    </table>
+    <input type="submit" value="Filter out" class="btn btn-primary"
+           asp-route-userId="@userId" asp-route-sort="@sort"
+           asp-route-craft="@craft" asp-route-q1="@q1"
+           asp-route-q2="@q2" asp-route-p1="@p1"
+           asp-route-date="@date" asp-route-p2="@p2"
+           style="float:right; margin-bottom: 2%" />
+</form>
+
+
 
 <table class="table table-hover center">
     <thead class="thead-light">
         <tr>
+            @if (role == "Admin")
+            {
+                <th>User id</th>
+            }
             <th>Craft id</th>
-            <th>Date</th>
             <th>Quantity</th>
             <th>Paid</th>
+            <th>Date</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var buy in Model)
+        @foreach (var buy in Model.PurchaseDTO)
         {
             <tr>
+                @if (role == "Admin")
+                {
+                    <th> @Html.DisplayFor(modelItem => buy.UserId)</th>
+                }
                 <td>
-                    @Html.DisplayFor(modelItem => buy.AuctionLotId)
+                    <a asp-controller="AuctionLot" asp-action="Details" asp-route-id="@buy.AuctionLotId"> @Html.DisplayFor(modelItem => buy.AuctionLotId) </a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => buy.Quantity)
@@ -36,3 +116,36 @@
     </tbody>
 </table>
 
+<div style="margin-bottom: 10%">
+    @for (int mypage = 1; mypage <= Model.PageViewModel.TotalPages; mypage++)
+    {
+        <a asp-action="ShowAdmin"
+           asp-route-userId="@userId" asp-route-sort="@sort"
+           asp-route-craft="@craft" asp-route-q1="@q1"
+           asp-route-q2="@q2" asp-route-p1="@p1"
+           asp-route-date="@date" asp-route-p2="@p2"
+           asp-route-page="@mypage"
+           class="btn btn-default btn">
+            @mypage
+        </a>
+    }
+</div>
+
+
+<style>
+
+    .ui-slider .ui-btn-inner {
+        padding: 4px 0 0 0 !important;
+    }
+
+    .ui-slider-popup {
+        position: absolute !important;
+        width: 64px;
+        height: 64px;
+        text-align: center;
+        font-size: 36px;
+        padding-top: 14px;
+        z-index: 100;
+        opacity: 0.8;
+    }
+</style>
