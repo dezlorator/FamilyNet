@@ -154,7 +154,7 @@ namespace FamilyNetServer.Controllers.API.V2
             };
 
             await _unitOfWork.Donations.Create(donation);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: Created. Donation was created");
             return Created("api/v1/donations/" + donation.ID, donationDTO);
@@ -208,7 +208,7 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: NoContent. Donation was edited.");
 
@@ -238,7 +238,7 @@ namespace FamilyNetServer.Controllers.API.V2
             donation.IsDeleted = true;
 
             _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: OK. Donation was deleted.");
 

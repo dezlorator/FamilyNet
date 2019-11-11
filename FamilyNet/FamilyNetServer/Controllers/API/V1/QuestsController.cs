@@ -168,7 +168,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             _unitOfWork.Quests.Update(quest);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: NoContent. Quest was edited.");
 
@@ -210,7 +210,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
            await _unitOfWork.Quests.Create(quest);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: Created. Quest was created");
             return Created("api/v1/quests/" + quest.ID, questDTO);
@@ -238,7 +238,7 @@ namespace FamilyNetServer.Controllers.API.V1
             quest.IsDeleted = true;
 
             _unitOfWork.Quests.Update(quest);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: OK. Quest was deleted.");
 
