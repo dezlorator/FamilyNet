@@ -21,7 +21,6 @@ namespace FamilyNetServer.Controllers.API.V1
     {
         #region private fields
 
-        private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IIdentityExtractor _identityExtractor;
         private readonly ILogger<RegistrationController> _logger;
@@ -31,11 +30,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
         public RegistrationController(IUnitOfWork unitOfWork,
                                       ILogger<RegistrationController> logger,
-                                      IStringLocalizer<HomeController> localizer,
                                       IIdentityExtractor identityExtractor)
         {
             _unitOfWork = unitOfWork;
-            _localizer = localizer;
             _identityExtractor = identityExtractor;
             _logger = logger;
         }
