@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FamilyNet.Models.Donation>
+﻿@model IEnumerable<DonationDTO>
 
 @{
     ViewData["Title"] = "Нужды";
@@ -18,14 +18,29 @@
     </div>
 </div>
 
+<form asp-action="Index">
+    <table class="table">
+        <th>
+            @Html.TextBox("forSearch", "", new { @class = "form-control" })
+        </th>
+
+        <th width="12%">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+            </button>
+            @Html.ActionLink("", "Index", "Donations", null, new { @class = "fas fa-ban" })
+        </th>
+    </table>
+</form>
+
 <table class="table table-hover">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Orphanage.Adress.City)
+                @Html.DisplayNameFor(model => model.City)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Orphanage)
+                @Html.DisplayNameFor(model => model.OrphanageName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Status)
@@ -34,13 +49,13 @@
                 @Html.DisplayNameFor(model => model.LastDateWhenStatusChanged)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DonationItem.Name)
+                @Html.DisplayNameFor(model => model.ItemName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DonationItem.Description)
+                @Html.DisplayNameFor(model => model.ItemDescription)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DonationItem.TypeBaseItem)
+                @Html.DisplayNameFor(model => model.Types)
             </th>
             <th>
                 Действия
@@ -52,10 +67,10 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Orphanage.Adress.City)
+                    @Html.DisplayFor(modelItem => item.City)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Orphanage.Name)
+                    @Html.DisplayFor(modelItem => item.OrphanageName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Status)
@@ -64,17 +79,17 @@
                     @Html.DisplayFor(modelItem => item.LastDateWhenStatusChanged)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.DonationItem.Name)
+                    @Html.DisplayFor(modelItem => item.ItemName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.DonationItem.Description)
+                    @Html.DisplayFor(modelItem => item.ItemDescription)
                 </td>
                 <td>
-                    @if (item.DonationItem != null && item.DonationItem.TypeBaseItem != null)
+                    @if (item.DonationItemID != null && item.Types != null)
                     {
-                        @foreach (var t in item.DonationItem.TypeBaseItem)
+                        @foreach (var t in item.Types)
                         {
-                            @t.Type.Name
+                            @t.Name
                             <br />
                         }
                     }
@@ -83,6 +98,7 @@
                     <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
                     <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
                     <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
+                    <a asp-action="Donate" asp-route-id="@item.ID"><i>Donate</i></a>
                 </td>
             </tr>
         }

@@ -3,7 +3,7 @@ using DataTransferObjects;
 
 namespace FamilyNetServer.Validators
 {
-    public class QuestValidator : IQuestValidator
+    public class QuestValidator : IValidator<QuestDTO>
     {
         public bool IsValid(QuestDTO questDTO)
         {
