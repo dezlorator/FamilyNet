@@ -24,7 +24,7 @@ namespace FamilyNetServer.Filters
             if (!String.IsNullOrEmpty(filter.Name))
             {
                 representatives = representatives
-                    .Where(c => c.FullName.ToString().Contains(filter.Name));
+                    .Where(c => c.FullName.ToString().ToUpper().Contains(filter.Name.ToUpper()));
             }
 
             if (filter.Rating > 0.001)
