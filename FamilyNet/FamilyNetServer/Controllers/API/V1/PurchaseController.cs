@@ -173,8 +173,8 @@ namespace FamilyNetServer.Controllers.API.V1
             {
                 var emailSender = new EmailService();
 
-                var task = emailSender.SendEmailAsync(user.Email, 
-                    "Buying crafts", 
+                var task = emailSender.SendEmailAsync(user.Email,
+                    "Buying crafts",
                     "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
                     "<h3>Craft info:</h3>" +
                     $"<h4>Craft id:< {purchase.AuctionLotId}</h4>" +
@@ -184,19 +184,22 @@ namespace FamilyNetServer.Controllers.API.V1
 
                 await task.ContinueWith(t =>
                 {
-                    _logger.LogInformation("{token}{userId}{status}{info}",
-                             token, userId, StatusCodes.Status201Created,
-                             $"Email was sent");
-                }, continuationOptions: TaskContinuationOptions.NotOnFaulted);
+                    if (t.Status == TaskStatus.RanToCompletion)
+                    {
+                        _logger.LogInformation("{token}{userId}{status}{info}",
+                                 token, userId, StatusCodes.Status201Created,
+                                 $"Email was sent");
+                    }
 
-                await task.ContinueWith(t =>
-                {
-                    _logger.LogInformation("{token}{userId}{status}{info}",
-                             token, userId, StatusCodes.Status201Created,
-                             $"Email was not sent");
-
-                }, continuationOptions: TaskContinuationOptions.OnlyOnFaulted);
+                    if (t.Status == TaskStatus.Faulted)
+                    {
+                        _logger.LogError("{token}{userId}{status}{info}",
+                            token, userId, StatusCodes.Status400BadRequest,
+                            $"Email was not sent");
+                    }
+                });
             }
+
             purchaseDTO.ID = purchase.ID;
 
             _logger.LogInformation("{token}{userId}{status}{info}",

@@ -11,9 +11,9 @@ using FamilyNetServer.HttpHandlers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace FamilyNetServer.Controllers.API.V1
+namespace FamilyNetServer.Controllers.API.V2
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v2/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -48,7 +48,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-               "Endpoint Users/api/v1 GetAll was called", userId, token);
+               "Endpoint Users/api/v2 GetAll was called", userId, token);
 
             var users = _unitOfWork.UserManager.Users;
 
@@ -68,7 +68,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint Users/api/v1 GetAsync was called", userId, token);
+                "Endpoint Users/api/v2 GetAsync was called", userId, token);
 
             var user = await _unitOfWork.UserManager.FindByIdAsync(id);
             var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
@@ -101,13 +101,13 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAsync([FromForm]UserDTO userDTO)
+        public async Task<IActionResult> CreateAsync([FromBody]UserDTO userDTO)
         {
             var userId = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info} {userId} {token}",
-                "Endpoint Users/api/v1 [POST] was called", userId, token);
+                "Endpoint Users/api/v2 [POST] was called", userId, token);
 
             if (userDTO == null)
             {
@@ -135,7 +135,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
                 _unitOfWork.SaveChanges();
 
-                return Created("api/v1/users/", userDTO);
+                return Created("api/v2/users", userDTO);
             }
 
             _logger.LogWarning("{status}{token}{userId}{info}",
@@ -155,7 +155,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint Users/api/v1 [DELETE] was called", userId, token);
+                "Endpoint Users/api/v2 [DELETE] was called", userId, token);
 
             var user = await _unitOfWork.UserManager.FindByIdAsync(id);
 
@@ -188,7 +188,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint Users/api/v1 [PUT] was called", userId, token);
+                "Endpoint Users/api/v2 [PUT] was called", userId, token);
 
             var user = await _unitOfWork.UserManager.FindByIdAsync(us.Id);
 
