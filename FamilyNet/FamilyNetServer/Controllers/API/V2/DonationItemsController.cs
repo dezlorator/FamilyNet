@@ -127,7 +127,7 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             await _unitOfWork.DonationItems.Create(donationItem);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             donationItemDTO.ID = donationItem.ID;
 
@@ -161,7 +161,7 @@ namespace FamilyNetServer.Controllers.API.V2
             donationItem.Price = donationItemDTO.Price;
 
             _unitOfWork.DonationItems.Update(donationItem);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: NoContent. Donation item was edited.");
 
@@ -191,7 +191,7 @@ namespace FamilyNetServer.Controllers.API.V2
             donationItem.IsDeleted = true;
 
             _unitOfWork.DonationItems.Update(donationItem);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: OK. Donation item was deleted.");
 

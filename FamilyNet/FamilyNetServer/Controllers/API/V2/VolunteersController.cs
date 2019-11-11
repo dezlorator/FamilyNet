@@ -126,6 +126,8 @@ namespace FamilyNetServer.Controllers.API.V2
         {
             if (!_volunteerValidator.IsValid(volunteerDTO))
             {
+                _logger.LogError("Bad request[400]. VolunteerDTO is not valid");
+
                 return BadRequest();
             }
 
@@ -157,7 +159,7 @@ namespace FamilyNetServer.Controllers.API.V2
             };
 
             await _unitOfWork.Volunteers.Create(volunteer);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
             _logger.LogInformation("Return Created[201]. New volunteer was added.");
 
             return Created("api/v2/volunteers/" + volunteer.ID, new VolunteerDTO());
@@ -180,6 +182,8 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (volunteer == null)
             {
+                _logger.LogError("Bad request[400]. Volunteer was not found by id");
+
                 return BadRequest();
             }
 
@@ -201,7 +205,7 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             _unitOfWork.Volunteers.Update(volunteer);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
             _logger.LogInformation("Return NoContent[204]. Volunteer was updated.");
 
             return NoContent();
@@ -232,7 +236,7 @@ namespace FamilyNetServer.Controllers.API.V2
             volunteer.IsDeleted = true;
 
             _unitOfWork.Volunteers.Update(volunteer);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
             _logger.LogInformation("Return Ok[200]. Volunteer's property IsDelete was updated.");
 
             return Ok();

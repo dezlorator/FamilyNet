@@ -2,7 +2,7 @@
 using FamilyNetServer.Configuration;
 using FamilyNetServer.Controllers.API.V1;
 using FamilyNetServer.Filters;
-using FamilyNetServer.Filters.FilterParameters;
+using FamilyNetServer.HttpHandlers;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Uploaders;
@@ -13,8 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace FamilyNetServer.Tests
@@ -27,6 +26,7 @@ namespace FamilyNetServer.Tests
         private Mock<IFileUploader> _mockFileUploader;
         private Mock<IChildValidator> _mockChildValidator;
         private Mock<IFilterConditionsChildren> _mockFilterConditions;
+        private Mock<IIdentityExtractor> _mockTokenSignatureExtractor;
         private Mock<IOptionsSnapshot<ServerURLSettings>> _mockSettings;
         private ChildrenController controller;
 
@@ -42,45 +42,25 @@ namespace FamilyNetServer.Tests
             _mockFilterConditions = new Mock<IFilterConditionsChildren>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
             _mockChildValidator = new Mock<IChildValidator>();
-            var mockLogger = new Mock<ILogger<ChildrenController>>();
+            _mockTokenSignatureExtractor = new Mock<IIdentityExtractor>();
+
+            _mockTokenSignatureExtractor.Setup(m => m.GetSignature(It.IsAny<HttpContext>()))
+               .Returns(It.IsAny<string>());
+
+            _mockTokenSignatureExtractor.Setup(m => m.GetId(It.IsAny<ClaimsPrincipal>()))
+               .Returns(It.IsAny<string>());
+
+            var _mockLogger = new Mock<ILogger<ChildrenController>>();
             controller = new ChildrenController(_mockFileUploader.Object,
                                                 _mockUnitOfWork.Object,
                                                 _mockChildValidator.Object,
                                                 _mockFilterConditions.Object,
                                                 _mockSettings.Object,
-                                                mockLogger.Object);
+                                                _mockLogger.Object,
+                                                _mockTokenSignatureExtractor.Object);
         }
 
         #endregion
-
-        [Test]
-        public void ChildrenController_WithFilter_ShouldReturnListOfChildren()
-        {
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-
-            var orphans = new List<Orphan>()
-            {
-                new Orphan()
-                {
-                    IsDeleted = false,
-                    FullName = new FullName()
-                    {
-                        Name = "Name",
-                        Patronymic= "Patronymic",
-                        Surname = "Surname"
-                    }
-                }
-            }.AsQueryable();
-
-            _mockOrphanRepository.Setup(r => r.GetAll()).Returns(orphans);
-
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-
-            var filter = It.IsAny<FilterParemetersChildren>();
-            controller.GetAll(filter);
-
-            _mockOrphanRepository.Verify(m => m.GetAll(), Times.Once);
-        }
 
 
         [Test]
@@ -139,7 +119,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -164,7 +144,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -188,7 +168,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -211,14 +191,14 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
 
             await controller.Create(childDTO);
 
-            _mockUnitOfWork.Verify(m => m.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -234,7 +214,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -254,7 +234,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -274,7 +254,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -296,7 +276,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -317,14 +297,14 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
 
             await controller.Create(childDTO);
 
-            _mockUnitOfWork.Verify(m => m.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -337,7 +317,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -359,7 +339,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -380,7 +360,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -400,13 +380,13 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
 
             await controller.Create(childDTO);
-            _mockUnitOfWork.Verify(m => m.SaveChangesAsync(), Times.Never);
+            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Never);
         }
 
 
@@ -420,7 +400,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -429,9 +409,9 @@ namespace FamilyNetServer.Tests
 
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
-                      
 
-                      
+
+
         [Test]
         public async Task ChildrenController_WithInValidChildDTOWithoutFile_ShouldNoatCallRepositoryUpdate()
         {
@@ -442,7 +422,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -464,14 +444,14 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(false);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
 
             var result = await controller.Edit(It.IsAny<int>(), childDTO);
 
-            _mockUnitOfWork.Verify(m => m.SaveChangesAsync(), Times.Never);
+            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Never);
         }
 
 
@@ -497,7 +477,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -532,7 +512,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -564,7 +544,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -597,14 +577,14 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
 
             var result = await controller.Edit(It.IsAny<int>(), childDTO);
 
-            _mockUnitOfWork.Verify(m => m.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -629,7 +609,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -661,7 +641,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -697,7 +677,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -730,7 +710,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -763,14 +743,14 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
 
             var result = await controller.Edit(It.IsAny<int>(), childDTO);
 
-            _mockUnitOfWork.Verify(m => m.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Once);
         }
 
 
@@ -796,7 +776,7 @@ namespace FamilyNetServer.Tests
 
             _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
             _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
                                         It.IsAny<string>(), It.IsAny<IFormFile>()))
                                         .Returns(It.IsAny<string>());
@@ -816,7 +796,7 @@ namespace FamilyNetServer.Tests
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
 
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
 
             var result = await controller.Delete(id);
 
@@ -833,7 +813,7 @@ namespace FamilyNetServer.Tests
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
 
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
 
             var result = await controller.Delete(id);
 
@@ -850,10 +830,10 @@ namespace FamilyNetServer.Tests
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
 
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
 
             var result = await controller.Delete(id);
-            _mockUnitOfWork.Verify(m => m.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -866,7 +846,7 @@ namespace FamilyNetServer.Tests
                 .ReturnsAsync(() => new Orphan() { FullName = new FullName() });
 
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
 
             var result = await controller.Delete(id);
 
@@ -883,7 +863,7 @@ namespace FamilyNetServer.Tests
                 .ReturnsAsync(() => null);
 
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
 
             var result = await controller.Delete(id);
 
@@ -900,7 +880,7 @@ namespace FamilyNetServer.Tests
                 .ReturnsAsync(() => null);
 
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
 
             var result = await controller.Delete(id);
 
@@ -918,10 +898,10 @@ namespace FamilyNetServer.Tests
                 .ReturnsAsync(() => null);
 
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
 
             var result = await controller.Delete(id);
-            _mockUnitOfWork.Verify(m => m.SaveChangesAsync(), Times.Never);
+            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Never);
         }
 
 
@@ -935,7 +915,7 @@ namespace FamilyNetServer.Tests
                 .ReturnsAsync(() => null);
 
             _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChangesAsync());
+            _mockUnitOfWork.Setup(m => m.SaveChanges());
 
             var result = await controller.Delete(id);
 
