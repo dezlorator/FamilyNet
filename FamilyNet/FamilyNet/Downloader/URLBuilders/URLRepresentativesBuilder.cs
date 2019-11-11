@@ -57,5 +57,10 @@ namespace FamilyNet.Downloader
         {
             return _options.Value.ServerURL + api + "/" + id;
         }
+
+        public string GetByChildrenHouseId(string api, int childrenHouseId)
+        {
+            return _options.Value.ServerURL + api + "/byChildrenHouse/" + childrenHouseId;
+        }
     }
 }

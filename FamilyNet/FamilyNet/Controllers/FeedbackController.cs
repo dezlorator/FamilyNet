@@ -35,10 +35,11 @@ namespace FamilyNet.Controllers
         private readonly IURLDonationsBuilder _urlDonationsBuilder;
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _donationDownloader;
         private readonly string _donationApiPath = "api/v1/donations";
-        private readonly ServerChildrenHouseDownloader _childrenHouseDownloader;
-        private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
-        private readonly string _houseApiPath = "api/v1/childrenHouse";
-        private int _donationId;
+        private readonly ServerDataDownloader<RepresentativeDTO> _representativeDownloader;
+        private readonly IURLRepresentativeBuilder _urlRepresentativeBuilder;
+        private readonly string _representativeApiPath = "api/v1/representatives";
+        private readonly IServerRepresenativesDataDownloader _representativeDataDownloader;
+        private static int _donationId;
         #endregion
 
         #region ctor
@@ -48,7 +49,10 @@ namespace FamilyNet.Controllers
             IURLFioBuilder urlFioBuilder,
             IIdentityInformationExtractor identityInformationExtactor,
             IURLDonationsBuilder urlDonationsBuilder, 
-            ServerSimpleDataDownloader<DonationDetailDTO> donationDownloader)
+            ServerSimpleDataDownloader<DonationDetailDTO> donationDownloader,
+            ServerDataDownloader<RepresentativeDTO> representativeDownloader,
+            IURLRepresentativeBuilder urlRepresentativeBuilder,
+            IServerRepresenativesDataDownloader representativeDataDownloader)
         {
             _urlFeedbackBuilder = urlFeedbackBuilder;
             _feedbackDownloader = feedbackDownloader;
@@ -58,6 +62,9 @@ namespace FamilyNet.Controllers
             _identityInformationExtactor = identityInformationExtactor;
             _urlDonationsBuilder = urlDonationsBuilder;
             _donationDownloader = donationDownloader;
+            _representativeDownloader = representativeDownloader;
+            _urlRepresentativeBuilder = urlRepresentativeBuilder;
+            _representativeDataDownloader = representativeDataDownloader;
         }
         #endregion
 
@@ -165,15 +172,23 @@ namespace FamilyNet.Controllers
             {
                 return View(viewModel);
             }
+            viewModel.feedbackDTO.Image = viewModel.Avatar;
             Stream stream = null;
             if (viewModel.feedbackDTO.Image != null)
             {
                 stream = _streamCreator.CopyFileToStream(viewModel.feedbackDTO.Image);
             }
 
+            viewModel.feedbackDTO.DonationId = _donationId;
+            viewModel.feedbackDTO.SenderId = Convert.ToInt32(HttpContext.Session.GetString("personId"));
+            viewModel.feedbackDTO.SenderRole = GetUserRoleByString(HttpContext.Session.GetString("roles"));
+            viewModel.feedbackDTO = GetReceiverInfoByRole(viewModel.Roles[0], viewModel.feedbackDTO.DonationId, 
+                viewModel.feedbackDTO).Result;
+            viewModel.feedbackDTO.Time = DateTime.Now;
+
             var feedbackUrl = _urlFeedbackBuilder.CreatePost(_feedbackApiPath);
             var status = await _feedbackDownloader.CreatePostAsync(feedbackUrl, viewModel.feedbackDTO,
-                                                             stream, viewModel.feedbackDTO.Image.FileName,
+                                                             stream, viewModel.feedbackDTO.Image?.FileName,
                                                              HttpContext.Session);
 
             if (status == HttpStatusCode.Unauthorized)
@@ -217,7 +232,7 @@ namespace FamilyNet.Controllers
                 case "Volunteer":
                     return new List<string>()
                     {
-                        "Reprecentative",
+                        "Representative",
                         "CharityMaker"
                     };
                 default:
@@ -225,29 +240,30 @@ namespace FamilyNet.Controllers
             }
         }
 
-        private async Task<FeedbackDTO> GetReceiverIdByRole(string role, int donationId, FeedbackDTO feedback)
+        private async Task<FeedbackDTO> GetReceiverInfoByRole(string role, int donationId, FeedbackDTO feedback)
         {
             var url = _urlDonationsBuilder.GetById(_donationApiPath, donationId);
 
-            var donation = _donationDownloader.GetByIdAsync(url, HttpContext.Session);
+            var donation = await _donationDownloader.GetByIdAsync(url, HttpContext.Session);
             UserRole receiverRole;
-            int receiverId;
+            int receiverId = 0;
 
             switch(role)
             {
                 case "CharityMaker":
                     receiverRole = UserRole.CharityMaker;
-                    receiverId = donation.Result.CharityMakerID??0;
+                    receiverId = donation.CharityMakerID??0;
                     break;
                 case "Representative":
                     receiverRole = UserRole.Representative;
-                    var houseUrl = _URLChildrenHouseBuilder.GetAllWithFilter(_houseApiPath, null, SortStateOrphanages.AddressAsc);
-                    var houses = _childrenHouseDownloader.GetAllAsync(houseUrl, HttpContext.Session);
-                    
+                    var representativesURL = _urlRepresentativeBuilder.GetByChildrenHouseId(_representativeApiPath,
+                        donation.OrphanageID??0);
+                    var representatives = await _representativeDataDownloader.GetByChildrenHouseIdAsync
+                        (representativesURL, HttpContext.Session);
+                    receiverId = representatives[0].ID;
                     break;
                 case "Volunteer":
                     receiverRole = UserRole.Volunteer;
-
                     //смерджусь тогда можно будет
                     break;
                 default:
@@ -256,9 +272,22 @@ namespace FamilyNet.Controllers
             }
 
             feedback.ReceiverRole = receiverRole;
-
+            feedback.ReceiverId = receiverId;
             return feedback;
             
+        }
+        private UserRole GetUserRoleByString(string str)
+        {
+            switch(str)
+            {
+                case "CharityMaker":
+                    return UserRole.CharityMaker;
+                case "Volunteer":
+                    return UserRole.Volunteer;
+                case "Representative":
+                    return UserRole.Representative;
+            }
+            return UserRole.Undefined;
         }
 
     }

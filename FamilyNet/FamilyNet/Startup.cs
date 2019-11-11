@@ -66,6 +66,7 @@ namespace FamilyNet
 
             #region ServerDataDownloader
 
+            services.AddTransient<IServerRepresenativesDataDownloader, ServerRepresentativesDownloader>();
             services.AddTransient<IFioDownloader, ServerFioDownloader>();
             services.AddTransient<ServerDataDownloader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
