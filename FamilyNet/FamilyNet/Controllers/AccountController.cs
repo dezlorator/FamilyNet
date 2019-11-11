@@ -62,9 +62,7 @@ namespace FamilyNet.Controllers
         {
 
             var urlRoles = _rolesBuilder.GetAll(_apiRolesPath);
-            IEnumerable<RoleDTO> roles = null;
-
-            roles = await _rolesDownloader.GetAllAsync(urlRoles, HttpContext.Session);
+            IEnumerable<RoleDTO> roles = await _rolesDownloader.GetAllAsync(urlRoles, HttpContext.Session);
 
             var yourDropdownList = new SelectList(roles.Select(item => new SelectListItem
             {

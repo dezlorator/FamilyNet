@@ -192,6 +192,11 @@ namespace FamilyNetServer.Controllers.API.V1
             await _unitOfWork.Orphans.Create(child);
             _unitOfWork.SaveChanges();
 
+            var id = User.Identity.Name;
+            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
+            user.PersonID = child.ID;
+            await _unitOfWork.UserManager.UpdateAsync(user);
+
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
                 $"Child was saved [id:{child.ID}]");
