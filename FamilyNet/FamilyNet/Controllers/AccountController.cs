@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
 using FamilyNet.Enums;
-using FamilyNet.Models.Identity;
 
 namespace FamilyNet.Controllers
 {

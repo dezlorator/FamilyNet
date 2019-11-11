@@ -100,7 +100,7 @@ namespace FamilyNetServer.Controllers.API.V1
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Representative, CharityMaker, Volunteer")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AddressDTO addressDTO)

@@ -28,6 +28,25 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork = unitOfWork;
             _localizer = localizer;
         }
+        [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Register()
+        {
+          
+            var allRoles = _unitOfWork.RoleManager.Roles.ToList();
+            var yourDropdownList = new SelectList(allRoles.Select(item => new SelectListItem
+            {
+                Text = item.Name,
+                Value = item.Name
+            }).ToList(), "Value", "Text");
+            var viewModel = new RegisterViewModel()
+            {
+                YourDropdownList = yourDropdownList
+            };
+            return Ok();
+        }
 
         [HttpPost]
         [AllowAnonymous]
@@ -63,8 +82,8 @@ namespace FamilyNetServer.Controllers.API.V1
 
                     var codeTokken = await _unitOfWork.UserManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action(
-                        "ConfirmEmailAsync",
-                        "Registration",
+                        "ConfirmEmail",
+                        "Account",
                         new { userId = user.Id, code = codeTokken },
                         protocol: HttpContext.Request.Scheme);
                     EmailService emailService = new EmailService();
@@ -96,7 +115,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ConfirmEmailAsync([FromQuery]string userId, [FromQuery]string code)
+        public async Task<IActionResult> ConfirmEmailAsync(string userId, string code)
         {
             if (userId == null || code == null)
             {
