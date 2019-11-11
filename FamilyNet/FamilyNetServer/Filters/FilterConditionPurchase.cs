@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.Filters
 {
-    public class FilterConditionPurchase: IFilterConditionPurchase
+    public class FilterConditionPurchase : IFilterConditionPurchase
     {
         public IEnumerable<Purchase> GetFiltered(IQueryable<Purchase> purchase,
-           FilterParamentrsPurchaseDTO filter,  out int count)
+           FilterParamentrsPurchaseDTO filter, out int count)
         {
 
             if (filter.PaidTo > 0.0)
@@ -53,7 +53,7 @@ namespace FamilyNetServer.Filters
 
 
             Enum.TryParse<PurchaseSortState>(filter.Sort, out var order);
-            
+
             switch (order)
             {
                 case PurchaseSortState.DateAsc:

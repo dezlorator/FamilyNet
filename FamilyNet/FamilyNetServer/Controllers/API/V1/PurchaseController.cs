@@ -1,4 +1,5 @@
 ﻿using DataTransferObjects;
+using FamilyNetServer.Filters;
 using FamilyNetServer.HttpHandlers;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Identity;
@@ -26,6 +27,7 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IValidator<PurchaseDTO> _purchaseValidator;
         private readonly ILogger<PurchaseController> _logger;
         private readonly IIdentityExtractor _identityExtractor;
+        private readonly IFilterConditionPurchase _filterPurchase;
 
         #endregion
 
@@ -34,12 +36,15 @@ namespace FamilyNetServer.Controllers.API.V1
         public PurchaseController(IUnitOfWork repo,
             IValidator<PurchaseDTO> auctionValidator,
             ILogger<PurchaseController> logger,
-            IIdentityExtractor identityExtractor)
+            IIdentityExtractor identityExtractor,
+            IFilterConditionPurchase filter)
         {
             _repository = repo;
             _purchaseValidator = auctionValidator;
             _logger = logger;
             _identityExtractor = identityExtractor;
+            _filterPurchase = filter;
+
         }
 
         #endregion
@@ -48,7 +53,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [Authorize(Roles = "Admin, CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery]FilterParamentrsPurchaseDTO filter)
         {
             var userIdentity = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
@@ -56,19 +61,18 @@ namespace FamilyNetServer.Controllers.API.V1
             _logger.LogInformation("{info}{token}{userId}",
                 "Endpoint Purchase/api/v1 GetAll was called", token, userIdentity);
 
-            var purchase = _repository.Purchases.GetAll()
-                .Where(c => !c.IsDeleted);
+            var purchase = _filterPurchase.GetFiltered(_repository.Purchases.GetAll().Where(c => !c.IsDeleted),
+                filter, out var count);
 
             if (purchase == null)
             {
                 _logger.LogInformation("{status}{info}",
                     StatusCodes.Status400BadRequest,
                     "List of Purchases is empty");
-
                 return BadRequest();
             }
 
-            var purchases = await purchase.Select(item =>
+            var purchases =  purchase.Select(item =>
                 new PurchaseDTO()
                 {
                     ID = item.ID,
@@ -77,12 +81,18 @@ namespace FamilyNetServer.Controllers.API.V1
                     Paid = item.Paid,
                     Quantity = item.Quantity,
                     UserId = item.UserId.ToString()
-                }).ToListAsync();
+                }).ToList();
 
+            var filterModel = new PurchaseFilterDTO
+            {
+                PurchaseDTOs = purchases,
+                TotalCount = count
+            };
+                      
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(purchases));
 
-            return Ok(purchases);
+            return Ok(filterModel);
         }
 
 
@@ -173,7 +183,7 @@ namespace FamilyNetServer.Controllers.API.V1
             {
                 var emailSender = new EmailService();
 
-                var task = emailSender.SendEmailAsync(user.Email, 
+               await emailSender.SendEmailAsync(user.Email, 
                     "Buying crafts", 
                     "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
                     "<h3>Craft info:</h3>" +
@@ -182,20 +192,6 @@ namespace FamilyNetServer.Controllers.API.V1
                     $"<h4>To pay: {purchase.Paid}</h4>" +
                     "<h3>Orphanage representatives will contact you♥</h3>");
 
-                await task.ContinueWith(t =>
-                {
-                    _logger.LogInformation("{token}{userId}{status}{info}",
-                             token, userId, StatusCodes.Status201Created,
-                             $"Email was sent");
-                }, continuationOptions: TaskContinuationOptions.NotOnFaulted);
-
-                await task.ContinueWith(t =>
-                {
-                    _logger.LogInformation("{token}{userId}{status}{info}",
-                             token, userId, StatusCodes.Status201Created,
-                             $"Email was not sent");
-
-                }, continuationOptions: TaskContinuationOptions.OnlyOnFaulted);
             }
             purchaseDTO.ID = purchase.ID;
 

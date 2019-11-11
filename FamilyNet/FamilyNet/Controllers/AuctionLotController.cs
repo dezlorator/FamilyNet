@@ -13,6 +13,7 @@ using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Models.ViewModels.AuctionLot;
 using FamilyNet.StreamCreater;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -132,9 +133,20 @@ namespace FamilyNet.Controllers
             return View(model);
         }
 
-        public async Task<ActionResult> MyCrafts(int page = 1, int orphanId = 7)
+        public async Task<ActionResult> MyCrafts(int page = 1)
         {
-            var url = _URLAuctionLotBuilder.GetAllOrphanCrafts(_apiAuctionLotPath, orphanId, page, _pageSize);
+            string url = String.Empty;
+            var role = HttpContext.Session.GetString("roles");
+            var personId = HttpContext.Session.GetString("personId");
+            if (personId == String.Empty || personId == null)
+            {
+                url = Url.Action("Create", role + "s");
+                return Redirect(url);
+            }
+
+            int.TryParse(personId, out var orphanId);
+
+            url = _URLAuctionLotBuilder.GetAllOrphanCrafts(_apiAuctionLotPath, orphanId, page, _pageSize);
             IEnumerable<AuctionLotDTO> auctionLots = null;
 
             try
@@ -240,8 +252,19 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AuctionLotCreateViewModel model)
         {
-            model.AuctionLot.OrphanID = 7;
-            var url = _URLDonationItem.CreatePost(_apiDonationItemsPath);
+            string url = String.Empty;
+            var role = HttpContext.Session.GetString("roles");
+            var personId = HttpContext.Session.GetString("personId");
+            if (personId == String.Empty || personId == null)
+            {
+                url = Url.Action("Create", role + "s");
+                return Redirect(url);
+            }
+
+            int.TryParse(personId, out var orphanId);
+
+            model.AuctionLot.OrphanID = orphanId;
+            url = _URLDonationItem.CreatePost(_apiDonationItemsPath);
             var msg = await _donationItemsDownloader.CreatePostAsync(url, model.Item, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.Created)
@@ -409,9 +432,19 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> ConfirmCrafts()
         {
-            int currnetReprId = 1;
 
-            var url = _URLRepresentativeBuilder.GetById(_apiRepresentativesPath, currnetReprId);
+            string url = String.Empty;
+            var role = HttpContext.Session.GetString("roles");
+            var personId = HttpContext.Session.GetString("personId");
+            if (personId == String.Empty || personId == null)
+            {
+                url = Url.Action("Create", role + "s");
+                return Redirect(url);
+            }
+
+            int.TryParse(personId, out var currnetReprId);
+
+            url = _URLRepresentativeBuilder.GetById(_apiRepresentativesPath, currnetReprId);
             var representative = await _representativesDownLoader.GetByIdAsync(url, HttpContext.Session);
 
             url = _URLChildrenBuilder.GetAllWithFilter(_apiChildrenPath, new PersonSearchModel(), representative.ChildrenHouseID);

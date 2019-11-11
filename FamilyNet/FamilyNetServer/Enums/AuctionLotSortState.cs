@@ -7,10 +7,10 @@ namespace FamilyNetServer.Enums
 {
     public enum AuctionLotSortState
     {
-        NameAsc,   
-        NameDesc,  
-        PriceAsc,
-        PriceDesc  
+        DateAsc,   
+        DateDesc,  
+        QuantityAsc,
+        QuantityDesc  
     }
     
 }
