@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 using DataTransferObjects;
 using FamilyNet.Downloader;
 using FamilyNet.Enums;
@@ -138,7 +137,8 @@ namespace FamilyNet.Controllers
             {
                 AuctionLots = GetFiltered(crafts, priceStart, priceEnd, name, page, sortState, out var count),
                 PageViewModel = new AuctionLotPageViewModel(count, page, 3),
-                FilterViewModel = new AuctionLotFilterModel {  SelectedName = name,  StartPrice= start, EndPrice = end }
+                FilterViewModel = new AuctionLotFilterModel {  SelectedName = name,  StartPrice= start, EndPrice = end },
+                Sort = sort
             };
 
             return View(model);
@@ -551,7 +551,6 @@ namespace FamilyNet.Controllers
                 lots = lots.Where(o => o.AuctionLotItem.Name.Contains(name));
             }
 
-            // сортировка
             switch (sortOrder)
             {
                 case SortState.NameDesc:
@@ -565,7 +564,6 @@ namespace FamilyNet.Controllers
                     break;
             }
 
-            //paging
             count = lots.Count();
 
             lots = lots.Skip((page - 1) * _pageSize).Take(_pageSize);

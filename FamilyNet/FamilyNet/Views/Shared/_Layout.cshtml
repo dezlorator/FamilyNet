@@ -101,6 +101,12 @@
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">My purchases</a>
                             </li>
                         }
+                        @if (role == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">Purchases</a>
+                            </li>
+                        }
                         @if (role.Length > 1)
                         {
                             <li class="nav-item dropdown">

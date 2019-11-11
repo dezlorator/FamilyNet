@@ -122,7 +122,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
 
             await _repository.Address.Create(address);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             addressDTO.ID = address.ID;
 
@@ -157,7 +157,7 @@ namespace FamilyNetServer.Controllers.API.V2
             address.House = addressDTO.House;
 
             _repository.Address.Update(address);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
             _logger.LogInformation($"Edited address with id #{address.ID}");
 
             return NoContent();
@@ -186,7 +186,7 @@ namespace FamilyNetServer.Controllers.API.V2
             address.IsDeleted = true;
 
             _repository.Address.Update(address);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Deleted address with id #{address.ID}");
 
