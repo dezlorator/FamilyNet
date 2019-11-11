@@ -1,6 +1,8 @@
-﻿using FamilyNetLogs.Database;
+﻿using FamilyNetLogs.AllicationBuilderExtansion;
+using FamilyNetLogs.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,13 +24,16 @@ namespace FamilyNetLogs
         {
             services.AddDbContext<FamilyNetLogsContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("FamilyNetLogsConnectionString")));
-            services.AddMvc();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddPaging();
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.AutoGenerationDataBase();
+
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
