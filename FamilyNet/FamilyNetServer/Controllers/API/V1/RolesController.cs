@@ -14,7 +14,6 @@ namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
     public class RolesController : ControllerBase
     {
         #region private fields
@@ -61,6 +60,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateAsync([FromForm]RoleDTO roleDTO)
         {
             var userId = _identityExtractor.GetId(User);
@@ -95,6 +95,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             var userId = _identityExtractor.GetId(User);
