@@ -31,9 +31,7 @@ namespace FamilyNetServer.Controllers.API.V2
         #region ctor
 
         public DonationItemsController(IUnitOfWork unitOfWork,
-                                  IDonationItemValidator donationItemValidator,
-                                  ILogger<DonationItemsController> logger,
-                                  IIdentityExtractor identityExtractor)
+                                  IIdentityExtractor identityExtractor,
                                   IValidator<DonationItemDTO> donationItemValidator,
                                   ILogger<DonationItemsController> logger)
         {

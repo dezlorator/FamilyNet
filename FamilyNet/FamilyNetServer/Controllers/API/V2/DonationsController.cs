@@ -97,7 +97,7 @@ namespace FamilyNetServer.Controllers.API.V2
                                    Name = t.Type.Name,
                                    ID = t.TypeID
                                })
-                }).ToList();
+                }).ToListAsync();
 
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(donationsDTO));

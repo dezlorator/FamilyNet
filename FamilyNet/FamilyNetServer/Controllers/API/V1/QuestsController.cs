@@ -56,7 +56,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             quests = _questsFilter.GetQuests(quests, forSearch, questStatus);
 
-            if (rows != 0 && page != 0)
+            if (rows > 0 && page > 0)
             {
                 _logger.LogInformation("Paging were used");
                 quests = quests

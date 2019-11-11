@@ -12,6 +12,7 @@ using FamilyNetServer.HttpHandlers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using DataTransferObjects.Enums;
 
 namespace FamilyNetServer.Controllers.API.V2
 {

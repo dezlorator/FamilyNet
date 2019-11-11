@@ -30,8 +30,6 @@ namespace FamilyNetServer.Controllers.API.V2
 
         public CategoriesController(IUnitOfWork unitOfWork,
                                     IValidator<CategoryDTO> categoryValidator,
-                                    ILogger<CategoriesController> logger)
-                                    ICategoryValidator categoryValidator,
                                     ILogger<CategoriesController> logger,
                                     IIdentityExtractor identityExtractor)
         {
