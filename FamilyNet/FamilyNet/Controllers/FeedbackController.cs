@@ -28,10 +28,16 @@ namespace FamilyNet.Controllers
         private const string _feedbackApiPath = "api/v1/feedback";
         private readonly IURLFioBuilder _urlFioBuilder;
         private readonly IFioDownloader _fioDownloader;
-        private const string _fioApiPath = "api/v1/fio";
+        private readonly string _fioApiPath = "api/v1/fio";
         private readonly IFileStreamCreater _streamCreator;
         private readonly string _pathToErrorView = "/Home/Error";
         private readonly IIdentityInformationExtractor _identityInformationExtactor;
+        private readonly IURLDonationsBuilder _urlDonationsBuilder;
+        private readonly ServerSimpleDataDownloader<DonationDetailDTO> _donationDownloader;
+        private readonly string _donationApiPath = "api/v1/donations";
+        private readonly ServerChildrenHouseDownloader _childrenHouseDownloader;
+        private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
+        private readonly string _houseApiPath = "api/v1/childrenHouse";
         private int _donationId;
         #endregion
 
@@ -40,7 +46,9 @@ namespace FamilyNet.Controllers
             ServerDataDownloader<FeedbackDTO> feedbackDownloader,
             IFileStreamCreater streamCreator, IFioDownloader fioDownloader,
             IURLFioBuilder urlFioBuilder,
-            IIdentityInformationExtractor identityInformationExtactor)
+            IIdentityInformationExtractor identityInformationExtactor,
+            IURLDonationsBuilder urlDonationsBuilder, 
+            ServerSimpleDataDownloader<DonationDetailDTO> donationDownloader)
         {
             _urlFeedbackBuilder = urlFeedbackBuilder;
             _feedbackDownloader = feedbackDownloader;
@@ -48,6 +56,8 @@ namespace FamilyNet.Controllers
             _fioDownloader = fioDownloader;
             _streamCreator = streamCreator;
             _identityInformationExtactor = identityInformationExtactor;
+            _urlDonationsBuilder = urlDonationsBuilder;
+            _donationDownloader = donationDownloader;
         }
         #endregion
 
@@ -137,27 +147,33 @@ namespace FamilyNet.Controllers
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                             ViewData);
             var role = HttpContext.Session.GetString("roles");
-            var personId = HttpContext.Session.GetString("personId");
-            return View();
+
+            var viewModel = new CreateFeedbackViewModel()
+            {
+                feedbackDTO = new FeedbackDTO(),
+                Roles = GetAllowedReceiversByRole(role)
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(FeedbackDTO feedbackDTO)
+        public async Task<IActionResult> Create(CreateFeedbackViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View(feedbackDTO);
+                return View(viewModel);
             }
             Stream stream = null;
-            if (feedbackDTO.Image != null)
+            if (viewModel.feedbackDTO.Image != null)
             {
-                stream = _streamCreator.CopyFileToStream(feedbackDTO.Image);
+                stream = _streamCreator.CopyFileToStream(viewModel.feedbackDTO.Image);
             }
 
             var feedbackUrl = _urlFeedbackBuilder.CreatePost(_feedbackApiPath);
-            var status = await _feedbackDownloader.CreatePostAsync(feedbackUrl, feedbackDTO,
-                                                             stream, feedbackDTO.Image.FileName,
+            var status = await _feedbackDownloader.CreatePostAsync(feedbackUrl, viewModel.feedbackDTO,
+                                                             stream, viewModel.feedbackDTO.Image.FileName,
                                                              HttpContext.Session);
 
             if (status == HttpStatusCode.Unauthorized)
@@ -183,6 +199,68 @@ namespace FamilyNet.Controllers
             fio.Role = role.ToString();
             return fio;
         }
+
+        private List<string> GetAllowedReceiversByRole(string role)
+        {
+            switch(role)
+            {
+                case "CharityMaker":
+                    return new List<string>()
+                    {
+                        "Volunteer"
+                    };
+                case "Representative":
+                    return new List<string>()
+                    {
+                        "Volunteer"
+                    };
+                case "Volunteer":
+                    return new List<string>()
+                    {
+                        "Reprecentative",
+                        "CharityMaker"
+                    };
+                default:
+                    return new List<string>();
+            }
+        }
+
+        private async Task<FeedbackDTO> GetReceiverIdByRole(string role, int donationId, FeedbackDTO feedback)
+        {
+            var url = _urlDonationsBuilder.GetById(_donationApiPath, donationId);
+
+            var donation = _donationDownloader.GetByIdAsync(url, HttpContext.Session);
+            UserRole receiverRole;
+            int receiverId;
+
+            switch(role)
+            {
+                case "CharityMaker":
+                    receiverRole = UserRole.CharityMaker;
+                    receiverId = donation.Result.CharityMakerID??0;
+                    break;
+                case "Representative":
+                    receiverRole = UserRole.Representative;
+                    var houseUrl = _URLChildrenHouseBuilder.GetAllWithFilter(_houseApiPath, null, SortStateOrphanages.AddressAsc);
+                    var houses = _childrenHouseDownloader.GetAllAsync(houseUrl, HttpContext.Session);
+                    
+                    break;
+                case "Volunteer":
+                    receiverRole = UserRole.Volunteer;
+
+                    //смерджусь тогда можно будет
+                    break;
+                default:
+                    return feedback;
+
+            }
+
+            feedback.ReceiverRole = receiverRole;
+
+            return feedback;
+            
+        }
+
     }
 }
 
