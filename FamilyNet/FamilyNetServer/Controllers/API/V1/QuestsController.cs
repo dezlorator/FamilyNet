@@ -29,6 +29,8 @@ namespace FamilyNetServer.Controllers.API.V1
 
         #endregion
 
+        #region ctor
+
         public QuestsController(IUnitOfWork unitOfWork,
                                 IQuestValidator questValidator,
                                 IQuestsFilter questsFilter,
@@ -42,31 +44,31 @@ namespace FamilyNetServer.Controllers.API.V1
             _identityExtractor = identityExtractor;
         }
 
+        #endregion
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> GetAllAsync([FromQuery]int rows,
-                                   [FromQuery]int page,
-                                   [FromQuery]string forSearch)
+                                                    [FromQuery]int page,
+                                                    [FromQuery]string forSearch)
         {
             _logger.LogInformation("{info}",
-                   "Endpoint Quests/api/v1 GetAll was called");
+                "Endpoint Quests/api/v1 GetAll was called");
 
             var quests = _unitOfWork.Quests.GetAll().Where(c => !c.IsDeleted);
             quests = _questsFilter.GetQuests(quests, forSearch);
 
             if (rows > 0 && page > 0)
             {
-                _logger.LogInformation("{info}", "Paging were used");
-
+                _logger.LogInformation("{info}", "Paging was used");
                 quests = quests.Skip((page - 1) * rows).Take(rows);
             }
 
             if (quests == null)
             {
                 _logger.LogInformation("{status}{info}",
-                   StatusCodes.Status400BadRequest,
-                   "List of Quests is empty");
+                    StatusCodes.Status400BadRequest, "List of Quests is empty");
 
                 return BadRequest();
             }
@@ -83,8 +85,7 @@ namespace FamilyNetServer.Controllers.API.V1
                     VolunteerID = d.VolunteerID
                 }).ToListAsync();
 
-            _logger.LogInformation("{status}, {json}",
-               StatusCodes.Status200OK,
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                JsonConvert.SerializeObject(questsDTO));
 
             return Ok(questsDTO);
@@ -103,8 +104,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (quest == null)
             {
-                _logger.LogError("{info}{status}", $"Quest wasn't found [id:{id}]",
-                   StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}",
+                    $"Quest wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -120,9 +122,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 VolunteerID = quest.VolunteerID
             };
 
-            _logger.LogInformation("{status},{json}",
-                            StatusCodes.Status200OK,
-                            JsonConvert.SerializeObject(questDTO));
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(questDTO));
 
             return Ok(questDTO);
         }
@@ -142,9 +143,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_questValidator.IsValid(questDTO))
             {
-                _logger.LogWarning("{status}{token}{userId}",
-                                   StatusCodes.Status400BadRequest,
-                                   token, userId);
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "QuestDTO is invalid");
 
                 return BadRequest();
             }
@@ -153,7 +154,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (quest == null)
             {
-                _logger.LogError("Bad request. No quest was found");
+                _logger.LogError("{info}{status}",
+                    $"Quest wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
+
                 return BadRequest();
             }
 
@@ -168,7 +172,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (questDTO.DonationID != null)
             {
-                _logger.LogInformation("Donation is not null.");
+                _logger.LogInformation("{info}", "Donation is not null.");
                 quest.DonationID = questDTO.DonationID;
             }
 
@@ -176,8 +180,8 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
-                           token, userId, StatusCodes.Status201Created,
-                           $"Quest was edited [id:{quest.ID}]");
+                token, userId, StatusCodes.Status201Created,
+                $"Quest was edited [id:{quest.ID}]");
 
             return NoContent();
         }
@@ -197,9 +201,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_questValidator.IsValid(questDTO))
             {
-                _logger.LogWarning("{status}{token}{userId}",
-                                   StatusCodes.Status400BadRequest,
-                                   token, userId);
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "QuestDTO is invalid");
 
                 return BadRequest();
             }
@@ -216,8 +220,8 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
-                           token, userId, StatusCodes.Status201Created,
-                           $"Quest was saved [id:{quest.ID}]");
+                token, userId, StatusCodes.Status201Created,
+                $"Quest was saved [id:{quest.ID}]");
 
             return Created("api/v1/quests/" + quest.ID, questDTO);
         }
@@ -238,9 +242,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (id <= 0)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                                   StatusCodes.Status400BadRequest,
-                                   $"Argument id is not valid [id:{id}]",
-                                   userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -250,9 +253,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (quest == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                                StatusCodes.Status400BadRequest,
-                                $"Quest was not found [id:{id}]",
-                                userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Quest was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -263,9 +265,8 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
-                           StatusCodes.Status200OK,
-                           $"Quest.IsDelete was updated [id:{id}]",
-                           userId, token);
+                StatusCodes.Status200OK,
+                $"Quest.IsDelete was updated [id:{id}]", userId, token);
 
             return Ok();
         }

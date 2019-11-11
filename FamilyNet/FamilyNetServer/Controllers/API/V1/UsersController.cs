@@ -52,8 +52,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             var users = _unitOfWork.UserManager.Users;
 
-            _logger.LogInformation("{status}, {json}",
-                StatusCodes.Status200OK,
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(users.ToList()));
 
             return Ok(users);
@@ -69,7 +68,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-               "Endpoint Users/api/v1 GetAsync was called", userId, token);
+                "Endpoint Users/api/v1 GetAsync was called", userId, token);
 
             var user = await _unitOfWork.UserManager.FindByIdAsync(id);
             var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
@@ -77,8 +76,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (user == null)
             {
-                _logger.LogError("{info}{status}", $"User wasn't found [id:{id}]",
-                   StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}",
+                    $"User wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -91,8 +91,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 Roles = userRoles.ToList()
             };
 
-            _logger.LogInformation("{status},{json}",
-                StatusCodes.Status200OK,
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(userDTO));
 
             return Ok(userDTO);
@@ -113,8 +112,7 @@ namespace FamilyNetServer.Controllers.API.V1
             if (userDTO == null)
             {
                 _logger.LogWarning("{status}{token}{userId}{info}",
-                    StatusCodes.Status400BadRequest,
-                    token, userId,
+                    StatusCodes.Status400BadRequest, token, userId,
                     "UserDTO is null");
 
                 return BadRequest();
@@ -132,8 +130,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (result.Succeeded)
             {
                 _logger.LogInformation("{token}{userId}{status}{info}",
-                token, userId, StatusCodes.Status201Created,
-                $"User was saved [id:{user.Id}]");
+                    token, userId, StatusCodes.Status201Created,
+                    $"User was saved [id:{user.Id}]");
 
                 _unitOfWork.SaveChangesAsync();
 
@@ -141,9 +139,8 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             _logger.LogWarning("{status}{token}{userId}{info}",
-                  StatusCodes.Status400BadRequest,
-                  token, userId,
-                  "User was not created");
+                StatusCodes.Status400BadRequest, token, userId,
+                "User was not created");
 
             return BadRequest();
         }
@@ -158,16 +155,16 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-               "Endpoint Users/api/v1 [DELETE] was called", userId, token);
+                "Endpoint Users/api/v1 [DELETE] was called", userId, token);
 
             var user = await _unitOfWork.UserManager.FindByIdAsync(id);
 
             if (user == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                StatusCodes.Status400BadRequest,
-                $"User was not found [id:{id}]",
-                userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"User was not found [id:{id}]", userId, token);
+
                 return BadRequest();
             }
 
@@ -175,9 +172,8 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
-               StatusCodes.Status200OK,
-               $"User was deleted [id:{id}]",
-               userId, token);
+                StatusCodes.Status200OK, $"User was deleted [id:{id}]",
+                userId, token);
 
             return Ok();
         }
@@ -199,8 +195,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (user == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest, $"User was not found [id:{id}]",
-                    userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"User was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -213,9 +209,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!validEmail.Succeeded)
             {
-                _logger.LogError("{userId} {token} {status} {info}", userId, token,
-                                    StatusCodes.Status400BadRequest.ToString(), 
-                                    "User's email is invalid");
+                _logger.LogError("{userId} {token} {status} {info}",
+                    userId, token, StatusCodes.Status400BadRequest,
+                    "User's email is invalid");
 
                 return BadRequest();
             }
@@ -226,9 +222,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!validPhone.Succeeded)
             {
-                _logger.LogError("{userId} {token} {status} {info}", userId, token,
-                                    StatusCodes.Status400BadRequest.ToString(),
-                                    "User's phone is invalid");
+                _logger.LogError("{userId} {token} {status} {info}",
+                    userId, token, StatusCodes.Status400BadRequest,
+                    "User's phone is invalid");
 
                 return BadRequest();
             }
@@ -242,14 +238,14 @@ namespace FamilyNetServer.Controllers.API.V1
 
                 if (validPass.Succeeded)
                 {
-                    user.PasswordHash = _unitOfWork.PasswordHasher.HashPassword(user,
-                        us.Password);
+                    user.PasswordHash = _unitOfWork
+                        .PasswordHasher.HashPassword(user, us.Password);
                 }
                 else
                 {
-                    _logger.LogError("{userId} {token} {status} {info}", userId, token,
-                                    StatusCodes.Status400BadRequest.ToString(),
-                                    "User's password is invalid");
+                    _logger.LogError("{userId} {token} {status} {info}",
+                        userId, token, StatusCodes.Status400BadRequest,
+                        "User's password is invalid");
 
                     return BadRequest();
                 }
@@ -267,15 +263,15 @@ namespace FamilyNetServer.Controllers.API.V1
             if (result.Succeeded)
             {
                 _logger.LogInformation("{token}{userId}{status}{info}",
-                token, userId, StatusCodes.Status204NoContent,
-                $"User was updated [id:{user.Id}]");
+                    token, userId, StatusCodes.Status204NoContent,
+                    $"User was updated [id:{user.Id}]");
 
                 return NoContent();
             }
 
             _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest, $"User was not updated [id:{id}]",
-                    userId, token);
+                StatusCodes.Status400BadRequest,
+                $"User was not updated [id:{id}]", userId, token);
 
             return BadRequest();
         }

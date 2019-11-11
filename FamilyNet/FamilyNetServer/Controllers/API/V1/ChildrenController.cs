@@ -65,7 +65,7 @@ namespace FamilyNetServer.Controllers.API.V1
         public async Task<IActionResult> GetAll([FromQuery]FilterParemetersChildren filter)
         {
             _logger.LogInformation("{info}",
-                   "Endpoint Children/api/v1 GetAll was called");
+                "Endpoint Children/api/v1 GetAll was called");
 
             var children = _unitOfWork.Orphans.GetAll().Where(c => !c.IsDeleted);
             children = _filterConditions.GetOrphans(children, filter);
@@ -80,22 +80,21 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             var childrenDTO = await children.Select(c =>
-            new ChildDTO()
-            {
-                PhotoPath = _settings.Value.ServerURL + c.Avatar,
-                Birthday = c.Birthday,
-                EmailID = c.EmailID,
-                ID = c.ID,
-                Name = c.FullName.Name,
-                Patronymic = c.FullName.Patronymic,
-                Surname = c.FullName.Surname,
-                ChildrenHouseID = c.OrphanageID ?? 0,
-                ChildrenHouseName = c.Orphanage.Name,
-                Rating = c.Rating
-            }).ToListAsync();
+                new ChildDTO()
+                {
+                    PhotoPath = _settings.Value.ServerURL + c.Avatar,
+                    Birthday = c.Birthday,
+                    EmailID = c.EmailID,
+                    ID = c.ID,
+                    Name = c.FullName.Name,
+                    Patronymic = c.FullName.Patronymic,
+                    Surname = c.FullName.Surname,
+                    ChildrenHouseID = c.OrphanageID ?? 0,
+                    ChildrenHouseName = c.Orphanage.Name,
+                    Rating = c.Rating
+                }).ToListAsync();
 
-            _logger.LogInformation("{status}, {json}",
-                StatusCodes.Status200OK,
+            _logger.LogInformation("{status}, {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(childrenDTO));
 
             return Ok(childrenDTO);
@@ -108,13 +107,14 @@ namespace FamilyNetServer.Controllers.API.V1
         public async Task<IActionResult> Get(int id)
         {
             _logger.LogInformation("{info}",
-                  $"Endpoint Children/api/v1 GetById({id}) was called");
+                $"Endpoint Children/api/v1 GetById({id}) was called");
 
             var child = await _unitOfWork.Orphans.GetById(id);
 
             if (child == null)
             {
-                _logger.LogError("{info}{status}", $"Child wasn't found [id:{id}]",
+                _logger.LogError("{info}{status}",
+                    $"Child wasn't found [id:{id}]",
                     StatusCodes.Status400BadRequest);
 
                 return BadRequest();
@@ -134,8 +134,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 PhotoPath = _settings.Value.ServerURL + child.Avatar
             };
 
-            _logger.LogInformation("{status},{json}",
-                StatusCodes.Status200OK,
+            _logger.LogInformation("{status}{json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(childDTO));
 
             return Ok(childDTO);
@@ -156,8 +155,7 @@ namespace FamilyNetServer.Controllers.API.V1
             if (!_childValidator.IsValid(childDTO))
             {
                 _logger.LogWarning("{status}{token}{userId}",
-                    StatusCodes.Status400BadRequest,
-                    token, userId);
+                    StatusCodes.Status400BadRequest, token, userId);
 
                 return BadRequest();
             }
@@ -169,10 +167,10 @@ namespace FamilyNetServer.Controllers.API.V1
                 _logger.LogInformation("{info}", "ChildDTO has file photo.");
 
                 var fileName = childDTO.Name + childDTO.Surname
-                        + childDTO.Patronymic + DateTime.Now.Ticks;
+                    + childDTO.Patronymic + DateTime.Now.Ticks;
 
                 pathPhoto = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.Children), childDTO.Avatar);
+                    nameof(DirectoryUploadName.Children), childDTO.Avatar);
             }
 
             var child = new Orphan()
@@ -215,8 +213,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_childValidator.IsValid(childDTO))
             {
-                _logger.LogError("{userId} {token} {status} {info}", userId, token,
-                    StatusCodes.Status400BadRequest.ToString(), "child enity is invalid");
+                _logger.LogError("{userId} {token} {status} {info}", userId,
+                    token, StatusCodes.Status400BadRequest.ToString(),
+                    "ChildDTO is invalid");
 
                 return BadRequest();
             }
@@ -226,8 +225,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (child == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest, $"Child was not found [id:{id}]",
-                    userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Child was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -243,6 +242,7 @@ namespace FamilyNetServer.Controllers.API.V1
             if (childDTO.Avatar != null)
             {
                 _logger.LogInformation("{info}", "ChildDTO has file photo.");
+
                 var fileName = childDTO.Name + childDTO.Surname
                         + childDTO.Patronymic + DateTime.Now.Ticks;
 
@@ -270,14 +270,13 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-               "Endpoint Children/api/v1 [DELETE] was called", userId, token);
+                "Endpoint Children/api/v1 [DELETE] was called", userId, token);
 
             if (id <= 0)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                   StatusCodes.Status400BadRequest,
-                   $"Argument id is not valid [id:{id}]",
-                   userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -287,9 +286,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (child == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                 StatusCodes.Status400BadRequest,
-                 $"Child was not found [id:{id}]",
-                 userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Child was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -301,8 +299,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,
-                $"Child.IsDelete was updated [id:{id}]",
-                userId, token);
+                $"Child.IsDelete was updated [id:{id}]", userId, token);
 
             return Ok();
         }

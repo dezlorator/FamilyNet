@@ -1,10 +1,10 @@
-﻿ using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DataTransferObjects;
 using FamilyNetServer.Configuration;
 using FamilyNetServer.Enums;
+using FamilyNetServer.HttpHandlers;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Uploaders;
@@ -12,8 +12,10 @@ using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -28,22 +30,25 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IValidator<AuctionLotDTO> _auctionValidator;
         private readonly ILogger<AuctionLotController> _logger;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
+        private readonly IIdentityExtractor _identityExtractor;
 
         #endregion
 
         #region ctor
 
-        public AuctionLotController(IUnitOfWork repo, 
+        public AuctionLotController(IUnitOfWork repo,
             IFileUploader fileUploader,
             IValidator<AuctionLotDTO> auctionValidator,
             ILogger<AuctionLotController> logger,
-            IOptionsSnapshot<ServerURLSettings> settings)
+            IOptionsSnapshot<ServerURLSettings> settings,
+            IIdentityExtractor identityExtractor)
         {
             _repository = repo;
             _fileUploader = fileUploader;
             _auctionValidator = auctionValidator;
             _logger = logger;
             _settings = settings;
+            _identityExtractor = identityExtractor;
         }
 
         #endregion
@@ -52,20 +57,25 @@ namespace FamilyNetServer.Controllers.API.V1
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var auction = _repository.AuctionLots.GetAll().Where(c => !c.IsDeleted);
+            _logger.LogInformation("{info}",
+                "Endpoint AuctionLot/api/v1 GetAll was called");
+
+            var auction = _repository.AuctionLots.GetAll()
+                .Where(c => !c.IsDeleted);
 
             if (auction == null)
             {
+                _logger.LogWarning("{status}{info}",
+                    StatusCodes.Status400BadRequest,
+                    "List of Auction Lots is empty");
+
                 return BadRequest();
             }
 
-            var auctions = new List<AuctionLotDTO>();
-
-            foreach (var lot in auction)
-            {
-                var auctionLotDTO = new AuctionLotDTO()
+            var auctions = await auction.Select(lot =>
+                new AuctionLotDTO()
                 {
                     ID = lot.ID,
                     DateStart = lot.DateAdded,
@@ -74,12 +84,11 @@ namespace FamilyNetServer.Controllers.API.V1
                     Status = lot.Status.ToString(),
                     PhotoParth = _settings.Value.ServerURL + lot.Avatar,
                     AuctionLotItemID = lot.AuctionLotItemID,
-                };
+                }).ToListAsync();
 
-                auctions.Add(auctionLotDTO);
-            }
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(auctions));
 
-            _logger.LogInformation("Returned auction lots list");
             return Ok(auctions);
         }
 
@@ -90,11 +99,17 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
         {
+            _logger.LogInformation("{info}",
+                $"Endpoint AuctionLot/api/v1 GetById({id}) was called");
+
             var auction = await _repository.AuctionLots.GetById(id);
 
             if (auction == null)
             {
-                _logger.LogError($"No auction lot with id #{id} in database");
+                _logger.LogError("{info}{status}",
+                    $"Auction Lot wasn't found. [id:{id}]",
+                    StatusCodes.Status400BadRequest);
+
                 return BadRequest();
             }
 
@@ -109,7 +124,9 @@ namespace FamilyNetServer.Controllers.API.V1
                 AuctionLotItemID = auction.AuctionLotItemID,
             };
 
-            _logger.LogInformation($"Returned auction lot #{id}");
+            _logger.LogInformation("{status},{json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(auctionDTO));
+
             return Ok(auctionDTO);
         }
 
@@ -119,9 +136,17 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AuctionLotDTO auctionDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info} {userId} {token}",
+                "Endpoint AuctionLot/api/v1 [POST] was called", userId, token);
+
             if (!_auctionValidator.IsValid(auctionDTO))
             {
-                _logger.LogError("Invalid auction lot");
+                _logger.LogWarning("{status}{token}{userId}",
+                    StatusCodes.Status400BadRequest, token, userId);
+
                 return BadRequest();
             }
 
@@ -130,7 +155,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 DateAdded = auctionDTO.DateStart,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
-                Status =  AuctionLotStatus.UnApproved,
+                Status = AuctionLotStatus.UnApproved,
                 AuctionLotItemID = auctionDTO.AuctionLotItemID,
                 IsDeleted = false
             };
@@ -139,21 +164,24 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (auctionDTO.Avatar != null)
             {
+                _logger.LogInformation("{info}", "AuctionLotDTO has file photo.");
+
                 var fileName = auctionDTO.ID.ToString() + DateTime.Now.Ticks;
 
                 pathPhoto = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.Auction), auctionDTO.Avatar);
+                    nameof(DirectoryUploadName.Auction), auctionDTO.Avatar);
             }
 
             auction.Avatar = pathPhoto;
-
 
             await _repository.AuctionLots.Create(auction);
             _repository.SaveChangesAsync();
 
             auctionDTO.ID = auction.ID;
 
-            _logger.LogInformation($"Created auction lot with id #{auction.ID}");
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                token, userId, StatusCodes.Status201Created,
+                $"Auction Lot was saved [id:{auction.ID}]");
 
             return Created(auctionDTO.ID.ToString(), auctionDTO);
         }
@@ -164,9 +192,18 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AuctionLotDTO auctionDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint AuctionLot/api/v1 [PUT] was called", userId, token);
+
             if (!_auctionValidator.IsValid(auctionDTO))
             {
-                _logger.LogError("Invalid auction lot");
+                _logger.LogError("{userId} {token} {status} {info}", userId,
+                    token, StatusCodes.Status400BadRequest.ToString(),
+                    "AuctionLotDTO is invalid");
+
                 return BadRequest();
             }
 
@@ -174,6 +211,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (auction == null)
             {
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Auction Lot was not found [id:{id}]", userId, token);
+
                 return BadRequest();
             }
 
@@ -181,22 +222,26 @@ namespace FamilyNetServer.Controllers.API.V1
             auction.DateAdded = auctionDTO.DateStart;
             auction.OrphanID = auctionDTO.OrphanID;
             var status = AuctionLotStatus.UnApproved;
-            Enum.TryParse(auctionDTO.Status,out status);
+            Enum.TryParse(auctionDTO.Status, out status);
             auction.Status = status;
             auction.Quantity = auctionDTO.Quantity;
 
             if (auctionDTO.Avatar != null)
             {
+                _logger.LogInformation("{info}", "AuctionLotDTO has file photo.");
+
                 var fileName = auctionDTO.ID.ToString() + DateTime.Now.Ticks;
 
                 auction.Avatar = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.Auction), auctionDTO.Avatar);
+                    nameof(DirectoryUploadName.Auction), auctionDTO.Avatar);
             }
 
             _repository.AuctionLots.Update(auction);
             _repository.SaveChangesAsync();
 
-            _logger.LogInformation($"Edited auction lot with id #{auction.ID}");
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                token, userId, StatusCodes.Status204NoContent,
+                $"Auction Lot was updated [id:{auction.ID}]");
 
             return NoContent();
         }
@@ -207,9 +252,19 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute]int id)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint AuctionLots/api/v1 [DELETE] was called",
+                userId, token);
+
             if (id <= 0)
             {
-                _logger.LogError($"No auction lot with id #{id} in database");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
+
                 return BadRequest();
             }
 
@@ -217,7 +272,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (auction == null)
             {
-                _logger.LogError($"No auction lot with id #{id} in database");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"AuctionLot was not found [id:{id}]", userId, token);
+
                 return BadRequest();
             }
 
@@ -226,7 +284,9 @@ namespace FamilyNetServer.Controllers.API.V1
             _repository.AuctionLots.Update(auction);
             _repository.SaveChangesAsync();
 
-            _logger.LogInformation($"Deleted auction lot with id #{auction.ID}");
+            _logger.LogInformation("{status} {info} {userId} {token}",
+                StatusCodes.Status200OK,
+                $"AuctionLot.IsDelete was updated [id:{id}]", userId, token);
 
             return Ok();
         }

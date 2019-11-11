@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,15 +45,19 @@ namespace FamilyNetServer.Controllers.API.V1
         #endregion
 
         [HttpGet]
-        [Authorize(Roles = "Admin,CharityMaker, Volunteer")]
+        [Authorize(Roles = "Admin, CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll()
         {
-            _logger.LogInformation("{info}",
-                   "Endpoint Purchase/api/v1 GetAll was called");
+            var userIdentity = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
 
-            var purchase = _repository.Purchases.GetAll().Where(c => !c.IsDeleted);
+            _logger.LogInformation("{info}{token}{userId}",
+                "Endpoint Purchase/api/v1 GetAll was called", token, userIdentity);
+
+            var purchase = _repository.Purchases.GetAll()
+                .Where(c => !c.IsDeleted);
 
             if (purchase == null)
             {
@@ -66,19 +69,18 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             var purchases = await purchase.Select(item =>
-             new PurchaseDTO()
-             {
-                 ID = item.ID,
-                 Date = item.Date,
-                 AuctionLotId = item.AuctionLotId,
-                 Paid = item.Paid,
-                 Quantity = item.Quantity,
-                 UserId = item.UserId.ToString()
-             }).ToListAsync();
+                new PurchaseDTO()
+                {
+                    ID = item.ID,
+                    Date = item.Date,
+                    AuctionLotId = item.AuctionLotId,
+                    Paid = item.Paid,
+                    Quantity = item.Quantity,
+                    UserId = item.UserId.ToString()
+                }).ToListAsync();
 
-            _logger.LogInformation("{status}, {json}",
-                           StatusCodes.Status200OK,
-                           JsonConvert.SerializeObject(purchases));
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(purchases));
 
             return Ok(purchases);
         }
@@ -90,15 +92,20 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
         {
-            _logger.LogInformation("{info}",
-                 $"Endpoint Purchase/api/v1 GetById({id}) was called");
+            var userIdentity = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{token}{userId}",
+                 $"Endpoint Purchase/api/v1 GetById({id}) was called",
+                 token, userIdentity);
 
             var purchase = await _repository.Purchases.GetById(id);
 
             if (purchase == null)
             {
-                _logger.LogError("{info}{status}", $"Purchase wasn't found [id:{id}]",
-                   StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}",
+                    $"Purchase wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -113,9 +120,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 UserId = purchase.UserId.ToString()
             };
 
-            _logger.LogInformation("{status},{json}",
-               StatusCodes.Status200OK,
-               JsonConvert.SerializeObject(purchaseDTO));
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(purchaseDTO));
 
             return Ok(purchaseDTO);
         }
@@ -132,13 +138,12 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info} {userId} {token}",
-                "Endpoint Children/api/v1 [POST] was called", userIdentity, token);
+                "Endpoint Purchase/api/v1 [POST] was called", userIdentity, token);
 
             if (!_purchaseValidator.IsValid(purchaseDTO))
             {
                 _logger.LogWarning("{status}{token}{userId}",
-                                   StatusCodes.Status400BadRequest,
-                                   token, userIdentity);
+                    StatusCodes.Status400BadRequest, token, userIdentity);
 
                 return BadRequest();
             }
@@ -158,15 +163,19 @@ namespace FamilyNetServer.Controllers.API.V1
             _repository.SaveChangesAsync();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
-               token, userId, StatusCodes.Status201Created,
-               $"Purchase was saved [id:{purchase.ID}]");
+                token, userId, StatusCodes.Status201Created,
+                $"Purchase was saved [id:{purchase.ID}]");
 
-            var user = await _repository.UserManager.FindByIdAsync(purchase.UserId.ToString().ToUpper());
+            var user = await _repository.UserManager
+                .FindByIdAsync(purchase.UserId.ToString().ToUpper());
+
             if (user != null)
             {
                 var emailSender = new EmailService();
 
-                var task = emailSender.SendEmailAsync(user.Email, "Buying crafts", "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
+                var task = emailSender.SendEmailAsync(user.Email, 
+                    "Buying crafts", 
+                    "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
                     "<h3>Craft info:</h3>" +
                     $"<h4>Craft id:< {purchase.AuctionLotId}</h4>" +
                     $"<h4>Quantity: {purchase.Quantity}</h4>" +
@@ -191,8 +200,8 @@ namespace FamilyNetServer.Controllers.API.V1
             purchaseDTO.ID = purchase.ID;
 
             _logger.LogInformation("{token}{userId}{status}{info}",
-               token, userId, StatusCodes.Status201Created,
-               $"Purchase was saved [id:{purchase.ID}]");
+                token, userId, StatusCodes.Status201Created,
+                $"Purchase was saved [id:{purchase.ID}]");
 
             return Created(purchaseDTO.ID.ToString(), purchaseDTO);
         }
@@ -211,8 +220,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_purchaseValidator.IsValid(purchaseDTO))
             {
-                _logger.LogError("{userId} {token} {status} {info}", userIdentity, token,
-                   StatusCodes.Status400BadRequest.ToString(), "Purchase enity is invalid");
+                _logger.LogError("{userId} {token} {status} {info}",
+                    userIdentity, token, StatusCodes.Status400BadRequest,
+                    "Purchase enity is invalid");
 
                 return BadRequest();
             }
@@ -222,8 +232,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (purchase == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest, $"Purchase was not found [id:{id}]",
-                    userIdentity, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Purchase was not found [id:{id}]", userIdentity, token);
 
                 return BadRequest();
             }
@@ -260,7 +270,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (id <= 0)
             {
-                _logger.LogError($"No purchase with id #{id} in database");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Purchase was not found [id:{id}]", userId, token);
+
                 return BadRequest();
             }
 
@@ -269,9 +282,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (purchase == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                                   StatusCodes.Status400BadRequest,
-                                   $"Argument id is not valid [id:{id}]",
-                                   userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -283,7 +295,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                StatusCodes.Status200OK,
-               $"AuctionLot.IsDelete was updated [id:{id}]",
+               $"Purchase.IsDelete was updated [id:{id}]",
                userId, token);
 
             return Ok();

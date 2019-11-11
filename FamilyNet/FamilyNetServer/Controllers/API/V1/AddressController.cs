@@ -48,32 +48,31 @@ namespace FamilyNetServer.Controllers.API.V1
         public async Task<IActionResult> GetAll()
         {
             _logger.LogInformation("{info}",
-                  "Endpoint Address/api/v1 GetAll was called");
+                "Endpoint Address/api/v1 GetAll was called");
 
             var address = _repository.Address.GetAll().Where(c => !c.IsDeleted);
 
             if (address == null)
             {
-                _logger.LogInformation("{status}{info}",
-               StatusCodes.Status400BadRequest,
-              "List of addresses is empty");
+                _logger.LogWarning("{status}{info}",
+                    StatusCodes.Status400BadRequest,
+                    "List of addresses is empty");
 
                 return BadRequest();
             }
 
             var addressDTO = await address.Select(adrs =>
-             new AddressDTO()
-             {
-                 ID = adrs.ID,
-                 Country = adrs.Country,
-                 Region = adrs.Region,
-                 City = adrs.City,
-                 House = adrs.House,
-                 Street = adrs.Street
-             }).ToListAsync();
+                new AddressDTO()
+                {
+                    ID = adrs.ID,
+                    Country = adrs.Country,
+                    Region = adrs.Region,
+                    City = adrs.City,
+                    House = adrs.House,
+                    Street = adrs.Street
+                }).ToListAsync();
 
-            _logger.LogInformation("{status}, {json}",
-                StatusCodes.Status200OK,
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(addressDTO));
 
             return Ok(addressDTO);
@@ -92,8 +91,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (addresses == null)
             {
-                _logger.LogError("{info}{status}", $"Address wasn't found. [id:{id}]",
-                                        StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}",
+                    $"Address wasn't found. [id:{id}]",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -108,9 +108,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 House = addresses.House
             };
 
-            _logger.LogInformation("{status},{json}",
-                            StatusCodes.Status200OK,
-                            JsonConvert.SerializeObject(addressDTO));
+            _logger.LogInformation("{status},{json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(addressDTO));
 
             return Ok(addressDTO);
         }
@@ -151,8 +150,8 @@ namespace FamilyNetServer.Controllers.API.V1
             addressDTO.ID = address.ID;
 
             _logger.LogInformation("{token}{userId}{status}{info}",
-                           token, userId, StatusCodes.Status201Created,
-                           $"Address was saved [id:{address.ID}]");
+                token, userId, StatusCodes.Status201Created,
+                $"Address was saved [id:{address.ID}]");
 
             return Created(addressDTO.ID.ToString(), addressDTO);
         }
@@ -172,9 +171,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (!_addressValidator.IsValid(addressDTO))
             {
                 _logger.LogError("{userId}{token}{status}{info}",
-                   userId, token,
-                   StatusCodes.Status400BadRequest.ToString(),
-                   "address enity is invalid");
+                   userId, token, StatusCodes.Status400BadRequest,
+                   "AddressDTO is invalid");
 
                 return BadRequest();
             }
@@ -233,9 +231,9 @@ namespace FamilyNetServer.Controllers.API.V1
             if (address == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                StatusCodes.Status400BadRequest,
-                $"Address was not found [id:{id}]",
-                userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Address was not found [id:{id}]",
+                    userId, token);
 
                 return BadRequest();
             }
@@ -246,9 +244,10 @@ namespace FamilyNetServer.Controllers.API.V1
             _repository.SaveChangesAsync();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
-                           StatusCodes.Status200OK,
-                           $"Address.IsDelete was updated [id:{id}]",
-                           userId, token);
+                StatusCodes.Status200OK,
+                $"Address.IsDelete was updated [id:{id}]",
+                userId, token);
+
             return Ok();
         }
     }

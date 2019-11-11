@@ -50,14 +50,14 @@ namespace FamilyNetServer.Controllers.API.V1
             _logger.LogInformation("{info}",
                    "Endpoint Categoties/api/v1 GetAll was called");
 
-            var categories = _unitOfWork.BaseItemTypes.GetAll().Where(c => !c.IsDeleted);
+            var categories = _unitOfWork.BaseItemTypes.GetAll()
+                .Where(c => !c.IsDeleted);
 
             if (rows > 0 && page > 0)
             {
-                _logger.LogInformation("{info}", "Paging were used");
+                _logger.LogInformation("{info}", "Paging was used");
 
-                categories = categories
-                    .Skip((page - 1) * rows).Take(rows);
+                categories = categories.Skip((page - 1) * rows).Take(rows);
             }
 
             if (categories == null)
@@ -75,8 +75,7 @@ namespace FamilyNetServer.Controllers.API.V1
                     Name = c.Name
                 }).ToListAsync();
 
-            _logger.LogInformation("{status}, {json}",
-                StatusCodes.Status200OK,
+            _logger.LogInformation("{status}{json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(categoriesDTO));
 
             return Ok(categoriesDTO);
@@ -95,7 +94,7 @@ namespace FamilyNetServer.Controllers.API.V1
             if (category == null)
             {
                 _logger.LogError("{info}{status}", $"Category wasn't found [id:{id}]",
-                                   StatusCodes.Status400BadRequest);
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -106,8 +105,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 Name = category.Name
             };
 
-            _logger.LogInformation("{status},{json}",
-               StatusCodes.Status200OK,
+            _logger.LogInformation("{status}{json}", StatusCodes.Status200OK,
                JsonConvert.SerializeObject(categoryDTO));
 
             return Ok(categoryDTO);
@@ -126,9 +124,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_categoryValidator.IsValid(categoryDTO))
             {
-                _logger.LogWarning("{status}{token}{userId}",
-                                   StatusCodes.Status400BadRequest,
-                                   token, userId);
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "CategoryDTO is invalid");
 
                 return BadRequest();
             }
@@ -142,8 +140,8 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
-                           token, userId, StatusCodes.Status201Created,
-                           $"Category was saved [id:{category.ID}]");
+                token, userId, StatusCodes.Status201Created,
+                $"Category was saved [id:{category.ID}]");
 
             return Created("api/v1/categories/" + category.ID, categoryDTO);
         }
@@ -162,9 +160,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (id <= 0)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                                   StatusCodes.Status400BadRequest,
-                                   $"Argument id is not valid [id:{id}]",
-                                   userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -174,9 +171,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (category == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                                 StatusCodes.Status400BadRequest,
-                                 $"Category was not found [id:{id}]",
-                                 userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Category was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -187,9 +183,8 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
-                           StatusCodes.Status200OK,
-                           $"Category.IsDelete was updated [id:{id}]",
-                           userId, token);
+                StatusCodes.Status200OK,
+                $"Category.IsDelete was updated [id:{id}]", userId, token);
 
             return Ok();
         }

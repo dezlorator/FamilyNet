@@ -56,22 +56,22 @@ namespace FamilyNetServer.Controllers.API.V1
                                     [FromQuery]string forSearch)
         {
             _logger.LogInformation("{info}",
-                   "Endpoint Donations/api/v1 GetAll was called");
+                "Endpoint Donations/api/v1 GetAll was called");
 
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
             donations = _donationsFilter.GetDonations(donations, forSearch);
 
             if (rows > 0 && page > 0)
             {
-                _logger.LogInformation("{info}", "Paging were used");
+                _logger.LogInformation("{info}", "Paging was used");
                 donations = donations.Skip((page - 1) * rows).Take(rows);
             }
 
             if (donations == null)
             {
                 _logger.LogInformation("{status}{info}",
-                                   StatusCodes.Status400BadRequest,
-                                   "List of Donations is empty");
+                    StatusCodes.Status400BadRequest,
+                    "List of Donations is empty");
 
                 return BadRequest();
             }
@@ -95,9 +95,8 @@ namespace FamilyNetServer.Controllers.API.V1
                                .Select(t => t.TypeID)
                 }).ToListAsync();
 
-            _logger.LogInformation("{status}, {json}",
-              StatusCodes.Status200OK,
-              JsonConvert.SerializeObject(donationsDTO));
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(donationsDTO));
 
             return Ok(donationsDTO);
         }
@@ -114,8 +113,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (donation == null)
             {
-                _logger.LogError("{info}{status}", $"Donation wasn't found [id:{id}]",
-                                   StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}",
+                    $"Donation wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -137,9 +137,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 OrphanageRating = donation.Orphanage.Rating
             };
 
-            _logger.LogInformation("{status},{json}",
-                           StatusCodes.Status200OK,
-                           JsonConvert.SerializeObject(donationDetailsDTO));
+            _logger.LogInformation("{status},{json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(donationDetailsDTO));
 
             return Ok(donationDetailsDTO);
         }
@@ -168,10 +167,12 @@ namespace FamilyNetServer.Controllers.API.V1
             var donation = new Donation()
             {
                 DonationItemID = donationDTO.DonationItemID,
-                DonationItem = await _unitOfWork.DonationItems.GetById(donationDTO.DonationItemID.Value),
+                DonationItem = await _unitOfWork.DonationItems
+                    .GetById(donationDTO.DonationItemID.Value),
                 CharityMakerID = donationDTO.CharityMakerID,
                 OrphanageID = donationDTO.OrphanageID,
-                Orphanage = await _unitOfWork.Orphanages.GetById(donationDTO.OrphanageID.Value),
+                Orphanage = await _unitOfWork.Orphanages
+                    .GetById(donationDTO.OrphanageID.Value),
                 Status = DonationStatus.Sended,
                 LastDateWhenStatusChanged = DateTime.Now
             };
@@ -200,9 +201,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_donationValidator.IsValid(donationDTO))
             {
-                _logger.LogError("{userId} {token} {status} {info}", userId, token,
-                                    StatusCodes.Status400BadRequest.ToString(),
-                                    "Donation enity is invalid");
+                _logger.LogError("{userId} {token} {status} {info}", userId,
+                    token, StatusCodes.Status400BadRequest,
+                    "DonationDTO is invalid");
 
                 return BadRequest();
             }
@@ -212,9 +213,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (donation == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                                   StatusCodes.Status400BadRequest,
-                                   $"Donation was not found [id:{id}]",
-                                   userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Donation was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -222,12 +222,12 @@ namespace FamilyNetServer.Controllers.API.V1
             if (donation.DonationItemID != null)
             {
                 _logger.LogInformation("{status} {info} {userId} {token}",
-                                  StatusCodes.Status400BadRequest,
-                                  "Donation item is not null.",
-                                  userId, token);
+                    StatusCodes.Status400BadRequest,
+                    "Donation item is not null.", userId, token);
 
                 donation.DonationItemID = donationDTO.DonationItemID;
-                donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
+                donation.DonationItem = await _unitOfWork.DonationItems
+                    .GetById(donation.DonationItemID.Value);
             }
 
             donation.IsRequest = true;
@@ -237,12 +237,12 @@ namespace FamilyNetServer.Controllers.API.V1
             if (donationDTO.OrphanageID != null)
             {
                 _logger.LogInformation("{status} {info} {userId} {token}",
-                                  StatusCodes.Status400BadRequest,
-                                  "Orphanage is not null.",
-                                  userId, token);
+                    StatusCodes.Status400BadRequest,
+                    "Orphanage is not null.", userId, token);
 
                 donation.OrphanageID = donationDTO.OrphanageID;
-                donation.Orphanage = await _unitOfWork.Orphanages.GetById(donation.OrphanageID.Value);
+                donation.Orphanage = await _unitOfWork.Orphanages
+                    .GetById(donation.OrphanageID.Value);
             }
 
             _unitOfWork.Donations.Update(donation);
@@ -265,11 +265,15 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint Children/api/v1/StatusEdit/ [PUT] was called", userId, token);
+                "Endpoint Donations/api/v1/StatusEdit/ [PUT] was called",
+                userId, token);
 
             if (!Enum.TryParse(status, out DonationStatus donationStatus))
             {
-                _logger.LogError("Wrong string.");
+                _logger.LogError("{userId} {token} {status} {info}", userId,
+                    token, StatusCodes.Status400BadRequest.ToString(),
+                    "Status is invalid");
+
                 return BadRequest();
             }
 
@@ -277,7 +281,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (donation == null)
             {
-                _logger.LogError("Bad request. No donation with such id was found");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Donation was not found [id:{id}]", userId, token);
+
                 return BadRequest();
             }
 
@@ -286,7 +293,9 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.Donations.Update(donation);
             _unitOfWork.SaveChangesAsync();
 
-            _logger.LogInformation("Status: NoContent. Donation status was edited.");
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                             token, userId, StatusCodes.Status204NoContent,
+                             $"Status was updated [id:{donation.ID}]");
 
             return NoContent();
         }
@@ -301,26 +310,28 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint Donations/api/v1/donationMade/ [PUT] was called", userId, token);
+                "Endpoint Donations/api/v1/donationMade/ [PUT] was called",
+                userId, token);
 
-            CharityMaker charityMaker = await _unitOfWork.CharityMakers.GetById(charityMakerID);
+            var charityMaker = await _unitOfWork.CharityMakers
+                .GetById(charityMakerID);
 
             if (charityMaker == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest, $"Charity maker was not found [id:{id}]",
-                    userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Charity maker was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
 
-            Donation donation = await _unitOfWork.Donations.GetById(id);
+            var donation = await _unitOfWork.Donations.GetById(id);
 
             if (donation == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest, $"Donation was not found [id:{id}]",
-                    userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Donation was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -352,9 +363,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (id <= 0)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                                   StatusCodes.Status400BadRequest,
-                                   $"Argument id is not valid [id:{id}]",
-                                   userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -364,9 +374,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (donation == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                StatusCodes.Status400BadRequest,
-                $"Donation was not found [id:{id}]",
-                userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Donation was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -377,9 +386,9 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
-                           StatusCodes.Status200OK,
-                           $"Donation.IsDelete was updated [id:{id}]",
-                           userId, token);
+                StatusCodes.Status200OK,
+                $"Donation.IsDelete was updated [id:{id}]", userId, token);
+
             return Ok();
         }
     }

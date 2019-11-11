@@ -78,7 +78,7 @@ namespace FamilyNetServer.Tests
 
             //Act
             _controller
-                .GetAll(It.IsAny<FilterParametersRepresentatives>());
+                .GetAllAsync(It.IsAny<FilterParametersRepresentatives>());
 
             //Assert
             _mockRepresentatives.Verify(repo => repo.GetAll(), Times.Once);
@@ -115,7 +115,7 @@ namespace FamilyNetServer.Tests
 
             //Act
             var result = _controller
-                .GetAll(filter);
+                .GetAllAsync(filter);
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -144,7 +144,7 @@ namespace FamilyNetServer.Tests
             _mockFilterConditions.Setup(f => f.GetRepresentatives(representatives, filter)).Returns(() => null);
 
             //Act
-            var result = _controller.GetAll(filter);
+            var result = _controller.GetAllAsync(filter);
 
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);

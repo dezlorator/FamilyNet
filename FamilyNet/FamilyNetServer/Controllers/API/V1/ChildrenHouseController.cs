@@ -70,45 +70,47 @@ namespace FamilyNetServer.Controllers.API.V1
                                    [FromQuery]int page)
         {
             _logger.LogInformation("{info}",
-                  "Endpoint ChildrenHouses/api/v1 GetAll was called");
+                "Endpoint ChildrenHouses/api/v1 GetAll was called");
 
-            var childrenHouses = _repository.Orphanages.GetAll().Where(c => !c.IsDeleted);
+            var childrenHouses = _repository.Orphanages.GetAll()
+                .Where(c => !c.IsDeleted);
             _logger.LogInformation("Get all children houses");
-            childrenHouses = _filterConditions.GetFilteredChildrenHouses(childrenHouses, name, rating, address);
+            childrenHouses = _filterConditions
+                .GetFilteredChildrenHouses(childrenHouses, name, rating, address);
             _logger.LogInformation("{info}", "Get children houses filtered");
-            childrenHouses = _filterConditions.GetSortedChildrenHouses(childrenHouses, sort);
+            childrenHouses = _filterConditions
+                .GetSortedChildrenHouses(childrenHouses, sort);
             _logger.LogInformation("{info}", "Get children houses sorted");
 
             if (rows > 0 && page > 0)
             {
                 _logger.LogInformation("{info}", "Paging was used");
-
-                childrenHouses = childrenHouses.Skip((page - 1) * rows).Take(rows);
+                childrenHouses = childrenHouses.Skip((page - 1) * rows)
+                    .Take(rows);
             }
 
             if (childrenHouses == null)
             {
                 _logger.LogInformation("{status}{info}",
-                                    StatusCodes.Status400BadRequest,
-                                    "List of ChildrenHouses is empty");
+                    StatusCodes.Status400BadRequest,
+                    "List of Children Houses is empty");
 
                 return BadRequest();
             }
 
             var childrenHousesDTO = await childrenHouses.Select(c =>
-             new ChildrenHouseDTO()
-             {
-                 ID = c.ID,
-                 Name = c.Name,
-                 AdressID = c.AdressID,
-                 LocationID = c.LocationID,
-                 Rating = c.Rating,
-                 PhotoPath = _settings.Value.ServerURL + c.Avatar,
-             }).ToListAsync();
+                new ChildrenHouseDTO()
+                {
+                    ID = c.ID,
+                    Name = c.Name,
+                    AdressID = c.AdressID,
+                    LocationID = c.LocationID,
+                    Rating = c.Rating,
+                    PhotoPath = _settings.Value.ServerURL + c.Avatar,
+                }).ToListAsync();
 
-            _logger.LogInformation("{status}, {json}",
-                           StatusCodes.Status200OK,
-                           JsonConvert.SerializeObject(childrenHousesDTO));
+            _logger.LogInformation("{status}{json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(childrenHousesDTO));
 
             return Ok(childrenHousesDTO);
         }
@@ -120,14 +122,15 @@ namespace FamilyNetServer.Controllers.API.V1
         public async Task<IActionResult> Get(int id)
         {
             _logger.LogInformation("{info}",
-                  $"Endpoint ChildrenHouses/api/v1 GetById({id}) was called");
+                $"Endpoint ChildrenHouses/api/v1 GetById({id}) was called");
 
             var childrenHouses = await _repository.Orphanages.GetById(id);
 
             if (childrenHouses == null)
             {
-                _logger.LogError("{info}{status}", $"ChildrenHouses wasn't found [id:{id}]",
-                   StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}",
+                    $"ChildrenHouses wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -142,9 +145,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 PhotoPath = _settings.Value.ServerURL + childrenHouses.Avatar
             };
 
-            _logger.LogInformation("{status},{json}",
-               StatusCodes.Status200OK,
-               JsonConvert.SerializeObject(childrenHouseDTO));
+            _logger.LogInformation("{status}{json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(childrenHouseDTO));
 
             return Ok(childrenHouseDTO);
         }
@@ -159,13 +161,13 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info} {userId} {token}",
-                "Endpoint ChildrenHouses/api/v1 [POST] was called", userId, token);
+                "Endpoint ChildrenHouses/api/v1 [POST] was called",
+                userId, token);
 
             if (!_childrenHouseValidator.IsValid(childrenHousesDTO))
             {
                 _logger.LogWarning("{status}{token}{userId}",
-                   StatusCodes.Status400BadRequest,
-                   token, userId);
+                   StatusCodes.Status400BadRequest, token, userId);
 
                 return BadRequest();
             }
@@ -179,7 +181,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 var fileName = childrenHousesDTO.Name + DateTime.Now.Ticks;
 
                 pathPhoto = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.ChildrenHouses), childrenHousesDTO.Avatar);
+                    nameof(DirectoryUploadName.ChildrenHouses),
+                    childrenHousesDTO.Avatar);
             }
 
             var childrenHouse = new Orphanage()
@@ -195,14 +198,16 @@ namespace FamilyNetServer.Controllers.API.V1
             _repository.SaveChangesAsync();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
-               token, userId, StatusCodes.Status201Created,
-               $"ChildHouses was saved [id:{childrenHouse.ID}]");
-            
+                token, userId, StatusCodes.Status201Created,
+                $"ChildHouses was saved [id:{childrenHouse.ID}]");
+
             childrenHousesDTO.ID = childrenHouse.ID;
             childrenHousesDTO.PhotoPath = childrenHouse.Avatar;
             childrenHousesDTO.Avatar = null;
 
-            _logger.LogInformation($"Created children house with id #{childrenHouse.ID}");
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                token, userId, StatusCodes.Status201Created,
+                $"Children House was saved [id:{childrenHouse.ID}]");
 
             return Created("api/v1/childrenHouse/" + childrenHouse.ID, childrenHousesDTO);
         }
@@ -221,8 +226,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_childrenHouseValidator.IsValid(childrenHouseDTO))
             {
-                _logger.LogError("{userId} {token} {status} {info}", userId, token,
-                                    StatusCodes.Status400BadRequest.ToString(), "child enity is invalid");
+                _logger.LogError("{userId} {token} {status} {info}", userId,
+                    token, StatusCodes.Status400BadRequest,
+                    "ChildHouseDTO is invalid");
 
                 return BadRequest();
             }
@@ -232,8 +238,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (childrenHouse == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest, $"ChildldrenHouse was not found [id:{id}]",
-                    userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"ChildldrenHouse was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -244,12 +250,14 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (childrenHouseDTO.Avatar != null)
             {
-                _logger.LogInformation("{info}", "ChildrenHouseDTO has file photo.");
+                _logger.LogInformation("{info}",
+                    "ChildrenHouseDTO has file photo.");
 
                 var fileName = childrenHouseDTO.Name + DateTime.Now.Ticks;
 
                 childrenHouse.Avatar = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.ChildrenHouses), childrenHouseDTO.Avatar);
+                    nameof(DirectoryUploadName.ChildrenHouses),
+                    childrenHouseDTO.Avatar);
             }
 
             _repository.Orphanages.Update(childrenHouse);
@@ -272,14 +280,14 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-               "Endpoint ChildrenHouse/api/v1 [DELETE] was called", userId, token);
+                "Endpoint ChildrenHouse/api/v1 [DELETE] was called",
+                userId, token);
 
             if (id <= 0)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
                    StatusCodes.Status400BadRequest,
-                   $"Argument id is not valid [id:{id}]",
-                   userId, token);
+                   $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -289,9 +297,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (childrenHouse == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                                StatusCodes.Status400BadRequest,
-                                $"ChildrenHouse was not found [id:{id}]",
-                                userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"ChildrenHouse was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -302,9 +309,9 @@ namespace FamilyNetServer.Controllers.API.V1
             _repository.SaveChangesAsync();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
-                            StatusCodes.Status200OK,
-                            $"ChildrenHouse.IsDelete was updated [id:{id}]",
-                            userId, token);
+                 StatusCodes.Status200OK,
+                 $"ChildrenHouse.IsDelete was updated [id:{id}]", 
+                 userId, token);
 
             return Ok();
         }

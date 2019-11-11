@@ -65,6 +65,21 @@ namespace FamilyNetLogs.Controllers
             return View(log);
         }
 
+        [HttpGet]
+        public IActionResult DeleteLogs()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete()
+        {
+            _context.Log.RemoveRange(_context.Log);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
         public IActionResult Error()
         {
             var message = new ErrorViewModel()

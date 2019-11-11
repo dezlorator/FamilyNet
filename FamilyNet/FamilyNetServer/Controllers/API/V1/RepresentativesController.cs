@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.HttpHandlers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -68,40 +69,41 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery] FilterParametersRepresentatives filter)
+        public async Task<IActionResult> GetAllAsync([FromQuery] FilterParametersRepresentatives filter)
         {
             _logger.LogInformation("{info}",
-                  "Endpoint Representatives/api/v1 GetAll was called");
+                "Endpoint Representatives/api/v1 GetAll was called");
 
-            var representatives = _unitOfWork.Representatives.GetAll().Where(r => !r.IsDeleted);
-            representatives = _filterConditions.GetRepresentatives(representatives, filter);
+            var representatives = _unitOfWork.Representatives.GetAll()
+                .Where(r => !r.IsDeleted);
+            representatives = _filterConditions
+                .GetRepresentatives(representatives, filter);
 
             if (representatives == null)
             {
                 _logger.LogInformation("{status}{info}",
-                   StatusCodes.Status400BadRequest,
-                   "List of Representatives is empty");
+                    StatusCodes.Status400BadRequest,
+                    "List of Representatives is empty");
 
                 return BadRequest();
             }
 
-            var representativesDTO = representatives.Select(r =>
-            new RepresentativeDTO()
-            {
-                PhotoPath = _settings.Value.ServerURL + r.Avatar,
-                Birthday = r.Birthday,
-                EmailID = r.EmailID,
-                ID = r.ID,
-                Name = r.FullName.Name,
-                Patronymic = r.FullName.Patronymic,
-                Surname = r.FullName.Surname,
-                ChildrenHouseID = r.OrphanageID,
-                Rating = r.Rating
-            });
+            var representativesDTO = await representatives.Select(r =>
+                new RepresentativeDTO()
+                {
+                    PhotoPath = _settings.Value.ServerURL + r.Avatar,
+                    Birthday = r.Birthday,
+                    EmailID = r.EmailID,
+                    ID = r.ID,
+                    Name = r.FullName.Name,
+                    Patronymic = r.FullName.Patronymic,
+                    Surname = r.FullName.Surname,
+                    ChildrenHouseID = r.OrphanageID,
+                    Rating = r.Rating
+                }).ToListAsync();
 
-            _logger.LogInformation("{status}, {json}",
-               StatusCodes.Status200OK,
-               JsonConvert.SerializeObject(representativesDTO));
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(representativesDTO));
 
             return Ok(representativesDTO);
         }
@@ -112,14 +114,15 @@ namespace FamilyNetServer.Controllers.API.V1
         public async Task<IActionResult> Get(int id)
         {
             _logger.LogInformation("{info}",
-                 $"Endpoint Representatives/api/v1 GetById({id}) was called");
+                $"Endpoint Representatives/api/v1 GetById({id}) was called");
 
             var represenntative = await _unitOfWork.Representatives.GetById(id);
 
             if (represenntative == null)
             {
-                _logger.LogError("{info}{status}", $"Representative wasn't found [id:{id}]",
-                   StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}",
+                    $"Representative wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -137,9 +140,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 PhotoPath = _settings.Value.ServerURL + represenntative.Avatar
             };
 
-            _logger.LogInformation("{status},{json}",
-               StatusCodes.Status200OK,
-               JsonConvert.SerializeObject(representativeDTO));
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(representativeDTO));
 
             return Ok(representativeDTO);
         }
@@ -158,9 +160,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_representativeValidator.IsValid(representativeDTO))
             {
-                _logger.LogWarning("{status}{token}{userId}",
-                   StatusCodes.Status400BadRequest,
-                   token, userId);
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "RepresentativeDTO is invalid");
 
                 return BadRequest();
             }
@@ -172,10 +174,11 @@ namespace FamilyNetServer.Controllers.API.V1
                 _logger.LogInformation("{info}", "RepresentativeDTO has file photo.");
 
                 var fileName = representativeDTO.Name + representativeDTO.Surname
-                        + representativeDTO.Patronymic + DateTime.Now.Ticks;
+                    + representativeDTO.Patronymic + DateTime.Now.Ticks;
 
                 pathPhoto = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.Representatives), representativeDTO.Avatar);
+                    nameof(DirectoryUploadName.Representatives),
+                    representativeDTO.Avatar);
             }
 
             var representative = new Representative()
@@ -201,10 +204,10 @@ namespace FamilyNetServer.Controllers.API.V1
             representativeDTO.PhotoPath = representative.Avatar;
 
             _logger.LogInformation("{token}{userId}{status}{info}",
-               token, userId, StatusCodes.Status201Created,
-               $"Representative was saved [id:{representative.ID}]");
+                token, userId, StatusCodes.Status201Created,
+                $"Representative was saved [id:{representative.ID}]");
 
-            return Created("api/v1/{controller}/" + representative.ID, representativeDTO);
+            return Created("api/v1/representatives/" + representative.ID, representativeDTO);
         }
 
         [HttpPut("{id}")]
@@ -221,19 +224,21 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_representativeValidator.IsValid(representativeDTO))
             {
-                _logger.LogError("{userId} {token} {status} {info}", userId, token,
-                    StatusCodes.Status400BadRequest.ToString(), "representativeDTO is invalid");
+                _logger.LogError("{userId} {token} {status} {info}",
+                    userId, token, StatusCodes.Status400BadRequest,
+                    "RepresentativeDTO is invalid");
 
                 return BadRequest();
             }
 
-            var representative = await _unitOfWork.Representatives.GetById(representativeDTO.ID);
+            var representative = await _unitOfWork.Representatives
+                .GetById(representativeDTO.ID);
 
             if (representative == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest, $"Representative was not found [id:{id}]",
-                    userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Representative was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -251,10 +256,11 @@ namespace FamilyNetServer.Controllers.API.V1
                 _logger.LogInformation("{info}", "representativeDTO has file photo.");
 
                 var fileName = representativeDTO.Name + representativeDTO.Surname
-                        + representativeDTO.Patronymic + DateTime.Now.Ticks;
+                    + representativeDTO.Patronymic + DateTime.Now.Ticks;
 
                 representative.Avatar = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.Representatives), representativeDTO.Avatar);
+                    nameof(DirectoryUploadName.Representatives),
+                    representativeDTO.Avatar);
             }
 
             _unitOfWork.Representatives.Update(representative);
@@ -282,9 +288,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (id <= 0)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                  StatusCodes.Status400BadRequest,
-                  $"Argument id is not valid [id:{id}]",
-                  userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -294,9 +299,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (representative == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                 StatusCodes.Status400BadRequest,
-                 $"Representative was not found [id:{id}]",
-                 userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Representative was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -307,10 +311,10 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
-               StatusCodes.Status200OK,
-               $"Representative.IsDelete was updated [id:{id}]",
-               userId, token);
-            
+                StatusCodes.Status200OK,
+                $"Representative.IsDelete was updated [id:{id}]",
+                userId, token);
+
             return Ok();
         }
     }

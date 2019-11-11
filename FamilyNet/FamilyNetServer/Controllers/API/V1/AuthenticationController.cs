@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿
+using System.Threading.Tasks;
 using DataTransferObjects;
 using FamilyNetServer.Factories;
 using FamilyNetServer.Models;
@@ -40,38 +41,49 @@ namespace FamilyNetServer.Controllers.API.V1
         [Produces("application/json")]
         public async Task<IActionResult> Authentication([FromBody]CredentialsDTO credentialsDTO)
         {
-            _logger.LogInformation("Endpoint Authentication/api/v1  [POST] was called. Arguments password: " +
-                credentialsDTO.Password + " email: " + credentialsDTO.Email);
+            _logger.LogInformation("Endpoint Authentication/api/v1 " +
+                " [POST] was called. Password: " + credentialsDTO.Password +
+                " email: " + credentialsDTO.Email);
 
-            var user = await _unitOfWork.UserManager.FindByEmailAsync(credentialsDTO.Email);
+            var user = await _unitOfWork.UserManager
+                .FindByEmailAsync(credentialsDTO.Email);
 
             if (user == null)
             {
                 var msg = "Credentials are invalid!";
-                _logger.LogError("{info}{status}",msg, StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}", msg,
+                    StatusCodes.Status400BadRequest);
+
                 return BadRequest(msg);
             }
 
             if (!await _unitOfWork.UserManager.IsEmailConfirmedAsync(user))
             {
                 var msg = "User's email was not confirmed!";
-                _logger.LogError("{info}{status}", msg, StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}", msg,
+                    StatusCodes.Status400BadRequest);
+
                 return BadRequest(msg);
             }
 
-            var result = await _unitOfWork.UserManager.CheckPasswordAsync(user, credentialsDTO.Password);
+            var result = await _unitOfWork.UserManager.CheckPasswordAsync(user,
+                             credentialsDTO.Password);
 
             if (!result)
             {
                 var msg = "Credentials are invalid!";
-                _logger.LogError("{info}{status}", msg, StatusCodes.Status400BadRequest);
+                _logger.LogError("{info}{status}", msg,
+                    StatusCodes.Status400BadRequest);
+
                 return BadRequest(msg);
             }
 
-            var roles = await _unitOfWork.UserManager.GetRolesAsync(user).ConfigureAwait(false);
+            var roles = await _unitOfWork.UserManager.GetRolesAsync(user)
+                .ConfigureAwait(false);
+
             var token = _tokenFactory.Create(user, roles);
 
-            _logger.LogInformation("{info}{status}{token}","Token was created ",
+            _logger.LogInformation("{info}{status}{token}", "Token was created ",
                 StatusCodes.Status201Created, token.Token);
 
             return Created("", token);

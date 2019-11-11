@@ -49,32 +49,30 @@ namespace FamilyNetServer.Controllers.API.V1
         public async Task<IActionResult> GetAll()
         {
             _logger.LogInformation("{info}",
-                  "Endpoint Location/api/v1 GetAll was called");
+                "Endpoint Location/api/v1 GetAll was called");
 
-            var location = _repository.Location.GetAll().Where(c => !c.IsDeleted);
+            var location = _repository.Location.GetAll()
+                .Where(c => !c.IsDeleted);
 
             if (location == null)
             {
-                _logger.LogError("No location in database");
                 _logger.LogInformation("{status}{info}",
-                   StatusCodes.Status400BadRequest,
-                   "List of Locations is empty");
+                    StatusCodes.Status400BadRequest,
+                    "List of Locations is empty");
 
                 return BadRequest();
             }
 
             var locationsDTO = await location.Select(Location =>
-            new LocationDTO()
-            {
-                ID = Location.ID,
-                MapCoordX = Location.MapCoordX,
-                MapCoordY = Location.MapCoordY,
-            }
-            ).ToListAsync();
+                new LocationDTO()
+                {
+                    ID = Location.ID,
+                    MapCoordX = Location.MapCoordX,
+                    MapCoordY = Location.MapCoordY,
+                }).ToListAsync();
 
-            _logger.LogInformation("{status}, {json}",
-                            StatusCodes.Status200OK,
-                            JsonConvert.SerializeObject(locationsDTO));
+            _logger.LogInformation("{status}, {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(locationsDTO));
 
             return Ok(locationsDTO);
         }
@@ -92,7 +90,8 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (locations == null)
             {
-                _logger.LogError("{info}{status}", $"Location wasn't found [id:{id}]",
+                _logger.LogError("{info}{status}", 
+                    $"Location wasn't found [id:{id}]",
                     StatusCodes.Status400BadRequest);
 
                 return BadRequest();
@@ -106,9 +105,8 @@ namespace FamilyNetServer.Controllers.API.V1
 
             };
 
-            _logger.LogInformation("{status},{json}",
-               StatusCodes.Status200OK,
-               JsonConvert.SerializeObject(locationDTO));
+            _logger.LogInformation("{status},{json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(locationDTO));
 
             return Ok(locationDTO);
         }
@@ -128,8 +126,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (!_addressValidator.IsValid(addressDTO))
             {
                 _logger.LogWarning("{status}{token}{userId}",
-                                    StatusCodes.Status400BadRequest,
-                                    token, userId);
+                    StatusCodes.Status400BadRequest,
+                    token, userId);
 
                 return BadRequest();
             }
@@ -148,9 +146,8 @@ namespace FamilyNetServer.Controllers.API.V1
             else
             {
                 _logger.LogError("{status}{token}{userId}{info}",
-                                 StatusCodes.Status400BadRequest,
-                                 token, userId,
-                                 "Invalid address data");
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "Invalid address data");
 
                 return BadRequest();
             }
@@ -179,8 +176,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (!_addressValidator.IsValid(addressDTO))
             {
-                _logger.LogError("{userId} {token} {status} {info}", userId, token,
-                    StatusCodes.Status400BadRequest.ToString(), "Address data is invalid");
+                _logger.LogError("{userId} {token} {status} {info}", userId,
+                    token, StatusCodes.Status400BadRequest,
+                    "Address data is invalid");
 
                 return BadRequest();
             }
@@ -189,8 +187,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (location == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                   StatusCodes.Status400BadRequest, $"Location was not found [id:{id}]",
-                   userId, token);
+                    StatusCodes.Status400BadRequest, 
+                    $"Location was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -204,8 +202,8 @@ namespace FamilyNetServer.Controllers.API.V1
             else
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                   StatusCodes.Status400BadRequest, $"Address data was not found [id:{id}]",
-                   userId, token);
+                    StatusCodes.Status400BadRequest, 
+                    $"Address data was not found [id:{id}]", userId, token);
 
                 location.IsDeleted = true;
             }
@@ -234,9 +232,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (id <= 0)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                                  StatusCodes.Status400BadRequest,
-                                  $"Argument id is not valid [id:{id}]",
-                                  userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -246,9 +243,8 @@ namespace FamilyNetServer.Controllers.API.V1
             if (location == null)
             {
                 _logger.LogError("{status} {info} {userId} {token}",
-                 StatusCodes.Status400BadRequest,
-                 $"Location was not found [id:{id}]",
-                 userId, token);
+                    StatusCodes.Status400BadRequest,
+                    $"Location was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -261,8 +257,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,
-                $"Location.IsDelete was updated [id:{id}]",
-                userId, token);
+                $"Location.IsDelete was updated [id:{id}]", userId, token);
 
             return Ok();
         }
@@ -293,6 +288,7 @@ namespace FamilyNetServer.Controllers.API.V1
                     forOut = true;
                 }
             }
+
             return forOut;
         }
     }

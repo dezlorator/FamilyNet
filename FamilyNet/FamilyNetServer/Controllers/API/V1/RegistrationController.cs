@@ -49,18 +49,19 @@ namespace FamilyNetServer.Controllers.API.V1
         public async Task<IActionResult> Register([FromForm]RegistrationDTO model)
         {
             _logger.LogInformation("{info}",
-                   "Endpoint Registration/api/v1 [POST] was called");
+                "Endpoint Registration/api/v1 [POST] was called");
 
             var allRoles = _unitOfWork.RoleManager.Roles.ToList();
 
             _logger.LogInformation("{json}{info}",
                 JsonConvert.SerializeObject(allRoles), "json contains roles");
 
-            var yourDropdownList = new SelectList(allRoles.Select(role => new SelectListItem
-            {
-                Text = role.Name,
-                Value = role.Name
-            }).ToList(), "Value", "Text");
+            var yourDropdownList = new SelectList(allRoles.Select(role =>
+                new SelectListItem
+                {
+                    Text = role.Name,
+                    Value = role.Name
+                }).ToList(), "Value", "Text");
 
             model.YourDropdownList = yourDropdownList;
 
@@ -75,22 +76,26 @@ namespace FamilyNetServer.Controllers.API.V1
                     PersonID = null
                 };
 
-                var result = await _unitOfWork.UserManager.CreateAsync(user, model.Password);
+                var result = await _unitOfWork.UserManager
+                    .CreateAsync(user, model.Password);
 
-                await _unitOfWork.UserManager.AddToRoleAsync(user, model.YourDropdownSelectedValue);
+                await _unitOfWork.UserManager.AddToRoleAsync(user,
+                    model.YourDropdownSelectedValue);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("{info}", "User was saved");
 
-                    var codeTokken = await _unitOfWork.UserManager.GenerateEmailConfirmationTokenAsync(user);
+                    var codeTokken = await _unitOfWork.UserManager
+                        .GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action(
                         "ConfirmEmail",
                         "Account",
                         new { userId = user.Id, code = codeTokken },
                         protocol: HttpContext.Request.Scheme);
                     EmailService emailService = new EmailService();
-                    await emailService.SendEmailAsync(model.Email, "Confirm your account",
+                    await emailService.SendEmailAsync(model.Email,
+                        "Confirm your account",
                         $"Confirm regisration by link: <a href='{callbackUrl}'>link</a>");
 
                     _logger.LogInformation("{info}{status}", "url " + callbackUrl,
@@ -105,17 +110,20 @@ namespace FamilyNetServer.Controllers.API.V1
                     foreach (var error in result.Errors)
                     {
                         e += error.Description;
-                        ModelState.AddModelError(string.Empty, error.Description);
+                        ModelState.AddModelError(string.Empty,
+                            error.Description);
                     }
 
-                    _logger.LogError("{info}{status}", "User was saved", StatusCodes.Status400BadRequest);
+                    _logger.LogError("{info}{status}", "User was saved",
+                        StatusCodes.Status400BadRequest);
 
                     return BadRequest(e);
                 }
             }
 
             var msg = "model is not valid";
-            _logger.LogError("{info}{status}", msg, StatusCodes.Status400BadRequest);
+            _logger.LogError("{info}{status}", msg,
+                StatusCodes.Status400BadRequest);
 
             return BadRequest(msg);
         }
@@ -127,13 +135,12 @@ namespace FamilyNetServer.Controllers.API.V1
         public async Task<IActionResult> ConfirmEmailAsync(string userId, string code)
         {
             _logger.LogInformation("{info}",
-                   "Endpoint Registration/api/v1 ConfirmEmailAsync was called");
+                "Endpoint Registration/api/v1 ConfirmEmailAsync was called");
 
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(code))
             {
                 _logger.LogWarning("{info}{status}",
-                   "Arguments are invalid",
-                   StatusCodes.Status400BadRequest);
+                    "Arguments are invalid", StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -142,28 +149,28 @@ namespace FamilyNetServer.Controllers.API.V1
             if (user == null)
             {
                 _logger.LogWarning("{info}{status}",
-                  "User was not found",
-                  StatusCodes.Status400BadRequest);
+                    "User was not found", StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
-            var result = await _unitOfWork.UserManager.ConfirmEmailAsync(user, code);
+
+            var result = await _unitOfWork.UserManager
+                .ConfirmEmailAsync(user, code);
 
             if (result.Succeeded)
             {
                 await _unitOfWork.SignInManager.SignInAsync(user, false);
 
                 _logger.LogInformation("{info}{status}",
-                 "User's email confirmed",
-                 StatusCodes.Status200OK);
+                    "User's email confirmed", StatusCodes.Status200OK);
 
                 return Ok();
             }
             else
             {
                 _logger.LogError("{info}{status}",
-                 "User's email isn't confirmed!",
-                 StatusCodes.Status400BadRequest);
+                    "User's email isn't confirmed!",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
