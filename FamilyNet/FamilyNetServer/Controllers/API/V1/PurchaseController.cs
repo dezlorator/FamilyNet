@@ -149,7 +149,9 @@ namespace FamilyNetServer.Controllers.API.V1
             {
                 var emailSender = new EmailService();
 
-                await emailSender.SendEmailAsync(user.Email, "Buying crafts", "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
+                await emailSender.SendEmailAsync(user.Email, 
+                    "Buying crafts", 
+                    "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
                     "<h3>Craft info:</h3>" +
                     $"<p>Craft id:< {purchase.AuctionLotId}</p>" +
                     $"<p>Quantity: {purchase.Quantity}</p>" +
