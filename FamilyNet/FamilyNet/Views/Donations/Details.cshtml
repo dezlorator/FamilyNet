@@ -51,7 +51,7 @@
 </div>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-warning"> <i class="fas fa-edit"></i>Редактировать</a> |
+    <a asp-action="Edit" asp-route-id="@Model.DonationItem.ID" type="submit" class="btn btn-warning"> <i class="fas fa-edit"></i>Редактировать</a> |
     <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
     <a asp-controller="Feedback" asp-action="FeedbackByDonationId" asp-for="@Model.ID" type="submit" class="btn btn-warning"> <i class="fas fa-edit"></i>Комментарии</a>
 </div>

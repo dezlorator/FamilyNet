@@ -15,13 +15,9 @@ namespace FamilyNetServer.Models.Interfaces
         IRepository<BaseItemType> BaseItemTypes { get; }
         IRepository<DonationItem> DonationItems { get; }
         IRepository<Quest> Quests { get; set; }
-
         IRepository<Purchase> Purchases { get; set; }
-
         IRepository<AuctionLot> AuctionLots { get; set; }
-
-        DbSet<TypeBaseItem> TypeBaseItems { get; set; }// TODO : rewrite this
-
-        void SaveChangesAsync();
+        DbSet<TypeBaseItem> TypeBaseItems { get; set; }
+        void SaveChanges();
     }
 }

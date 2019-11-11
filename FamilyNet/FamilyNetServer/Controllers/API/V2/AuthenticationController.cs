@@ -11,12 +11,13 @@ namespace FamilyNetServer.Controllers.API.V2
     [Route("api/v2/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class AuthenticationController : BaseController
+    public class AuthenticationController : ControllerBase
     {
         #region private fields
 
         private readonly ITokenFactory _tokenFactory;
         private readonly ILogger<AuthenticationController> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
         #endregion
 
@@ -25,10 +26,10 @@ namespace FamilyNetServer.Controllers.API.V2
         public AuthenticationController(IUnitOfWork unitOfWork,
                                         ITokenFactory tokenFactory,
                                         ILogger<AuthenticationController> logger)
-            : base(unitOfWork)
         {
             _tokenFactory = tokenFactory;
             _logger = logger;
+            _unitOfWork = unitOfWork;
         }
 
         #endregion
@@ -63,7 +64,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 _logger.LogError(msg);
                 return BadRequest(msg);
             }
-                        
+
             var roles = await _unitOfWork.UserManager.GetRolesAsync(user).ConfigureAwait(false);
             var token = _tokenFactory.Create(user, roles);
             _logger.LogInformation("User " + credentialsDTO.Email + " has token " +

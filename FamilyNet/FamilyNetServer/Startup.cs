@@ -21,6 +21,7 @@ using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using FamilyNetServer.Controllers.API.V1;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using FamilyNetServer.HttpHandlers;
 using FamilyNetServer.Controllers.API;
 using FamilyNetServer.EnumConvertor;
 
@@ -61,6 +62,8 @@ namespace FamilyNetServer
             services.AddTransient<ILogger<LocationController>, Logger<LocationController>>();
             services.AddTransient<ILogger<AuctionLotController>, Logger<AuctionLotController>>();
             services.AddTransient<ILogger<PurchaseController>, Logger<PurchaseController>>();
+            services.AddTransient<ILogger<RegistrationController>,Logger<RegistrationController>>();
+            services.AddTransient<ILogger<RepresentativesController>, Logger<RepresentativesController>>();
             services.AddTransient<ILogger<QuestsController>, Logger<QuestsController>>();
             services.AddTransient<ILogger<Controllers.API.V2.ChildrenActivitiesController>, Logger<Controllers.API.V2.ChildrenActivitiesController>>();
             services.AddTransient<IFileUploader, FileUploader>();
@@ -87,6 +90,7 @@ namespace FamilyNetServer
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IQuestValidator, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
+            services.AddTransient<IIdentityExtractor, IdentityExtractor>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>
@@ -111,7 +115,6 @@ namespace FamilyNetServer
                  options.ClientErrorMapping[404].Link =
                      "https://httpstatuses.com/404";
              });
-            //services.AddApiVersioning(o => o.ApiVersionReader = new HeaderApiVersionReader("api-version"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
