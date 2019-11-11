@@ -140,7 +140,7 @@ namespace FamilyNetServer.Controllers.API.V2
             };
 
             await _repository.Purchases.Create(purchase);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             var user = await _repository.UserManager.FindByIdAsync(purchase.UserId.ToString().ToUpper());
             if (user != null)
@@ -189,7 +189,7 @@ namespace FamilyNetServer.Controllers.API.V2
             purchase.UserId = userId;
 
             _repository.Purchases.Update(purchase);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Edited purchase with id #{purchase.ID}");
 
@@ -219,7 +219,7 @@ namespace FamilyNetServer.Controllers.API.V2
             purchase.IsDeleted = true;
 
             _repository.Purchases.Update(purchase);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Deleted auction lot with id #{purchase.ID}");
 

@@ -15,6 +15,7 @@ namespace FamilyNet.IdentityHelpers
             var volunteer = "Volunteer";
             var charityMaker = "CharityMaker";
             var role = roles != null && roles.Contains(admin) ? admin : String.Empty;
+
             if(role == "")
             {
                 role = roles != null && roles.Contains(orphan) ? orphan : String.Empty;

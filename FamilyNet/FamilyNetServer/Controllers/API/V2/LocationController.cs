@@ -122,7 +122,7 @@ namespace FamilyNetServer.Controllers.API.V2
             };
 
             await _repository.Location.Create(loc);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Created location with id #{loc.ID}");
             
@@ -159,7 +159,7 @@ namespace FamilyNetServer.Controllers.API.V2
             }
            
             _repository.Location.Update(location);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Edited location with id #{location.ID}");
 
@@ -189,7 +189,7 @@ namespace FamilyNetServer.Controllers.API.V2
             location.IsDeleted = true;
 
             _repository.Location.Update(location);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Deleted location with id #{location.ID}");
 
