@@ -1,0 +1,57 @@
+﻿@model QuestDTO
+
+@{
+    ViewData["Title"] = "Подробности";
+    var role = ViewData["role"] as String;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Подробности квеста</h1>
+
+<div class="container">
+    <div class="row my-2">
+        <div class="col-lg-8 order-lg-2">
+            <div class="tab-content py-4">
+                <div class="tab-pane active" id="profile">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Name):</b>
+                                @Html.DisplayFor(model => model.Name)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Description):</b>
+                                @Html.DisplayFor(model => model.Description)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.DonationName):</b>
+                                @Html.DisplayFor(model => model.DonationName)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.DonationDescription):</b>
+                                @Html.DisplayFor(model => model.DonationDescription)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.OrphanageName)</b>
+                                @Html.DisplayFor(model => model.OrphanageName)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.FromDate)</b>
+                                @Html.DisplayFor(model => model.FromDate)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.ToDate)</b>
+                                @Html.DisplayFor(model => model.ToDate)
+                            <p>
+                                <b>@Html.DisplayNameFor(model => model.Hours)</b>
+                                @Html.DisplayFor(model => model.Hours)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    @if (role == "Representative" || role == "Admin" || role == "CharityMaker")
+    {
+        <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-warning">Редактировать</a>
+    }
+
+    <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
+</div>

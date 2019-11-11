@@ -308,10 +308,6 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<string>("Name");
-
-                    b.Property<int>("Status");
-
                     b.Property<float>("Paid");
 
                     b.Property<int>("Quantity");
@@ -335,11 +331,18 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<int?>("DonationID");
 
+                    b.Property<DateTime>("FromDate");
+
+                    b.Property<TimeSpan>("Hours")
+                        .HasColumnType("time");
+
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("Name");
 
                     b.Property<int>("Status");
+
+                    b.Property<DateTime>("ToDate");
 
                     b.Property<int?>("VolunteerID");
 

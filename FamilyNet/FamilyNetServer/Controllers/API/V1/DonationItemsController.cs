@@ -82,7 +82,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 Name = donationItem.Name,
                 Description = donationItem.Description,
                 Price = donationItem.Price,
-                CategoriesID = donationItem.TypeBaseItem.Select(t => t.TypeID)
+                CategoriesID = donationItem.TypeBaseItem?.Select(t => t.TypeID)
             };
 
             _logger.LogInformation("Status: OK. Donation item was sent");

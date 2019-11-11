@@ -84,20 +84,21 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.ItemDescription)
                 </td>
-                @*<td>
+                <td>
                     @if (item.DonationItemID != null && item.Types != null)
                     {
-                        @foreach (var t in ViewBag.categoriesList)
+                        @foreach (var t in item.Types)
                         {
-                            @t.Type.Name
+                            @t.Name
                             <br />
                         }
                     }
-                </td>*@
+                </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
                     <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
                     <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
+                    <a asp-action="Donate" asp-route-id="@item.ID"><i>Donate</i></a>
                 </td>
             </tr>
         }

@@ -80,8 +80,11 @@ namespace FamilyNetServer.Controllers.API.V1
                     LastDateWhenStatusChanged = d.LastDateWhenStatusChanged,
                     ItemName = d.DonationItem.Name,
                     ItemDescription = d.DonationItem.Description,
-                    Types = d.DonationItem.TypeBaseItem
-                               .Select(t => t.TypeID)
+                    Types = d.DonationItem.TypeBaseItem.Select(t => new CategoryDTO
+                    {
+                        Name = t.Type.Name,
+                        ID = t.TypeID
+                    })
                 }).ToList();
 
             _logger.LogInformation("Status: OK. List of donations was sent");
@@ -104,8 +107,11 @@ namespace FamilyNetServer.Controllers.API.V1
             var donationDetailsDTO = new DonationDetailDTO()
             {
                 ID = donation.ID,
-                Types = donation.DonationItem.TypeBaseItem
-                                     .Select(t => t.TypeID),
+                Types = donation.DonationItem.TypeBaseItem.Select(t => new CategoryDTO
+                {
+                    Name = t.Type.Name,
+                    ID = t.TypeID
+                }),
                 DonationItemID = donation.DonationItemID,
                 CharityMakerID = donation.CharityMakerID,
                 OrphanageID = donation.OrphanageID,
@@ -113,9 +119,9 @@ namespace FamilyNetServer.Controllers.API.V1
                 ItemDescription = donation.DonationItem.Description,
                 OrphanageName = donation.Orphanage.Name,
                 City = donation.Orphanage.Adress.City,
-                OrphanageHouse = donation.Orphanage.Adress.House,
-                OrphanageStreet = donation.Orphanage.Adress.Street,
-                OrphanageRating = donation.Orphanage.Rating
+                House = donation.Orphanage.Adress.House,
+                Street = donation.Orphanage.Adress.Street,
+                Rating = donation.Orphanage.Rating
             };
 
             _logger.LogInformation("Status: OK. Donation was sent");

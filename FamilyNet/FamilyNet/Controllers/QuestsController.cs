@@ -24,23 +24,22 @@ namespace FamilyNet.Controllers
         private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<QuestsController> _localizer;
         private readonly ServerSimpleDataDownloader<QuestDTO> _downloader;
-        private readonly ServerSimpleDataDownloader<DonationItemDTO> _downloaderItems;
+        private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloaderDonations;
         private readonly ServerDataDownloader<ChildrenHouseDTO> _downloaderOrphanages;
 
         private readonly IURLQuestsBuilder _URLBuilder;
-        private readonly IURLDonationsBuilder _URLDonationsBuilder;
+        private readonly IURLDonationsBuilder _URLDonationBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
         private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
 
         private readonly string _apiPath = "api/v1/quests";
-        private readonly string _apiCategoriesPath = "api/v1/categories";
-        private readonly string _apiDonationItemsPath = "api/v1/donationItems";
+        private readonly string _apiDonationPath = "api/v1/donations";
         private readonly string _apiOrphanagesPath = "api/v1/childrenHouse";
 
         #endregion
         public QuestsController(IStringLocalizer<QuestsController> localizer,
                                  ServerSimpleDataDownloader<QuestDTO> downloader,
-                                 ServerSimpleDataDownloader<DonationItemDTO> downloaderItems,
+                                 ServerSimpleDataDownloader<DonationDetailDTO> downloaderDonations,
                                  ServerDataDownloader<ChildrenHouseDTO> serverChildrenHouseDownloader,
                                  IURLQuestsBuilder uRLQuestsBuilder,
                                  IURLDonationsBuilder uRLDonationsBuilder,
@@ -50,10 +49,10 @@ namespace FamilyNet.Controllers
         {
             _localizer = localizer;
             _downloader = downloader;
-            _downloaderItems = downloaderItems;
+            _downloaderDonations = downloaderDonations;
             _downloaderOrphanages = serverChildrenHouseDownloader;
             _URLBuilder = uRLQuestsBuilder;
-            _URLDonationsBuilder = uRLDonationsBuilder;
+            _URLDonationBuilder = uRLDonationsBuilder;
             _URLDonationItemsBuilder = uRLDonationItemsBuilder;
             _URLChildrenHouseBuilder = uRLChildrenHouseBuilder;
             _identityInformationExtactor = identityInformationExtactor;
@@ -87,6 +86,139 @@ namespace FamilyNet.Controllers
             GetViewData();
 
             return View(questsDTO);
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            var urlDonation = _URLDonationBuilder.GetAllWithFilter(_apiDonationPath, null);
+            var donationsList = await _downloaderDonations.GetAllAsync(urlDonation, HttpContext.Session);
+            ViewBag.ListOfDonations = donationsList;
+
+            GetViewData();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(QuestDTO quest)
+        {         
+            var url = _URLBuilder.CreatePost(_apiPath);
+            var msg = await _downloader.CreatePostAsync(url, quest, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if (msg.StatusCode != HttpStatusCode.Created)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return Redirect("/Quests/Index");
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var url = _URLBuilder.GetById(_apiPath, id.Value);
+            QuestDTO questDTO;
+
+            try
+            {
+                questDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (questDTO == null)
+            {
+                return NotFound();
+            }
+
+            GetViewData();
+
+            return View(questDTO);
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var url = _URLBuilder.GetById(_apiPath, id.Value);
+            QuestDTO questDTO;
+
+            try
+            {
+                questDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (questDTO == null)
+            {
+                return NotFound();
+            }
+
+            GetViewData();
+
+            return View(questDTO);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+
+            var url = _URLBuilder.GetById(_apiPath, id);
+            var msg = await _downloader.DeleteAsync(url, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if (msg.StatusCode != HttpStatusCode.OK)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return Redirect("/Quests/Index");
         }
 
         private void GetViewData()

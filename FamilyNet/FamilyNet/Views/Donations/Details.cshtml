@@ -1,4 +1,4 @@
-﻿@model FamilyNet.Models.Donation
+﻿@model DonationDetailDTO
 
 @{
     ViewData["Title"] = "Подробности";
@@ -15,33 +15,33 @@
                 <div class="tab-pane active" id="profile">
                     <div class="row">
                         <div class="col-md-6">
-                            <b>@Html.DisplayNameFor(model => model.DonationItem.TypeBaseItem):</b>
-                            @foreach (var t in Model.DonationItem.TypeBaseItem)
+                            <b>@Html.DisplayNameFor(model => model.Types)</b>
+                            @foreach (var t in @Model.Types)
                             {
-                                @t.Type.Name
+                                @t.Name
                             }
                             <p>
-                                <b>@Html.DisplayNameFor(model => model.DonationItem.Name):</b>
-                                @Html.DisplayFor(model => model.DonationItem.Name)
+                                <b>@Html.DisplayNameFor(model => model.ItemName):</b>
+                                @Html.DisplayFor(model => model.ItemName)
                             <p>
-                                <b>@Html.DisplayNameFor(model => model.DonationItem.Description):</b>
-                                @Html.DisplayFor(model => model.DonationItem.Description)
+                                <b>@Html.DisplayNameFor(model => model.ItemDescription):</b>
+                                @Html.DisplayFor(model => model.ItemDescription)
                             <p>
-                                <h5>@Html.DisplayNameFor(model => model.Orphanage)</h5>
-                                <b>@Html.DisplayNameFor(model => model.Orphanage.Name)</b>
-                                @Html.DisplayFor(model => model.Orphanage.Name)
+                                <h5>@Html.DisplayNameFor(model => model.OrphanageName)</h5>
+                                <b>@Html.DisplayNameFor(model => model.OrphanageName)</b>
+                                @Html.DisplayFor(model => model.OrphanageName)
                             <p>
-                                <b>@Html.DisplayNameFor(model => model.Orphanage.Adress.City)</b>
-                                @Html.DisplayFor(model => model.Orphanage.Adress.City)
+                                <b>@Html.DisplayNameFor(model => model.City)</b>
+                                @Html.DisplayFor(model => model.City)
                             <p>
-                                <b>@Html.DisplayNameFor(model => model.Orphanage.Adress.Street)</b>
-                                @Html.DisplayFor(model => model.Orphanage.Adress.Street)
+                                <b>@Html.DisplayNameFor(model => model.Street)</b>
+                                @Html.DisplayFor(model => model.Street)
                             <p>
-                                <b>@Html.DisplayNameFor(model => model.Orphanage.Adress.House)</b>
-                                @Html.DisplayFor(model => model.Orphanage.Adress.House)
+                                <b>@Html.DisplayNameFor(model => model.House)</b>
+                                @Html.DisplayFor(model => model.House)
                             <p>
-                                <b>@Html.DisplayNameFor(model => model.Orphanage.Rating)</b>
-                                @Html.DisplayFor(model => model.Orphanage.Rating) <br>
+                                <b>@Html.DisplayNameFor(model => model.Rating)</b>
+                                @Html.DisplayFor(model => model.Rating) <br>
 
                         </div>
                     </div>
@@ -52,14 +52,19 @@
 </div>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-warning">Редактировать</a>
-    <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
-    @if (role == "CharityMaker" || role == "Volunteer")
+    @if (role == "Representative" || role == "Admin")
     {
-        <br /><br />
-        <label for="Name">Нужна помощь волонтера</label>
-        <input id="NeedHelp" name="NeedHelp" type="checkbox" value="true" />
-        <input asp-name="NeedHelp" type="hidden" value="false" />
-        <a asp-action="Donate" class="btn btn-primary">Пожертвовать</a>
+        <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-warning">Редактировать</a>
+    }
+
+    <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
+
+    @if (role == "CharityMaker")
+    {
+        <form asp-action="Donate">
+            <br /><br />
+            <input type="hidden" asp-for="ID" />
+            <a asp-action="Donate" class="btn btn-primary">Пожертвовать</a>
+        </form>
     }
 </div>

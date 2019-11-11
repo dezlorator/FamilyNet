@@ -9,7 +9,7 @@ namespace FamilyNetServer.Validators
         {
             return itemDTO.Name != String.Empty &&
                    itemDTO.Description != String.Empty &&
-                   itemDTO.Price > 0;
+                   itemDTO.Price >= 0;
         }
     }
 }

@@ -107,7 +107,7 @@
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">My purchases</a>
                             </li>
                         }
-                        @if (role.Length > 1)
+                        @if (role?.Length > 1)
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

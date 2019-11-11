@@ -1,22 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FamilyNetServer.Migrations
 {
-    public partial class StatusAddedToQuests : Migration
+    public partial class TimeSpanToQuests : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "Status",
+            migrationBuilder.AddColumn<TimeSpan>(
+                name: "Hours",
                 table: "Quests",
+                type: "time",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: new TimeSpan(0, 0, 0, 0, 0));
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Status",
+                name: "Hours",
                 table: "Quests");
         }
     }
