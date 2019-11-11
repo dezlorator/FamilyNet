@@ -198,7 +198,7 @@ namespace FamilyNetServer.Controllers.API.V1
             };
 
             await _unitOfWork.Representatives.Create(representative);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             representativeDTO.ID = representative.ID;
             representativeDTO.PhotoPath = representative.Avatar;
@@ -264,7 +264,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             _unitOfWork.Representatives.Update(representative);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                  token, userId, StatusCodes.Status204NoContent,
@@ -308,7 +308,7 @@ namespace FamilyNetServer.Controllers.API.V1
             representative.IsDeleted = true;
 
             _unitOfWork.Representatives.Update(representative);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,

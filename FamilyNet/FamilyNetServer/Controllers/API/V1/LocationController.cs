@@ -153,7 +153,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             await _repository.Location.Create(location);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
@@ -208,7 +208,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 location.IsDeleted = true;
             }
             _repository.Location.Update(location);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status204NoContent,
@@ -252,7 +252,7 @@ namespace FamilyNetServer.Controllers.API.V1
             location.IsDeleted = true;
 
             _repository.Location.Update(location);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
 
             _logger.LogInformation("{status} {info} {userId} {token}",

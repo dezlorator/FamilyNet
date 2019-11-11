@@ -160,7 +160,7 @@ namespace FamilyNetServer.Controllers.API.V1
             };
 
             await _repository.Purchases.Create(purchase);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
@@ -247,7 +247,7 @@ namespace FamilyNetServer.Controllers.API.V1
             purchase.UserId = userId;
 
             _repository.Purchases.Update(purchase);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status204NoContent,
@@ -291,7 +291,7 @@ namespace FamilyNetServer.Controllers.API.V1
             purchase.IsDeleted = true;
 
             _repository.Purchases.Update(purchase);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                StatusCodes.Status200OK,

@@ -177,7 +177,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             _unitOfWork.Quests.Update(quest);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
@@ -217,7 +217,7 @@ namespace FamilyNetServer.Controllers.API.V1
             };
 
             await _unitOfWork.Quests.Create(quest);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
@@ -262,7 +262,7 @@ namespace FamilyNetServer.Controllers.API.V1
             quest.IsDeleted = true;
 
             _unitOfWork.Quests.Update(quest);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,

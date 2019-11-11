@@ -137,7 +137,7 @@ namespace FamilyNetServer.Controllers.API.V1
             };
 
             await _unitOfWork.BaseItemTypes.Create(category);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
@@ -180,7 +180,7 @@ namespace FamilyNetServer.Controllers.API.V1
             category.IsDeleted = true;
 
             _unitOfWork.BaseItemTypes.Update(category);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,

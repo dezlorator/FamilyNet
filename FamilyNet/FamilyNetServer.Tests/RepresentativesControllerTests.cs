@@ -319,7 +319,7 @@ namespace FamilyNetServer.Tests
             await _controller.Create(representativeDTO);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -415,7 +415,7 @@ namespace FamilyNetServer.Tests
             await _controller.Create(representativeDTO);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Never);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Never);
         }
 
         #endregion
@@ -569,7 +569,7 @@ namespace FamilyNetServer.Tests
             await _controller.Edit(It.IsAny<int>(), representativeDTO);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -734,7 +734,7 @@ namespace FamilyNetServer.Tests
             await _controller.Edit(It.IsAny<int>(), representativeDTO);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Never);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Never);
         }
 
         #endregion
@@ -823,7 +823,7 @@ namespace FamilyNetServer.Tests
             await _controller.Delete(id);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Once);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Once);
         }
 
         [Test]
@@ -878,7 +878,7 @@ namespace FamilyNetServer.Tests
             await _controller.Delete(id);
 
             //Assert
-            _mockUnitOfWork.Verify(w => w.SaveChangesAsync(), Times.Never);
+            _mockUnitOfWork.Verify(w => w.SaveChanges(), Times.Never);
         }
 
         [Test]

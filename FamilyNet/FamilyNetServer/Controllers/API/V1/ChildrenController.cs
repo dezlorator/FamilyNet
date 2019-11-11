@@ -190,7 +190,7 @@ namespace FamilyNetServer.Controllers.API.V1
             };
 
             await _unitOfWork.Orphans.Create(child);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
@@ -251,7 +251,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             _unitOfWork.Orphans.Update(child);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                  token, userId, StatusCodes.Status204NoContent,
@@ -295,7 +295,7 @@ namespace FamilyNetServer.Controllers.API.V1
             child.IsDeleted = true;
 
             _unitOfWork.Orphans.Update(child);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,

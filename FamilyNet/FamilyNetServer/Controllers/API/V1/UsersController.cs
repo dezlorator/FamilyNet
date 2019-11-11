@@ -133,7 +133,7 @@ namespace FamilyNetServer.Controllers.API.V1
                     token, userId, StatusCodes.Status201Created,
                     $"User was saved [id:{user.Id}]");
 
-                _unitOfWork.SaveChangesAsync();
+                _unitOfWork.SaveChanges();
 
                 return Created("api/v1/users/", userDTO);
             }
@@ -169,7 +169,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             var result = await _unitOfWork.UserManager.DeleteAsync(user);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK, $"User was deleted [id:{id}]",

@@ -76,7 +76,7 @@ namespace FamilyNetServer.Controllers.API.V1
                     Name = roleDTO.Name,
                 });
 
-                _unitOfWork.SaveChangesAsync();
+                _unitOfWork.SaveChanges();
 
                 _logger.LogInformation("{token}{userId}{status}{info}",
                     token, userId, StatusCodes.Status201Created,
@@ -112,7 +112,7 @@ namespace FamilyNetServer.Controllers.API.V1
                     await _unitOfWork.RoleManager.DeleteAsync(role);
                 }
 
-                _unitOfWork.SaveChangesAsync();
+                _unitOfWork.SaveChanges();
 
                 _logger.LogInformation("{status} {info} {userId} {token}",
                     StatusCodes.Status200OK, $"Role was deleted",

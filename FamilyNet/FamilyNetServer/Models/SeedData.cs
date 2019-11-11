@@ -249,7 +249,7 @@ namespace FamilyNetServer.Models
 
 
                 _unitOfWork.Orphanages.AddRange(orphanages);
-                _unitOfWork.SaveChangesAsync();
+                _unitOfWork.SaveChanges();
             }
 
             if (_unitOfWork.Volunteers.Get(v => v.ID == v.ID) != null)
@@ -378,7 +378,7 @@ namespace FamilyNetServer.Models
                 volunteers.Add(volunteer);
 
                 _unitOfWork.Volunteers.AddRange(volunteers);
-                _unitOfWork.SaveChangesAsync();
+                _unitOfWork.SaveChanges();
             }
 
             if (_unitOfWork.Orphans.Get(v => v.ID == v.ID) != null)
@@ -453,7 +453,7 @@ namespace FamilyNetServer.Models
                 orphans.Add(orphan6);
 
                 _unitOfWork.Orphans.AddRange(orphans);
-                _unitOfWork.SaveChangesAsync();
+                _unitOfWork.SaveChanges();
             }
 
             if (_unitOfWork.CharityMakers.Get(v => v.ID == v.ID) != null)
@@ -582,7 +582,7 @@ namespace FamilyNetServer.Models
                 charityMakers.Add(charityMaker);
 
                 _unitOfWork.CharityMakers.AddRange(charityMakers);
-                _unitOfWork.SaveChangesAsync();
+                _unitOfWork.SaveChanges();
             }
 
             if (_unitOfWork.BaseItemTypes.Get(v => v.ID == v.ID) != null)
@@ -607,7 +607,7 @@ namespace FamilyNetServer.Models
                 baseItemTypes.Add(baseItemType);
 
                 _unitOfWork.BaseItemTypes.AddRange(baseItemTypes);
-                _unitOfWork.SaveChangesAsync();
+                _unitOfWork.SaveChanges();
             }
         }
     }

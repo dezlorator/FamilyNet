@@ -175,7 +175,7 @@ namespace FamilyNetServer.Controllers.API.V1
             auction.Avatar = pathPhoto;
 
             await _repository.AuctionLots.Create(auction);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             auctionDTO.ID = auction.ID;
 
@@ -237,7 +237,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             _repository.AuctionLots.Update(auction);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status204NoContent,
@@ -282,7 +282,7 @@ namespace FamilyNetServer.Controllers.API.V1
             auction.IsDeleted = true;
 
             _repository.AuctionLots.Update(auction);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,

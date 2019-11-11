@@ -145,7 +145,7 @@ namespace FamilyNetServer.Controllers.API.V1
             };
 
             await _repository.Address.Create(address);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             addressDTO.ID = address.ID;
 
@@ -195,7 +195,7 @@ namespace FamilyNetServer.Controllers.API.V1
             address.House = addressDTO.House;
 
             _repository.Address.Update(address);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                  token, userId, StatusCodes.Status204NoContent,
@@ -241,7 +241,7 @@ namespace FamilyNetServer.Controllers.API.V1
             address.IsDeleted = true;
 
             _repository.Address.Update(address);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,

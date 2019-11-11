@@ -149,7 +149,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
 
             await _repository.AuctionLots.Create(auction);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             auctionDTO.ID = auction.ID;
 
@@ -194,7 +194,7 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             _repository.AuctionLots.Update(auction);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Edited auction lot with id #{auction.ID}");
 
@@ -224,7 +224,7 @@ namespace FamilyNetServer.Controllers.API.V2
             auction.IsDeleted = true;
 
             _repository.AuctionLots.Update(auction);
-            _repository.SaveChangesAsync();
+            _repository.SaveChanges();
 
             _logger.LogInformation($"Deleted auction lot with id #{auction.ID}");
 
