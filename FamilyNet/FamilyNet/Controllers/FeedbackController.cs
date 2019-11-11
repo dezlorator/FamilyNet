@@ -9,7 +9,6 @@ using DataTransferObjects;
 using DataTransferObjects.Enums;
 using FamilyNet.Downloader;
 using FamilyNet.Downloader.Interfaces;
-using FamilyNet.Encoders;
 using FamilyNet.IdentityHelpers;
 using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;

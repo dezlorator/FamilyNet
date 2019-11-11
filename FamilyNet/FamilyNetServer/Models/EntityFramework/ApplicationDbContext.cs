@@ -30,7 +30,8 @@ namespace FamilyNetServer.Models.EntityFramework
 
         public DbSet<AuctionLot> AuctionLot { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
-
+        public DbSet<ChildActivity> Activities { get; set; }
+        public DbSet<Award> Awards { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
