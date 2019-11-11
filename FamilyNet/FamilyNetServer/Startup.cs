@@ -69,7 +69,6 @@ namespace FamilyNetServer
             services.AddTransient<IFilterConditionsChildren, FilterConditionsChildren>();
             services.AddTransient<IRepresentativeValidator, RepresentativeValidator>();
             services.AddTransient<IFilterConditionsRepresentatives, FilterConditionsRepresentatives>();
-            services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IFilterConditionsChildrenHouse, FilterConditionChildrenHouse>();
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IValidator<AddressDTO>, AddressValidator>();

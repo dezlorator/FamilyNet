@@ -120,6 +120,8 @@ namespace FamilyNet.Controllers
             return Redirect("/Quests/Index");
         }
 
+
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

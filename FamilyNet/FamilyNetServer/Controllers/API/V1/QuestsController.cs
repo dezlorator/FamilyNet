@@ -82,8 +82,7 @@ namespace FamilyNetServer.Controllers.API.V1
                     CharityMakerID = d.Donation.CharityMakerID,
                     VolunteerID = d.VolunteerID,
                     FromDate = d.FromDate,
-                    ToDate = d.ToDate,
-                    Hours = d.Hours
+                    ToDate = d.ToDate
                 }).ToList();
 
             _logger.LogInformation("Status: OK. List of quests was sent");
@@ -112,8 +111,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 DonationID = quest.DonationID,
                 VolunteerID = quest.VolunteerID,
                 FromDate = quest.FromDate,
-                ToDate = quest.ToDate,
-                Hours = quest.Hours
+                ToDate = quest.ToDate
             };
 
             if (questDTO.DonationID != null)
@@ -196,8 +194,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 Description = questDTO.Description,
                 DonationID = questDTO.DonationID,
                 FromDate = questDTO.FromDate,
-                ToDate = questDTO.ToDate,
-                Hours = questDTO.Hours
+                ToDate = questDTO.ToDate
             };
 
             if (questDTO.DonationID != null)

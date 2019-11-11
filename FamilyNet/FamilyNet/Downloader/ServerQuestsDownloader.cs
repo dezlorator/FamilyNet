@@ -68,6 +68,16 @@ namespace FamilyNet.Downloader
             {
                 formDataContent.Add(new StringContent(dto.Description), "Description");
             }
+
+            if (dto.FromDate != null)
+            {
+                formDataContent.Add(new StringContent(dto.FromDate.ToString()), "FromDate");
+            }
+
+            if (dto.ToDate != null)
+            {
+                formDataContent.Add(new StringContent(dto.ToDate.ToString()), "ToDate");
+            }
         }
     }
 }

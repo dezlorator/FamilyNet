@@ -30,17 +30,13 @@ namespace DataTransferObjects
         public int? CharityMakerID { get; set; }
 
         [Required]
-        [DataType(DataType.Time)]
+        [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime FromDate { get; set; }
 
         [Required]
-        [DataType(DataType.Time)]
+        [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime ToDate { get; set; }
-
-        [Required]
-        [DataType(DataType.Time)]
-        public TimeSpan Hours { get; set; }
     }
 }

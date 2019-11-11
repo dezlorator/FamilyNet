@@ -33,22 +33,15 @@
 
             <div class="form-group">
                 <label asp-for="FromDate" class="control-label"></label>
-                <input type="date" class="myInput" asp-for="FromDate" placeholder="Дата начала">
+                <input type="date" class="myInput" asp-for="FromDate" placeholder="Дата начала" asp-format="{0:yyyy-MM-dd HH:mm}">
                 <span asp-validation-for="FromDate" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="ToDate" class="control-label"></label>
-                <input type="date" class="myInput" asp-for="ToDate" placeholder="Дата окончания">
+                <input type="date" class="myInput" asp-for="ToDate" placeholder="Дата окончания" asp-format="{0:yyyy-MM-dd HH:mm}>
                 <span asp-validation-for="ToDate" class="text-danger"></span>
             </div>
-
-            <div class="form-group">
-                <label asp-for="Hours"></label><br />
-                <input asp-for="Hours" asp-format="{HH:mm}" />
-                <span asp-validation-for="Hours" class="text-danger"></span>
-            </div>
-
             <div class="form-group">
                 <input type="submit" value="Создать" class="btn btn-success" />
             </div>

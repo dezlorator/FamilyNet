@@ -4,14 +4,16 @@ using FamilyNetServer.Models.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class pplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191111171841_RemoveTimeSpanFromQuests")]
+    partial class RemoveTimeSpanFromQuests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -332,9 +334,6 @@ namespace FamilyNetServer.Migrations
                     b.Property<int?>("DonationID");
 
                     b.Property<DateTime>("FromDate");
-
-                    b.Property<TimeSpan>("Hours")
-                        .HasColumnType("time");
 
                     b.Property<bool>("IsDeleted");
 

@@ -17,17 +17,12 @@ namespace FamilyNetServer.Models
         public QuestStatus Status { get; set; } = QuestStatus.ToDo;
         public bool IsDeleted { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime FromDate { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime ToDate { get; set; }
-
-        [DataType(DataType.Time)]
-        [Column(TypeName = "time")]
-        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        public TimeSpan Hours { get; set; }
     }
 }
