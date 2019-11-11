@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FamilyNet.Enums
+namespace FamilyNetServer.Enums
 {
     public enum PurchaseSortState
     {

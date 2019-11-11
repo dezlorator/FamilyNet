@@ -1,4 +1,6 @@
-﻿using FamilyNet.Configuration;
+﻿using DataTransferObjects;
+using FamilyNet.Configuration;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,60 @@ namespace FamilyNet.Downloader.URLBuilders
         public URLPurchaseBuilder(IOptionsSnapshot<ServerURLSettings> options)
         {
             _options = options;
+        }
+
+        public string GetAllFiltered(string api, FilterParamentrsPurchaseDTO filter)
+        {
+            var queryParams = new Dictionary<string, string>();
+
+            if (filter.PaidTo > 0.0)
+            {
+                queryParams.Add("PaidTo", filter.PaidTo.ToString());
+            }
+            
+            if (filter.PaidFrom > 0.0)
+            {
+                queryParams.Add("PaidFrom", filter.PaidFrom.ToString());
+            }
+
+            if (filter.QuantityFrom > 0.0)
+            {
+                queryParams.Add("QuantityFrom", filter.QuantityFrom.ToString());
+            }
+
+            if (filter.QuantityTo > 0.0)
+            {
+                queryParams.Add("QuantityTo", filter.QuantityTo.ToString());
+            }
+
+            if (!String.IsNullOrEmpty(filter.UserId))
+            {
+                queryParams.Add("UserId", filter.UserId);
+            }
+
+            if (filter.Date > DateTime.MinValue)
+            {
+                queryParams.Add("Date", filter.Date.ToString());
+            }
+
+            if (filter.CraftId > 0)
+            {
+                queryParams.Add("CraftId", filter.CraftId.ToString());
+            }
+
+            if (!String.IsNullOrEmpty(filter.Sort))
+            {
+                queryParams.Add("Sort", filter.Sort);
+            }
+
+            if (filter.Rows > 0 && filter.Page > 0)
+            {
+                queryParams.Add("Rows", filter.Rows.ToString());
+                queryParams.Add("Page", filter.Page.ToString());
+            }
+
+            return QueryHelpers.AddQueryString(_options.Value.ServerURL + api ,
+                                                queryParams);
         }
 
         #endregion

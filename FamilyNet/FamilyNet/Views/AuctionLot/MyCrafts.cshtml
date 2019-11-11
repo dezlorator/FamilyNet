@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FamilyNet.Models.AuctionLot>
+﻿@model FamilyNet.Models.ViewModels.AuctionLotAllViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -9,14 +9,14 @@
     Fair
 </h1>
 <a asp-action="Create" asp-controller="AuctionLot" class="btn btn-primary float-right"><i class="fas fa-plus"></i></a>
-@foreach (var lot in Model)
+@foreach (var lot in Model.AuctionLots)
 {
     <div class="card" style="width: 18rem;">
         <img src="@Url.Content(lot.Avatar)" class="card-img-top" alt="...">
         <div class="card-body">
-            <h5 class="card-title">@lot.AuctionLotItem.Name</h5>
-            <p class="card-text">@lot.AuctionLotItem.Description</p>
-            <p class="card-text"><b>Status:</b>@lot.Status </p>
+            <h5 class="card-title"> @lot.AuctionLotItem.Name</h5>
+            <p class="card-text"> @lot.AuctionLotItem.Description</p>
+            <p class="card-text"><b>Status:</b> @lot.Status </p>
             <div>
                 <a asp-action="Edit" asp-route-id="@lot.ID" style="padding-left: 30px; padding-right: 30px;" class="btn btn-sm btn-warning"><i class="far fa-edit"></i></a>
                 <a asp-action="Details" asp-route-id="@lot.ID" style="padding-left: 30px; padding-right: 30px;" class="btn btn-sm btn-info"><i class="fas fa-info fa-fw"></i></a>
@@ -28,3 +28,24 @@
     </div>
 
 }
+<ul class="pagination" style="margin-top: 2%;">
+    @for (int mypage = 1; mypage <= Model.PageViewModel.TotalPages; mypage++)
+    {
+        if (mypage == Model.PageViewModel.PageNumber)
+        {
+            <li class="page-item active">
+                <a asp-action="MyCrafts" asp-route-page="@mypage" class="page-link">
+                     @mypage 
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item">
+                <a asp-action="MyCrafts" asp-route-page="@mypage" class="page-link">
+                   @mypage 
+                </a>
+            </li>
+        }
+    }
+</ul>

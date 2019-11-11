@@ -6,10 +6,10 @@
 }
 @{
     var role = ViewData["role"] as String;
-    string name = Model.FilterViewModel.SelectedName;
-    string sort = Model.Sort == null? String.Empty : Model.Sort;
-    string start = Model.FilterViewModel.StartPrice;
-    string end = Model.FilterViewModel.EndPrice;
+    var name = Model.FilterViewModel.SelectedName;
+    var sort = Model.Sort == null? String.Empty : Model.Sort;
+    var priceStart = Model.FilterViewModel.StartPrice;
+    var priceEnd = Model.FilterViewModel.EndPrice;
 }
 
 <h1>
@@ -27,8 +27,8 @@
         <tbody>
             <tr>
                 <td><input asp-for="@name" /></td>
-                <td><input asp-for="@start" /></td>
-                <td><input asp-for="@end" /></td>
+                <td><input asp-for="@priceStart" /></td>
+                <td><input asp-for="@priceEnd" /></td>
                 <td>
                     <select asp-for="@sort">
                         <option></option>
@@ -45,8 +45,8 @@
                 <td></td>
                 <td>
                     <input type="submit" value="Filter out" class="btn btn-primary"
-                           asp-route-name="@name" asp-route-sort="@sort"
-                           asp-route-start="@start" asp-route-end="@end" style="float:right" />
+                           asp-route-name="@name" asp-route-sort="@sort" asp-route-priceStart="@priceStart"
+                           asp-route-priceEnd="@priceEnd" style="float:right" />
                 </td>
             </tr>
         </tbody>
@@ -70,23 +70,36 @@
                 {
                     <a class="btn btn-dark" asp-area="" asp-controller="Purchase" asp-action="Buy" asp-route-id="@lot.ID">Buy</a>
                 }
+
             </div>
         </div>
 
 }
         
     </div>
-
-
-@for (int mypage = 1; mypage <= Model.PageViewModel.TotalPages; mypage++)
-{
-    <a asp-action="All"
-       asp-route-page="@mypage"
-       asp-route-name="@name"
-       asp-route-start="@start"
-       asp-route-sort="@sort"
-       asp-route-finish="@end"
-       class="btn btn-default btn">
-        @mypage
-    </a>
-}
+<ul class="pagination" style="margin-top: 2%;">
+    @for (int mypage = 1; mypage <= Model.PageViewModel.TotalPages; mypage++)
+    {
+        if (mypage == Model.PageViewModel.PageNumber)
+        {
+            <li class="page-item active">
+                <a asp-action="All" asp-route-page="@mypage" asp-route-name="@name"
+                   asp-route-priceStart="@priceStart" asp-route-sort="@sort" asp-route-priceEnd="@priceEnd"
+                   class="page-link">
+                    @mypage
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item">
+                <a asp-action="All"
+                   asp-route-page="@mypage" asp-route-name="@name"
+                   asp-route-priceStart="@priceStart" asp-route-sort="@sort"
+                   asp-route-priceEnd="@priceEnd" class="page-link">
+                    @mypage
+                </a>
+            </li>
+        }
+    }
+</ul>

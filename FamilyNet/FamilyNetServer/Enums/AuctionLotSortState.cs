@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace FamilyNetServer.Enums
 {
-    public enum AuctionLotStatus
+    public enum AuctionLotSortState
     {
-        UnApproved = 1,
-        Approved,
-        Declined,
-        Sold
+        NameAsc,   
+        NameDesc,  
+        PriceAsc,
+        PriceDesc  
     }
+    
 }

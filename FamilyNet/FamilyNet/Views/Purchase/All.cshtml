@@ -116,36 +116,37 @@ else
     </tbody>
 </table>
 
-<div style="margin-bottom: 10%">
+<ul class="pagination" style="margin-top: 2%;">
     @for (int mypage = 1; mypage <= Model.PageViewModel.TotalPages; mypage++)
     {
-        <a asp-action="ShowAdmin"
-           asp-route-userId="@userId" asp-route-sort="@sort"
-           asp-route-craft="@craft" asp-route-q1="@q1"
-           asp-route-q2="@q2" asp-route-p1="@p1"
-           asp-route-date="@date" asp-route-p2="@p2"
-           asp-route-page="@mypage"
-           class="btn btn-default btn">
-            @mypage
-        </a>
+        if (mypage == Model.PageViewModel.PageNumber)
+        {
+            <li class="page-item active">
+                <a asp-action="All"
+                   asp-route-userId="@userId" asp-route-sort="@sort"
+                   asp-route-craft="@craft" asp-route-q1="@q1"
+                   asp-route-q2="@q2" asp-route-p1="@p1"
+                   asp-route-date="@date" asp-route-p2="@p2"
+                   asp-route-mypage="@mypage"
+                   class="page-link">
+                    @mypage
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item">
+                <a asp-action="All"
+                   asp-route-userId="@userId" asp-route-sort="@sort"
+                   asp-route-craft="@craft" asp-route-q1="@q1"
+                   asp-route-q2="@q2" asp-route-p1="@p1"
+                   asp-route-date="@date" asp-route-p2="@p2"
+                   asp-route-mypage="@mypage"
+                   class="page-link">
+                    @mypage
+                </a>
+            </li>
+        }
     }
-</div>
+</ul>
 
-
-<style>
-
-    .ui-slider .ui-btn-inner {
-        padding: 4px 0 0 0 !important;
-    }
-
-    .ui-slider-popup {
-        position: absolute !important;
-        width: 64px;
-        height: 64px;
-        text-align: center;
-        font-size: 36px;
-        padding-top: 14px;
-        z-index: 100;
-        opacity: 0.8;
-    }
-</style>

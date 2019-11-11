@@ -12,7 +12,6 @@ namespace FamilyNet.Models.ViewModels
 
         public AuctionLotPageViewModel PageViewModel { get; set; }
         public AuctionLotFilterModel FilterViewModel { get; set; }
-        public AuctionLotSortModel SortViewModel { get; set; }
 
         public string Sort { get; set; }
     }

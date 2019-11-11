@@ -9,7 +9,7 @@ namespace DataTransferObjects
     {
         public int ID { get; set; }
 
-        public DateTime DateStart { get; set; }
+        public DateTime DateAdded { get; set; }
 
         public int? AuctionLotItemID { get; set; }
 
