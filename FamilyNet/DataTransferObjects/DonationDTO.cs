@@ -16,6 +16,6 @@ namespace DataTransferObjects
         public string OrphanageName { get; set; }
         public string ItemName { get; set; }
         public string ItemDescription { get; set; }
-        public IEnumerable<int> Types { get; set; }
+        public IEnumerable<CategoryDTO> Types { get; set; }
     }
 }

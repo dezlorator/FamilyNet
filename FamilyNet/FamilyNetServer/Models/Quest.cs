@@ -1,5 +1,7 @@
-﻿using FamilyNetServer.Models.Interfaces;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using FamilyNetServer.Models.Interfaces;
 
 namespace FamilyNetServer.Models
 {
@@ -13,7 +15,14 @@ namespace FamilyNetServer.Models
         public virtual Volunteer Volunteer { get; set; }
         public string Description { get; set; }
         public QuestStatus Status { get; set; } = QuestStatus.ToDo;
-        [BindNever]
-        public bool IsDeleted { get; set; } = true;
+        public bool IsDeleted { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime FromDate { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime ToDate { get; set; }
     }
 }

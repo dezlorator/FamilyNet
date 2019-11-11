@@ -23,16 +23,16 @@ namespace FamilyNet.Downloader
         #endregion
 
         public string GetAllWithFilter(string api,
-                                       int orphanageId)
+                                       string forSearch)
         {
             var queryParams = new Dictionary<string, string>();
 
-            if (orphanageId > 0)
+            if (!string.IsNullOrEmpty(forSearch))
             {
-                queryParams.Add("childrenHouseId", orphanageId.ToString());
+                queryParams.Add("forSearch", forSearch);
             }
 
-            return QueryHelpers.AddQueryString(_options.Value.ServerURL + api,
+            return QueryHelpers.AddQueryString(_options.Value.ServerURL + api +"/",
                                                 queryParams);
         }
 
