@@ -16,6 +16,8 @@ namespace FamilyNet.Downloader
 
         protected readonly IHttpAuthorizationHandler _authorizationHandler;
 
+        public int TotalItemsCount { get; protected set; }
+
         #endregion
 
         #region ctor
@@ -27,7 +29,7 @@ namespace FamilyNet.Downloader
 
         #endregion
 
-        public async Task<IEnumerable<T>> GetAllAsync(string url,
+        public async virtual Task<IEnumerable<T>> GetAllAsync(string url,
                                                       ISession session)
         {
             List<T> objs = null;
