@@ -74,7 +74,7 @@ namespace FamilyNet.Controllers
             return View(categories);
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             GetViewData();
 

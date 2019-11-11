@@ -6,7 +6,7 @@ using DataTransferObjects;
 
 namespace FamilyNetServer.Validators
 {
-    public class DonationValidator: IDonationValidator
+    public class DonationValidator: IValidator<DonationDTO>
     {
         public bool IsValid(DonationDTO donationDTO)
         {
