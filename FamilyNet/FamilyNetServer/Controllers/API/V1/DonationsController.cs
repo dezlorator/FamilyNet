@@ -178,7 +178,7 @@ namespace FamilyNetServer.Controllers.API.V1
             };
 
             await _unitOfWork.Donations.Create(donation);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
@@ -246,7 +246,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                  token, userId, StatusCodes.Status204NoContent,
@@ -291,7 +291,7 @@ namespace FamilyNetServer.Controllers.API.V1
             donation.Status = donationStatus;
 
             _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                              token, userId, StatusCodes.Status204NoContent,
@@ -339,7 +339,7 @@ namespace FamilyNetServer.Controllers.API.V1
             donation.CharityMakerID = charityMakerID;
 
             _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status204NoContent,
@@ -383,7 +383,7 @@ namespace FamilyNetServer.Controllers.API.V1
             donation.IsDeleted = true;
 
             _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,
