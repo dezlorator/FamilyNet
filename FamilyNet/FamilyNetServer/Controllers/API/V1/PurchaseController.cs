@@ -1,4 +1,7 @@
 ﻿using DataTransferObjects;
+using FamilyNetServer.Enums;
+using FamilyNetServer.Filters;
+using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Models.Interfaces;
@@ -23,6 +26,7 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IUnitOfWork _repository;
         private readonly IValidator<PurchaseDTO> _purchaseValidator;
         private readonly ILogger<PurchaseController> _logger;
+        private readonly IFilterConditionPurchase _filterPurchase;
 
         #endregion
 
@@ -30,11 +34,13 @@ namespace FamilyNetServer.Controllers.API.V1
 
         public PurchaseController(IUnitOfWork repo,
             IValidator<PurchaseDTO> auctionValidator,
-            ILogger<PurchaseController> logger)
+            ILogger<PurchaseController> logger,
+            IFilterConditionPurchase filter)
         {
             _repository = repo;
             _purchaseValidator = auctionValidator;
             _logger = logger;
+            _filterPurchase = filter;
         }
 
         #endregion
@@ -43,10 +49,11 @@ namespace FamilyNetServer.Controllers.API.V1
         [Authorize(Roles = "Admin,CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery]FilterParamentrsPurchaseDTO filter)
         {
-            var purchase = _repository.Purchases.GetAll().Where(c => !c.IsDeleted);
-
+            var purchase = _filterPurchase.GetFiltered(_repository.Purchases.GetAll().Where(c => !c.IsDeleted),
+                filter,out var count);
+           
             if (purchase == null)
             {
                 return BadRequest();
@@ -70,8 +77,14 @@ namespace FamilyNetServer.Controllers.API.V1
                 purchases.Add(purchaseDTO);
             }
 
+            var filterModel = new PurchaseFilterDTO
+            {
+                PurchaseDTOs = purchases,
+                TotalCount = count
+            };
+
             _logger.LogInformation("Returned purchases list");
-            return Ok(purchases);
+            return Ok(filterModel);
         }
 
 
@@ -214,5 +227,6 @@ namespace FamilyNetServer.Controllers.API.V1
 
             return Ok();
         }
+
     }
 }

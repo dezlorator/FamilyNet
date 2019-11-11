@@ -172,7 +172,7 @@ namespace FamilyNet.Controllers
             return Redirect("/AuctionLot/All");
         }
 
-        public async Task<IActionResult> All(int page = 1,
+        public async Task<IActionResult> All(int mypage = 1,
             string userId = "", string sort = "",
             int craft = 0, string date = "",
             int q1 = 0, int q2 = 0,
@@ -180,12 +180,31 @@ namespace FamilyNet.Controllers
         {
             string currentUserId = null;
 
-            if (HttpContext.Session.GetString("role") != "Admin")
+            if (HttpContext.Session.GetString("roles") != "Admin")
             {
                 currentUserId = HttpContext.Session.GetString("id");
             }
 
-            var url = _URLPurchase.SimpleQuery(_apiPurchasePath);
+
+            if (!DateTime.TryParse(date, out var dateTime))
+            {
+                dateTime = DateTime.MinValue;
+            }
+
+            var url = _URLPurchase.GetAllFiltered(_apiPurchasePath, new FilterParamentrsPurchaseDTO
+            {
+                CraftId = craft,
+                Date = dateTime,
+                Page =mypage,
+                PaidFrom =p1,
+                PaidTo = p2,
+                QuantityFrom =q1,
+                QuantityTo =q2,
+                Rows = _pageSize,
+                UserId = currentUserId !=null? currentUserId: userId,
+                Sort = sort
+            });
+
             IEnumerable<PurchaseDTO> purchases = null;
 
             try
@@ -196,8 +215,7 @@ namespace FamilyNet.Controllers
                 }
                 else
                 {
-                    purchases = _purchaseDownloader.GetAllAsync(url, HttpContext.Session)
-                        .Result.Where(p => p.UserId.ToUpper() == currentUserId.ToUpper());
+                    purchases = await _purchaseDownloader.GetAllAsync(url, HttpContext.Session);
                 }
             }
             catch (ArgumentNullException)
@@ -221,16 +239,6 @@ namespace FamilyNet.Controllers
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                 ViewData);
 
-            if(!DateTime.TryParse(date, out var dateTime))
-            {
-                dateTime = DateTime.MinValue;
-            }
-
-            if (!Enum.TryParse<PurchaseSortState>(sort, true, out var sortState))
-            {
-                sortState = PurchaseSortState.DateDesc;
-            }
-
             var filter = new PurchaseFilterViewModel
             {
                 UserId = userId,
@@ -244,9 +252,9 @@ namespace FamilyNet.Controllers
 
             var viewModel = new PurchaseAllViewModel
             {
-                PurchaseDTO = GetFiltered(purchases, filter, page, sortState, out var count),
+                PurchaseDTO = purchases,
                 FilterViewModel = filter,
-                PageViewModel = new PageViewModel(count, page, _pageSize),
+                PageViewModel = new PageViewModel(_purchaseDownloader.TotalItemsCount, mypage, _pageSize),
                 Sort = sort
             };
 
@@ -254,79 +262,6 @@ namespace FamilyNet.Controllers
             return View(viewModel);
         }
 
-        #region Private Helpers
-
-        private IEnumerable<PurchaseDTO> GetFiltered(IEnumerable<PurchaseDTO> purchase, 
-            PurchaseFilterViewModel filter, int page,
-            PurchaseSortState sort, out int count)
-        {
-
-            if (filter.PaidTo > 0.0)
-            {
-                purchase = purchase.Where(o => o.Paid > filter.PaidTo);
-            }
-
-            if (filter.PaidFrom > 0.0)
-            {
-                purchase = purchase.Where(o => o.Paid < filter.PaidFrom);
-            }
-
-            if (filter.QuantityFrom > 0.0)
-            {
-                purchase = purchase.Where(o => o.Quantity > filter.QuantityFrom);
-            }
-
-            if (filter.QuantityTo > 0.0)
-            {
-                purchase = purchase.Where(o => o.Quantity < filter.QuantityTo);
-            }
-
-            if (!String.IsNullOrEmpty(filter.UserId))
-            {
-                purchase = purchase.Where(o => o.UserId == filter.UserId);
-            }
-
-            if (filter.Date > DateTime.MinValue)
-            {
-                purchase = purchase.Where(o => o.Date == filter.Date);
-            }
-
-            if (filter.CraftId > 0)
-            {
-                purchase = purchase.Where(o => o.AuctionLotId == filter.CraftId);
-            }
-
-            // сортировка
-            switch (sort)
-            {
-                case PurchaseSortState.DateAsc:
-                    purchase = purchase.OrderBy(s => s.Date);
-                    break;
-                case PurchaseSortState.PaidAsc:
-                    purchase = purchase.OrderBy(s => s.Paid);
-                    break;
-                case PurchaseSortState.PaidDesc:
-                    purchase = purchase.OrderByDescending(s => s.Paid);
-                    break;
-                case PurchaseSortState.QuantityAsc:
-                    purchase = purchase.OrderBy(s => s.Quantity);
-                    break;
-                case PurchaseSortState.QuantityDesc:
-                    purchase = purchase.OrderByDescending(s => s.Quantity);
-                    break;
-
-                default:
-                    purchase = purchase.OrderByDescending(s => s.Date);
-                    break;
-            }
-
-            count = purchase.Count();
-
-            purchase = purchase.Skip((page - 1) * _pageSize).Take(_pageSize);
-
-            return purchase;
-        }
-
-        #endregion
+      
     }
 }

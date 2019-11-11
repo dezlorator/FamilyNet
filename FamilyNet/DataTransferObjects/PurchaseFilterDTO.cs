@@ -4,9 +4,10 @@ using System.Text;
 
 namespace DataTransferObjects
 {
-    public class AuctionLotFilterDTO
+    public class PurchaseFilterDTO
     {
-        public IEnumerable<AuctionLotDTO> AuctionLotDTOs { get; set; }
+        public IEnumerable<PurchaseDTO> PurchaseDTOs { get; set; }
+
 
         public int TotalCount { get; set; }
     }

@@ -122,12 +122,12 @@ else
         if (mypage == Model.PageViewModel.PageNumber)
         {
             <li class="page-item active">
-                <a asp-action="ShowAdmin"
+                <a asp-action="All"
                    asp-route-userId="@userId" asp-route-sort="@sort"
                    asp-route-craft="@craft" asp-route-q1="@q1"
                    asp-route-q2="@q2" asp-route-p1="@p1"
                    asp-route-date="@date" asp-route-p2="@p2"
-                   asp-route-page="@mypage"
+                   asp-route-mypage="@mypage"
                    class="page-link">
                     @mypage
                 </a>
@@ -136,12 +136,12 @@ else
         else
         {
             <li class="page-item">
-                <a asp-action="ShowAdmin"
+                <a asp-action="All"
                    asp-route-userId="@userId" asp-route-sort="@sort"
                    asp-route-craft="@craft" asp-route-q1="@q1"
                    asp-route-q2="@q2" asp-route-p1="@p1"
                    asp-route-date="@date" asp-route-p2="@p2"
-                   asp-route-page="@mypage"
+                   asp-route-mypage="@mypage"
                    class="page-link">
                     @mypage
                 </a>

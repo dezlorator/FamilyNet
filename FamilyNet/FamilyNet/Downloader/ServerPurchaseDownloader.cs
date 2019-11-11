@@ -1,6 +1,7 @@
 ﻿using DataTransferObjects;
 using FamilyNet.HttpHandlers;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,6 +47,42 @@ namespace FamilyNet.Downloader
             }
 
             return msg;
+        }
+
+        public async override Task<IEnumerable<PurchaseDTO>> GetAllAsync(string url,
+                                                      ISession session)
+        {
+            PurchaseFilterDTO objs = null;
+
+            try
+            {
+                HttpResponseMessage response = null;
+
+                using (var httpClient = new HttpClient())
+                {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
+                    response = await httpClient.GetAsync(url);
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                objs = JsonConvert.DeserializeObject<PurchaseFilterDTO>(json);
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            TotalItemsCount = objs.TotalCount;
+
+            return objs.PurchaseDTOs;
         }
 
         private static void BuildMultipartFormData(PurchaseDTO dto,
