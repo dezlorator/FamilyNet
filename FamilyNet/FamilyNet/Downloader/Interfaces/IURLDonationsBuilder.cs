@@ -3,7 +3,7 @@
     public interface IURLDonationsBuilder
     {
         string GetAllWithFilter(string api,
-                               int orphanageId);
+                               string forSearch);
 
         string GetById(string api, int id);
         string CreatePost(string api);

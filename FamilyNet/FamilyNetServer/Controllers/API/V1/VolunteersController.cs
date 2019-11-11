@@ -193,6 +193,11 @@ namespace FamilyNetServer.Controllers.API.V1
             volunteerDTO.PhotoPath = volunteer.Avatar;
             volunteerDTO.Avatar = null;
 
+            var id = User.Identity.Name;
+            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
+            user.PersonID = volunteer.ID;
+            await _unitOfWork.UserManager.UpdateAsync(user);
+
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
                 $"Volunteer was saved [id:{volunteer.ID}]");

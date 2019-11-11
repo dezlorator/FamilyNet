@@ -24,7 +24,7 @@ namespace FamilyNetServer.Controllers.API.V2
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDonationValidator _donationValidator;
+        private readonly IValidator<DonationDTO> _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
         private readonly ILogger<DonationsController> _logger;
         private readonly IIdentityExtractor _identityExtractor;
@@ -34,7 +34,7 @@ namespace FamilyNetServer.Controllers.API.V2
         #region ctor
 
         public DonationsController(IUnitOfWork unitOfWork,
-                                   IDonationValidator donationValidator,
+                                   IValidator<DonationDTO> donationValidator,
                                    IDonationsFilter donationsFilter,
                                    ILogger<DonationsController> logger,
                                    IIdentityExtractor identityExtractor)
@@ -92,8 +92,12 @@ namespace FamilyNetServer.Controllers.API.V2
                     ItemName = d.DonationItem.Name,
                     ItemDescription = d.DonationItem.Description,
                     Types = d.DonationItem.TypeBaseItem
-                               .Select(t => t.TypeID)
-                }).ToListAsync();
+                               .Select(t => new CategoryDTO
+                               {
+                                   Name = t.Type.Name,
+                                   ID = t.TypeID
+                               })
+                }).ToList();
 
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(donationsDTO));
@@ -124,7 +128,11 @@ namespace FamilyNetServer.Controllers.API.V2
             {
                 ID = donation.ID,
                 Types = donation.DonationItem.TypeBaseItem
-                                     .Select(t => t.TypeID),
+                               .Select(t => new CategoryDTO
+                               {
+                                   Name = t.Type.Name,
+                                   ID = t.TypeID
+                               }),
                 DonationItemID = donation.DonationItemID,
                 CharityMakerID = donation.CharityMakerID,
                 OrphanageID = donation.OrphanageID,
@@ -132,9 +140,9 @@ namespace FamilyNetServer.Controllers.API.V2
                 ItemDescription = donation.DonationItem.Description,
                 OrphanageName = donation.Orphanage.Name,
                 City = donation.Orphanage.Adress.City,
-                OrphanageHouse = donation.Orphanage.Adress.House,
-                OrphanageStreet = donation.Orphanage.Adress.Street,
-                OrphanageRating = donation.Orphanage.Rating
+                House = donation.Orphanage.Adress.House,
+                Street = donation.Orphanage.Adress.Street,
+                Rating = donation.Orphanage.Rating
             };
 
             _logger.LogInformation("{status},{json}", StatusCodes.Status200OK,
@@ -209,6 +217,15 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             var donation = await _unitOfWork.Donations.GetById(id);
+            donation.CharityMakerID = donationDTO.CharityMakerID;
+
+            if (!Enum.TryParse(donationDTO.Status, out DonationStatus donationStatus))
+            {
+                _logger.LogError("Wrong string.");
+                return BadRequest();
+            }
+
+            donation.Status = donationStatus;
 
             if (donation == null)
             {
@@ -251,99 +268,6 @@ namespace FamilyNetServer.Controllers.API.V2
             _logger.LogInformation("{token}{userId}{status}{info}",
                  token, userId, StatusCodes.Status204NoContent,
                  $"Donation was updated [id:{donation.ID}]");
-
-            return NoContent();
-        }
-
-        [HttpPut("StatusEdit/{id}")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> StatusEdit(int id, [FromBody]string status)
-        {
-            var userId = _identityExtractor.GetId(User);
-            var token = _identityExtractor.GetSignature(HttpContext);
-
-            _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint Donations/api/v2/StatusEdit/ [PUT] was called",
-                userId, token);
-
-            if (!Enum.TryParse(status, out DonationStatus donationStatus))
-            {
-                _logger.LogError("{userId} {token} {status} {info}", userId,
-                    token, StatusCodes.Status400BadRequest.ToString(),
-                    "Status is invalid");
-
-                return BadRequest();
-            }
-
-            var donation = await _unitOfWork.Donations.GetById(id);
-
-            if (donation == null)
-            {
-                _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest,
-                    $"Donation was not found [id:{id}]", userId, token);
-
-                return BadRequest();
-            }
-
-            donation.Status = donationStatus;
-
-            _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
-
-            _logger.LogInformation("{token}{userId}{status}{info}",
-                             token, userId, StatusCodes.Status204NoContent,
-                             $"Status was updated [id:{donation.ID}]");
-
-            return NoContent();
-        }
-
-        [HttpPut("donationMade/{id}")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddCharityMaker(int id, [FromBody]int charityMakerID)
-        {
-            var userId = _identityExtractor.GetId(User);
-            var token = _identityExtractor.GetSignature(HttpContext);
-
-            _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint Donations/api/v2/donationMade/ [PUT] was called",
-                userId, token);
-
-            var charityMaker = await _unitOfWork.CharityMakers
-                .GetById(charityMakerID);
-
-            if (charityMaker == null)
-            {
-                _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest,
-                    $"Charity maker was not found [id:{id}]", userId, token);
-
-                return BadRequest();
-            }
-
-            var donation = await _unitOfWork.Donations.GetById(id);
-
-            if (donation == null)
-            {
-                _logger.LogError("{status} {info} {userId} {token}",
-                    StatusCodes.Status400BadRequest,
-                    $"Donation was not found [id:{id}]", userId, token);
-
-                return BadRequest();
-            }
-
-            donation.CharityMakerID = charityMakerID;
-
-            _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
-
-            _logger.LogInformation("{token}{userId}{status}{info}",
-                token, userId, StatusCodes.Status204NoContent,
-                $"Charity maker was added [id:{charityMakerID}]");
 
             return NoContent();
         }

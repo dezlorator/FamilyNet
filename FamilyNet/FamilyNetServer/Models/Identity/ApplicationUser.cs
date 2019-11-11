@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using DataTransferObjects.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -29,16 +30,6 @@ namespace FamilyNetServer.Models.Identity
 
         public PersonType PersonType { get; set; }
 
-    }
-
-    public enum PersonType
-    {
-        User,
-        CharityMaker,
-        Volunteer,
-        Orphan,
-        Representative
-        
     }
 }
 

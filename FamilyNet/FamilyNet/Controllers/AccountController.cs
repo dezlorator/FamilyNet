@@ -62,9 +62,7 @@ namespace FamilyNet.Controllers
         {
 
             var urlRoles = _rolesBuilder.GetAll(_apiRolesPath);
-            IEnumerable<RoleDTO> roles = null;
-
-            roles = await _rolesDownloader.GetAllAsync(urlRoles, HttpContext.Session);
+            IEnumerable<RoleDTO> roles = await _rolesDownloader.GetAllAsync(urlRoles, HttpContext.Session);
 
             var yourDropdownList = new SelectList(roles.Select(item => new SelectListItem
             {
@@ -200,13 +198,15 @@ namespace FamilyNet.Controllers
         public IActionResult PersonalRoom()
         {
             var role = HttpContext.Session.GetString("roles");
-            if (GetPersonType(role) == PersonType.User)
+            if (GetPersonType(role) == PersonType.User || GetPersonType(role) == PersonType.Admin)
             {
-                RedirectToAction("Index", "Home");
+                var url = Url.Action("Index", "Home");
+                return Redirect(url);
             }
-            if (GetPersonType(role) != PersonType.User)
+            var personId = HttpContext.Session.GetString("personId");
+            if (GetPersonType(role) != PersonType.User && GetPersonType(role) != PersonType.Admin &&(personId == String.Empty || personId == null))
             {
-                var url = Url.Action(role + "s", "Create");
+                var url = Url.Action("Create", role + "s");
                 return Redirect(url);
             }
 
@@ -246,6 +246,8 @@ namespace FamilyNet.Controllers
                     return PersonType.Orphan;
                 case "User":
                     return PersonType.User;
+                case "Admin":
+                    return PersonType.Admin;
                 default:
                     return PersonType.User;
             }

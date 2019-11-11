@@ -22,7 +22,7 @@ namespace FamilyNetServer.Controllers.API.V2
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDonationItemValidator _donationItemValidator;
+        private readonly IValidator<DonationItemDTO> _donationItemValidator;
         private readonly ILogger<DonationItemsController> _logger;
         private readonly IIdentityExtractor _identityExtractor;
 
@@ -34,6 +34,8 @@ namespace FamilyNetServer.Controllers.API.V2
                                   IDonationItemValidator donationItemValidator,
                                   ILogger<DonationItemsController> logger,
                                   IIdentityExtractor identityExtractor)
+                                  IValidator<DonationItemDTO> donationItemValidator,
+                                  ILogger<DonationItemsController> logger)
         {
             _unitOfWork = unitOfWork;
             _donationItemValidator = donationItemValidator;

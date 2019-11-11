@@ -20,7 +20,7 @@ namespace FamilyNetServer.Controllers.API.V2
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICategoryValidator _categoryValidator;
+        private readonly IValidator<CategoryDTO> _categoryValidator;
         private readonly ILogger<CategoriesController> _logger;
         private readonly IIdentityExtractor _identityExtractor;
 
@@ -29,6 +29,8 @@ namespace FamilyNetServer.Controllers.API.V2
         #region ctor
 
         public CategoriesController(IUnitOfWork unitOfWork,
+                                    IValidator<CategoryDTO> categoryValidator,
+                                    ILogger<CategoriesController> logger)
                                     ICategoryValidator categoryValidator,
                                     ILogger<CategoriesController> logger,
                                     IIdentityExtractor identityExtractor)
