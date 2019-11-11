@@ -162,6 +162,11 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChangesAsync();
             _logger.LogInformation("Return Created[201].New child was added.");
 
+            var id = User.Identity.Name;
+            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
+            user.PersonID = child.ID;
+            await _unitOfWork.UserManager.UpdateAsync(user);
+
             return Created("api/v1/children/" + child.ID, new ChildDTO());
         }
 

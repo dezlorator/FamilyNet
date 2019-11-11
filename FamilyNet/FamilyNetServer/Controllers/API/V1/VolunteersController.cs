@@ -149,11 +149,18 @@ namespace FamilyNetServer.Controllers.API.V1
             };
 
             await _unitOfWork.Volunteers.Create(volunteer);
+
             _unitOfWork.SaveChangesAsync();
 
             volunteerDTO.ID = volunteer.ID;
             volunteerDTO.PhotoPath = volunteer.Avatar;
             volunteerDTO.Avatar = null;
+
+            var id = User.Identity.Name;
+            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
+            user.PersonID = volunteer.ID;
+            await _unitOfWork.UserManager.UpdateAsync(user);
+
 
             return Created("api/v1/volunteers/" + volunteer.ID, volunteerDTO);
         }

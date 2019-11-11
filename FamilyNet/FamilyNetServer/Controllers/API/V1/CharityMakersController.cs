@@ -167,6 +167,11 @@ namespace FamilyNetServer.Controllers.API.V1
             await _unitOfWork.CharityMakers.Create(charityMaker);
             _unitOfWork.SaveChangesAsync();
 
+            var id = User.Identity.Name;
+            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
+            user.PersonID = charityMaker.ID;
+            await _unitOfWork.UserManager.UpdateAsync(user);
+
             _logger.LogInformation("Charity maker was created");
             return Created("api/v1/charityMakers/" + charityMaker.ID, charityMaker);
         }
@@ -212,6 +217,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             _unitOfWork.CharityMakers.Update(charityMaker);
             _unitOfWork.SaveChangesAsync();
+
 
             _logger.LogInformation("Charity maker was successfully updated");
             return NoContent();

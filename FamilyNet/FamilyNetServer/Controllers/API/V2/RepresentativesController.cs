@@ -153,10 +153,15 @@ namespace FamilyNetServer.Controllers.API.V2
             };
 
             await _unitOfWork.Representatives.Create(representative);
+
             _unitOfWork.SaveChangesAsync();
 
             representativeDTO.ID = representative.ID;
             representativeDTO.PhotoPath = representative.Avatar;
+
+            var user = await _unitOfWork.UserManager.GetUserAsync(HttpContext.User);
+            user.PersonID = representative.ID;
+            await _unitOfWork.UserManager.UpdateAsync(user);
 
             return Created("api/v1/{controller}/" + representative.ID, representativeDTO);
         }
