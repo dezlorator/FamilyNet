@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191108112712_Availabilities")]
+    [Migration("20191111234233_Availabilities")]
     partial class Availabilities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,6 +96,10 @@ namespace FamilyNetServer.Migrations
                     b.Property<bool>("IsReserved");
 
                     b.Property<int>("PersonID");
+
+                    b.Property<int>("QuestID");
+
+                    b.Property<string>("QuestName");
 
                     b.Property<int>("Role");
 

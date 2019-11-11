@@ -19,7 +19,9 @@ namespace FamilyNetServer.Migrations
                     Date = table.Column<DateTime>(nullable: false),
                     FreeHours = table.Column<TimeSpan>(type: "time", nullable: false),
                     IsReserved = table.Column<bool>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false)
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    QuestName = table.Column<string>(nullable: true),
+                    QuestID = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

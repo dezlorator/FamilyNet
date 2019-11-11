@@ -56,21 +56,21 @@ namespace FamilyNet.Controllers
 
             GetViewData();
 
-            var vm = new ScheduleViewModel
+            var scheduleViewModel = new ScheduleViewModel
             {
                 Days = availabilitiesDTO.Select(a => a.DayOfWeek).Distinct().OrderBy(d => d),
                 Hours = availabilitiesDTO.Select(a => a.StartTime.TimeOfDay).Distinct().OrderBy(t => t),
                 Sorted = new Dictionary<TimeSpan, IEnumerable<AvailabilityDTO>>()
             };
 
-            foreach (var h in vm.Hours)
+            foreach (var h in scheduleViewModel.Hours)
             {
-                vm.Sorted.Add(h, availabilitiesDTO
+                scheduleViewModel.Sorted.Add(h, availabilitiesDTO
                 .Where(a => a.StartTime.TimeOfDay == h)
                 .OrderBy(a => a.StartTime.TimeOfDay));
             }
 
-            return View(vm);
+            return View(scheduleViewModel);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -201,11 +201,11 @@ namespace FamilyNet.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-        
+
         }
 
         [HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)

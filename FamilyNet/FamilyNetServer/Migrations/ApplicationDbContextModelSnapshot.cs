@@ -95,6 +95,10 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<int>("PersonID");
 
+                    b.Property<int>("QuestID");
+
+                    b.Property<string>("QuestName");
+
                     b.Property<int>("Role");
 
                     b.HasKey("ID");

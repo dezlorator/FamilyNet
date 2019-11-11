@@ -28,11 +28,15 @@ namespace FamilyNetServer.Controllers.API
 
         #endregion
 
+        #region ctors
+
         public ScheduleController(IUnitOfWork unitOfWork, IAvailabilityValidator availabilityValidator)
         {
             _validator = availabilityValidator;
             _unitOfWork = unitOfWork;
         }
+
+        #endregion
 
         [HttpGet]
         [Authorize(Roles = "Admin, Volunteer, CharityMaker")]
@@ -55,17 +59,18 @@ namespace FamilyNetServer.Controllers.API
             new AvailabilityDTO()
             {
                 ID = a.ID,
+                PersonID = a.PersonID,
                 StartTime = a.Date,
                 DayOfWeek = a.Date.DayOfWeek,
                 FreeHours = a.FreeHours,
                 Role = user.PersonType,
-                IsReserved = a.IsReserved
+                IsReserved = a.IsReserved,
+                QuestID = a.QuestID,
+                QuestName = a.QuestName
             });
 
             return Ok(availabilitiesDTO);
         }
-
-        #region поиск по дате квеста и продолжительности
 
         [HttpGet("freePersons")]
         //[Authorize(Roles = "Admin, CharityMaker, Representative")]
@@ -90,9 +95,39 @@ namespace FamilyNetServer.Controllers.API
             return Ok(personIdsList);
         }
 
-        #endregion 
-
         //Reserve(AvailabilityID id) ? deReserve()
+        [HttpGet("switchReserveStatus/{id}")]
+        //[Authorize(Roles = "Admin, Volunteer")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SwitchReserveStatusById(int id,
+            [FromQuery]string questName, [FromQuery] int questID)
+        {
+            var availability = await _unitOfWork.Availabilities.GetById(id);
+
+            if (availability == null)
+            {
+                return BadRequest();
+            }
+
+            if (!availability.IsReserved)
+            {
+                availability.IsReserved = !availability.IsReserved;
+                availability.QuestID = questID;
+                availability.QuestName = questName;
+            }
+            else
+            {
+                availability.IsReserved = !availability.IsReserved;
+                availability.QuestID = 0;
+                availability.QuestName = null;
+            }
+
+            _unitOfWork.Availabilities.Update(availability);
+            _unitOfWork.SaveChangesAsync();
+
+            return Ok();
+        }
 
         #region сравнение расписаний волонтера и мецената
 
@@ -154,11 +189,14 @@ namespace FamilyNetServer.Controllers.API
             var availabilityDTO = new AvailabilityDTO()
             {
                 ID = availability.ID,
+                PersonID = availability.PersonID,
                 StartTime = availability.Date,
                 DayOfWeek = availability.Date.DayOfWeek,
                 FreeHours = availability.FreeHours,
                 Role = user.PersonType,
-                IsReserved = availability.IsReserved
+                IsReserved = availability.IsReserved,
+                QuestID = availability.QuestID,
+                QuestName = availability.QuestName
             };
 
             return Ok(availabilityDTO);
@@ -189,7 +227,7 @@ namespace FamilyNetServer.Controllers.API
                 //TODO logg
                 return Conflict();
             }
-     
+
             var user = identify();
 
             //var diff = adjustDate(dto);
@@ -224,7 +262,7 @@ namespace FamilyNetServer.Controllers.API
             }
 
             var overlaps = _unitOfWork.Availabilities.Get(a => _validator
-                .IsOverlaping(availabilityDTO, a) && 
+                .IsOverlaping(availabilityDTO, a) &&
                 a.ID != availabilityDTO.ID).Count();
 
             if (overlaps > 0)

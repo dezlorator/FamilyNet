@@ -11,7 +11,6 @@ namespace FamilyNetServer.Models
         public int ID { get; set; }
         public int PersonID { get; set; }
         public PersonType Role { get; set; }
-        //public Quest Quest { get; set;}
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
@@ -20,10 +19,10 @@ namespace FamilyNetServer.Models
         [DataType(DataType.Time)]
         [Column(TypeName = "time")]
         [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        public TimeSpan FreeHours { get; set; } 
-
+        public TimeSpan FreeHours { get; set; }
         public bool IsReserved { get; set; }
-        
         public bool IsDeleted { get; set; }
+        public string QuestName { get; set; }
+        public int QuestID { get; set; }
     }
 }

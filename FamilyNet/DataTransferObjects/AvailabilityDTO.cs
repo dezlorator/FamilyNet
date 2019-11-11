@@ -9,10 +9,10 @@ namespace DataTransferObjects
     public class AvailabilityDTO
     {
         public int ID { get; set; }
-        //public int PersonID { get; set; }
+        public int PersonID { get; set; }
         public PersonType Role { get; set; }
 
-        [Required(ErrorMessage ="Please, select the day of week")]
+        [Required(ErrorMessage = "Please, select the day of week")]
         public DayOfWeek DayOfWeek { get; set; }
 
         [Required]
@@ -24,6 +24,8 @@ namespace DataTransferObjects
         [DataType(DataType.Time)]
         public TimeSpan FreeHours { get; set; }
         public bool IsReserved { get; set; }
+        public string QuestName { get; set; }
+        public int QuestID { get; set; }
 
     }
 }
