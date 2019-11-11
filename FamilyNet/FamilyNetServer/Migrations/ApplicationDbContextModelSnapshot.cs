@@ -78,6 +78,29 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("AuctionLot");
                 });
 
+            modelBuilder.Entity("FamilyNetServer.Models.Award", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ChildActivityID");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ChildActivityID");
+
+                    b.ToTable("Awards");
+                });
+
             modelBuilder.Entity("FamilyNetServer.Models.BaseItem", b =>
                 {
                     b.Property<int>("ID")
@@ -153,6 +176,27 @@ namespace FamilyNetServer.Migrations
                         .HasFilter("[AddressID] IS NOT NULL");
 
                     b.ToTable("CharityMakers");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.ChildActivity", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ChildID");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ChildID");
+
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Donation", b =>
@@ -308,10 +352,6 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<string>("Name");
-
-                    b.Property<int>("Status");
-
                     b.Property<float>("Paid");
 
                     b.Property<int>("Quantity");
@@ -453,6 +493,13 @@ namespace FamilyNetServer.Migrations
                         .HasForeignKey("OrphanID");
                 });
 
+            modelBuilder.Entity("FamilyNetServer.Models.Award", b =>
+                {
+                    b.HasOne("FamilyNetServer.Models.ChildActivity")
+                        .WithMany("Awards")
+                        .HasForeignKey("ChildActivityID");
+                });
+
             modelBuilder.Entity("FamilyNetServer.Models.BaseItemType", b =>
                 {
                     b.HasOne("FamilyNetServer.Models.BaseItemType", "Parent")
@@ -491,6 +538,13 @@ namespace FamilyNetServer.Migrations
                                 .HasForeignKey("FamilyNetServer.Models.FullName", "CharityMakerID")
                                 .OnDelete(DeleteBehavior.Cascade);
                         });
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.ChildActivity", b =>
+                {
+                    b.HasOne("FamilyNetServer.Models.Orphan", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildID");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Donation", b =>
