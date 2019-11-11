@@ -126,6 +126,8 @@ namespace FamilyNetServer.Controllers.API.V2
         {
             if (!_volunteerValidator.IsValid(volunteerDTO))
             {
+                _logger.LogError("Bad request[400]. VolunteerDTO is not valid");
+
                 return BadRequest();
             }
 
@@ -180,6 +182,8 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (volunteer == null)
             {
+                _logger.LogError("Bad request[400]. Volunteer was not found by id");
+
                 return BadRequest();
             }
 
