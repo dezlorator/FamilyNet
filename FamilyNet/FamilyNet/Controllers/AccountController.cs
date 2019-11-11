@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
 using FamilyNet.Enums;
-using FamilyNet.Models.Identity;
 
 namespace FamilyNet.Controllers
 {
@@ -201,12 +200,13 @@ namespace FamilyNet.Controllers
         public IActionResult PersonalRoom()
         {
             var role = HttpContext.Session.GetString("roles");
-            if (GetPersonType(role) == PersonType.User)
+            if (GetPersonType(role) == PersonType.User || GetPersonType(role) == PersonType.Admin)
             {
-                RedirectToAction("Index", "Home");
+                var url = Url.Action("Index", "Home");
+                return Redirect(url);
             }
             var personId = HttpContext.Session.GetString("personId");
-            if (GetPersonType(role) != PersonType.User && (personId == String.Empty || personId == null))
+            if (GetPersonType(role) != PersonType.User && GetPersonType(role) != PersonType.Admin &&(personId == String.Empty || personId == null))
             {
                 var url = Url.Action("Create", role + "s");
                 return Redirect(url);
@@ -248,6 +248,8 @@ namespace FamilyNet.Controllers
                     return PersonType.Orphan;
                 case "User":
                     return PersonType.User;
+                case "Admin":
+                    return PersonType.Admin;
                 default:
                     return PersonType.User;
             }
