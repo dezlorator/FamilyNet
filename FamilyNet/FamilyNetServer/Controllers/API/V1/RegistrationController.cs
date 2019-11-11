@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNetServer.Models.Identity;
@@ -7,11 +8,11 @@ using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using DataTransferObjects;
+using DataTransferObjects.Enums;
 using Microsoft.AspNetCore.Http;
 using FamilyNetServer.HttpHandlers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
 
 namespace FamilyNetServer.Controllers.API.V1
 {

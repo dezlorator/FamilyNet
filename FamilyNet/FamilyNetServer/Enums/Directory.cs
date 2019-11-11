@@ -7,6 +7,8 @@
         CharityMaker,
         Representatives,
         ChildrenHouses,
-        Auction
+        Auction,
+        Feedback,
+        avatars
     }
 }

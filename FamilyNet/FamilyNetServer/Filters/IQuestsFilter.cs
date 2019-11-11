@@ -6,6 +6,6 @@ namespace FamilyNetServer.Filters
     public interface IQuestsFilter
     {
         IQueryable<Quest> GetQuests(IQueryable<Quest> quests,
-                                          string filter);
+                                          string filter, QuestStatus status);
     }
 }

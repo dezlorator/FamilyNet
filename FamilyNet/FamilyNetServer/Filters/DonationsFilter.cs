@@ -13,10 +13,10 @@ namespace FamilyNetServer.Filters
                 return donations;
             }
 
-            return donations.Where(d => d.Orphanage.Name == filter
-                                || d.Orphanage.Adress.City == filter
-                                || d.Orphanage.Adress.Street == filter
-                                || d.DonationItem.Name == filter
+            return donations.Where(d => d.Orphanage.Name.Contains(filter)
+                                || d.Orphanage.Adress.City.Contains(filter)
+                                || d.Orphanage.Adress.Street.Contains(filter)
+                                || d.DonationItem.Name.Contains(filter)
                                 || d.DonationItem.TypeBaseItem
                                                  .Select(i => i.Type.Name)
                                                  .Contains(filter));

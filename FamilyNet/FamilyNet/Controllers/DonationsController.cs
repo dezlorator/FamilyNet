@@ -13,6 +13,9 @@ using Newtonsoft.Json;
 using System.Net;
 using FamilyNet.IdentityHelpers;
 using FamilyNet.Enums;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace FamilyNet.Controllers
 {
@@ -20,7 +23,6 @@ namespace FamilyNet.Controllers
     {
         #region private fields
 
-        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IStringLocalizer<DonationsController> _localizer;
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _downloader;
         private readonly ServerSimpleDataDownloader<CategoryDTO> _downloaderCategories;
@@ -29,6 +31,8 @@ namespace FamilyNet.Controllers
         private readonly IURLDonationsBuilder _URLDonationsBuilder;
         private readonly IURLDonationItemsBuilder _URLDonationItemsBuilder;
         private readonly IURLChildrenHouseBuilder _URLChildrenHouseBuilder;
+        private readonly IURLCategoriesBuilder _URLCategoriesBuilder;
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
 
         private readonly string _apiPath = "api/v1/donations";
         private readonly string _apiCategoriesPath = "api/v1/categories";
@@ -47,7 +51,8 @@ namespace FamilyNet.Controllers
                                  IURLDonationsBuilder uRLDonationsBuilder,
                                  IURLDonationItemsBuilder uRLDonationItemsBuilder,
                                  IURLChildrenHouseBuilder uRLChildrenHouseBuilder,
-                                 IIdentityInformationExtractor identityInformationExtactor)
+                                 IIdentityInformationExtractor identityInformationExtactor,
+                                 IURLCategoriesBuilder uRLCategoriesBuilder)
         {
             _localizer = localizer;
             _downloader = downloader;
@@ -58,19 +63,20 @@ namespace FamilyNet.Controllers
             _URLDonationItemsBuilder = uRLDonationItemsBuilder;
             _URLChildrenHouseBuilder = uRLChildrenHouseBuilder;
             _identityInformationExtactor = identityInformationExtactor;
+            _URLCategoriesBuilder = uRLCategoriesBuilder;
         }
 
         #endregion
 
-        public async Task<IActionResult> Index(int orphanageId)
+        public async Task<IActionResult> Index(string forSearch)
         {
             var url = _URLDonationsBuilder.GetAllWithFilter(_apiPath,
-                                                            orphanageId);
-            IEnumerable<DonationDTO> donationDTO = null;
+                                                            forSearch);
+            IEnumerable<DonationDTO> donationsDTO;
 
             try
             {
-                donationDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
+                donationsDTO = await _downloader.GetAllAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -85,38 +91,9 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var donations = donationDTO.Select(donation => new Donation()
-            {
-                ID = donation.ID,
-
-                Orphanage = new Orphanage()
-                {
-                    Name = donation.OrphanageName,
-
-                    Adress = new Address()
-                    {
-                        City = donation.City,
-                    }
-                },
-
-                DonationItem = new DonationItem()
-                {
-                    Name = donation.ItemName,
-                    Description = donation.ItemDescription,
-                    TypeBaseItem = donation.Types.Select(async t => await GetTypeBaseItemsAsync(t))
-                                                                          .Select(t => t.Result)
-                                                                          .Where(i => i != null)
-                                                                          .ToList()
-                },
-
-                LastDateWhenStatusChanged = donation.LastDateWhenStatusChanged,
-
-                Status = (DonationStatus)Enum.Parse(typeof(DonationStatus), donation.Status, true)
-            });
-
             GetViewData();
 
-            return View(donations);
+            return View(donationsDTO);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -151,35 +128,9 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
-            var donation = new Donation()
-            {
-                Orphanage = new Orphanage()
-                {
-                    Name = donationDetailDTO.OrphanageName,
-                    Rating = donationDetailDTO.OrphanageRating,
-
-                    Adress = new Address()
-                    {
-                        City = donationDetailDTO.City,
-                        Street = donationDetailDTO.OrphanageStreet,
-                        House = donationDetailDTO.OrphanageHouse
-                    }
-                },
-
-                DonationItem = new DonationItem()
-                {
-                    Name = donationDetailDTO.ItemName,
-                    Description = donationDetailDTO.ItemDescription,
-                    TypeBaseItem = donationDetailDTO.Types.Select(async t => await GetTypeBaseItemsAsync(t))
-                                                                          .Select(t => t.Result)
-                                                                          .Where(i => i != null)
-                                                                          .ToList()
-                }
-            };
-
             GetViewData();
 
-            return View(donation);
+            return View(donationDetailDTO);
         }
 
         public async Task<IActionResult> Create()
@@ -187,6 +138,10 @@ namespace FamilyNet.Controllers
             var urlOrphanages = _URLChildrenHouseBuilder.GetAllWithFilter(_apiOrphanagesPath, new OrphanageSearchModel(), SortStateOrphanages.NameAsc);
             var orphanagesList = await _downloaderOrphanages.GetAllAsync(urlOrphanages, HttpContext.Session);
             ViewBag.ListOfOrphanages = orphanagesList;
+
+            var urlCategories = _URLCategoriesBuilder.GetAll(_apiCategoriesPath);
+            var categoriesList = await _downloaderCategories.GetAllAsync(urlCategories, HttpContext.Session);
+            ViewBag.ListOfCategories = categoriesList;
 
             GetViewData();
             return View();
@@ -212,7 +167,7 @@ namespace FamilyNet.Controllers
 
             var itemDTO = msg.Content.ReadAsAsync<DonationItemDTO>().Result;
             model.Donation.DonationItemID = itemDTO.ID;
-
+          
             url = _URLDonationsBuilder.CreatePost(_apiPath);
             msg = await _downloader.CreatePostAsync(url, model.Donation, HttpContext.Session);
 
@@ -250,7 +205,7 @@ namespace FamilyNet.Controllers
 
                 if (donation.DonationItemID != null)
                 {
-                    var urlItem = _URLDonationsBuilder.GetById(_apiDonationItemsPath, donation.DonationItemID.Value);
+                    var urlItem = _URLDonationItemsBuilder.GetById(_apiDonationItemsPath, donation.DonationItemID.Value);
                     item = await _downloaderItems.GetByIdAsync(urlItem, HttpContext.Session);
                 }
             }
@@ -267,10 +222,9 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            var donationItemsList = await _downloaderItems.GetAllAsync(_apiDonationItemsPath, HttpContext.Session);
-            ViewBag.ListOfDonationItems = donationItemsList;
-
-            var orphanagesList = await _downloaderOrphanages.GetAllAsync(_apiOrphanagesPath, HttpContext.Session);
+            var urlOrphanage = _URLChildrenHouseBuilder.GetAllWithFilter(_apiOrphanagesPath,
+                                  new OrphanageSearchModel(), SortStateOrphanages.NameAsc);
+            var orphanagesList = await _downloaderOrphanages.GetAllAsync(urlOrphanage, HttpContext.Session);
             ViewBag.ListOfOrphanages = orphanagesList;
 
             GetViewData();
@@ -394,6 +348,45 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
+        public IActionResult Donate(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Donate(int id, DonationDetailDTO donation)
+        {
+            if (id != donation.ID)
+            {
+                return NotFound(); 
+            }
+
+            // var userId = HttpContext.User.
+            donation.CharityMakerID = 2;
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, donation.ID);
+            var msg = await _downloader.CreatePutAsync(url, donation, HttpContext.Session);
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {  
+                return Redirect("/Account/Login");
+            }
+
+            if (msg.StatusCode != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return Redirect("/Donations/");
+        }
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -456,35 +449,6 @@ namespace FamilyNet.Controllers
             GetViewData();
 
             return Redirect("/Donations/Index");
-        }
-
-        private async Task<TypeBaseItem> GetTypeBaseItemsAsync(int typeId)
-        {
-            var typeBaseItem = new TypeBaseItem()
-            {
-                Type = await GetTypeByIdAsync(typeId)
-            };
-
-            GetViewData();
-
-            return typeBaseItem;
-        }
-
-        private async Task<BaseItemType> GetTypeByIdAsync(int id)
-        {
-            var url = _URLDonationsBuilder.GetById(_apiCategoriesPath, id);
-
-            var category = await _downloaderCategories.GetByIdAsync(url, HttpContext.Session);
-
-            var newCategory = new BaseItemType()
-            {
-                ID = category.ID,
-                Name = category.Name,
-            };
-
-            GetViewData();
-
-            return newCategory;
         }
 
         private void GetViewData()
