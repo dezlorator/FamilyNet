@@ -11,7 +11,8 @@ namespace FamilyNet.Enums
         CharityMaker,
         Volunteer,
         Orphan,
-        Representative
+        Representative,
+        Admin
     }
 }
 

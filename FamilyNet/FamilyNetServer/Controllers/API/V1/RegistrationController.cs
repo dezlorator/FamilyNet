@@ -87,8 +87,8 @@ namespace FamilyNetServer.Controllers.API.V1
                     var codeTokken = await _unitOfWork.UserManager
                         .GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action(
-                        "ConfirmEmail",
-                        "Account",
+                        "ConfirmEmailAsync",
+                        "Registration",
                         new { userId = user.Id, code = codeTokken },
                         protocol: HttpContext.Request.Scheme);
                     EmailService emailService = new EmailService();

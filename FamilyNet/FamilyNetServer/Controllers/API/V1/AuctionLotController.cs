@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataTransferObjects;
@@ -53,43 +54,155 @@ namespace FamilyNetServer.Controllers.API.V1
 
         #endregion
 
-        [HttpGet]
+
+        [HttpGet("approved")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAllAsync()
+        public IActionResult GetAllApproved([FromQuery]string name,
+                                   [FromQuery]string priceStart,
+                                   [FromQuery]string priceEnd,
+                                    [FromQuery]string sort,
+                                   [FromQuery]int rows,
+                                   [FromQuery]int page)
         {
             _logger.LogInformation("{info}",
-                "Endpoint AuctionLot/api/v1 GetAll was called");
+                "Endpoint AuctionLot/api/v1 GetAllApproved was called");
 
-            var auction = _repository.AuctionLots.GetAll()
-                .Where(c => !c.IsDeleted);
+            float.TryParse(priceStart, out var start);
+            float.TryParse(priceEnd, out var end);
+            Enum.TryParse<AuctionLotSortState>(sort, out var sortOrder);
+
+            var auction = GetFiltered(_repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
+            && c.Status == AuctionLotStatus.Approved && c.Quantity > 0),
+                start, end, name, page, rows, sortOrder, out var count);
 
             if (auction == null)
             {
                 _logger.LogWarning("{status}{info}",
-                    StatusCodes.Status400BadRequest,
-                    "List of Auction Lots is empty");
+                   StatusCodes.Status400BadRequest,
+                   "List of Auction Lots is empty");
 
                 return BadRequest();
             }
 
-            var auctions = await auction.Select(lot =>
+            var auctions =  auction.Select(lot =>
                 new AuctionLotDTO()
                 {
                     ID = lot.ID,
-                    DateStart = lot.DateAdded,
+                    DateAdded = lot.DateAdded,
                     OrphanID = lot.OrphanID,
                     Quantity = lot.Quantity,
                     Status = lot.Status.ToString(),
                     PhotoParth = _settings.Value.ServerURL + lot.Avatar,
                     AuctionLotItemID = lot.AuctionLotItemID,
-                }).ToListAsync();
+                }).ToList();
+
+
+            var filterModel = new AuctionLotFilterDTO
+            {
+                AuctionLotDTOs = auctions,
+                TotalCount = count
+            };
+
 
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(auctions));
 
-            return Ok(auctions);
+            return Ok(filterModel);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetAllOrphanCrafts([FromQuery]int orphanId, [FromQuery]int rows,
+                           [FromQuery]int page)
+        {
+            _logger.LogInformation("{info}",
+                "Endpoint AuctionLot/api/v1 GetAllOrphanCrafts was called");
+
+            var auction = _repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
+            && c.Status != AuctionLotStatus.Approved && c.OrphanID == orphanId).Skip((page - 1) * rows).Take(rows);
+
+            if (auction == null)
+            {
+                _logger.LogWarning("{status}{info}",
+                   StatusCodes.Status400BadRequest,
+                   "List of Auction Lots is empty");
+
+                return BadRequest();
+            }
+
+            var auctions = auction.Select(lot =>
+               new AuctionLotDTO()
+               {
+                   ID = lot.ID,
+                   DateAdded = lot.DateAdded,
+                   OrphanID = lot.OrphanID,
+                   Quantity = lot.Quantity,
+                   Status = lot.Status.ToString(),
+                   PhotoParth = _settings.Value.ServerURL + lot.Avatar,
+                   AuctionLotItemID = lot.AuctionLotItemID,
+               }).ToList();
+
+            var filterModel = new AuctionLotFilterDTO
+            {
+                AuctionLotDTOs = auctions,
+                TotalCount = auction.Count()
+            };
+
+
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+               JsonConvert.SerializeObject(auctions));
+
+            return Ok(filterModel);
+        }
+
+        [HttpGet("confirm")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetAllUnApproved([FromQuery]int orphanId)
+        {
+            _logger.LogInformation("{info}",
+                "Endpoint AuctionLot/api/v1 GetAllUnApproved was called");
+
+            var auction = _repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
+             && c.Status == AuctionLotStatus.UnApproved && c.OrphanID == orphanId);
+
+            if (auction == null)
+            {
+                _logger.LogWarning("{status}{info}",
+                   StatusCodes.Status400BadRequest,
+                   "List of Auction Lots is empty");
+
+                return BadRequest();
+            }
+
+            var auctions = auction.Select(lot =>
+               new AuctionLotDTO()
+               {
+                   ID = lot.ID,
+                   DateAdded = lot.DateAdded,
+                   OrphanID = lot.OrphanID,
+                   Quantity = lot.Quantity,
+                   Status = lot.Status.ToString(),
+                   PhotoParth = _settings.Value.ServerURL + lot.Avatar,
+                   AuctionLotItemID = lot.AuctionLotItemID,
+               }).ToList();
+
+            var filterModel = new AuctionLotFilterDTO
+            {
+                AuctionLotDTOs = auctions,
+                TotalCount = auction.Count()
+            };
+
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+               JsonConvert.SerializeObject(auctions));
+
+            return Ok(filterModel);
         }
 
 
@@ -116,7 +229,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var auctionDTO = new AuctionLotDTO()
             {
                 ID = auction.ID,
-                DateStart = auction.DateAdded,
+                DateAdded = auction.DateAdded,
                 OrphanID = auction.OrphanID,
                 Quantity = auction.Quantity,
                 Status = auction.Status.ToString(),
@@ -152,7 +265,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             var auction = new AuctionLot()
             {
-                DateAdded = auctionDTO.DateStart,
+                DateAdded = auctionDTO.DateAdded,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
                 Status = AuctionLotStatus.UnApproved,
@@ -219,7 +332,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             auction.AuctionLotItemID = auctionDTO.AuctionLotItemID;
-            auction.DateAdded = auctionDTO.DateStart;
+            auction.DateAdded = auctionDTO.DateAdded;
             auction.OrphanID = auctionDTO.OrphanID;
             var status = AuctionLotStatus.UnApproved;
             Enum.TryParse(auctionDTO.Status, out status);
@@ -290,5 +403,53 @@ namespace FamilyNetServer.Controllers.API.V1
 
             return Ok();
         }
+
+        #region Private Helpers
+
+        private IEnumerable<AuctionLot> GetFiltered(IEnumerable<AuctionLot> lots, float start, float end, string name, int page,
+            int rows, AuctionLotSortState sortOrder, out int count)
+        {
+
+            if (start > 0.0)
+            {
+                lots = lots.Where(o => o.AuctionLotItem.Price > start);
+            }
+
+            if (end > 0.0)
+            {
+                lots = lots.Where(o => o.AuctionLotItem.Price < end);
+            }
+
+            if (!String.IsNullOrEmpty(name))
+            {
+                lots = lots.Where(o => o.AuctionLotItem.Name.Contains(name));
+            }
+
+            switch (sortOrder)
+            {
+                case AuctionLotSortState.DateDesc:
+                    lots = lots.OrderByDescending(s => s.DateAdded);
+                    break;
+                case AuctionLotSortState.QuantityAsc:
+                    lots = lots.OrderBy(s => s.Quantity);
+                    break;
+                case AuctionLotSortState.QuantityDesc:
+                    lots = lots.OrderByDescending(s => s.Quantity);
+                    break;
+
+                default:
+                    lots = lots.OrderBy(s => s.DateAdded);
+                    break;
+            }
+
+            count = lots.Count();
+
+            lots = lots.Skip((page - 1) * rows).Take(rows);
+
+            return lots;
+        }
+
+       
+        #endregion
     }
 }
