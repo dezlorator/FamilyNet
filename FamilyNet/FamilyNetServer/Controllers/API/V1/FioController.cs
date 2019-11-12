@@ -57,6 +57,11 @@ namespace FamilyNetServer.Controllers.API.V1
                     return Forbid();
             }
 
+            if(person == null)
+            {
+                return BadRequest();
+            }
+
             var fioDTO = new FioDTO()
             {
                 Name = person.FullName.Name,

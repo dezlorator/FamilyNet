@@ -75,7 +75,7 @@ namespace FamilyNetServer.Controllers.API
                 {
                     ID = feedback.ID,
                     DonationId = feedback.DonationId,
-                    ImagePath = _settings.Value.ServerURL + feedback.Image,
+                    ImagePath = feedback.Image,
                     Message = feedback.Message,
                     Rating = feedback.Rating,
                     ReceiverId = feedback.ReceiverId,
@@ -116,7 +116,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 ID = feedback.ID,
                 DonationId = feedback.DonationId,
-                ImagePath = _settings.Value.ServerURL + feedback.Image,
+                ImagePath = feedback.Image,
                 Message = feedback.Message,
                 Rating = feedback.Rating,
                 ReceiverId = feedback.ReceiverId,
@@ -177,7 +177,7 @@ namespace FamilyNetServer.Controllers.API
             var feedback = new Feedback()
             {
                 DonationId = feedbackDTO.DonationId,
-                Image = photoPath,
+                Image = _settings.Value.ServerURL + photoPath,
                 Message = feedbackDTO.Message,
                 Rating = feedbackDTO.Rating,
                 ReceiverId = feedbackDTO.ReceiverId,
@@ -305,8 +305,10 @@ namespace FamilyNetServer.Controllers.API
         private UserRole GetIdAndRole(IEnumerable<Claim> claims, out int id)
         {
             var claim = claims.ToList();
-            id = Convert.ToInt32(claim[2].Value);
-            return _userRoleConvertor.ConvertFromString(claim[3].Value);
+            var user = _unitOfWork.UserManager.FindByIdAsync(claim[0].Value);
+            id = user.Result.PersonID??0;
+            return _userRoleConvertor.ConvertFromString(claim[1].Value);
+
         }
     }
 }

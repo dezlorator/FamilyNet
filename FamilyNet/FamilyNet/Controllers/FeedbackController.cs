@@ -179,8 +179,6 @@ namespace FamilyNet.Controllers
             }
 
             viewModel.feedbackDTO.DonationId = _donationId;
-            viewModel.feedbackDTO.SenderId = Convert.ToInt32(HttpContext.Session.GetString("personId"));
-            viewModel.feedbackDTO.SenderRole = GetUserRoleByString(HttpContext.Session.GetString("roles"));
             viewModel.feedbackDTO = GetReceiverInfoByRole(viewModel.Roles[0], viewModel.feedbackDTO.DonationId, 
                 viewModel.feedbackDTO).Result;
             viewModel.feedbackDTO.Time = DateTime.Now;
@@ -196,6 +194,76 @@ namespace FamilyNet.Controllers
             }
 
             if (status != HttpStatusCode.Created)
+            {
+                return Redirect(_pathToErrorView);
+            }
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
+            return Redirect("/feedback/FeedbackByDonationId");
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                ViewData);
+
+            var feedbackUrl = _urlFeedbackBuilder.GetById(_feedbackApiPath, id);
+            var feedback = await _feedbackDownloader.GetByIdAsync(feedbackUrl, HttpContext.Session);
+
+            var role = HttpContext.Session.GetString("roles");
+
+            var viewModel = new CreateFeedbackViewModel()
+            {
+                feedbackDTO = feedback,
+                Roles = GetAllowedReceiversByRole(role)
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, CreateFeedbackViewModel viewModel)
+        {
+            if (id != viewModel.feedbackDTO.ID)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            Stream stream = null;
+
+            if (viewModel.feedbackDTO.Image != null)
+            {
+                stream = _streamCreator.CopyFileToStream(viewModel.feedbackDTO.Image);
+            }
+
+            viewModel.feedbackDTO.DonationId = _donationId;
+            viewModel.feedbackDTO = GetReceiverInfoByRole(viewModel.Roles[0], viewModel.feedbackDTO.DonationId,
+                viewModel.feedbackDTO).Result;
+            viewModel.feedbackDTO.Time = DateTime.Now;
+            var url = _urlFeedbackBuilder.GetById(_feedbackApiPath, id);
+            var status = await _feedbackDownloader.CreatePutAsync(url, viewModel.feedbackDTO,
+                                                            stream, viewModel.feedbackDTO.Image?.FileName,
+                                                            HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if(status == HttpStatusCode.Forbidden)
+            {
+                return Redirect(_pathToErrorView);
+            }
+
+            if (status != HttpStatusCode.NoContent)
             {
                 return Redirect(_pathToErrorView);
             }
