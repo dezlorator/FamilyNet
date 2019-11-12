@@ -1,6 +1,6 @@
 ﻿public enum DonationStatus
 {
-    Sended = 1,
-    Aproved,
-    Taken,
+    Needed = 1,
+    Sended,
+    Taken
 }

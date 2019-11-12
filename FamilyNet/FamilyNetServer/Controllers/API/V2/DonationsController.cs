@@ -45,12 +45,23 @@ namespace FamilyNetServer.Controllers.API.V2
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll([FromQuery]int rows,
                                     [FromQuery]int page,
-                                    [FromQuery]string forSearch)
+                                    [FromQuery]string forSearch,
+                                    [FromQuery]string status = "Needed",
+                                    [FromQuery]bool isRequest = true)
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
-            donations = _donationsFilter.GetDonations(donations, forSearch);
+
+            if (!Enum.TryParse(status, out DonationStatus donationStatus))
+            {
+                return BadRequest();
+            }
+
+            donations = _donationsFilter.GetDonations(donations, forSearch, donationStatus, isRequest);
 
             if (rows != 0 && page != 0)
             {
@@ -80,12 +91,11 @@ namespace FamilyNetServer.Controllers.API.V2
                     LastDateWhenStatusChanged = d.LastDateWhenStatusChanged,
                     ItemName = d.DonationItem.Name,
                     ItemDescription = d.DonationItem.Description,
-                    Types = d.DonationItem.TypeBaseItem
-                               .Select(t => new CategoryDTO
-                               {
-                                   Name = t.Type.Name,
-                                   ID = t.TypeID
-                               })
+                    Types = d.DonationItem.TypeBaseItem.Select(t => new CategoryDTO
+                    {
+                        Name = t.Type.Name,
+                        ID = t.TypeID
+                    })
                 }).ToList();
 
             _logger.LogInformation("Status: OK. List of donations was sent");

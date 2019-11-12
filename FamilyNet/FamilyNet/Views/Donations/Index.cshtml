@@ -25,6 +25,10 @@
             @Html.TextBox("forSearch", "", new { @class = "form-control" })
         </th>
 
+        <th>
+            @Html.DropDownList("status", new SelectList(new List<string>() { "Needed", "Sended", "Taken" }), new { @class = "form-control" })
+        </th>
+
         <th width="12%">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-filter"></i>
@@ -102,7 +106,12 @@
 
                     @if (role == "CharityMaker")
                     {
-                          <a asp-action="Donate" asp-route-id="@item.ID" class=.btn-info><i>Donate</i></a>
+                        <a asp-action="Donate" asp-route-id="@item.ID" class=.btn-info><i>Пожертвувати</i></a>
+                    }
+
+                    @if (role == "Representative")
+                    {
+                        <a asp-action="MarkAsTaken" asp-route-id="@item.ID" class=.btn-info><i>Отримано</i></a>
                     }
                 </td>
             </tr>

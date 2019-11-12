@@ -68,10 +68,11 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        public async Task<IActionResult> Index(string forSearch)
+        public async Task<IActionResult> Index(string forSearch, string status = "Needed")
         {
             var url = _URLDonationsBuilder.GetAllWithFilter(_apiPath,
-                                                            forSearch);
+                                                            forSearch,
+                                                            status);
             IEnumerable<DonationDTO> donationsDTO;
 
             try
@@ -284,19 +285,14 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        public async Task<IActionResult> EditStatus(int? id)
+        public async Task<IActionResult> MarkAsTaken(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var url = _URLDonationsBuilder.GetById(_apiPath, id.Value);
-            DonationDTO donationDTO;
+            var url = _URLDonationsBuilder.GetById(_apiPath, id);
+            DonationDetailDTO donation;
 
             try
             {
-                donationDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
+                donation = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -311,9 +307,17 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            donation.Status = "Taken";
+            var msg = await _downloader.CreatePutAsync(url, donation, HttpContext.Session);
+
+            if (msg.StatusCode != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
             GetViewData();
 
-            return View(donationDTO);
+            return Redirect("/Donations/Index");
         }
 
         [HttpPost]

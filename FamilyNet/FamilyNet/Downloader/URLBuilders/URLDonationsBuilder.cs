@@ -23,7 +23,9 @@ namespace FamilyNet.Downloader
         #endregion
 
         public string GetAllWithFilter(string api,
-                                       string forSearch)
+                                       string forSearch, 
+                                       string status,
+                                       bool isRequest)
         {
             var queryParams = new Dictionary<string, string>();
 
@@ -31,6 +33,13 @@ namespace FamilyNet.Downloader
             {
                 queryParams.Add("forSearch", forSearch);
             }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                queryParams.Add("status", status);
+            }
+
+            queryParams.Add("isRequest", isRequest.ToString());
 
             return QueryHelpers.AddQueryString(_options.Value.ServerURL + api +"/",
                                                 queryParams);

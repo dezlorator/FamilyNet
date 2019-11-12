@@ -11,6 +11,7 @@ using FamilyNetServer.Validators;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNetServer.Models.Identity;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -21,8 +22,8 @@ namespace FamilyNetServer.Controllers.API.V1
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<DonationDTO> _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
+        private readonly IValidator<DonationDTO> _donationValidator;
         private readonly ILogger<DonationsController> _logger;
 
         #endregion
@@ -47,10 +48,18 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll([FromQuery]int rows,
                                     [FromQuery]int page,
-                                    [FromQuery]string forSearch)
+                                    [FromQuery]string forSearch,
+                                    [FromQuery]string status = "Needed",
+                                    [FromQuery]bool isRequest = true)
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
-            donations = _donationsFilter.GetDonations(donations, forSearch);
+
+            if(!Enum.TryParse(status, out DonationStatus donationStatus))
+            {
+                return BadRequest();
+            }
+
+            donations = _donationsFilter.GetDonations(donations, forSearch, donationStatus, isRequest);
 
             if (rows != 0 && page != 0)
             {
@@ -185,8 +194,13 @@ namespace FamilyNetServer.Controllers.API.V1
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
             }
 
-            donation.CharityMakerID = donationDTO.CharityMakerID;
-         
+            if(donation.CharityMakerID != donationDTO.CharityMakerID)
+            {
+                donation.CharityMakerID = donationDTO.CharityMakerID;
+                donation.Status = DonationStatus.Sended;
+                donation.IsRequest = false;
+            }
+
             if (donation.CharityMakerID != null)
             {
                 donation.IsRequest = false;
