@@ -76,7 +76,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 Name = a.Name,
                 Description = a.Description,
                 ChildID = a.Child.ID,
-                Awards = a.Awards.Select(aw => new AwardDTO
+                Awards = a.Awards.Where(aw => !aw.IsDeleted).Select(aw => new AwardDTO
                 {
                     ID = aw.ID,
                     Name = aw.Name,
@@ -110,7 +110,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 Name = activity.Name,
                 Description = activity.Description,
                 ChildID = activity.Child.ID,
-                Awards = activity.Awards.Select(aw => new AwardDTO
+                Awards = activity.Awards.Where(a => !a.IsDeleted).Select(aw => new AwardDTO
                 {
                     ID = aw.ID,
                     Name = aw.Name,
@@ -141,14 +141,18 @@ namespace FamilyNetServer.Controllers.API.V2
             {
                 Name = childActivityDTO.Name,
                 Description = childActivityDTO.Description,
-                Awards = childActivityDTO.Awards.Select(aw => new Award
+                Child = await _unitOfWork.Orphans.GetById(childActivityDTO.ChildID)
+            };
+
+            if (childActivityDTO.Awards != null)
+            {
+                childActivity.Awards = childActivityDTO.Awards.Select(aw => new Award
                 {
                     Name = aw.Name,
                     Description = aw.Description,
                     Date = aw.Date
-                }).ToList(),
-                Child = await _unitOfWork.Orphans.GetById(childActivityDTO.ChildID)
-            };
+                }).ToList();
+            }
 
             if (childActivity.Child == null)
             {
@@ -190,26 +194,39 @@ namespace FamilyNetServer.Controllers.API.V2
             childActivity.Name = childActivityDTO.Name;
             childActivity.Description = childActivityDTO.Description;
 
-            foreach (var a in childActivityDTO.Awards)
+            if (childActivityDTO.Awards != null)
             {
-                var award = await _awardRepository.GetById(a.ID);
-
-                if (award != null)
+                foreach (var a in childActivity.Awards)
                 {
-                    award.Name = a.Name;
-                    award.Description = a.Description;
-                    award.Date = a.Date;
-
-                    _awardRepository.Update(award);
-                }
-                else
-                {
-                    childActivity.Awards.Add(new Award
+                    if (childActivityDTO.Awards.FirstOrDefault(i => i.ID == a.ID) == null)
                     {
-                        Name = a.Name,
-                        Description = a.Description,
-                        Date = a.Date
-                    });
+                        a.IsDeleted = true;
+
+                        _logger.LogInformation("Award property IsDeleted was updated.");
+                    }
+                }
+
+                foreach (var a in childActivityDTO.Awards)
+                {
+                    var award = await _awardRepository.GetById(a.ID);
+
+                    if (award != null)
+                    {
+                        award.Name = a.Name;
+                        award.Description = a.Description;
+                        award.Date = a.Date;
+
+                        _awardRepository.Update(award);
+                    }
+                    else
+                    {
+                        childActivity.Awards.Add(new Award
+                        {
+                            Name = a.Name,
+                            Description = a.Description,
+                            Date = a.Date
+                        });
+                    }
                 }
             }
 
