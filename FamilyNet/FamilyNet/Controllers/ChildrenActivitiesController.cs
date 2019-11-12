@@ -12,6 +12,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
 using FamilyNet.IdentityHelpers;
+using Microsoft.AspNetCore.Http;
 
 namespace FamilyNet.Controllers
 {
@@ -22,7 +23,7 @@ namespace FamilyNet.Controllers
         private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly ServerSimpleDataDownloader<ChildActivityDTO> _childrenActivitiesDownloader;
         private readonly IURLChildrenActivitesBuilder _URLChildrenActivitiesBuilder;
-        private readonly string _apiChildrenActivitiesPath = "api/v2/childrenActivities";
+        private readonly string _apiChildrenActivitiesPath = "api/v1/childrenActivities";
         private readonly IStringLocalizer<ChildrenActivitiesController> _localizer;
 
         #endregion
@@ -65,53 +66,23 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            ViewBag.ChildID = searchModel.ChildID;
+
             GetViewData();
 
             return View(childrenActivities);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Create(int childId)
         {
-            if (id == null)
-            {
-                return Redirect("/Orphans/Index");
-            }
-
-            var url = _URLChildrenActivitiesBuilder.GetById(_apiChildrenActivitiesPath, id.Value);
-            ChildActivityDTO ChildActivityDTO = null;
-
-            try
-            {
-                ChildActivityDTO = await _childrenActivitiesDownloader.GetByIdAsync(url, HttpContext.Session);
-            }
-            catch (ArgumentNullException)
-            {
-                return Redirect("/Home/Error");
-            }
-            catch (HttpRequestException)
-            {
-                return Redirect("/Home/Error");
-            }
-            catch (JsonException)
-            {
-                return Redirect("/Home/Error");
-            }
-
-            if (ChildActivityDTO == null)
+            if (childId <= 0)
             {
                 return NotFound();
             }
 
             GetViewData();
 
-            return View(ChildActivityDTO);
-        }
-
-        public IActionResult Create()
-        {
-            GetViewData();
-
-            return View();
+            return View(new ChildActivityDTO { ChildID = childId });
         }
 
 
@@ -173,21 +144,21 @@ namespace FamilyNet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ChildActivityDTO ChildActivityDTO)
+        public async Task<IActionResult> Edit(int id, ChildActivityDTO childActivityDTO)
         {
-            if (id != ChildActivityDTO.ID)
+            if (id != childActivityDTO.ID)
             {
                 return NotFound();
             }
 
             if (!ModelState.IsValid)
             {
-                return View(ChildActivityDTO);
+                return View(childActivityDTO);
             }
 
             var url = _URLChildrenActivitiesBuilder.GetById(_apiChildrenActivitiesPath, id);
 
-            var message = await _childrenActivitiesDownloader.CreatePutAsync(url, ChildActivityDTO,
+            var message = await _childrenActivitiesDownloader.CreatePutAsync(url, childActivityDTO,
                                               HttpContext.Session);
 
             if (message.StatusCode == HttpStatusCode.Unauthorized)
@@ -205,19 +176,28 @@ namespace FamilyNet.Controllers
             return Redirect("/Orphans/Index");
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult AddAward(int? childActivityId)
         {
-            if (id == null)
+            if (childActivityId == null)
             {
                 return NotFound();
             }
 
-            var url = _URLChildrenActivitiesBuilder.GetById(_apiChildrenActivitiesPath, id.Value);
-            ChildActivityDTO ChildActivityDTO = null;
+            GetViewData();
+
+            return View(new AwardViewModel { ChildActivityID = (int)childActivityId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddAward(AwardViewModel award)
+        {
+            var url = _URLChildrenActivitiesBuilder.GetById(_apiChildrenActivitiesPath, award.ChildActivityID);
+            ChildActivityDTO childActivityDTO = null;
 
             try
             {
-                ChildActivityDTO = await _childrenActivitiesDownloader.GetByIdAsync(url, HttpContext.Session);
+                childActivityDTO = await _childrenActivitiesDownloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -232,19 +212,37 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            if (ChildActivityDTO == null)
+            if (childActivityDTO == null)
             {
                 return NotFound();
             }
 
+            childActivityDTO.Awards.Add(new AwardDTO
+            {
+                Name = award.Name,
+                Description = award.Description,
+                Date = award.Date
+            });
+
+            var message = await _childrenActivitiesDownloader.CreatePutAsync(url, childActivityDTO,
+                                              HttpContext.Session);
+
+            if (message.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if (message.StatusCode != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
             GetViewData();
 
-            return View(id.Value);
+            return Redirect("/Orphans/Index");
         }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
             {
@@ -254,6 +252,59 @@ namespace FamilyNet.Controllers
             var url = _URLChildrenActivitiesBuilder.GetById(_apiChildrenActivitiesPath, id);
 
             var message = await _childrenActivitiesDownloader.DeleteAsync(url, HttpContext.Session);
+
+            if (message.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if (message.StatusCode != HttpStatusCode.OK)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return Redirect("/Orphans/Index");
+        }
+
+        public async Task<IActionResult> DeleteAward(int activityId, int awardId)
+        {
+            if (activityId <= 0 || awardId <= 0)
+            {
+                return NotFound();
+            }
+
+            var url = _URLChildrenActivitiesBuilder.GetById(_apiChildrenActivitiesPath, activityId);
+            ChildActivityDTO childActivityDTO = null;
+
+            try
+            {
+                childActivityDTO = await _childrenActivitiesDownloader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (childActivityDTO == null)
+            {
+                return NotFound();
+            }
+
+            var award = childActivityDTO.Awards.FirstOrDefault(a => a.ID == awardId);
+            childActivityDTO.Awards.Remove(award);
+
+            var message = await _childrenActivitiesDownloader.CreatePutAsync(url, childActivityDTO,
+                                              HttpContext.Session);
 
             if (message.StatusCode == HttpStatusCode.Unauthorized)
             {

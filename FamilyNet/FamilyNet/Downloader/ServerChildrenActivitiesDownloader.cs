@@ -60,21 +60,26 @@ namespace FamilyNet.Downloader
 
             formDataContent.Add(new StringContent(dto.Name), "Name");
             formDataContent.Add(new StringContent(dto.Description), "Description");
+            formDataContent.Add(new StringContent(dto.ChildID.ToString()), "ChildID");
 
             int counter = 0;
-            foreach (var a in dto.Awards)
+
+            if (dto.Awards != null)
             {
-                if (a.ID > 0)
+                foreach (var a in dto.Awards)
                 {
-                    formDataContent.Add(new StringContent(a.ID.ToString()), "Awards[" + counter + "].ID");
+                    if (a.ID > 0)
+                    {
+                        formDataContent.Add(new StringContent(a.ID.ToString()), "Awards[" + counter + "].ID");
+                    }
+
+                    formDataContent.Add(new StringContent(a.Name), "Awards[" + counter + "].Name");
+                    formDataContent.Add(new StringContent(a.Description), "Awards[" + counter + "].Description");
+                    formDataContent.Add(new StringContent(a.Date.ToString()), "Awards[" + counter + "].Date");
+
+                    counter++;
+
                 }
-
-                formDataContent.Add(new StringContent(a.Name), "Awards[" + counter + "].Name");
-                formDataContent.Add(new StringContent(a.Description), "Awards[" + counter + "].Description");
-                formDataContent.Add(new StringContent(a.Date.ToString()), "Awards[" + counter + "].Date");
-
-                counter++;
-
             }
         }
     }

@@ -7,18 +7,26 @@ namespace FamilyNetServer.Validators
     {
         public bool IsValid(ChildActivityDTO childrenActivityDTO)
         {
+            if (childrenActivityDTO.ChildID <= 0)
+            {
+                return false;
+            }
+
             if (String.IsNullOrEmpty(childrenActivityDTO.Name) ||
                 String.IsNullOrEmpty(childrenActivityDTO.Description))
             {
                 return false;
             }
 
-            foreach (var a in childrenActivityDTO.Awards)
+            if (childrenActivityDTO.Awards != null)
             {
-                if (String.IsNullOrEmpty(a.Name) ||
-                    String.IsNullOrEmpty(a.Description))
+                foreach (var a in childrenActivityDTO.Awards)
                 {
-                    return false;
+                    if (String.IsNullOrEmpty(a.Name) ||
+                        String.IsNullOrEmpty(a.Description))
+                    {
+                        return false;
+                    }
                 }
             }
 

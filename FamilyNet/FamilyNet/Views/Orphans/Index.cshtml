@@ -18,6 +18,7 @@
 <form asp-action="Filter">
     <table class="table">
         <th>
+            @Html.Label("Им'я:")
             @Html.TextBox("FullNameString", "", new { @class = "form-control" })
         </th>
         <th width="12%">
