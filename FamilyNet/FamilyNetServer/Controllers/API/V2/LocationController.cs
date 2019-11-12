@@ -155,9 +155,16 @@ namespace FamilyNetServer.Controllers.API.V2
                 _logger.LogInformation("Deleted location");
                 location.IsDeleted = true;
 
+                _repository.Location.Update(location);
+                _repository.SaveChanges();
+
                 return NotFound();
             }
-           
+
+            location.MapCoordX = locationDTO.MapCoordX;
+            location.MapCoordY = locationDTO.MapCoordY;
+
+
             _repository.Location.Update(location);
             _repository.SaveChanges();
 

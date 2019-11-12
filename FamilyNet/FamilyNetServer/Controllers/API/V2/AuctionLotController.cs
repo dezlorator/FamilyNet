@@ -129,7 +129,12 @@ namespace FamilyNetServer.Controllers.API.V2
                 "Endpoint AuctionLot/api/v1 GetAllOrphanCrafts was called");
 
             var auction = _repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
-            && c.Status != AuctionLotStatus.Approved && c.OrphanID == orphanId).Skip((page - 1) * rows).Take(rows);
+            && c.Status != AuctionLotStatus.Approved && c.OrphanID == orphanId);
+
+            if (page > 0 && rows > 0)
+            {
+                auction = auction.Skip((page - 1) * rows).Take(rows);
+            }
 
             if (auction == null)
             {
@@ -270,7 +275,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
             var auction = new AuctionLot()
             {
-                DateAdded = auctionDTO.DateAdded,
+                DateAdded = DateTime.Now,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
                 Status = AuctionLotStatus.UnApproved,
@@ -461,7 +466,10 @@ namespace FamilyNetServer.Controllers.API.V2
 
             count = lots.Count();
 
-            lots = lots.Skip((page - 1) * rows).Take(rows);
+            if (page > 0 && rows > 0)
+            {
+                lots = lots.Skip((page - 1) * rows).Take(rows);
+            }
 
             return lots;
         }

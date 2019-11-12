@@ -275,7 +275,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             var auction = new AuctionLot()
             {
-                DateAdded = auctionDTO.DateAdded,
+                DateAdded = DateTime.Now,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
                 Status = AuctionLotStatus.UnApproved,
