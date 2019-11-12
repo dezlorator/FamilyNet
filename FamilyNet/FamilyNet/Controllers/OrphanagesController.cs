@@ -34,9 +34,6 @@ namespace FamilyNet.Controllers
         private readonly string _apiLocationPath = "api/v1/location";
         private readonly IFileStreamCreater _streamCreater;
 
-        private readonly ServerSimpleDataDownloader<DonationItemDTO> _donationItems;
-        private readonly IURLDonationItemsBuilder _URLDonationItem;
-        private readonly string _apiDonationItemsPath = "api/v1/donationItems";
         private readonly IURLDonationsBuilder _URLDonation;
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _donation;
         private readonly string _apiDonationPath = "api/v1/donations";
@@ -53,8 +50,6 @@ namespace FamilyNet.Controllers
                                 ServerAddressDownloader addressDownLoader,
                                 ServerLocationDownloader locationDownLoader,
                                 IURLLocationBuilder URLLocationBuilder,
-                                ServerSimpleDataDownloader<DonationItemDTO> donationItems,
-                                IURLDonationItemsBuilder URLDonationItem,
                                 IURLDonationsBuilder URLDonation,
                                 ServerSimpleDataDownloader<DonationDetailDTO> donation,
                                 IIdentityInformationExtractor identityInformationExtactor)
@@ -67,8 +62,6 @@ namespace FamilyNet.Controllers
             _childrenHouseDownloader = downLoader;
             _addressDownLoader = addressDownLoader;
             _locationDownLoader = locationDownLoader;
-            _donationItems = donationItems;
-            _URLDonationItem = URLDonationItem;
             _URLDonation = URLDonation;
             _donation = donation;
             _identityInformationExtactor = identityInformationExtactor;
@@ -451,28 +444,18 @@ namespace FamilyNet.Controllers
         }
 
         [HttpPost]
-        public IActionResult SearchResult(string typeHelp)
+        public async Task<IActionResult> SearchResult(string typeHelp)
         {
             ViewData["TypeHelp"] = typeHelp;
-            IEnumerable<Orphanage> list = new List<Orphanage>();
+            IEnumerable<DonationDetailDTO> listDonation = null;
             if(typeHelp != null)
             {
-                //var url = _URLDonationItem.GetAllWithFilter(_apiDonationItemsPath, "", 0, 0, typeHelp);
-                //var items = _donationItems.GetAllAsync(url);
-                //foreach(var item in items.Result)
-                //{
-                //    //var url = _URLDonation.
-                //}
+                var url = _URLDonation.GetAllWithFilter(_apiDonationPath, typeHelp);
+                listDonation =await _donation.GetAllAsync(url, HttpContext.Session);              
             }
-            //list = _unitOfWorkAsync.Orphanages.Get(
-            //    orp => orp.Donations.Where(
-            //        donat => donat.DonationItem.TypeBaseItem.Where(
-            //            donatitem =>  donatitem.Type.Name.ToLower().Contains(typeHelp.ToLower())).
-            //            Count() > 0 && donat.IsRequest).
-            //        Count() > 0);
-            GetViewData();
 
-            return View("SearchResult", list);
+            GetViewData();
+            return View("SearchResult", listDonation);
         }
 
         public async Task<IActionResult> SearchOrphanageOnMap()
