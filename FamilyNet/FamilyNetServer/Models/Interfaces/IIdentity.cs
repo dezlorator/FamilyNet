@@ -6,7 +6,6 @@ namespace FamilyNetServer.Models.Interfaces
 {
     public interface IIdentity
     {
-
         IUserValidator<ApplicationUser> UserValidator { get; }
 
         IPasswordValidator<ApplicationUser> PasswordValidator { get; }
@@ -20,8 +19,5 @@ namespace FamilyNetServer.Models.Interfaces
         SignInManager<ApplicationUser> SignInManager { get; }
 
         RoleManager<IdentityRole> RoleManager { get; }
-
-
-
     }
 }
