@@ -23,6 +23,7 @@ using FamilyNetServer.Controllers.API.V1;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using FamilyNetServer.Controllers.API;
 using FamilyNetServer.EnumConvertor;
+using FamilyNetServer.HttpHandlers;
 
 namespace FamilyNetServer
 {
@@ -38,6 +39,7 @@ namespace FamilyNetServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IIdentityExtractor, IdentityExtractor>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetServerPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetServerUserValidator>();
             services.AddDBContextService(Configuration);
@@ -81,6 +83,8 @@ namespace FamilyNetServer
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IValidator<QuestDTO>, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
+            services.AddTransient<IIdentityExtractor, IdentityExtractor>();
+            services.AddTransient<IFilterConditionPurchase, FilterConditionPurchase>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>

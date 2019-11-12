@@ -41,7 +41,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin, Orphan, Volunteer, CharityMaker, Representative")]
+        //[Authorize(Roles = "Admin, Orphan, Volunteer, CharityMaker, Representative")]
         public IActionResult Get()
         {
             var userId = _identityExtractor.GetId(User);
@@ -61,7 +61,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin, Orphan, Volunteer, CharityMaker, Representative")]
+        //[Authorize(Roles = "Admin, Orphan, Volunteer, CharityMaker, Representative")]
         public async Task<IActionResult> GetAsync(string id)
         {
             var userId = _identityExtractor.GetId(User);
@@ -148,7 +148,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             var userId = _identityExtractor.GetId(User);
@@ -181,7 +181,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin, Orphan, Volunteer, CharityMaker, Representative")]
+        //[Authorize(Roles = "Admin, Orphan, Volunteer, CharityMaker, Representative")]
         public async Task<IActionResult> EditAsync(string id, UserDTO us)
         {
             var userId = _identityExtractor.GetId(User);

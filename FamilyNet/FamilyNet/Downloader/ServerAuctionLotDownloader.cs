@@ -1,6 +1,7 @@
 ﻿using DataTransferObjects;
 using FamilyNet.HttpHandlers;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,8 @@ using System.Threading.Tasks;
 namespace FamilyNet.Downloader
 {
     public class ServerAuctionLotDownloader : ServerDataDownloader<AuctionLotDTO>
-    {
+    {        
+
         public ServerAuctionLotDownloader(IHttpAuthorizationHandler authorizationHandler)
             : base(authorizationHandler) { }
 
@@ -61,6 +63,42 @@ namespace FamilyNet.Downloader
             return statusCode;
         }
 
+        public async override Task<IEnumerable<AuctionLotDTO>> GetAllAsync(string url,
+                                                      ISession session)
+        {
+            AuctionLotFilterDTO objs = null;
+
+            try
+            {
+                HttpResponseMessage response = null;
+
+                using (var httpClient = new HttpClient())
+                {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
+                    response = await httpClient.GetAsync(url);
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                objs = JsonConvert.DeserializeObject<AuctionLotFilterDTO>(json);
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            TotalItemsCount = objs.TotalCount;
+
+            return objs.AuctionLotDTOs;
+        }
+
         private static void BuildMultipartFormData(AuctionLotDTO dto,
                                                   Stream streamFile,
                                                   MultipartFormDataContent formDataContent)
@@ -77,7 +115,7 @@ namespace FamilyNet.Downloader
             }
 
             formDataContent.Add(new StringContent(dto.AuctionLotItemID.ToString()), "AuctionLotItemID");
-            formDataContent.Add(new StringContent(dto.DateStart.ToString()), "DateAdded");
+            formDataContent.Add(new StringContent(dto.DateAdded.ToString()), "DateAdded");
             formDataContent.Add(new StringContent(dto.OrphanID.ToString()), "OrphanID");
             formDataContent.Add(new StringContent(dto.Quantity.ToString()), "Quantity");
             formDataContent.Add(new StringContent(dto.Status.ToString()), "Status");

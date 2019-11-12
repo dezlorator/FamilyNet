@@ -1,4 +1,5 @@
 ﻿using DataTransferObjects;
+using FamilyNetServer.Filters;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Models.Interfaces;
@@ -23,6 +24,7 @@ namespace FamilyNetServer.Controllers.API.V2
         private readonly IUnitOfWork _repository;
         private readonly IValidator<PurchaseDTO> _purchaseValidator;
         private readonly ILogger<PurchaseController> _logger;
+        private readonly IFilterConditionPurchase _filterPurchase;
 
         #endregion
 
@@ -30,11 +32,13 @@ namespace FamilyNetServer.Controllers.API.V2
 
         public PurchaseController(IUnitOfWork repo,
             IValidator<PurchaseDTO> auctionValidator,
-            ILogger<PurchaseController> logger)
+            ILogger<PurchaseController> logger,
+            IFilterConditionPurchase filter)
         {
             _repository = repo;
             _purchaseValidator = auctionValidator;
             _logger = logger;
+            _filterPurchase = filter;
         }
 
         #endregion
@@ -43,9 +47,10 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "Admin,CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery]FilterParamentrsPurchaseDTO filter)
         {
-            var purchase = _repository.Purchases.GetAll().Where(c => !c.IsDeleted);
+            var purchase = _filterPurchase.GetFiltered(_repository.Purchases.GetAll().Where(c => !c.IsDeleted),
+                filter, out var count);
 
             if (purchase == null)
             {
@@ -70,8 +75,14 @@ namespace FamilyNetServer.Controllers.API.V2
                 purchases.Add(purchaseDTO);
             }
 
+            var filterModel = new PurchaseFilterDTO
+            {
+                PurchaseDTOs = purchases,
+                TotalCount = count
+            };
+
             _logger.LogInformation("Returned purchases list");
-            return Ok(purchases);
+            return Ok(filterModel);
         }
 
 
@@ -109,7 +120,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]PurchaseDTO purchaseDTO)
+        public async Task<IActionResult> Create([FromForm]PurchaseDTO purchaseDTO)
         {
             if (!_purchaseValidator.IsValid(purchaseDTO))
             {
@@ -138,9 +149,9 @@ namespace FamilyNetServer.Controllers.API.V2
 
                 await emailSender.SendEmailAsync(user.Email, "Buying crafts", "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
                     "<h3>Craft info:</h3>" +
-                    $"<h4>Craft id:< {purchase.AuctionLotId}</h4>" +
-                    $"<h4>Quantity: {purchase.Quantity}</h4>" +
-                    $"<h4>To pay: {purchase.Paid}</h4>" +
+                    $"<p>Craft id:< {purchase.AuctionLotId}</p>" +
+                    $"<p>Quantity: {purchase.Quantity}</p>" +
+                    $"<p>To pay: {purchase.Paid}</p>" +
                     "<h3>Orphanage representatives will contact you♥</h3>");
             }
             purchaseDTO.ID = purchase.ID;
@@ -154,7 +165,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]PurchaseDTO purchaseDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]PurchaseDTO purchaseDTO)
         {
             if (!_purchaseValidator.IsValid(purchaseDTO))
             {
@@ -214,5 +225,6 @@ namespace FamilyNetServer.Controllers.API.V2
 
             return Ok();
         }
+
     }
 }

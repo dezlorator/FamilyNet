@@ -11,8 +11,8 @@ namespace FamilyNet.Models.ViewModels
     {       
         public string SelectedName { get;  set; }   
 
-        public string StartPrice { get; set; }   
+        public float StartPrice { get; set; }   
 
-        public string EndPrice { get; set; }    
+        public float EndPrice { get; set; }    
     }
 }
