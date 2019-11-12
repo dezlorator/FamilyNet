@@ -146,6 +146,43 @@ namespace FamilyNetServer.Controllers.API.V1
             return Ok(representativeDTO);
         }
 
+        [HttpGet("byChildrenHouse/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetByChildrenHouseId(int id)
+        {
+            var childrenHouse =
+                await _unitOfWork.Orphanages.GetById(id);
+
+            if (childrenHouse == null)
+            {
+                return BadRequest();
+            }
+
+            var representatives = childrenHouse.Representatives;
+
+            if (representatives == null)
+            {
+                return BadRequest();
+            }
+
+            var representativesDTO = representatives.Select(r =>
+             new RepresentativeDTO()
+             {
+                 PhotoPath = _settings.Value.ServerURL + r.Avatar,
+                 Birthday = r.Birthday,
+                 EmailID = r.EmailID,
+                 ID = r.ID,
+                 Name = r.FullName.Name,
+                 Patronymic = r.FullName.Patronymic,
+                 Surname = r.FullName.Surname,
+                 ChildrenHouseID = r.OrphanageID,
+                 Rating = r.Rating
+             });
+
+            return Ok(representativesDTO);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -202,11 +239,6 @@ namespace FamilyNetServer.Controllers.API.V1
 
             representativeDTO.ID = representative.ID;
             representativeDTO.PhotoPath = representative.Avatar;
-
-            var id = User.Identity.Name;
-            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
-            user.PersonID = representative.ID;
-            await _unitOfWork.UserManager.UpdateAsync(user);
 
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,

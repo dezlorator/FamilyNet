@@ -9,6 +9,7 @@ namespace FamilyNet.Downloader
                                 int orphanageId);
 
         string GetById(string api, int id);
+        string GetByChildrenHouseId(string api, int childrenHouseId);
         string CreatePost(string api);
     }
 }
