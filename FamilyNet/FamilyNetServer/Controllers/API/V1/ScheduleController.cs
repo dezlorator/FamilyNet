@@ -5,13 +5,16 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Validators;
+using FamilyNetServer.HttpHandlers;
 using DataTransferObjects;
 using DataTransferObjects.Enums;
+using Newtonsoft.Json;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -24,15 +27,22 @@ namespace FamilyNetServer.Controllers.API
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAvailabilityValidator _validator;
+        private readonly ILogger<ScheduleController> _logger;
+        private readonly IIdentityExtractor _identityExtractor;
 
         #endregion
 
         #region ctors
 
-        public ScheduleController(IUnitOfWork unitOfWork, IAvailabilityValidator availabilityValidator)
+        public ScheduleController(IUnitOfWork unitOfWork,
+            IAvailabilityValidator availabilityValidator,
+            ILogger<ScheduleController> logger, 
+            IIdentityExtractor identityExtractor)
         {
+            _identityExtractor = identityExtractor;
             _validator = availabilityValidator;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         #endregion
@@ -44,14 +54,22 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetAll(DateTime date)
         {
+            _logger.LogInformation("{info}",
+               "Endpoint Schedule/api/v1 GetAll was called");
+
             var user = identify();
 
             var availabilities = _unitOfWork.Availabilities.GetAll()
-                .Where(a => a.PersonID == user.PersonID && a.Date > DateTime.Now)
+                .Where(a => a.PersonID == user.PersonID && 
+                a.Date > DateTime.Now && a.IsDeleted == false)
                 .OrderBy(a => a.Date);
 
             if (availabilities == null)
             {
+                _logger.LogInformation("{status}{info}",
+                   StatusCodes.Status404NotFound,
+                   "List of Availabilities is empty");
+
                 return NotFound();
             }
             var availabilitiesDTO = availabilities.Select(a =>
@@ -68,6 +86,9 @@ namespace FamilyNetServer.Controllers.API
                 QuestName = a.QuestName
             });
 
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(availabilitiesDTO));
+
             return Ok(availabilitiesDTO);
         }
 
@@ -76,20 +97,33 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetFreePersonIDsList(DateTime date, TimeSpan duration, PersonType role)
+        public IActionResult GetFreePersonIDsList(DateTime date, TimeSpan duration,
+                                                                 PersonType role)
         {
+            _logger.LogInformation("{info}",
+               "Endpoint Schedule/api/v1/freePersons" +
+               $" GetFreePersonIDsList({date}, {duration}, {role}) was called");
+
             var personIdsList = _unitOfWork.Availabilities.Get(a =>
                date >= a.Date &&
                date < (a.Date + a.FreeHours) &&
                duration <= a.FreeHours &&
                a.Role == role &&
-               a.IsReserved == false)
+               a.IsReserved == false &&
+               a.IsDeleted == false)
                .Select(a => new { personID = a.PersonID, availabilityID = a.ID }).GroupBy(a => a.personID);
 
             if (personIdsList == null)
             {
+                _logger.LogError("{info}{status}",
+                    $"Persons wasn't found",
+                    StatusCodes.Status404NotFound);
+
                 return NotFound();
             }
+
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(personIdsList));
 
             return Ok(personIdsList);
         }
@@ -101,10 +135,18 @@ namespace FamilyNetServer.Controllers.API
         public async Task<IActionResult> SwitchReserveStatusById(int id,
             [FromQuery]string questName, [FromQuery] int questID)
         {
+            _logger.LogInformation("{info}",
+                "Endpoint Schedule/api/v1/switchReserveStatus" +
+                $" SwitchReserveStatusById({id}, {questName}, {questID}) was called");
+
             var availability = await _unitOfWork.Availabilities.GetById(id);
 
             if (availability == null)
             {
+                _logger.LogError("{info}{status}",
+                   $"Availability wasn't found [id:{id}]",
+                   StatusCodes.Status400BadRequest);
+
                 return BadRequest();
             }
 
@@ -124,6 +166,9 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork.Availabilities.Update(availability);
             _unitOfWork.SaveChanges();
 
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(availability));
+
             return Ok();
         }
 
@@ -134,31 +179,53 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult FindPossibleDate()
         {
+            _logger.LogInformation("{info}",
+                "Endpoint Schedule/api/v1/posibleDates" +
+                $" FindPossibleDate() was called");
+
             var user = identify();
 
             var myAvailabilities = _unitOfWork.Availabilities.GetAll()
                 .Where(a => a.PersonID == user.PersonID &&
                 a.Role == user.PersonType &&
-                a.Date > DateTime.Now)
+                a.Date > DateTime.Now && 
+                a.IsDeleted == false)
                 .OrderBy(a => a.Date);
 
-            IEnumerable<Availability> posibleDates = new List<Availability>();
-
-            foreach (var my in myAvailabilities)
+            if (myAvailabilities == null)
             {
-                posibleDates.Concat(_unitOfWork.Availabilities.Get(
-                    a => a.Date <= my.Date &&
-                    my.Date < (a.Date + a.FreeHours) &&
-                    a.Role == PersonType.Volunteer &&
-                    a.IsReserved == false));
-            }
+                _logger.LogError("{info}{status}",
+                    $"Availabilities for {user.PersonType} wasn't found",
+                    StatusCodes.Status404NotFound);
 
-            if (posibleDates.Count() == 0)
-            {
                 return NotFound();
             }
 
-            return Ok(posibleDates);
+            IEnumerable<Availability> matchingAvailabilities = new List<Availability>();
+
+            foreach (var my in myAvailabilities)
+            {
+                matchingAvailabilities.Concat(_unitOfWork.Availabilities.Get(
+                    a => a.Date <= my.Date &&
+                    my.Date < (a.Date + a.FreeHours) &&
+                    a.Role == PersonType.Volunteer &&
+                    a.IsReserved == false &&
+                    a.IsDeleted == false));
+            }
+
+            if (matchingAvailabilities.Count() == 0)
+            {
+                _logger.LogError("{info}{status}",
+                    $"Matching availabilities wasn't found",
+                    StatusCodes.Status404NotFound);
+
+                return NotFound();
+            }
+
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(matchingAvailabilities));
+
+            return Ok(matchingAvailabilities);
         }
 
         [HttpGet("{id}")]
@@ -167,12 +234,19 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetById(int id)
         {
+            _logger.LogInformation("{info}",
+                $"Endpoint Schedule/api/v1 GetById({id}) was called");
+
             var user = identify();
 
             var availability = await _unitOfWork.Availabilities.GetById(id);
 
             if (availability == null)
             {
+                _logger.LogError("{info}{status}",
+                    $"Availabilities wasn't found [id:{id}]",
+                    StatusCodes.Status404NotFound);
+
                 return BadRequest();
             }
 
@@ -189,6 +263,9 @@ namespace FamilyNetServer.Controllers.API
                 QuestName = availability.QuestName
             };
 
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(availabilityDTO));
+
             return Ok(availabilityDTO);
         }
 
@@ -199,22 +276,35 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]AvailabilityDTO availabilityDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info} {userId} {token}",
+                "Endpoint Schedule/api/v1 [POST] was called", userId, token);
+
             var diff = adjustDate(availabilityDTO);
 
             availabilityDTO.StartTime = availabilityDTO.StartTime.AddDays(diff);
 
             if (!_validator.IsValid(availabilityDTO))
             {
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "AvailabilityDTO is invalid");
+
                 return BadRequest();
             }
 
             var overlaps = _unitOfWork.Availabilities
-                .Get(a => _validator
+                .Get(a => a.IsDeleted == false && _validator
                 .IsOverlaping(availabilityDTO, a)).Count();
 
             if (overlaps > 0)
             {
-                //TODO logg
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status409Conflict, token, userId,
+                    "Time overlap was found");
+
                 return Conflict();
             }
 
@@ -231,6 +321,10 @@ namespace FamilyNetServer.Controllers.API
             await _unitOfWork.Availabilities.Create(availability);
             _unitOfWork.SaveChanges();
 
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                token, userId, StatusCodes.Status201Created,
+                $"Representative was saved [id:{availability.ID}]");
+
             return Created("api/v1/{controller}/" + availability.ID, availabilityDTO);
         }
 
@@ -240,12 +334,22 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]AvailabilityDTO availabilityDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint Schedule/api/v1 [PUT] was called", userId, token);
+
             var diff = adjustDate(availabilityDTO);
 
             availabilityDTO.StartTime = availabilityDTO.StartTime.AddDays(diff);
 
             if (!_validator.IsValid(availabilityDTO))
             {
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "AvailabilityDTO is invalid");
+
                 return BadRequest();
             }
 
@@ -255,7 +359,10 @@ namespace FamilyNetServer.Controllers.API
 
             if (overlaps > 0)
             {
-                //TODO logg
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                   StatusCodes.Status409Conflict, token, userId,
+                   "Time overlap was found");
+
                 return Conflict();
             }
 
@@ -263,6 +370,10 @@ namespace FamilyNetServer.Controllers.API
 
             if (availability == null)
             {
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Availability was not found [id:{availabilityDTO.ID}]", userId, token);
+
                 return BadRequest();
             }
 
@@ -271,6 +382,10 @@ namespace FamilyNetServer.Controllers.API
 
             _unitOfWork.Availabilities.Update(availability);
             _unitOfWork.SaveChanges();
+
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                 token, userId, StatusCodes.Status204NoContent,
+                 $"Availability was updated [id:{availability.ID}]");
 
             return NoContent();
         }
@@ -281,8 +396,18 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+               "Endpoint Schedule/api/v1 [DELETE] was called", userId, token);
+
             if (id <= 0)
             {
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
+
                 return BadRequest();
             }
 
@@ -290,11 +415,22 @@ namespace FamilyNetServer.Controllers.API
 
             if (availability == null)
             {
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Availability was not found [id:{id}]", userId, token);
+
                 return BadRequest();
             }
 
-            await _unitOfWork.Availabilities.HardDelete(id);
+            availability.IsDeleted = true;
+
+            _unitOfWork.Availabilities.Update(availability);
             _unitOfWork.SaveChanges();
+
+            _logger.LogInformation("{status} {info} {userId} {token}",
+                StatusCodes.Status200OK,
+                $"Availability.IsDelete was updated [id:{id}]",
+                userId, token);
 
             return Ok();
         }

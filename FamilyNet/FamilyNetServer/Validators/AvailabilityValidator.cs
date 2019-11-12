@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using FamilyNetServer.Models;
 using DataTransferObjects;
 
@@ -6,11 +7,32 @@ namespace FamilyNetServer.Validators
 {
     public class AvailabilityValidator : IAvailabilityValidator
     {
+        #region fields
+
+        private readonly ILogger<AvailabilityValidator> _logger;
+
+        #endregion
+
+        #region ctor
+
+        public AvailabilityValidator(ILogger<AvailabilityValidator> logger)
+        {
+            _logger = logger;
+        }
+
+        #endregion
+
         public bool IsValid(AvailabilityDTO dto)
         {
-            if (dto.StartTime < DateTime.Now ||
-                dto.IsReserved == true ||
-                dto.FreeHours.TotalMinutes < 30.0)
+            if (dto == null)
+            {
+                _logger.LogWarning("AvailabilityDTO is null");
+                return false;
+            }
+
+            if (IsCorrectStartTime(dto) ||
+                IsNotReserved(dto) ||
+                IsFreeTimeEnough(dto))
             {
                 return false;
             }
@@ -18,9 +40,45 @@ namespace FamilyNetServer.Validators
             return true;
         }
 
+        public bool IsCorrectStartTime(AvailabilityDTO dto)
+        {
+            var result = dto.StartTime < DateTime.Now;
+            _logger.LogInformation("return " + result);
+
+            return result;
+        }
+
+        public bool IsNotReserved (AvailabilityDTO dto)
+        {
+            var result = dto.FreeHours.TotalMinutes < 30.0;
+            _logger.LogInformation("return " + result);
+
+            return result;
+        }
+
+        public bool IsFreeTimeEnough (AvailabilityDTO dto)
+        {
+            var result = dto.StartTime < DateTime.Now;
+            _logger.LogInformation("return " + result);
+
+            return result;
+        }
+
         public bool IsOverlaping(AvailabilityDTO dto, Availability entity)
         {
-           bool Overlaping = (dto.StartTime < entity.Date &&
+            if (dto == null)
+            {
+                _logger.LogWarning("AvailabilityDTO is null");
+                return false;
+            }
+            
+            if (entity == null)
+            {
+                _logger.LogWarning("Availability is null");
+                return false;
+            }
+
+            bool Overlaping = (dto.StartTime < entity.Date &&
                 (dto.StartTime + dto.FreeHours) <= entity.Date) ||
                 (dto.StartTime >= (entity.Date + entity.FreeHours) && 
                 (dto.StartTime + dto.FreeHours) > (entity.Date + entity.FreeHours));
