@@ -30,7 +30,7 @@ namespace FamilyNetServer.Controllers.API.V2
         private readonly EFRepository<Award> _awardRepository;
         private readonly ILogger<ChildrenActivitiesController> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IChildActivityValidator _childActivityValidator;
+        private readonly IValidator<ChildActivityDTO> _childActivityValidator;
         private readonly IFilterConditionsChildrenActivities _filterConditions;
 
         #endregion
@@ -41,7 +41,7 @@ namespace FamilyNetServer.Controllers.API.V2
                                   EFRepository<Award> awardRepository,
                                   IUnitOfWork unitOfWork,
                                   ILogger<ChildrenActivitiesController> logger,
-                                  IChildActivityValidator childActivityValidator,
+                                  IValidator<ChildActivityDTO> childActivityValidator,
                                   IFilterConditionsChildrenActivities filterConditions)
         {
             _activityRepository = activityRepository;

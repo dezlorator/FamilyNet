@@ -3,7 +3,7 @@ using System;
 
 namespace FamilyNetServer.Validators
 {
-    public class ChildActivityValidator : IChildActivityValidator
+    public class ChildActivityValidator : IValidator<ChildActivityDTO>
     {
         public bool IsValid(ChildActivityDTO childrenActivityDTO)
         {

@@ -1,0 +1,40 @@
+﻿@model ChildActivityDTO
+@using DataTransferObjects
+
+@{
+    ViewData["Title"] = "Редактировать занятие";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Редактировать занятие</h1>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="@Model.ID" />
+    <input type="hidden" asp-for="@Model.ChildID" />
+    <div class="form-group">
+        <label asp-for="@Model.Name">Название</label>
+        <input asp-for="@Model.Name" type="text" class="form-control" placeholder="@Model.Name">
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.Description">Описание</label>
+        <input asp-for="@Model.Description" type="text" class="form-control" placeholder="@Model.Description">
+    </div>
+    <h4>Награды</h4>
+    @for (int i = 0; i < Model.Awards.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.Awards[i].ID" />
+        <div class="form-group">
+            <label asp-for="@Model.Awards[i].Name">Название награды</label>
+            <input asp-for="@Model.Awards[i].Name" type="text" class="form-control" placeholder="@Model.Awards[i].Name">
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.Awards[i].Description">Описание награды</label>
+            <input asp-for="@Model.Awards[i].Description" type="text" class="form-control" placeholder="@Model.Awards[i].Description">
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.Awards[i].Date">Дата выдачи</label>
+            <input asp-for="@Model.Awards[i].Date" type="date" class="form-control" placeholder="@Model.Awards[i].Date">
+        </div>
+    }
+    <button type="submit" class="btn btn-primary mb-2">Сохранить</button>
+</form>

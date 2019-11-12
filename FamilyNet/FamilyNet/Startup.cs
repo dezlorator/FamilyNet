@@ -58,6 +58,7 @@ namespace FamilyNet
             services.AddTransient<IURLRegistrationBuilder, URLRegistrationBuilder>();
             services.AddTransient<IURLUsersBuilder, URLUsersBuilder>();
             services.AddTransient<IURLRolesBuilder, URLRolesBuilder>();
+            services.AddTransient<IURLChildrenActivitesBuilder, URLChildrenActivitiesBuilder>();
 
             #endregion
 
@@ -94,6 +95,7 @@ namespace FamilyNet
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<PurchaseDTO>, ServerPurchaseDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<QuestDTO>, ServerQuestsDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<ChildActivityDTO>, ServerChildrenActivitiesDownloader>();
 
             #endregion
 

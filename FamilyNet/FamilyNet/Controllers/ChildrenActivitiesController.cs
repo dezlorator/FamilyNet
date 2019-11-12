@@ -185,9 +185,9 @@ namespace FamilyNet.Controllers
                 return View(ChildActivityDTO);
             }
 
-            var urlChildren = _URLChildrenActivitiesBuilder.GetById(_apiChildrenActivitiesPath, id);
+            var url = _URLChildrenActivitiesBuilder.GetById(_apiChildrenActivitiesPath, id);
 
-            var message = await _childrenActivitiesDownloader.CreatePutAsync(urlChildren, ChildActivityDTO,
+            var message = await _childrenActivitiesDownloader.CreatePutAsync(url, ChildActivityDTO,
                                               HttpContext.Session);
 
             if (message.StatusCode == HttpStatusCode.Unauthorized)
