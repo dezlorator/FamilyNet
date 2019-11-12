@@ -35,6 +35,8 @@
     <Compile Remove="Migrations\20191108001759_updateAvailabilities.Designer.cs" />
     <Compile Remove="Migrations\20191108112712_Availabilities.cs" />
     <Compile Remove="Migrations\20191108112712_Availabilities.Designer.cs" />
+    <Compile Remove="Migrations\20191111234233_Availabilities.cs" />
+    <Compile Remove="Migrations\20191111234233_Availabilities.Designer.cs" />
   </ItemGroup>
 
 
