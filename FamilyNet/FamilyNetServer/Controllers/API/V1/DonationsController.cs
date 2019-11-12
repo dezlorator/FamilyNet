@@ -11,6 +11,7 @@ using FamilyNetServer.Validators;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNetServer.Models.Identity;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -24,6 +25,7 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IValidator<DonationDTO> _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
         private readonly ILogger<DonationsController> _logger;
+        private readonly EmailService _emailService;
 
         #endregion
 
@@ -32,12 +34,14 @@ namespace FamilyNetServer.Controllers.API.V1
         public DonationsController(IUnitOfWork unitOfWork,
                                    IValidator<DonationDTO> donationValidator,
                                    IDonationsFilter donationsFilter,
-                                   ILogger<DonationsController> logger)
+                                   ILogger<DonationsController> logger,
+                                   EmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _donationValidator = donationValidator;
             _donationsFilter = donationsFilter;
             _logger = logger;
+            _emailService = emailService;
         }
 
         #endregion
@@ -186,8 +190,10 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             donation.IsRequest = true;
+            if(donation.CharityMakerID == donationDTO.CharityMakerID)
+            {
 
-            donation.CharityMakerID = donationDTO.CharityMakerID;
+            }
 
             if (donationDTO.OrphanageID != null)
             {
