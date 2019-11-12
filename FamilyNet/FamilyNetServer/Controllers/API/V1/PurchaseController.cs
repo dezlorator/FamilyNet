@@ -1,4 +1,5 @@
 ﻿using DataTransferObjects;
+using FamilyNetServer.Filters;
 using FamilyNetServer.HttpHandlers;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Identity;
@@ -14,6 +15,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
@@ -26,6 +28,7 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IValidator<PurchaseDTO> _purchaseValidator;
         private readonly ILogger<PurchaseController> _logger;
         private readonly IIdentityExtractor _identityExtractor;
+        private readonly IFilterConditionPurchase _filterPurchase;
 
         #endregion
 
@@ -34,12 +37,15 @@ namespace FamilyNetServer.Controllers.API.V1
         public PurchaseController(IUnitOfWork repo,
             IValidator<PurchaseDTO> auctionValidator,
             ILogger<PurchaseController> logger,
-            IIdentityExtractor identityExtractor)
+            IIdentityExtractor identityExtractor,
+            IFilterConditionPurchase filter)
         {
             _repository = repo;
             _purchaseValidator = auctionValidator;
             _logger = logger;
             _identityExtractor = identityExtractor;
+            _filterPurchase = filter;
+
         }
 
         #endregion
@@ -48,7 +54,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [Authorize(Roles = "Admin, CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery]FilterParamentrsPurchaseDTO filter)
         {
             var userIdentity = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
@@ -56,33 +62,38 @@ namespace FamilyNetServer.Controllers.API.V1
             _logger.LogInformation("{info}{token}{userId}",
                 "Endpoint Purchase/api/v1 GetAll was called", token, userIdentity);
 
-            var purchase = _repository.Purchases.GetAll()
-                .Where(c => !c.IsDeleted);
+            var purchase = _filterPurchase.GetFiltered(_repository.Purchases.GetAll().Where(c => !c.IsDeleted),
+                filter, out var count).AsQueryable();
 
             if (purchase == null)
             {
                 _logger.LogInformation("{status}{info}",
                     StatusCodes.Status400BadRequest,
                     "List of Purchases is empty");
-
                 return BadRequest();
             }
 
             var purchases = await purchase.Select(item =>
-                new PurchaseDTO()
-                {
-                    ID = item.ID,
-                    Date = item.Date,
-                    AuctionLotId = item.AuctionLotId,
-                    Paid = item.Paid,
-                    Quantity = item.Quantity,
-                    UserId = item.UserId.ToString()
-                }).ToListAsync();
+               new PurchaseDTO()
+               {
+                   ID = item.ID,
+                   Date = item.Date,
+                   AuctionLotId = item.AuctionLotId,
+                   Paid = item.Paid,
+                   Quantity = item.Quantity,
+                   UserId = item.UserId.ToString()
+               }).ToListAsync();
+
+            var filterModel = new PurchaseFilterDTO
+            {
+                PurchaseDTOs = purchases,
+                TotalCount = count
+            };
 
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(purchases));
 
-            return Ok(purchases);
+            return Ok(filterModel);
         }
 
 
