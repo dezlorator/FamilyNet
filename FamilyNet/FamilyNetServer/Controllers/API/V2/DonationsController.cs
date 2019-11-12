@@ -24,7 +24,7 @@ namespace FamilyNetServer.Controllers.API.V2
         private readonly IValidator<DonationDTO> _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
         private readonly ILogger<DonationsController> _logger;
-
+        
         #endregion
 
         #region ctor
@@ -196,7 +196,11 @@ namespace FamilyNetServer.Controllers.API.V2
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
             }
 
-            donation.CharityMakerID = donationDTO.CharityMakerID;
+            if(donation.CharityMakerID != donationDTO.CharityMakerID)
+            {
+                donation.CharityMakerID = donationDTO.CharityMakerID;
+
+            }
 
             if(donation.CharityMakerID != null)
             {

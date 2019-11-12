@@ -76,6 +76,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 {
                     ID = d.ID,
                     Name = d.Name,
+                    Description = d.Description,
                     DonationID = d.DonationID,
                     OrphanageID = d.Donation.OrphanageID,
                     OrphanageName = d.Donation.Orphanage.Name,
@@ -108,6 +109,7 @@ namespace FamilyNetServer.Controllers.API.V1
             {
                 ID = quest.ID,
                 Name = quest.Name,
+                Description = quest.Description,
                 DonationID = quest.DonationID,
                 VolunteerID = quest.VolunteerID,
                 FromDate = quest.FromDate,
@@ -153,6 +155,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             quest.Name = questDTO.Name;
+            quest.Description = questDTO.Description;
 
             if (questDTO.VolunteerID != null)
             {

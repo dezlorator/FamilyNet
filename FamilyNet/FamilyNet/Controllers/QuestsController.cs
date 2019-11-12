@@ -90,10 +90,6 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var urlDonation = _URLDonationBuilder.GetAllWithFilter(_apiDonationPath, null);
-            var donationsList = await _downloaderDonations.GetAllAsync(urlDonation, HttpContext.Session);
-            ViewBag.ListOfDonations = donationsList;
-
             GetViewData();
             return View();
         }
@@ -101,7 +97,8 @@ namespace FamilyNet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(QuestDTO quest)
-        {         
+        {
+            quest.DonationID = (int)TempData["DonationID"];
             var url = _URLBuilder.CreatePost(_apiPath);
             var msg = await _downloader.CreatePostAsync(url, quest, HttpContext.Session);
 

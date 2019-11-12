@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Нужды";
+    var role = ViewData["role"] as String;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -98,7 +99,11 @@
                     <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
                     <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
                     <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
-                    <a asp-action="Donate" asp-route-id="@item.ID"><i>Donate</i></a>
+
+                    @if (role == "CharityMaker")
+                    {
+                          <a asp-action="Donate" asp-route-id="@item.ID" class=.btn-info><i>Donate</i></a>
+                    }
                 </td>
             </tr>
         }
