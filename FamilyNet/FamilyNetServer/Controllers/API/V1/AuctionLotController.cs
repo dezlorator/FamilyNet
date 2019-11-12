@@ -130,7 +130,11 @@ namespace FamilyNetServer.Controllers.API.V1
                 "Endpoint AuctionLot/api/v1 GetAllOrphanCrafts was called");
 
             var auction = _repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
-            && c.Status != AuctionLotStatus.Approved && c.OrphanID == orphanId).Skip((page - 1) * rows).Take(rows);
+            && c.Status != AuctionLotStatus.Approved && c.OrphanID == orphanId);
+
+            var count = auction.Count();
+
+            auction = auction.Skip((page - 1) * rows).Take(rows);
 
             if (auction == null)
             {
@@ -156,7 +160,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var filterModel = new AuctionLotFilterDTO
             {
                 AuctionLotDTOs = auctions,
-                TotalCount = auction.Count()
+                TotalCount = count
             };
 
 
@@ -306,7 +310,7 @@ namespace FamilyNetServer.Controllers.API.V1
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Orphan, Representative")]
+        [Authorize(Roles = "Orphan, Representative, CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AuctionLotDTO auctionDTO)
