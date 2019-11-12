@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191109202524_TimeSpanToQuests")]
-    partial class TimeSpanToQuests
+    [Migration("20191112180926_ReCreatedMigrations")]
+    partial class ReCreatedMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -78,6 +78,29 @@ namespace FamilyNetServer.Migrations
                     b.HasIndex("OrphanID");
 
                     b.ToTable("AuctionLot");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.Award", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ChildActivityID");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ChildActivityID");
+
+                    b.ToTable("Awards");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.BaseItem", b =>
@@ -155,6 +178,27 @@ namespace FamilyNetServer.Migrations
                         .HasFilter("[AddressID] IS NOT NULL");
 
                     b.ToTable("CharityMakers");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.ChildActivity", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ChildID");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ChildID");
+
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Donation", b =>
@@ -335,9 +379,6 @@ namespace FamilyNetServer.Migrations
 
                     b.Property<DateTime>("FromDate");
 
-                    b.Property<TimeSpan>("Hours")
-                        .HasColumnType("time");
-
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("Name");
@@ -458,6 +499,13 @@ namespace FamilyNetServer.Migrations
                         .HasForeignKey("OrphanID");
                 });
 
+            modelBuilder.Entity("FamilyNetServer.Models.Award", b =>
+                {
+                    b.HasOne("FamilyNetServer.Models.ChildActivity")
+                        .WithMany("Awards")
+                        .HasForeignKey("ChildActivityID");
+                });
+
             modelBuilder.Entity("FamilyNetServer.Models.BaseItemType", b =>
                 {
                     b.HasOne("FamilyNetServer.Models.BaseItemType", "Parent")
@@ -496,6 +544,13 @@ namespace FamilyNetServer.Migrations
                                 .HasForeignKey("FamilyNetServer.Models.FullName", "CharityMakerID")
                                 .OnDelete(DeleteBehavior.Cascade);
                         });
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.ChildActivity", b =>
+                {
+                    b.HasOne("FamilyNetServer.Models.Orphan", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildID");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Donation", b =>

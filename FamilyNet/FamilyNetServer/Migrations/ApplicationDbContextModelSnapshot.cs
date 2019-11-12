@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class pplicationDbContextModelSnapshot : ModelSnapshot
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -376,9 +376,6 @@ namespace FamilyNetServer.Migrations
                     b.Property<int?>("DonationID");
 
                     b.Property<DateTime>("FromDate");
-
-                    b.Property<TimeSpan>("Hours")
-                        .HasColumnType("time");
 
                     b.Property<bool>("IsDeleted");
 
