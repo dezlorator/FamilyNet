@@ -196,9 +196,12 @@ namespace FamilyNetServer.Controllers.API.V2
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
             }
 
-            donation.IsRequest = true;
-
             donation.CharityMakerID = donationDTO.CharityMakerID;
+
+            if(donation.CharityMakerID != null)
+            {
+                donation.IsRequest = false;
+            }
 
             if (donationDTO.OrphanageID != null)
             {

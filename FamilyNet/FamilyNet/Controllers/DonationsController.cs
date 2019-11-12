@@ -348,29 +348,49 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        public IActionResult Donate(int? id)
+        public async Task<IActionResult> Donate(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            return View();
+            var urlDonation = _URLDonationsBuilder.GetById(_apiPath, id.Value);
+
+            var model = new DonateViewModel
+            {
+                Donation = await _downloader.GetByIdAsync(urlDonation, HttpContext.Session)
+            };
+
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Donate(int id, DonationDetailDTO donation)
+        public async Task<IActionResult> Donate(int id, DonateViewModel model)
         {
-            if (id != donation.ID)
+            if (id != model.Donation.ID)
             {
                 return NotFound(); 
             }
 
-            // var userId = HttpContext.User.
-            donation.CharityMakerID = 2;
+            var role = HttpContext.Session.GetString("roles");
+            var personId = HttpContext.Session.GetString("personId");
 
-            var url = _URLDonationsBuilder.GetById(_apiPath, donation.ID);
-            var msg = await _downloader.CreatePutAsync(url, donation, HttpContext.Session);
+            if (personId == String.Empty || personId == null)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if(!int.TryParse(personId, out var charityMakerID))
+            {
+                return Redirect("/Home/Error");
+            }
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, model.Donation.ID);
+            model.Donation = await _downloader.GetByIdAsync(url, HttpContext.Session);
+            model.Donation.CharityMakerID = charityMakerID;
+
+            var msg = await _downloader.CreatePutAsync(url, model.Donation, HttpContext.Session);
 
             if (msg.StatusCode == HttpStatusCode.Unauthorized)
             {  
@@ -382,9 +402,15 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            if (model.NeedHelp)
+            {
+                TempData["DonationID"] = model.Donation.ID;
+                return Redirect("/Quests/Create");
+            }
+
             GetViewData();
 
-            return Redirect("/Donations/");
+            return Redirect("/Donations/Index");
         }
 
         public async Task<IActionResult> Delete(int? id)

@@ -185,9 +185,12 @@ namespace FamilyNetServer.Controllers.API.V1
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
             }
 
-            donation.IsRequest = true;
-
             donation.CharityMakerID = donationDTO.CharityMakerID;
+         
+            if (donation.CharityMakerID != null)
+            {
+                donation.IsRequest = false;
+            }
 
             if (donationDTO.OrphanageID != null)
             {
@@ -200,68 +203,6 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: NoContent. Donation was edited.");
-
-            return NoContent();
-        }
-
-        [HttpPut("StatusEdit/{id}")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> StatusEdit(int id, [FromForm]string status)
-        {
-            if(!Enum.TryParse(status, out DonationStatus donationStatus))
-            {
-                _logger.LogError("Wrong string.");
-                return BadRequest();
-            }
-
-            var donation = await _unitOfWork.Donations.GetById(id);
-
-            if (donation == null)
-            {
-                _logger.LogError("Bad request. No donation with such id was found");
-                return BadRequest();
-            }
-
-            donation.Status = donationStatus;
-
-            _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
-
-            _logger.LogInformation("Status: NoContent. Donation status was edited.");
-
-            return NoContent();
-        }
-
-        [HttpPut("donationMade/{id}")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddCharityMaker(int id, [FromForm]int charityMakerID)
-        {
-            CharityMaker charityMaker = await _unitOfWork.CharityMakers.GetById(charityMakerID);
-
-            if (charityMaker == null)
-            {
-                _logger.LogError("Bad request. No charity maker with such id was found");
-                return BadRequest();
-            }
-
-            Donation donation = await _unitOfWork.Donations.GetById(id);
-
-            if (donation == null)
-            {
-                _logger.LogError("Bad request. No donation with such id was found");
-                return BadRequest();
-            }
-
-            donation.CharityMakerID = charityMakerID;
-
-            _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
-
-            _logger.LogInformation("Status: NoContent. Charity maker was added.");
 
             return NoContent();
         }
