@@ -11,7 +11,6 @@ namespace FamilyNet.Models.ViewModels
     {
         public FeedbackDTO feedbackDTO { get; set; }
         public List<string> Roles { get; set; }
-        public string Role { get; set; }
         public IFormFile Avatar { get; set; }
     }
 }

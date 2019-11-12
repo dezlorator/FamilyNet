@@ -274,6 +274,78 @@ namespace FamilyNet.Controllers
             return Redirect("/feedback/FeedbackByDonationId");
         }
 
+        public async Task<IActionResult> Delete(int id)
+        {
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                    ViewData);
+
+            var feedbackUrl = _urlFeedbackBuilder.GetById(_feedbackApiPath, id);
+            var feedback = await _feedbackDownloader.GetByIdAsync(feedbackUrl, HttpContext.Session);
+
+            return View(feedback);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+
+            var url = _urlFeedbackBuilder.GetById(_feedbackApiPath, id);
+            var status = await _feedbackDownloader.DeleteAsync(url, HttpContext.Session);
+
+            if (status == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if(status == HttpStatusCode.Forbidden)
+            {
+                return Redirect(_pathToErrorView);
+            }
+
+            if (status != HttpStatusCode.OK)
+            {
+                return Redirect(_pathToErrorView);
+            }
+
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                            ViewData);
+
+            return Redirect("/feedback/FeedbackByDonationId");
+        }
+
+        //public async Task<IActionResult> Table()
+        //{
+        //    var url = _urlFeedbackBuilder.GetAll(_feedbackApiPath);
+        //    IEnumerable<FeedbackDTO> feedbackContainer = null;
+
+        //    try
+        //    {
+        //        feedbackContainer = await _feedbackDownloader.GetAllAsync(url, HttpContext.Session);
+        //    }
+        //    catch (ArgumentNullException)
+        //    {
+        //        return Redirect(_pathToErrorView);
+        //    }
+        //    catch (HttpRequestException)
+        //    {
+        //        return Redirect(_pathToErrorView);
+        //    }
+        //    catch (JsonException)
+        //    {
+        //        return Redirect(_pathToErrorView);
+        //    }
+
+        //    _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+        //                                                    ViewData);
+
+        //    return View(charityMakers);
+        //}
+
         private async Task<FioDTO> GetFio(int id, UserRole role)
         {
             var url = _urlFioBuilder.GetById(_fioApiPath, id, role);

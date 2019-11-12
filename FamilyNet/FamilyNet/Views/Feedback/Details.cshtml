@@ -65,5 +65,6 @@
 
 <div>
     <a asp-action="Edit" asp-route-id="@Model.FeedbackDTO.ID" type="submit" class="btn btn-primary"> <i class="fas fa-edit"></i>Редактировать</a>
+    <a asp-action="Delete" asp-route-id="@Model.FeedbackDTO.ID" class="btn btn-sm btn-danger">Удалить</a>
     <a asp-action="FeedbackByDonationId" type="submit" class="btn btn-primary">Вернуться к списку</a>
 </div>

@@ -23,6 +23,11 @@ namespace FamilyNet.Downloader.URLBuilders
             return _options.Value.ServerURL + api;
         }
 
+        public string GetAll(string api)
+        {
+            return _options.Value.ServerURL + api + "/GetAll";
+        }
+
         public string GetByDonationId(string api, int donationId)
         {
             return _options.Value.ServerURL + api + "?donationId=" + donationId;

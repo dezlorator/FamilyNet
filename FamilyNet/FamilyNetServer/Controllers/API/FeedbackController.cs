@@ -51,6 +51,39 @@ namespace FamilyNetServer.Controllers.API
             _unitOfWork = unitOfWork;
         }
 
+        [HttpGet("GetAll")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetAll()
+        {
+            var feedbackContainer = _feedbackRepository.GetAll();
+
+            if (feedbackContainer.Count() == 0)
+            {
+                _logger.LogError(string.Format("No feedback found"));
+                return BadRequest();
+            }
+
+            var feedbackDTO = feedbackContainer.Select(feedback =>
+                new FeedbackDTO
+                {
+                    ID = feedback.ID,
+                    DonationId = feedback.DonationId,
+                    ImagePath = feedback.Image,
+                    Message = feedback.Message,
+                    Rating = feedback.Rating,
+                    ReceiverId = feedback.ReceiverId,
+                    ReceiverRole = feedback.ReceiverRole,
+                    Time = feedback.Time,
+                    SenderId = feedback.SenderId ?? 0,
+                    SenderRole = feedback.SenderRole
+                });
+
+            _logger.LogInformation(string.Format("List of feedback was sent"));
+            return Ok(feedbackDTO);
+        }
+
         [HttpGet()]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
