@@ -6,53 +6,61 @@
 }
 @{
     var role = ViewData["role"] as String;
+    var name = Model.FilterViewModel.SelectedName;
+    var sort = Model.Sort == null? String.Empty : Model.Sort;
+    var priceStart = Model.FilterViewModel.StartPrice;
+    var priceEnd = Model.FilterViewModel.EndPrice;
 }
-@{
-    string name = Model.FilterViewModel.SelectedName;
-    string sort = String.Empty;
-    string start = Model.FilterViewModel.StartPrice;
-    string end = Model.FilterViewModel.EndPrice;
-}
+
 <h1>
     Fair
 </h1>
-
-<form method="get">
-    <table class="table table-bordered table-sm">
-        <th>Name</th>
-        <th>Price from</th>
-        <th>Price to</th>
-        <th>Sort</th>
+<div style="margin-bottom:2%; border: none;">
+<form method="get" >
+    <table class="table" style="margin-bottom:2%; border: none;">
+        <tr class="table-info">
+            <th>Name</th>
+            <th>Price from</th>
+            <th>Price to</th>
+            <th>Sort</th>
+         </tr>
         <tbody>
             <tr>
                 <td><input asp-for="@name" /></td>
-                <td><input asp-for="@start" /></td>
-                <td><input asp-for="@end" /></td>
+                <td><input asp-for="@priceStart" /></td>
+                <td><input asp-for="@priceEnd" /></td>
                 <td>
                     <select asp-for="@sort">
                         <option></option>
-                        <option>NameAsc</option>
-                        <option>NameDesc</option>
-                        <option>PriceAsc</option>
-                        <option>PriceDesc</option>
+                        <option>DateAsc</option>
+                        <option>DateDesc</option>
+                        <option>QuantityAsc</option>
+                        <option>QuantityDesc</option>
                     </select>
                 </td>
-
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <input type="submit" value="Filter out" class="btn btn-primary"
+                           asp-route-name="@name" asp-route-sort="@sort" asp-route-priceStart="@priceStart"
+                           asp-route-priceEnd="@priceEnd" style="float:right" />
+                </td>
             </tr>
         </tbody>
     </table>
-    <input type="submit" value="Фильтр" class="btn btn-default"
-           asp-route-name="@name" asp-route-sort="@sort"
-           asp-route-start="@start" asp-route-end="@end" style="float:right" />
 </form>
 
+</div>
 <div>
 
 
 @foreach (var lot in Model.AuctionLots)
 {
 
-    <div class="card m-3" style="width: 18rem;">
+    <div class="card m-3" style="width: 18rem; border: none;">
         <div class="card-body" >
             <img src="@Url.Content(lot.Avatar)" class="card-img-top" alt="...">
                 <h5 class="card-title">@lot.AuctionLotItem.Name</h5>
@@ -62,22 +70,36 @@
                 {
                     <a class="btn btn-dark" asp-area="" asp-controller="Purchase" asp-action="Buy" asp-route-id="@lot.ID">Buy</a>
                 }
+
             </div>
         </div>
 
 }
         
     </div>
-
-
-@for (int mypage = 1; mypage <= Model.PageViewModel.TotalPages; mypage++)
-{
-    <a asp-action="All"
-       asp-route-page="@mypage"
-       asp-route-name="@name"
-       asp-route-start="@start"
-       asp-route-finish="@end"
-       class="btn btn-default btn">
-        @mypage
-    </a>
-}
+<ul class="pagination" style="margin-top: 2%;">
+    @for (int mypage = 1; mypage <= Model.PageViewModel.TotalPages; mypage++)
+    {
+        if (mypage == Model.PageViewModel.PageNumber)
+        {
+            <li class="page-item active">
+                <a asp-action="All" asp-route-page="@mypage" asp-route-name="@name"
+                   asp-route-priceStart="@priceStart" asp-route-sort="@sort" asp-route-priceEnd="@priceEnd"
+                   class="page-link">
+                    @mypage
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item">
+                <a asp-action="All"
+                   asp-route-page="@mypage" asp-route-name="@name"
+                   asp-route-priceStart="@priceStart" asp-route-sort="@sort"
+                   asp-route-priceEnd="@priceEnd" class="page-link">
+                    @mypage
+                </a>
+            </li>
+        }
+    }
+</ul>

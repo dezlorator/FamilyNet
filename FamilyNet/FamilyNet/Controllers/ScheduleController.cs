@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using DataTransferObjects;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Downloader;
 using FamilyNet.IdentityHelpers;
 using FamilyNet.Models.ViewModels;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using DataTransferObjects;
 using Newtonsoft.Json;
 
 namespace FamilyNet.Controllers
@@ -159,7 +159,6 @@ namespace FamilyNet.Controllers
             if (status != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
-                //TODO: log
             }
 
             GetViewData();
@@ -180,12 +179,7 @@ namespace FamilyNet.Controllers
             {
                 return View(availabilityDTO);
             }
-            //AvailabilityDTO availabilityDTO = new AvailabilityDTO
-            //{
-            //    DayOfWeek = model.DayOfWeek,
-            //    StartTime = model.StartTime,
-            //    FreeHours = model.FreeHours
-            //};
+
             var url = _URLAvailabilitiesBuilder.CreatePost(_apiPath);
             var status = await _availabilitiesDownLoader.CreatePostAsync(url, availabilityDTO,
                                                  HttpContext.Session);
@@ -201,7 +195,6 @@ namespace FamilyNet.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-
         }
 
         [HttpPost, ActionName("Delete")]

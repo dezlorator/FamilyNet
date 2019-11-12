@@ -34,13 +34,13 @@ namespace FamilyNet.Downloader
                 var json = await result.Content.ReadAsStringAsync();
                 try
                 {
-                    var token = JsonConvert.DeserializeObject<TokenDTO>(json).Token;
+                    var token = JsonConvert.DeserializeObject<TokenDTO>(json);
                     authenticationResult.Token = token;
                     authenticationResult.Success = true;
                 }
                 catch (JsonException)
                 {
-                    authenticationResult.Token = String.Empty;
+                    authenticationResult.Token = null;
                     authenticationResult.Success = false;
                 }
             }

@@ -10,7 +10,6 @@ using FamilyNet.Downloader;
 using DataTransferObjects;
 using FamilyNet.StreamCreater;
 using FamilyNet.HttpHandlers;
-using FamilyNet.Encoders;
 using FamilyNet.IdentityHelpers;
 using FamilyNet.Downloader.URLBuilders;
 using System;
@@ -77,7 +76,6 @@ namespace FamilyNet
             services.AddTransient<IServerAvailabilitiesDownloader, ServerAvailabilitiesDownloader>();
             services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
             services.AddTransient<IURLChildrenBuilder, URLChildrenBuilder>();
-            services.AddTransient<IJWTEncoder, JWTEncoder>();
             services.AddTransient<IURLAvailabilitiesBuilder, URLAvailabilitiesBuilder>();
 
             services.AddTransient<ServerChildrenHouseDownloader>();
@@ -96,15 +94,15 @@ namespace FamilyNet
             services.AddTransient<IURLVolunteersBuilder, URLVolunteersBuilder>();
             services.AddTransient<IURLCharityMakerBuilder, URLCharityMakerBuilder>();
             services.AddTransient<IIdentityInformationExtractor, IdentityInformationExtractor>();
+            services.AddTransient<IURLQuestsBuilder, URLQuestsBuilder>();
             services.AddTransient<ServerDataDownloader<VolunteerDTO>, ServerVolunteersDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<PurchaseDTO>, ServerPurchaseDownloader>();
+            services.AddTransient<ServerSimpleDataDownloader<QuestDTO>, ServerQuestsDownloader>();
 
             #endregion
 
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));            
             services.AddTransient<IServerAddressDownloader, ServerAddressDownloader>();
-            services.AddTransient<IJWTEncoder, JWTEncoder>();
-
 
             services.Configure<CookiePolicyOptions>(options =>
             {

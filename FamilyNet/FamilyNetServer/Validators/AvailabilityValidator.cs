@@ -1,10 +1,6 @@
-﻿using DataTransferObjects;
-using DataTransferObjects.Enums;
+﻿using System;
 using FamilyNetServer.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DataTransferObjects;
 
 namespace FamilyNetServer.Validators
 {
@@ -18,6 +14,7 @@ namespace FamilyNetServer.Validators
             {
                 return false;
             }
+
             return true;
         }
 

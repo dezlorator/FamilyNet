@@ -19,13 +19,13 @@ namespace FamilyNetServer.Controllers.API.V1
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDonationItemValidator _donationItemValidator;
+        private readonly IValidator<DonationItemDTO> _donationItemValidator;
         private readonly ILogger<DonationItemsController> _logger;
 
         #endregion
 
         public DonationItemsController(IUnitOfWork unitOfWork,
-                                  IDonationItemValidator donationItemValidator,
+                                  IValidator<DonationItemDTO> donationItemValidator,
                                   ILogger<DonationItemsController> logger)
         {
             _unitOfWork = unitOfWork;
@@ -82,7 +82,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 Name = donationItem.Name,
                 Description = donationItem.Description,
                 Price = donationItem.Price,
-                CategoriesID = donationItem.TypeBaseItem.Select(t => t.TypeID)
+                CategoriesID = donationItem.TypeBaseItem?.Select(t => t.TypeID)
             };
 
             _logger.LogInformation("Status: OK. Donation item was sent");
@@ -127,7 +127,7 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             await _unitOfWork.DonationItems.Create(donationItem);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             donationItemDTO.ID = donationItem.ID;
 
@@ -161,7 +161,7 @@ namespace FamilyNetServer.Controllers.API.V1
             donationItem.Price = donationItemDTO.Price;
 
             _unitOfWork.DonationItems.Update(donationItem);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: NoContent. Donation item was edited.");
 
@@ -191,7 +191,7 @@ namespace FamilyNetServer.Controllers.API.V1
             donationItem.IsDeleted = true;
 
             _unitOfWork.DonationItems.Update(donationItem);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: OK. Donation item was deleted.");
 

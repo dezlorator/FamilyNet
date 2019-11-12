@@ -18,7 +18,7 @@ namespace FamilyNetServer.Controllers.API.V1
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICategoryValidator _categoryValidator;
+        private readonly IValidator<CategoryDTO> _categoryValidator;
         private readonly ILogger<CategoriesController> _logger;
 
         #endregion
@@ -26,7 +26,7 @@ namespace FamilyNetServer.Controllers.API.V1
         #region ctor
 
         public CategoriesController(IUnitOfWork unitOfWork,
-                                    ICategoryValidator categoryValidator,
+                                    IValidator<CategoryDTO> categoryValidator,
                                     ILogger<CategoriesController> logger)
         {
             _unitOfWork = unitOfWork;
@@ -112,7 +112,7 @@ namespace FamilyNetServer.Controllers.API.V1
             };
 
             await _unitOfWork.BaseItemTypes.Create(category);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: Created. Category was created");
 
@@ -141,7 +141,7 @@ namespace FamilyNetServer.Controllers.API.V1
             category.IsDeleted = true;
 
             _unitOfWork.BaseItemTypes.Update(category);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: OK. Category was deleted.");
 

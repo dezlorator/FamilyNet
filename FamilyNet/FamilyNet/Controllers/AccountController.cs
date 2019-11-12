@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using FamilyNet.Downloader;
 using DataTransferObjects;
 using Microsoft.AspNetCore.Http;
-using FamilyNet.Encoders;
 using FamilyNet.IdentityHelpers;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -25,7 +24,6 @@ namespace FamilyNet.Controllers
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IAuthorizeCreater _authorizeCreater;
         private readonly string _headerToken = "Bearer";
-        private readonly IJWTEncoder _encoder;
 
         private readonly ServerSimpleDataDownloader<RegistrationDTO> _registrationDownloader;
         private readonly IURLRegistrationBuilder _registrationBuilder;
@@ -42,7 +40,6 @@ namespace FamilyNet.Controllers
         public AccountController(IStringLocalizer<HomeController> localizer,
                                 IStringLocalizer<SharedResource> sharedLocalizer,
                                 IAuthorizeCreater authorizeCreater,
-                                IJWTEncoder encoder,
                                 IIdentityInformationExtractor identityInformationExtactor,
                                 ServerSimpleDataDownloader<RegistrationDTO> registrationDownloader,
                                 ServerSimpleDataDownloader<RoleDTO> rolesDownloader,
@@ -51,7 +48,6 @@ namespace FamilyNet.Controllers
         {
             _localizer = localizer;
             _authorizeCreater = authorizeCreater;
-            _encoder = encoder;
             _identityInformationExtactor = identityInformationExtactor;
             _registrationDownloader = registrationDownloader;
             _rolesDownloader = rolesDownloader;
@@ -60,14 +56,13 @@ namespace FamilyNet.Controllers
         }
 
         #endregion
+
         [HttpGet]
         public async Task<IActionResult> Register()
         {
 
             var urlRoles = _rolesBuilder.GetAll(_apiRolesPath);
-            IEnumerable<RoleDTO> roles = null;
-
-            roles = await _rolesDownloader.GetAllAsync(urlRoles, HttpContext.Session);
+            IEnumerable<RoleDTO> roles = await _rolesDownloader.GetAllAsync(urlRoles, HttpContext.Session);
 
             var yourDropdownList = new SelectList(roles.Select(item => new SelectListItem
             {
@@ -86,7 +81,6 @@ namespace FamilyNet.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegistrationDTO model)
         {
-
             GetViewData();
 
             var urlRoles = _rolesBuilder.GetAll(_apiRolesPath);
@@ -145,12 +139,16 @@ namespace FamilyNet.Controllers
 
                 if (result.Success)
                 {
-                    var claims = _encoder.GetTokenData(result.Token);
-                    HttpContext.Session.SetString("id", claims.UserId.ToString());
-                    HttpContext.Session.SetString("email", claims.Email);
-                    HttpContext.Session.SetString("roles", String.Join(",", claims.Roles));
-                    HttpContext.Session.SetString("personId", claims.PersonId.ToString());
-                    HttpContext.Session.SetString(_headerToken, result.Token);
+                    HttpContext.Session.SetString("id", result.Token.Id);
+                    HttpContext.Session.SetString("email", result.Token.Email);
+                    HttpContext.Session.SetString("roles", String.Join(",", result.Token.Roles));
+
+                    if (result.Token.PersonId != null)
+                    {
+                        HttpContext.Session.SetString("personId", result.Token.PersonId.ToString());
+                    }
+
+                    HttpContext.Session.SetString(_headerToken, result.Token.Token);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -200,15 +198,17 @@ namespace FamilyNet.Controllers
         public IActionResult PersonalRoom()
         {
             var role = HttpContext.Session.GetString("roles");
-            if (GetPersonType(role) == PersonType.User)
+            if (GetPersonType(role) == PersonType.User || GetPersonType(role) == PersonType.Admin)
             {
-                RedirectToAction("Index", "Home");
+                var url = Url.Action("Index", "Home");
+                return Redirect(url);
             }
-            //if (GetPersonType(role) != PersonType.User)
-            //{
-            //    var url = Url.Action(role + "s", "Create");
-            //    return Redirect(url);
-            //}
+            var personId = HttpContext.Session.GetString("personId");
+            if (GetPersonType(role) != PersonType.User && GetPersonType(role) != PersonType.Admin &&(personId == String.Empty || personId == null))
+            {
+                var url = Url.Action("Create", role + "s");
+                return Redirect(url);
+            }
 
             GetViewData();
 
@@ -246,6 +246,8 @@ namespace FamilyNet.Controllers
                     return PersonType.Orphan;
                 case "User":
                     return PersonType.User;
+                case "Admin":
+                    return PersonType.Admin;
                 default:
                     return PersonType.User;
             }

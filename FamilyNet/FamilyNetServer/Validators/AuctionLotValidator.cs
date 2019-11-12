@@ -13,7 +13,7 @@ namespace FamilyNetServer.Validators
             return (auctionDTO.Quantity > 0 ||
                 auctionDTO.OrphanID > 0 ||
                 auctionDTO.AuctionLotItemID > 0 ||
-                auctionDTO.DateStart >= DateTime.MinValue);
+                auctionDTO.DateAdded >= DateTime.MinValue);
         }
     }
 }

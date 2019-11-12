@@ -97,7 +97,7 @@ namespace FamilyNetServer.Models.EntityFramework
 
         #endregion
 
-        public void SaveChangesAsync()
+        public void SaveChanges()
         {
             _context.SaveChanges();
         }

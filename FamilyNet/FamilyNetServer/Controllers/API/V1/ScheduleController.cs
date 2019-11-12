@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Security.Claims;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
-using DataTransferObjects;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using DataTransferObjects.Enums;
 using FamilyNetServer.Models.Identity;
-using System.Collections.Generic;
 using FamilyNetServer.Validators;
+using DataTransferObjects;
+using DataTransferObjects.Enums;
 
 namespace FamilyNetServer.Controllers.API
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class ScheduleController : ControllerBase
@@ -24,7 +24,6 @@ namespace FamilyNetServer.Controllers.API
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAvailabilityValidator _validator;
-        //private readonly IFilterConditionsAvailability _filterConditions;
 
         #endregion
 
@@ -73,7 +72,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpGet("freePersons")]
-        //[Authorize(Roles = "Admin, CharityMaker, Representative")]
+        [Authorize(Roles = "Admin, CharityMaker, Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -95,9 +94,8 @@ namespace FamilyNetServer.Controllers.API
             return Ok(personIdsList);
         }
 
-        //Reserve(AvailabilityID id) ? deReserve()
         [HttpGet("switchReserveStatus/{id}")]
-        //[Authorize(Roles = "Admin, Volunteer")]
+        [Authorize(Roles = "Admin, Volunteer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SwitchReserveStatusById(int id,
@@ -124,12 +122,10 @@ namespace FamilyNetServer.Controllers.API
             }
 
             _unitOfWork.Availabilities.Update(availability);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             return Ok();
         }
-
-        #region сравнение расписаний волонтера и мецената
 
         [HttpGet("posibleDates")]
         [Authorize(Roles = "Admin, CharityMaker")]
@@ -164,12 +160,6 @@ namespace FamilyNetServer.Controllers.API
 
             return Ok(posibleDates);
         }
-
-        #endregion
-
-        //reserve Availability client side controller => HttpPut
-
-
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin, Volunteer, CharityMaker")]
@@ -230,8 +220,6 @@ namespace FamilyNetServer.Controllers.API
 
             var user = identify();
 
-            //var diff = adjustDate(dto);
-
             var availability = new Availability()
             {
                 PersonID = user.PersonID.Value,
@@ -241,7 +229,7 @@ namespace FamilyNetServer.Controllers.API
             };
 
             await _unitOfWork.Availabilities.Create(availability);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             return Created("api/v1/{controller}/" + availability.ID, availabilityDTO);
         }
@@ -282,7 +270,7 @@ namespace FamilyNetServer.Controllers.API
             availability.FreeHours = availabilityDTO.FreeHours;
 
             _unitOfWork.Availabilities.Update(availability);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             return NoContent();
         }
@@ -306,10 +294,12 @@ namespace FamilyNetServer.Controllers.API
             }
 
             await _unitOfWork.Availabilities.HardDelete(id);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             return Ok();
         }
+
+        #region private methods
 
         private double adjustDate(AvailabilityDTO availabilityDTO)
         {
@@ -334,5 +324,7 @@ namespace FamilyNetServer.Controllers.API
             var userId = User.FindFirst(ClaimTypes.Name)?.Value;
             return _unitOfWork.UserManager.FindByIdAsync(userId).Result;
         }
+
+        #endregion
     }
 }

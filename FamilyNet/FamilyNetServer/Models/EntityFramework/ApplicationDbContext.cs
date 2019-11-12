@@ -28,9 +28,9 @@ namespace FamilyNetServer.Models.EntityFramework
         public DbSet<Quest> Quests { get; set; }
         public DbSet<Availability> Availabilities { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
-
         public DbSet<AuctionLot> AuctionLot { get; set; }
-        public DbSet<Feedback> Feedback { get; set; }
+        public DbSet<ChildActivity> Activities { get; set; }
+        public DbSet<Award> Awards { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

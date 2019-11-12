@@ -1,0 +1,9 @@
+﻿@model DataTransferObjects.DonationDTO
+
+<h3>Как Вы хотите совершить пожертвование?</h3>
+<div>
+    <input type="hidden" asp-for="ID" />
+    <a class="btn btn-danger" asp-controller="Quests" asp-action="Create">С помощью волонтера</a>
+    <a class="btn btn-danger" asp-action="Donate">Самостоятельно</a>
+    <a class="btn btn-danger" asp-action="Donations">Назад</a>
+</div>

@@ -9,6 +9,7 @@ namespace FamilyNetServer.Enums
     {
         UnApproved = 1,
         Approved,
-        Declined
+        Declined,
+        Sold
     }
 }

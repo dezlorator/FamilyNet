@@ -45,7 +45,7 @@
                                 @if (note.QuestName != null)
                                 {
                                     <div style="width:100%" class="text-center">
-                                        <a asp-controller="Quests" asp-action="Details" class="justify-content-center fas fa-link">@note.QuestName</a>
+                                        <a asp-controller="Quests" asp-action="Details" asp-route-id="@note.QuestID" class="justify-content-center fas fa-link">@note.QuestName</a>
                                     </div>
                                 }
                             </div>

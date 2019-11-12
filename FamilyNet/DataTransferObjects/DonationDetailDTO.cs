@@ -4,8 +4,8 @@ namespace DataTransferObjects
 {
     public class DonationDetailDTO : DonationDTO
     {
-        public string OrphanageStreet { get; set; }
-        public string OrphanageHouse { get; set; }
-        public float OrphanageRating { get; set; }
+        public string Street { get; set; }
+        public string House { get; set; }
+        public float Rating { get; set; }
     }
 }

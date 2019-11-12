@@ -87,9 +87,5 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.AdressID.ToString()), "AdressID");
         }
 
-        //public Task<HttpStatusCode> CreatePostAsync(string url, ChildrenHouseDTO dto, Stream file, string fieName)
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

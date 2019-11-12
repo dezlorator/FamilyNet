@@ -1,5 +1,5 @@
-﻿using DataTransferObjects;
-using FamilyNetServer.Models;
+﻿using FamilyNetServer.Models;
+using DataTransferObjects;
 
 namespace FamilyNetServer.Validators
 {

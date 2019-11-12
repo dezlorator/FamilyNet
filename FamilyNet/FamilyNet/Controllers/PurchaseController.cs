@@ -6,8 +6,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DataTransferObjects;
 using FamilyNet.Downloader;
+using FamilyNet.Enums;
 using FamilyNet.IdentityHelpers;
 using FamilyNet.Models.ViewModels;
+using FamilyNet.Models.ViewModels.Purchase;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -31,6 +33,8 @@ namespace FamilyNet.Controllers
         private readonly string _apiPurchasePath = "api/v1/Purchase";
 
         private readonly IIdentityInformationExtractor _identityInformationExtactor;
+
+        private readonly int _pageSize = 3;
 
         #endregion
 
@@ -144,23 +148,75 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
                 //TODO: log
             }
-          
+
+            url = _URLAuctionLotBuilder.GetById(_apiAuctionLotPath, model.Purchase.AuctionLotId);
+            var lot = await _auctionLotDownloader.GetByIdAsync(url, HttpContext.Session);
+
+            lot.Quantity -= model.Purchase.Quantity;
+            if(lot.Quantity == 0)
+            {
+                lot.Status = "Sold";
+            }
+            
+            var status = await _auctionLotDownloader.CreatePutAsync(url, lot, null, String.Empty, HttpContext.Session);
+
+            if (status != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+                //TODO: log
+            }
+
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                          ViewData);
 
             return Redirect("/AuctionLot/All");
         }
 
-        public IActionResult All()
+        public async Task<IActionResult> All(int mypage = 1,
+            string userId = "", string sort = "",
+            int craft = 0, string date = "",
+            int q1 = 0, int q2 = 0,
+            int p1 = 0, int p2 = 0)
         {
-            var userId = HttpContext.Session.GetString("id");
+            string currentUserId = null;
 
-            var url = _URLPurchase.SimpleQuery(_apiPurchasePath);
+            if (HttpContext.Session.GetString("roles") != "Admin")
+            {
+                currentUserId = HttpContext.Session.GetString("id");
+            }
+
+
+            if (!DateTime.TryParse(date, out var dateTime))
+            {
+                dateTime = DateTime.MinValue;
+            }
+
+            var url = _URLPurchase.GetAllFiltered(_apiPurchasePath, new FilterParamentrsPurchaseDTO
+            {
+                CraftId = craft,
+                Date = dateTime,
+                Page =mypage,
+                PaidFrom =p1,
+                PaidTo = p2,
+                QuantityFrom =q1,
+                QuantityTo =q2,
+                Rows = _pageSize,
+                UserId = currentUserId !=null? currentUserId: userId,
+                Sort = sort
+            });
+
             IEnumerable<PurchaseDTO> purchases = null;
 
             try
             {
-                purchases = _purchaseDownloader.GetAllAsync(url, HttpContext.Session).Result.Where(p => p.UserId.ToUpper() == userId.ToUpper());
+                if (HttpContext.Session.GetString("roles") == "Admin")
+                {
+                    purchases = await _purchaseDownloader.GetAllAsync(url, HttpContext.Session);
+                }
+                else
+                {
+                    purchases = await _purchaseDownloader.GetAllAsync(url, HttpContext.Session);
+                }
             }
             catch (ArgumentNullException)
             {
@@ -183,13 +239,29 @@ namespace FamilyNet.Controllers
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                 ViewData);
 
-            return View(purchases);
+            var filter = new PurchaseFilterViewModel
+            {
+                UserId = userId,
+                CraftId = craft,
+                Date = dateTime,
+                QuantityFrom = q1,
+                QuantityTo = q2,
+                PaidFrom = p1,
+                PaidTo = p2
+            };
+
+            var viewModel = new PurchaseAllViewModel
+            {
+                PurchaseDTO = purchases,
+                FilterViewModel = filter,
+                PageViewModel = new PageViewModel(_purchaseDownloader.TotalItemsCount, mypage, _pageSize),
+                Sort = sort
+            };
+
+
+            return View(viewModel);
         }
 
-        #region Private Helpers
-
-
-
-        #endregion
+      
     }
 }

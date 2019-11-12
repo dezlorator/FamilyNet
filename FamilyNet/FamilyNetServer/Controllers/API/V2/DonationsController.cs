@@ -21,7 +21,7 @@ namespace FamilyNetServer.Controllers.API.V2
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDonationValidator _donationValidator;
+        private readonly IValidator<DonationDTO> _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
         private readonly ILogger<DonationsController> _logger;
 
@@ -30,7 +30,7 @@ namespace FamilyNetServer.Controllers.API.V2
         #region ctor
 
         public DonationsController(IUnitOfWork unitOfWork,
-                                   IDonationValidator donationValidator,
+                                   IValidator<DonationDTO> donationValidator,
                                    IDonationsFilter donationsFilter,
                                    ILogger<DonationsController> logger)
         {
@@ -81,7 +81,11 @@ namespace FamilyNetServer.Controllers.API.V2
                     ItemName = d.DonationItem.Name,
                     ItemDescription = d.DonationItem.Description,
                     Types = d.DonationItem.TypeBaseItem
-                               .Select(t => t.TypeID)
+                               .Select(t => new CategoryDTO
+                               {
+                                   Name = t.Type.Name,
+                                   ID = t.TypeID
+                               })
                 }).ToList();
 
             _logger.LogInformation("Status: OK. List of donations was sent");
@@ -105,7 +109,11 @@ namespace FamilyNetServer.Controllers.API.V2
             {
                 ID = donation.ID,
                 Types = donation.DonationItem.TypeBaseItem
-                                     .Select(t => t.TypeID),
+                               .Select(t => new CategoryDTO
+                               {
+                                   Name = t.Type.Name,
+                                   ID = t.TypeID
+                               }),
                 DonationItemID = donation.DonationItemID,
                 CharityMakerID = donation.CharityMakerID,
                 OrphanageID = donation.OrphanageID,
@@ -113,9 +121,9 @@ namespace FamilyNetServer.Controllers.API.V2
                 ItemDescription = donation.DonationItem.Description,
                 OrphanageName = donation.Orphanage.Name,
                 City = donation.Orphanage.Adress.City,
-                OrphanageHouse = donation.Orphanage.Adress.House,
-                OrphanageStreet = donation.Orphanage.Adress.Street,
-                OrphanageRating = donation.Orphanage.Rating
+                House = donation.Orphanage.Adress.House,
+                Street = donation.Orphanage.Adress.Street,
+                Rating = donation.Orphanage.Rating
             };
 
             _logger.LogInformation("Status: OK. Donation was sent");
@@ -146,7 +154,7 @@ namespace FamilyNetServer.Controllers.API.V2
             };
 
             await _unitOfWork.Donations.Create(donation);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: Created. Donation was created");
             return Created("api/v1/donations/" + donation.ID, donationDTO);
@@ -165,6 +173,15 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             var donation = await _unitOfWork.Donations.GetById(id);
+            donation.CharityMakerID = donationDTO.CharityMakerID;
+
+            if (!Enum.TryParse(donationDTO.Status, out DonationStatus donationStatus))
+            {
+                _logger.LogError("Wrong string.");
+                return BadRequest();
+            }
+
+            donation.Status = donationStatus;
 
             if (donation == null)
             {
@@ -191,71 +208,9 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: NoContent. Donation was edited.");
-
-            return NoContent();
-        }
-
-        [HttpPut("StatusEdit/{id}")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> StatusEdit(int id, [FromBody]string status)
-        {
-            if(!Enum.TryParse(status, out DonationStatus donationStatus))
-            {
-                _logger.LogError("Wrong string.");
-                return BadRequest();
-            }
-
-            var donation = await _unitOfWork.Donations.GetById(id);
-
-            if (donation == null)
-            {
-                _logger.LogError("Bad request. No donation with such id was found");
-                return BadRequest();
-            }
-
-            donation.Status = donationStatus;
-
-            _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChangesAsync();
-
-            _logger.LogInformation("Status: NoContent. Donation status was edited.");
-
-            return NoContent();
-        }
-
-        [HttpPut("donationMade/{id}")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddCharityMaker(int id, [FromBody]int charityMakerID)
-        {
-            CharityMaker charityMaker = await _unitOfWork.CharityMakers.GetById(charityMakerID);
-
-            if (charityMaker == null)
-            {
-                _logger.LogError("Bad request. No charity maker with such id was found");
-                return BadRequest();
-            }
-
-            Donation donation = await _unitOfWork.Donations.GetById(id);
-
-            if (donation == null)
-            {
-                _logger.LogError("Bad request. No donation with such id was found");
-                return BadRequest();
-            }
-
-            donation.CharityMakerID = charityMakerID;
-
-            _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChangesAsync();
-
-            _logger.LogInformation("Status: NoContent. Charity maker was added.");
 
             return NoContent();
         }
@@ -283,7 +238,7 @@ namespace FamilyNetServer.Controllers.API.V2
             donation.IsDeleted = true;
 
             _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: OK. Donation was deleted.");
 

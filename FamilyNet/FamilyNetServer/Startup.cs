@@ -23,6 +23,7 @@ using FamilyNetServer.Controllers.API.V1;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using FamilyNetServer.Controllers.API;
 using FamilyNetServer.EnumConvertor;
+using FamilyNetServer.HttpHandlers;
 
 namespace FamilyNetServer
 {
@@ -38,6 +39,7 @@ namespace FamilyNetServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IIdentityExtractor, IdentityExtractor>();
             services.AddTransient<IPasswordValidator<ApplicationUser>, FamilyNetServerPasswordValidator>();
             services.AddTransient<IUserValidator<ApplicationUser>, FamilyNetServerUserValidator>();
             services.AddDBContextService(Configuration);
@@ -45,6 +47,7 @@ namespace FamilyNetServer
             services.AddTransient<ITokenFactory, TokenFactory>();
             services.AddAuthorizationService(Configuration);
             services.AddTransient<IConvertUserRole, ConvertUserRole>();
+            services.AddTransient<ILogger<FioController>, Logger<FioController>>();
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<EFRepository<Feedback>, FeedbackRepository>();
             services.AddTransient<ILogger<FeedbackController>, Logger<FeedbackController>>();
@@ -68,20 +71,21 @@ namespace FamilyNetServer
             services.AddTransient<IFilterConditionsChildren, FilterConditionsChildren>();
             services.AddTransient<IRepresentativeValidator, RepresentativeValidator>();
             services.AddTransient<IFilterConditionsRepresentatives, FilterConditionsRepresentatives>();
-            services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IFilterConditionsChildrenHouse, FilterConditionChildrenHouse>();
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<IValidator<AddressDTO>, AddressValidator>();
             services.AddTransient<IValidator<AuctionLotDTO>, AuctionLotValidator>();
             services.AddTransient<IValidator<ChildrenHouseDTO>, ChildrenHouseValidator>();
             services.AddTransient<IValidator<PurchaseDTO>, PurchaseValidator>();
-            services.AddTransient<ICategoryValidator, CategoryValidator>();
-            services.AddTransient<IDonationItemValidator, DonationItemValidator>();
-            services.AddTransient<IDonationValidator, DonationValidator>();
+            services.AddTransient<IValidator<CategoryDTO>, CategoryValidator>();
+            services.AddTransient<IValidator<DonationItemDTO>, DonationItemValidator>();
+            services.AddTransient<IValidator<DonationDTO>, DonationValidator>();
             services.AddTransient<IDonationsFilter, DonationsFilter>();
-            services.AddTransient<IQuestValidator, QuestValidator>();
+            services.AddTransient<IValidator<QuestDTO>, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
             services.AddTransient<IAvailabilityValidator, AvailabilityValidator>();
+            services.AddTransient<IIdentityExtractor, IdentityExtractor>();
+            services.AddTransient<IFilterConditionPurchase, FilterConditionPurchase>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>
