@@ -101,7 +101,7 @@
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Quests" asp-action="Index">Quests</a>
                             </li>
                         }
-                        @if (role == "CharityMaker" || role == "Volunteer")
+                        @if (role == "CharityMaker" || role == "Volunteer" || role == "Admin")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">My purchases</a>

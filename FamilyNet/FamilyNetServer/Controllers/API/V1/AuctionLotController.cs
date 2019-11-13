@@ -59,7 +59,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAllApproved([FromQuery]string name,
+        public async Task<IActionResult> GetAllApproved([FromQuery]string name,
                                    [FromQuery]string priceStart,
                                    [FromQuery]string priceEnd,
                                     [FromQuery]string sort,
@@ -73,11 +73,17 @@ namespace FamilyNetServer.Controllers.API.V1
             float.TryParse(priceEnd, out var end);
             Enum.TryParse<AuctionLotSortState>(sort, out var sortOrder);
 
-            var auction = GetFiltered(_repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
-            && c.Status == AuctionLotStatus.Approved && c.Quantity > 0),
-                start, end, name, page, rows, sortOrder, out var count);
+            var auction = _repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
+            && c.Status == AuctionLotStatus.Approved && c.Quantity > 0);
+                
+            foreach(var lot in auction)
+            {
+                lot.AuctionLotItem = await GetItem(lot.AuctionLotItemID.Value);
+            }
 
-            if (auction == null)
+            var crafts =GetFiltered(auction, start, end, name, page, rows, sortOrder, out int count);
+
+            if (crafts == null)
             {
                 _logger.LogWarning("{status}{info}",
                    StatusCodes.Status400BadRequest,
@@ -86,7 +92,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 return BadRequest();
             }
 
-            var auctions =  auction.Select(lot =>
+            var auctions = crafts.Select(lot =>
                 new AuctionLotDTO()
                 {
                     ID = lot.ID,
@@ -114,7 +120,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
 
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize(Roles = "Orphan, Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAllOrphanCrafts([FromQuery]int orphanId, [FromQuery]int rows,
@@ -124,7 +130,11 @@ namespace FamilyNetServer.Controllers.API.V1
                 "Endpoint AuctionLot/api/v1 GetAllOrphanCrafts was called");
 
             var auction = _repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
-            && c.Status != AuctionLotStatus.Approved && c.OrphanID == orphanId).Skip((page - 1) * rows).Take(rows);
+            && c.Status != AuctionLotStatus.Approved && c.OrphanID == orphanId);
+
+            var count = auction.Count();
+
+            auction = auction.Skip((page - 1) * rows).Take(rows);
 
             if (auction == null)
             {
@@ -150,7 +160,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var filterModel = new AuctionLotFilterDTO
             {
                 AuctionLotDTOs = auctions,
-                TotalCount = auction.Count()
+                TotalCount = count
             };
 
 
@@ -161,7 +171,7 @@ namespace FamilyNetServer.Controllers.API.V1
         }
 
         [HttpGet("confirm")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Orphan, Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAllUnApproved([FromQuery]int orphanId)
@@ -265,7 +275,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             var auction = new AuctionLot()
             {
-                DateAdded = auctionDTO.DateAdded,
+                DateAdded = DateTime.Now,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
                 Status = AuctionLotStatus.UnApproved,
@@ -300,7 +310,7 @@ namespace FamilyNetServer.Controllers.API.V1
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Orphan, Representative")]
+        [Authorize(Roles = "Orphan, Representative, CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AuctionLotDTO auctionDTO)
@@ -405,6 +415,18 @@ namespace FamilyNetServer.Controllers.API.V1
         }
 
         #region Private Helpers
+        private async Task<AuctionLotItem> GetItem(int id)
+        {
+            var item = await _repository.DonationItems.GetById(id);
+
+            return new AuctionLotItem
+            {
+                ID = item.ID,
+                Name = item.Name,
+                Price = item.Price,
+                Description = item.Description
+            };
+        }
 
         private IEnumerable<AuctionLot> GetFiltered(IEnumerable<AuctionLot> lots, float start, float end, string name, int page,
             int rows, AuctionLotSortState sortOrder, out int count)

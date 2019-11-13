@@ -10,11 +10,10 @@ using FamilyNetServer.Validators;
 using DataTransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using System;
 
-namespace FamilyNetServer.Controllers.API.V1
+namespace FamilyNetServer.Controllers.API.V2
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v2/[controller]")]
     [ApiController]
     public class QuestsController : ControllerBase
     {
@@ -77,8 +76,6 @@ namespace FamilyNetServer.Controllers.API.V1
                 {
                     ID = d.ID,
                     Name = d.Name,
-                    Description = d.Description,
-                    Status = d.Status.ToString(),
                     DonationID = d.DonationID,
                     OrphanageID = d.Donation.OrphanageID,
                     OrphanageName = d.Donation.Orphanage.Name,
@@ -111,12 +108,10 @@ namespace FamilyNetServer.Controllers.API.V1
             {
                 ID = quest.ID,
                 Name = quest.Name,
-                Description = quest.Description,
                 DonationID = quest.DonationID,
                 VolunteerID = quest.VolunteerID,
                 FromDate = quest.FromDate,
-                ToDate = quest.ToDate,
-                Status = quest.Status.ToString()
+                ToDate = quest.ToDate
             };
 
             if (questDTO.DonationID != null)
@@ -138,7 +133,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
         // PUT: api/Quests/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Volunteer, CharityMaker, Representative, Admin")]
+        [Authorize(Roles = "CharityMaker, Representative, Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]QuestDTO questDTO)
@@ -158,16 +153,8 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             quest.Name = questDTO.Name;
-            quest.Description = questDTO.Description;
 
-            if (!Enum.TryParse(questDTO.Status, out QuestStatus status))
-            {
-                return BadRequest();
-            }
-
-            quest.Status = status;
-
-            if (questDTO.VolunteerID != quest.VolunteerID)
+            if (questDTO.VolunteerID != null)
             {
                 _logger.LogInformation("Volunteer is not null.");
                 quest.VolunteerID = questDTO.VolunteerID;
@@ -222,11 +209,11 @@ namespace FamilyNetServer.Controllers.API.V1
                 questDTO.DonationDescription = item.Description;
             }
 
-           await _unitOfWork.Quests.Create(quest);
+            await _unitOfWork.Quests.Create(quest);
             _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: Created. Quest was created");
-            return Created("api/v1/quests/" + quest.ID, questDTO);
+            return Created("api/v2/quests/" + quest.ID, questDTO);
         }
 
         // DELETE: api/Quests/5
