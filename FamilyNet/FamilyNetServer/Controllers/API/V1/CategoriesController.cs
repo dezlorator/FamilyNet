@@ -44,7 +44,7 @@ namespace FamilyNetServer.Controllers.API.V1
         {
             var categories = _unitOfWork.BaseItemTypes.GetAll().Where(c => !c.IsDeleted);
 
-            if (rows != 0 && page != 0)
+            if (rows > 0 && page > 0)
             {
                 _logger.LogInformation("Paging were used");
                 categories = categories
