@@ -7,6 +7,7 @@ namespace DataTransferObjects.Enums
 {
     public enum UserRole
     {
+        Undefined,
         User,
         CharityMaker,
         Volunteer,
