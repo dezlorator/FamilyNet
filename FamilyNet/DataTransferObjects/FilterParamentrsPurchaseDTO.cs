@@ -6,19 +6,11 @@ namespace DataTransferObjects
 {
     public class FilterParamentrsPurchaseDTO
     {
-        public string UserId { get; set; }
+        public string Email { get; set; }
 
-        public int CraftId { get; set; }
+        public string CraftName { get; set; }
 
         public DateTime Date { get; set; }
-
-        public int QuantityFrom { get; set; }
-
-        public int QuantityTo { get; set; }
-
-        public float PaidFrom { get; set; }
-
-        public float PaidTo { get; set; }
 
         public int Page { get; set; }
 

@@ -12,16 +12,18 @@ namespace FamilyNet.Models
     {
         public int ID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter name")]
         [Display(Name = "Название")]
         public string Name { get; set; }
 
+        [Required(ErrorMessage = "Please enter desciption")]
         [Display(Name = "Описание")]
         public string Description { get; set; }
 
         //[Required]
         //[Range(0.01, double.MaxValue,
-            //ErrorMessage = "Please enter a positive price")]
+        //ErrorMessage = "Please enter a positive price")]
+        [Required(ErrorMessage = "Please enter price")]
         public float Price { get; set; }
 
         [BindNever]

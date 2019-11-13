@@ -222,6 +222,9 @@ namespace FamilyNet.Controllers
                 return NotFound();
             }
 
+            url = _URLChildrenBuilder.GetById(_apiChildrenPath, auctionLot.OrphanID.Value);
+            var orphan = await _childrenDownloader.GetByIdAsync(url, HttpContext.Session);
+ 
             var craft = new AuctionLot
             {
                 ID = auctionLot.ID,
@@ -230,6 +233,10 @@ namespace FamilyNet.Controllers
                 OrphanID = auctionLot.OrphanID,
                 Quantity = auctionLot.Quantity,
                 Status = auctionLot.Status,
+                Orphan = new Orphan { FullName =
+                new FullName { Name = orphan.Name,
+                    Surname = orphan.Surname,
+                    Patronymic = orphan.Patronymic} },
                 AuctionLotItemID = auctionLot.AuctionLotItemID,
                 AuctionLotItem = GetItem(auctionLot.AuctionLotItemID.Value).Result
             };
@@ -252,6 +259,16 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AuctionLotCreateViewModel model)
         {
+            if(model.AuctionLot.Quantity  <= 0 ||
+                String.IsNullOrEmpty(model.Item.Name) ||
+                String.IsNullOrEmpty(model.Item.Description) ||
+                model.Item.Price <= 0.0)
+            {
+                return Redirect("/AuctionLot/Create");
+            }
+
+
+
             string url = String.Empty;
             var role = HttpContext.Session.GetString("roles");
             var personId = HttpContext.Session.GetString("personId");
@@ -285,7 +302,7 @@ namespace FamilyNet.Controllers
 
             url = _URLAuctionLotBuilder.SimpleQuery(_apiAuctionLotPath);
             model.AuctionLot.Status = "UnApproved";
-            var msg2 = await _auctionLotDownloader.CreatePostAsync(url, model.AuctionLot, stream, model.AuctionLot.Avatar.FileName, HttpContext.Session);
+            var msg2 = await _auctionLotDownloader.CreatePostAsync(url, model.AuctionLot, stream, model.AuctionLot.Avatar?.FileName, HttpContext.Session);
 
             if (msg2 != HttpStatusCode.Created)
             {
