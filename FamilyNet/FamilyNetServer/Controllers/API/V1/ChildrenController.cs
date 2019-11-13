@@ -192,8 +192,7 @@ namespace FamilyNetServer.Controllers.API.V1
             await _unitOfWork.Orphans.Create(child);
             _unitOfWork.SaveChanges();
 
-            var id = User.Identity.Name;
-            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             user.PersonID = child.ID;
             await _unitOfWork.UserManager.UpdateAsync(user);
 

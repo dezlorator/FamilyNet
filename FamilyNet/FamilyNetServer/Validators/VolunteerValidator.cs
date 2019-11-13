@@ -7,9 +7,9 @@ namespace FamilyNetServer.Validators
     {
         public bool IsValid(VolunteerDTO volunteerDTO)
         {
-            if (volunteerDTO.Birthday == null ||
-                String.IsNullOrEmpty(volunteerDTO.Name) ||
+            if (String.IsNullOrEmpty(volunteerDTO.Name) ||
                 String.IsNullOrEmpty(volunteerDTO.Surname) ||
+                String.IsNullOrEmpty(volunteerDTO.Patronymic) ||
                 volunteerDTO.AddressID < 0)
             {
                 return false;
