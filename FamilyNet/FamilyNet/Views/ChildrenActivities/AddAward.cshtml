@@ -1,0 +1,25 @@
+﻿@model AwardViewModel
+
+@{
+    ViewData["Title"] = "Добавить награду";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Добавить награду</h1>
+
+<form asp-action="AddAward">
+    <input asp-for="ChildActivityID" value="@Model.ChildActivityID" type="hidden" />
+    <div class="form-group">
+        <label asp-for="Name">Название награды</label>
+        <input asp-for="Name" type="text" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="Description">Описание награды</label>
+        <textarea asp-for="Description" type="text" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="Date">Дата выдачи</label>
+        <input asp-for="Date" type="date" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary mb-2">Сохранить</button>
+</form>

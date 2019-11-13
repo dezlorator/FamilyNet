@@ -2,7 +2,7 @@
 {
     public enum DonationStatus
     {
-        Sended = 1,
+        Sent = 1,
         Aproved,
         Taken,
     }

@@ -6,6 +6,6 @@ namespace FamilyNetServer.Filters
     public interface IDonationsFilter
     {
         IQueryable<Donation> GetDonations(IQueryable<Donation> donations,
-                                          string filter);
+                                          string filter, DonationStatus status);
     }
 }

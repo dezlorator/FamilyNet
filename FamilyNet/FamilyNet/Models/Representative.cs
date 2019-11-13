@@ -12,8 +12,8 @@ namespace FamilyNet.Models
         public override void CopyState(Person sender)
         {
             base.CopyState(sender);
-            Representative representativeSended = sender as Representative;
-            Orphanage = representativeSended.Orphanage; // TODO : Test - do is work right?
+            Representative representativeSent = sender as Representative;
+            Orphanage = representativeSent.Orphanage; // TODO : Test - do is work right?
         }
     }
 }

@@ -1,9 +1,14 @@
-﻿@model DataTransferObjects.DonationDTO
+﻿@model FamilyNet.Models.ViewModels.DonateViewModel
 
 <h3>Как Вы хотите совершить пожертвование?</h3>
-<div>
-    <input type="hidden" asp-for="ID" />
-    <a class="btn btn-danger" asp-controller="Quests" asp-action="Create">С помощью волонтера</a>
-    <a class="btn btn-danger" asp-action="Donate">Самостоятельно</a>
-    <a class="btn btn-danger" asp-action="Donations">Назад</a>
+
+<div class="form-group">
+    <form asp-action="Donate">
+        <input type="hidden" asp-for="Donation.ID" />
+        <label>Потрібна допомога волонтера?</label><br />
+        <input asp-for="NeedHelp" />
+        <br />
+        <a class="btn btn-danger" asp-action="Index">Назад</a>
+        <input type="submit" value="Підтвердити" class="btn btn-success" />
+    </form>
 </div>

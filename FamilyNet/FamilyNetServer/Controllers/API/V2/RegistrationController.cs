@@ -1,3 +1,6 @@
+
+﻿using System;
+using System.Linq;
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +10,7 @@ using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using DataTransferObjects;
+using DataTransferObjects.Enums;
 using Microsoft.AspNetCore.Http;
 using FamilyNetServer.HttpHandlers;
 using Microsoft.Extensions.Logging;
@@ -71,6 +75,7 @@ namespace FamilyNetServer.Controllers.API.V2
                     UserName = model.Email,
                     PhoneNumber = model.Phone,
                     PersonType = GetPersonType(model.YourDropdownSelectedValue),
+                    EmailConfirmed = true,
                     PersonID = null
                 };
 
@@ -82,49 +87,21 @@ namespace FamilyNetServer.Controllers.API.V2
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("{info}", "User was saved");
-
-                    var codeTokken = await _unitOfWork.UserManager
-                        .GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action(
-                        "ConfirmEmail",
-                        "Account",
-                        new { userId = user.Id, code = codeTokken },
-                        protocol: HttpContext.Request.Scheme);
-                    EmailService emailService = new EmailService();
-                    await emailService.SendEmailAsync(model.Email,
-                        "Confirm your account",
-                        $"Confirm regisration by link: <a href='{callbackUrl}'>link</a>");
-
-                    _logger.LogInformation("{info}{status}", "url " + callbackUrl,
-                        StatusCodes.Status200OK);
 
                     return Ok(model);
                 }
-                else
-                {
-                    string e = string.Empty;
 
-                    foreach (var error in result.Errors)
-                    {
-                        e += error.Description;
-                        ModelState.AddModelError(string.Empty,
-                            error.Description);
-                    }
 
-                    _logger.LogError("{info}{status}", "User was saved",
-                        StatusCodes.Status400BadRequest);
-
-                    return BadRequest(e);
-                }
+                var msg = "model is not valid";
+                _logger.LogError("{info}{status}", msg,
+                    StatusCodes.Status400BadRequest);
+                return BadRequest(msg);
             }
-
-            var msg = "model is not valid";
-            _logger.LogError("{info}{status}", msg,
-                StatusCodes.Status400BadRequest);
-
-            return BadRequest(msg);
-        }
+            _logger.LogInformation("{info}", "User was saved");
+            return BadRequest();
+            } 
+         
+        
 
         [HttpGet]
         [AllowAnonymous]

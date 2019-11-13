@@ -10,6 +10,7 @@ using FamilyNetServer.Validators;
 using DataTransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -76,6 +77,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 {
                     ID = d.ID,
                     Name = d.Name,
+                    Description = d.Description,
+                    Status = d.Status.ToString(),
                     DonationID = d.DonationID,
                     OrphanageID = d.Donation.OrphanageID,
                     OrphanageName = d.Donation.Orphanage.Name,
@@ -108,10 +111,12 @@ namespace FamilyNetServer.Controllers.API.V1
             {
                 ID = quest.ID,
                 Name = quest.Name,
+                Description = quest.Description,
                 DonationID = quest.DonationID,
                 VolunteerID = quest.VolunteerID,
                 FromDate = quest.FromDate,
-                ToDate = quest.ToDate
+                ToDate = quest.ToDate,
+                Status = quest.Status.ToString()
             };
 
             if (questDTO.DonationID != null)
@@ -133,7 +138,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
         // PUT: api/Quests/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "CharityMaker, Representative, Admin")]
+        [Authorize(Roles = "Volunteer, CharityMaker, Representative, Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]QuestDTO questDTO)
@@ -153,8 +158,16 @@ namespace FamilyNetServer.Controllers.API.V1
             }
 
             quest.Name = questDTO.Name;
+            quest.Description = questDTO.Description;
 
-            if (questDTO.VolunteerID != null)
+            if (!Enum.TryParse(questDTO.Status, out QuestStatus status))
+            {
+                return BadRequest();
+            }
+
+            quest.Status = status;
+
+            if (questDTO.VolunteerID != quest.VolunteerID)
             {
                 _logger.LogInformation("Volunteer is not null.");
                 quest.VolunteerID = questDTO.VolunteerID;
@@ -194,7 +207,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 Description = questDTO.Description,
                 DonationID = questDTO.DonationID,
                 FromDate = questDTO.FromDate,
-                ToDate = questDTO.ToDate
+                ToDate = questDTO.ToDate,
+                VolunteerID = 2
             };
 
             if (questDTO.DonationID != null)
