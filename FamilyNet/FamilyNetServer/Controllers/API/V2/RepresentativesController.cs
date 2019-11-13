@@ -203,6 +203,12 @@ namespace FamilyNetServer.Controllers.API.V2
             representativeDTO.ID = representative.ID;
             representativeDTO.PhotoPath = representative.Avatar;
 
+
+            var id = User.Identity.Name;
+            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
+            user.PersonID = representative.ID;
+            await _unitOfWork.UserManager.UpdateAsync(user);
+
             _logger.LogInformation("{token}{userId}{status}{info}",
                 token, userId, StatusCodes.Status201Created,
                 $"Representative was saved [id:{representative.ID}]");
