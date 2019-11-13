@@ -15,6 +15,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
@@ -62,7 +63,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 "Endpoint Purchase/api/v1 GetAll was called", token, userIdentity);
 
             var purchase = _filterPurchase.GetFiltered(_repository.Purchases.GetAll().Where(c => !c.IsDeleted),
-                filter, out var count);
+                filter, out var count).AsQueryable();
 
             if (purchase == null)
             {
@@ -72,23 +73,23 @@ namespace FamilyNetServer.Controllers.API.V1
                 return BadRequest();
             }
 
-            var purchases =  purchase.Select(item =>
-                new PurchaseDTO()
-                {
-                    ID = item.ID,
-                    Date = item.Date,
-                    AuctionLotId = item.AuctionLotId,
-                    Paid = item.Paid,
-                    Quantity = item.Quantity,
-                    UserId = item.UserId.ToString()
-                }).ToList();
+            var purchases = await purchase.Select(item =>
+               new PurchaseDTO()
+               {
+                   ID = item.ID,
+                   Date = item.Date,
+                   AuctionLotId = item.AuctionLotId,
+                   Paid = item.Paid,
+                   Quantity = item.Quantity,
+                   UserId = item.UserId.ToString()
+               }).ToListAsync();
 
             var filterModel = new PurchaseFilterDTO
             {
                 PurchaseDTOs = purchases,
                 TotalCount = count
             };
-                      
+
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(purchases));
 
@@ -183,8 +184,8 @@ namespace FamilyNetServer.Controllers.API.V1
             {
                 var emailSender = new EmailService();
 
-               await emailSender.SendEmailAsync(user.Email, 
-                    "Buying crafts", 
+                var task = emailSender.SendEmailAsync(user.Email,
+                    "Buying crafts",
                     "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
                     "<h3>Craft info:</h3>" +
                     $"<p>Craft id: {purchase.AuctionLotId}</p>" +
@@ -192,7 +193,24 @@ namespace FamilyNetServer.Controllers.API.V1
                     $"<p>To pay: {purchase.Paid}</p>" +
                     "<h3>Orphanage representatives will contact you♥</h3>");
 
+                await task.ContinueWith(t =>
+                {
+                    if (t.Status == TaskStatus.RanToCompletion)
+                    {
+                        _logger.LogInformation("{token}{userId}{status}{info}",
+                                 token, userId, StatusCodes.Status201Created,
+                                 $"Email was sent");
+                    }
+
+                    if (t.Status == TaskStatus.Faulted)
+                    {
+                        _logger.LogError("{token}{userId}{status}{info}",
+                            token, userId, StatusCodes.Status400BadRequest,
+                            $"Email was not sent");
+                    }
+                });
             }
+
             purchaseDTO.ID = purchase.ID;
 
             _logger.LogInformation("{token}{userId}{status}{info}",
