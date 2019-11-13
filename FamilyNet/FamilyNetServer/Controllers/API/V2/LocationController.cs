@@ -195,9 +195,14 @@ namespace FamilyNetServer.Controllers.API.V2
                     token, StatusCodes.Status400BadRequest,
                     "Address data is invalid");
 
-                location.IsDeleted = true;
+                _repository.Location.Update(location);
+                _repository.SaveChanges();
+
                 return NotFound();
             }
+
+            location.MapCoordX = locationDTO.MapCoordX;
+            location.MapCoordY = locationDTO.MapCoordY;
 
             _repository.Location.Update(location);
             _repository.SaveChanges();

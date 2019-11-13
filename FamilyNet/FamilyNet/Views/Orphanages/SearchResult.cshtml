@@ -1,10 +1,10 @@
-﻿@model IEnumerable<FamilyNet.Models.Orphanage>
+﻿@model IEnumerable<DonationDetailDTO>
 @{
     ViewData["Title"] = "Результаты поиска";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@if (Model.Count() == 0)
+@if (Model == null || Model.Count() == 0)
 {
     <form asp-controller="Orphanages" asp-action="SearchByTypeHelp">
         <p class="text-danger h5">По указаной категории  @ViewData["TypeHelp"] ничего найдено не было</p>
@@ -13,57 +13,41 @@
 }
 else
 {
-    <p class="text-center h5">В указаной категории помощи (@ViewData["TypeHelp"]) нуждаются следующие детские дома</p>
+    <p class="text-center h5">Указанный дом нуждается:</p>
     <table class="table center">
         <thead class="thead-light">
             <tr>
                 <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
-                        @Html.DisplayNameFor(model => model.Name)
-                    </a>
+                    Orphanage name
                 </th>
                 <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
-                        @Html.DisplayNameFor(model => model.Adress)
-                    </a>
+                    City
                 </th>
                 <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
-                        @Html.DisplayNameFor(model => model.Rating)
-                    </a>
+                    Item name
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Avatar)
-                </th>
-                <th>
-                    Actions
+                    Item description
                 </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Adress.Country),
-                        @Html.DisplayFor(modelItem => item.Adress.Region),
-                        @Html.DisplayFor(modelItem => item.Adress.City),
-                        @Html.DisplayFor(modelItem => item.Adress.Street),
-                        @Html.DisplayFor(modelItem => item.Adress.House)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Rating)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Avatar)
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info"><i class="fas fa-info-circle"></i></a>
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.City)
+                </td>                               
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemDescription)
+                </td>
+            </tr>
             }
         </tbody>
     </table>
