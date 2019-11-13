@@ -21,7 +21,7 @@ namespace FamilyNetLogs.Controllers
 
         public async Task<IActionResult> Index(string userId, string level,
                                                string token, int page = 1,
-                                               int rows = 8)
+                                               int rows = 7)
         {
             ViewData["userFilter"] = userId;
             ViewData["levelFilter"] = level;

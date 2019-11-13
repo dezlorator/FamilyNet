@@ -5,10 +5,10 @@ namespace FamilyNetLogs.Database
 {
     public partial class FamilyNetLogsContext : DbContext
     {
-        public virtual DbSet<Log> Log { get; set; }
+        public DbSet<Log> Log { get; set; }
 
         public FamilyNetLogsContext(DbContextOptions<FamilyNetLogsContext> options)
-        : base(options) { }
+                : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

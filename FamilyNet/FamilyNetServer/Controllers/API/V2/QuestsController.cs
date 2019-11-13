@@ -11,9 +11,9 @@ using DataTransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
-namespace FamilyNetServer.Controllers.API.V1
+namespace FamilyNetServer.Controllers.API.V2
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v2/[controller]")]
     [ApiController]
     public class QuestsController : ControllerBase
     {
@@ -209,11 +209,11 @@ namespace FamilyNetServer.Controllers.API.V1
                 questDTO.DonationDescription = item.Description;
             }
 
-           await _unitOfWork.Quests.Create(quest);
+            await _unitOfWork.Quests.Create(quest);
             _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: Created. Quest was created");
-            return Created("api/v1/quests/" + quest.ID, questDTO);
+            return Created("api/v2/quests/" + quest.ID, questDTO);
         }
 
         // DELETE: api/Quests/5
