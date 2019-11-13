@@ -63,7 +63,7 @@ namespace FamilyNetServer.Controllers.API
                 .Where(a => a.PersonID == user.PersonID
                     && a.Date > DateTime.Now && !a.IsDeleted)
                 .OrderBy(a => a.Date);
-            availabilities = availabilities.ToList();
+
             if (availabilities == null)
             {
                 _logger.LogInformation("{status}{info}",
