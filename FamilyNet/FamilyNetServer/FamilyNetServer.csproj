@@ -37,6 +37,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\charitymaker\" />
+    <Folder Include="wwwroot\CharityMaker\" />
     <Folder Include="wwwroot\representatives\" />
     <Folder Include="wwwroot\volunteer\" />
   </ItemGroup>

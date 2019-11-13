@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Нужды";
+    var role = ViewData["role"] as String;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -22,6 +23,10 @@
     <table class="table">
         <th>
             @Html.TextBox("forSearch", "", new { @class = "form-control" })
+        </th>
+
+        <th>
+            @Html.DropDownList("status", new SelectList(new List<string>() { "Needed", "Sent", "Taken" }), new { @class = "form-control" })
         </th>
 
         <th width="12%">
@@ -98,7 +103,16 @@
                     <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
                     <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
                     <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
-                    <a asp-action="Donate" asp-route-id="@item.ID"><i>Donate</i></a>
+
+                    @if (role == "CharityMaker" && item.Status == "Needed")
+                    {
+                        <a asp-action="Donate" asp-route-id="@item.ID" class=.btn-info><i>Пожертвувати</i></a>
+                    }
+
+                    @if (role == "Representative" && item.Status == "Sent")
+                    {
+                        <a asp-action="MarkAsTaken" asp-route-id="@item.ID" class=.btn-info><i>Отримано</i></a>
+                    }
                 </td>
             </tr>
         }

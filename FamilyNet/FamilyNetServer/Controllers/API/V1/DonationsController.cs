@@ -11,6 +11,7 @@ using FamilyNetServer.Validators;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNetServer.Models.Identity;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -21,8 +22,8 @@ namespace FamilyNetServer.Controllers.API.V1
         #region fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<DonationDTO> _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
+        private readonly IValidator<DonationDTO> _donationValidator;
         private readonly ILogger<DonationsController> _logger;
 
         #endregion
@@ -47,10 +48,17 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll([FromQuery]int rows,
                                     [FromQuery]int page,
-                                    [FromQuery]string forSearch)
+                                    [FromQuery]string forSearch,
+                                    [FromQuery]string status = "Needed")
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
-            donations = _donationsFilter.GetDonations(donations, forSearch);
+
+            if(!Enum.TryParse(status, out DonationStatus donationStatus))
+            {
+                return BadRequest();
+            }
+
+            donations = _donationsFilter.GetDonations(donations, forSearch, donationStatus);
 
             if (rows != 0 && page != 0)
             {
@@ -147,7 +155,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 CharityMakerID = donationDTO.CharityMakerID,
                 OrphanageID = donationDTO.OrphanageID,
                 Orphanage = await _unitOfWork.Orphanages.GetById(donationDTO.OrphanageID.Value),
-                Status = DonationStatus.Sended,
+                Status = DonationStatus.Needed,
                 LastDateWhenStatusChanged = DateTime.Now
             };
 
@@ -161,7 +169,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, CharityMaker, Representative")]
         public async Task<IActionResult> Edit(int id, [FromForm]DonationDTO donationDTO)
         {
             if (!_donationValidator.IsValid(donationDTO))
@@ -178,6 +186,18 @@ namespace FamilyNetServer.Controllers.API.V1
                 return BadRequest();
             }
 
+            if (!Enum.TryParse(donationDTO.Status, out DonationStatus status))
+            {
+                return BadRequest();
+            }
+
+            if(status != donation.Status)
+            {
+                donation.LastDateWhenStatusChanged = DateTime.Now;
+            }
+
+            donation.Status = status;
+
             if (donation.DonationItemID != null)
             {
                 _logger.LogInformation("Donation item is not null.");
@@ -185,9 +205,10 @@ namespace FamilyNetServer.Controllers.API.V1
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
             }
 
-            donation.IsRequest = true;
-
-            donation.CharityMakerID = donationDTO.CharityMakerID;
+            if (donationDTO.CharityMakerID != donation.CharityMakerID)
+            {
+                donation.Status = DonationStatus.Sent;
+            }
 
             if (donationDTO.OrphanageID != null)
             {
@@ -200,68 +221,6 @@ namespace FamilyNetServer.Controllers.API.V1
             _unitOfWork.SaveChanges();
 
             _logger.LogInformation("Status: NoContent. Donation was edited.");
-
-            return NoContent();
-        }
-
-        [HttpPut("StatusEdit/{id}")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> StatusEdit(int id, [FromForm]string status)
-        {
-            if(!Enum.TryParse(status, out DonationStatus donationStatus))
-            {
-                _logger.LogError("Wrong string.");
-                return BadRequest();
-            }
-
-            var donation = await _unitOfWork.Donations.GetById(id);
-
-            if (donation == null)
-            {
-                _logger.LogError("Bad request. No donation with such id was found");
-                return BadRequest();
-            }
-
-            donation.Status = donationStatus;
-
-            _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
-
-            _logger.LogInformation("Status: NoContent. Donation status was edited.");
-
-            return NoContent();
-        }
-
-        [HttpPut("donationMade/{id}")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddCharityMaker(int id, [FromForm]int charityMakerID)
-        {
-            CharityMaker charityMaker = await _unitOfWork.CharityMakers.GetById(charityMakerID);
-
-            if (charityMaker == null)
-            {
-                _logger.LogError("Bad request. No charity maker with such id was found");
-                return BadRequest();
-            }
-
-            Donation donation = await _unitOfWork.Donations.GetById(id);
-
-            if (donation == null)
-            {
-                _logger.LogError("Bad request. No donation with such id was found");
-                return BadRequest();
-            }
-
-            donation.CharityMakerID = charityMakerID;
-
-            _unitOfWork.Donations.Update(donation);
-            _unitOfWork.SaveChanges();
-
-            _logger.LogInformation("Status: NoContent. Charity maker was added.");
 
             return NoContent();
         }
