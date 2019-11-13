@@ -18,9 +18,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models.EntityFramework;
 
-namespace FamilyNetServer.Controllers.API.V2
+namespace FamilyNetServer.Controllers.API.V1
 {
-    [Route("api/v2/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ChildrenActivitiesController : ControllerBase
     {
@@ -128,7 +128,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody]ChildActivityDTO childActivityDTO)
+        public async Task<IActionResult> Create([FromForm]ChildActivityDTO childActivityDTO)
         {
             if (!_childActivityValidator.IsValid(childActivityDTO))
             {
@@ -166,14 +166,14 @@ namespace FamilyNetServer.Controllers.API.V2
 
             _logger.LogInformation("Return Created[201]. New child activity was added.");
 
-            return Created("api/v2/childrenActivities/" + childActivity.ID, new ChildActivityDTO());
+            return Created("api/v1/childrenActivities/" + childActivity.ID, new ChildActivityDTO());
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromQuery]int id, [FromBody]ChildActivityDTO childActivityDTO)
+        public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]ChildActivityDTO childActivityDTO)
         {
             if (!_childActivityValidator.IsValid(childActivityDTO))
             {
