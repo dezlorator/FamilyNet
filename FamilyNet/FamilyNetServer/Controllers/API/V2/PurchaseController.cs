@@ -76,9 +76,8 @@ namespace FamilyNetServer.Controllers.API.V2
                 buy.AuctionLot = await GetCraft(buy.AuctionLotId);
             }
 
-
             var purchase = _filterPurchase.GetFiltered(buys,
-                filter, user.Id, out var count).AsQueryable();
+                filter, user == null ? String.Empty : user.Id, out var count).AsQueryable();
 
             if (purchase == null)
             {
@@ -88,16 +87,18 @@ namespace FamilyNetServer.Controllers.API.V2
                 return BadRequest();
             }
 
-            var purchases =  purchase.Select(item =>
-               new PurchaseDTO()
-               {
-                   ID = item.ID,
-                   Date = item.Date,
-                   AuctionLotId = item.AuctionLotId,
-                   Paid = item.Paid,
-                   Quantity = item.Quantity,
-                   UserId = item.UserId.ToString()
-               }).ToList<PurchaseDTO>();
+            var purchases = purchase.Select(item =>
+              new PurchaseDTO()
+              {
+                  ID = item.ID,
+                  Date = item.Date,
+                  AuctionLotId = item.AuctionLotId,
+                  Paid = item.Paid,
+                  Quantity = item.Quantity,
+                  ItemName = GetItem(item.AuctionLotId).Result.Name,
+                  UserEmail = _repository.UserManager.FindByIdAsync(item.UserId.ToString()).Result.Email,
+                  UserId = item.UserId.ToString()
+              }).ToList();
 
             var filterModel = new PurchaseFilterDTO
             {
