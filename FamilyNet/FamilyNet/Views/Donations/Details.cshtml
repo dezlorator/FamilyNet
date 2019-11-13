@@ -58,13 +58,4 @@
     }
 
     <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
-
-    @if (role == "CharityMaker")
-    {
-        <form asp-action="Donate">
-            <br /><br />
-            <input type="hidden" asp-for="ID" />
-            <a asp-action="Donate" class="btn btn-primary">Пожертвовать</a>
-        </form>
-    }
 </div>

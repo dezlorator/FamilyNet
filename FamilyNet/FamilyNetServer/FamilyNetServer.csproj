@@ -25,7 +25,6 @@
 
 
   <ItemGroup>
-    <PackageReference Include="FontAwesome" Version="4.7.0" />
     <PackageReference Include="MailKit" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.6" />
@@ -38,6 +37,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\charitymaker\" />
+    <Folder Include="wwwroot\CharityMaker\" />
     <Folder Include="wwwroot\representatives\" />
     <Folder Include="wwwroot\volunteer\" />
   </ItemGroup>

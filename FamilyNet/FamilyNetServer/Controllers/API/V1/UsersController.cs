@@ -275,14 +275,6 @@ namespace FamilyNetServer.Controllers.API.V1
 
             return BadRequest();
         }
-
-        private void AddErrorsFromResult(IdentityResult result)
-        {
-            foreach (IdentityError error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
-        }
     }
 }
 

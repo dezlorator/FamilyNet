@@ -5,19 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Создать квест</h1>
+<h1>Створити квест</h1>
 
 <div class="row">
     <div class="col-md-4">
         <form enctype="multipart/form-data" asp-action="Create">
             <div asp-validation-summary="All" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="DonationName" class="control-label"></label>
-                <select asp-for="DonationID"
-                        class="form-control"
-                        asp-items="@(new SelectList(@ViewBag.ListOfDonations, "ID", "ItemName"))"></select>
-            </div>
 
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -33,13 +26,13 @@
 
             <div class="form-group">
                 <label asp-for="FromDate" class="control-label"></label>
-                <input type="date" class="myInput" asp-for="FromDate" placeholder="Дата начала" asp-format="{0:yyyy-MM-dd HH:mm}">
+                <input type="date" class="myInput" asp-for="FromDate" placeholder="Дата початку">
                 <span asp-validation-for="FromDate" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="ToDate" class="control-label"></label>
-                <input type="date" class="myInput" asp-for="ToDate" placeholder="Дата окончания" asp-format="{0:yyyy-MM-dd HH:mm}>
+                <input type="date" class="myInput" asp-for="ToDate" placeholder="Дата закінчення">
                 <span asp-validation-for="ToDate" class="text-danger"></span>
             </div>
             <div class="form-group">

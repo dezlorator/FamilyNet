@@ -68,10 +68,11 @@ namespace FamilyNet.Controllers
 
         #endregion
 
-        public async Task<IActionResult> Index(string forSearch)
+        public async Task<IActionResult> Index(string forSearch, string status = "Needed")
         {
             var url = _URLDonationsBuilder.GetAllWithFilter(_apiPath,
-                                                            forSearch);
+                                                            forSearch,
+                                                            status);
             IEnumerable<DonationDTO> donationsDTO;
 
             try
@@ -162,7 +163,6 @@ namespace FamilyNet.Controllers
             if (msg.StatusCode != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
-                //TODO: log
             }
 
             var itemDTO = msg.Content.ReadAsAsync<DonationItemDTO>().Result;
@@ -284,19 +284,14 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        public async Task<IActionResult> EditStatus(int? id)
+        public async Task<IActionResult> MarkAsTaken(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var url = _URLDonationsBuilder.GetById(_apiPath, id.Value);
-            DonationDTO donationDTO;
+            var url = _URLDonationsBuilder.GetById(_apiPath, id);
+            DonationDetailDTO donation;
 
             try
             {
-                donationDTO = await _downloader.GetByIdAsync(url, HttpContext.Session);
+                donation = await _downloader.GetByIdAsync(url, HttpContext.Session);
             }
             catch (ArgumentNullException)
             {
@@ -311,32 +306,8 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
-            GetViewData();
-
-            return View(donationDTO);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditStatus(int id, DonationDetailDTO donationDTO) //TODO: completely remake
-        {
-            if (id != donationDTO.ID)
-            {
-                return NotFound();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(donationDTO.Status);
-            }
-
-            var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var msg = await _downloader.CreatePutAsync(url, donationDTO, HttpContext.Session);
-
-            if (msg.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                return Redirect("/Account/Login");
-            }
+            donation.Status = "Taken";
+            var msg = await _downloader.CreatePutAsync(url, donation, HttpContext.Session);
 
             if (msg.StatusCode != HttpStatusCode.NoContent)
             {
@@ -348,29 +319,48 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        public IActionResult Donate(int? id)
+        public async Task<IActionResult> Donate(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            return View();
+            var urlDonation = _URLDonationsBuilder.GetById(_apiPath, id.Value);
+
+            var model = new DonateViewModel
+            {
+                Donation = await _downloader.GetByIdAsync(urlDonation, HttpContext.Session)
+            };
+
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Donate(int id, DonationDetailDTO donation)
+        public async Task<IActionResult> Donate(int id, DonateViewModel model)
         {
-            if (id != donation.ID)
+            if (id != model.Donation.ID)
             {
                 return NotFound(); 
             }
 
-            // var userId = HttpContext.User.
-            donation.CharityMakerID = 2;
+            var personId = HttpContext.Session.GetString("personId");
 
-            var url = _URLDonationsBuilder.GetById(_apiPath, donation.ID);
-            var msg = await _downloader.CreatePutAsync(url, donation, HttpContext.Session);
+            if (personId == String.Empty || personId == null)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if(!int.TryParse(personId, out var charityMakerID))
+            {
+                return Redirect("/Home/Error");
+            }
+
+            var url = _URLDonationsBuilder.GetById(_apiPath, model.Donation.ID);
+            model.Donation = await _downloader.GetByIdAsync(url, HttpContext.Session);
+            model.Donation.CharityMakerID = charityMakerID;
+
+            var msg = await _downloader.CreatePutAsync(url, model.Donation, HttpContext.Session);
 
             if (msg.StatusCode == HttpStatusCode.Unauthorized)
             {  
@@ -382,9 +372,15 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            if (model.NeedHelp)
+            {
+                TempData["DonationID"] = model.Donation.ID;
+                return Redirect("/Quests/Create");
+            }
+
             GetViewData();
 
-            return Redirect("/Donations/");
+            return Redirect("/Donations/Index");
         }
 
         public async Task<IActionResult> Delete(int? id)

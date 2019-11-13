@@ -19,11 +19,11 @@ namespace FamilyNetServer.Models
         public override void CopyState(Person sender)
         {
             base.CopyState(sender);
-            Orphan orphanSended = sender as Orphan;
-            Avatar = orphanSended.Avatar;
-            Orphanage = orphanSended.Orphanage;
-            Confirmation = orphanSended.Confirmation;
-            ChildInOrphanage = orphanSended.ChildInOrphanage;
+            Orphan orphanSent = sender as Orphan;
+            Avatar = orphanSent.Avatar;
+            Orphanage = orphanSent.Orphanage;
+            Confirmation = orphanSent.Confirmation;
+            ChildInOrphanage = orphanSent.ChildInOrphanage;
         }
     }
 }

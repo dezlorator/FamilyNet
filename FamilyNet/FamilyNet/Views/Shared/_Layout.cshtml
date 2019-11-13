@@ -78,7 +78,7 @@
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Representatives" asp-action="Index">@SharedLocalizer["Representatives"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Donations" asp-action="Index">Потребности</a>
+                            <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Donations" asp-action="Index">Needs</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="All">Fair</a>
@@ -101,7 +101,7 @@
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Quests" asp-action="Index">Quests</a>
                             </li>
                         }
-                        @if (role == "CharityMaker" || role == "Volunteer")
+                        @if (role == "CharityMaker" || role == "Volunteer" || role == "Admin")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">My purchases</a>

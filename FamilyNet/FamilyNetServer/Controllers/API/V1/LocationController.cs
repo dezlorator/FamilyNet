@@ -253,8 +253,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             _repository.Location.Update(location);
             _repository.SaveChanges();
-
-
+            
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,
                 $"Location.IsDelete was updated [id:{id}]", userId, token);
