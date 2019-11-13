@@ -28,29 +28,11 @@ namespace FamilyNet.Downloader.URLBuilders
         {
             var queryParams = new Dictionary<string, string>();
 
-            if (filter.PaidTo > 0.0)
-            {
-                queryParams.Add("PaidTo", filter.PaidTo.ToString());
-            }
-            
-            if (filter.PaidFrom > 0.0)
-            {
-                queryParams.Add("PaidFrom", filter.PaidFrom.ToString());
-            }
+           
 
-            if (filter.QuantityFrom > 0.0)
+            if (!String.IsNullOrEmpty(filter.Email))
             {
-                queryParams.Add("QuantityFrom", filter.QuantityFrom.ToString());
-            }
-
-            if (filter.QuantityTo > 0.0)
-            {
-                queryParams.Add("QuantityTo", filter.QuantityTo.ToString());
-            }
-
-            if (!String.IsNullOrEmpty(filter.UserId))
-            {
-                queryParams.Add("UserId", filter.UserId);
+                queryParams.Add("Email", filter.Email);
             }
 
             if (filter.Date > DateTime.MinValue)
@@ -58,9 +40,9 @@ namespace FamilyNet.Downloader.URLBuilders
                 queryParams.Add("Date", filter.Date.ToString());
             }
 
-            if (filter.CraftId > 0)
+            if (!String.IsNullOrEmpty(filter.CraftName))
             {
-                queryParams.Add("CraftId", filter.CraftId.ToString());
+                queryParams.Add("CraftName", filter.CraftName);
             }
 
             if (!String.IsNullOrEmpty(filter.Sort))

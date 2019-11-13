@@ -105,6 +105,9 @@ namespace FamilyNet.Controllers
             });
 
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                             ViewData);
+
             GetViewData();
 
             return View(orphanages);
@@ -153,7 +156,8 @@ namespace FamilyNet.Controllers
                 Avatar = childrenHouseDTO.PhotoPath,
                 Adress = GetAddress(childrenHouseDTO.AdressID.Value).Result
             };
-
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                             ViewData);
             GetViewData();
 
             return View(orphanage);
@@ -162,6 +166,8 @@ namespace FamilyNet.Controllers
 
         public IActionResult Create()
         {
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                                ViewData);
             GetViewData();
 
             return View();
@@ -220,6 +226,8 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                             ViewData);
             GetViewData();
 
             return Redirect("/Orphanages/Index");
@@ -255,6 +263,8 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                             ViewData);
             GetViewData();
 
             ChildrenHouseCreateViewModel model = new ChildrenHouseCreateViewModel
@@ -329,6 +339,8 @@ namespace FamilyNet.Controllers
                 //TODO: log
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                             ViewData);
             GetViewData();
 
             return View(model);
@@ -379,6 +391,8 @@ namespace FamilyNet.Controllers
                 Adress = GetAddress(childrenHouseDTO.AdressID.Value).Result
             };
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                             ViewData);
             GetViewData();
 
             return View(orphanage);
@@ -432,31 +446,13 @@ namespace FamilyNet.Controllers
                 return Redirect("/Home/Error");
             }
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                             ViewData);
             GetViewData();
 
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult SearchByTypeHelp()
-        {
-            GetViewData();
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SearchResult(string typeHelp)
-        {
-            ViewData["TypeHelp"] = typeHelp;
-            IEnumerable<DonationDetailDTO> listDonation = null;
-            if(typeHelp != null)
-            {
-                var url = _URLDonation.GetAllWithFilter(_apiDonationPath, typeHelp);
-                listDonation =await _donation.GetAllAsync(url, HttpContext.Session);              
-            }
-
-            GetViewData();
-            return View("SearchResult", listDonation);
-        }
 
         public async Task<IActionResult> SearchOrphanageOnMap()
         {
@@ -471,6 +467,8 @@ namespace FamilyNet.Controllers
                    Location = GetLocation(orph.LocationID.Value).Result
                });
 
+            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+                                             ViewData);
             GetViewData();
 
             return View(filtredHouses);

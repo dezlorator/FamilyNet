@@ -60,10 +60,7 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphanages" asp-action="Index">@SharedLocalizer["Orphanages"]</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphanages" asp-action="SearchByTypeHelp">@SharedLocalizer["SearchHelp"]</a>
-                        </li>
+                        </li>                       
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphans" asp-action="Index">@SharedLocalizer["Orphans"]</a>
 
@@ -103,9 +100,19 @@
                         }
                         @if (role == "CharityMaker" || role == "Volunteer" || role == "Admin")
                         {
-                            <li class="nav-item">
+                            @if (role == "Admin")
+                            {
+                                <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">Purchases</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">My purchases</a>
-                            </li>
+                                </li>
+                            }
+                            
                         }
                         @if (role?.Length > 1)
                         {

@@ -14,5 +14,6 @@ namespace FamilyNet.Models.ViewModels.Purchase
         public PurchaseFilterViewModel FilterViewModel { get; set; }
 
         public string Sort { get; set; }
+
     }
 }

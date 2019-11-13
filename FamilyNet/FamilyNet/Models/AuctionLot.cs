@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace FamilyNet.Models
 {
@@ -8,8 +9,6 @@ namespace FamilyNet.Models
         public int ID { get; set; }
 
         public DateTime DateStart { get; set; }
-
-        public DateTime DateEnd { get; set; }
 
         public int? AuctionLotItemID { get; set; }
 
@@ -24,6 +23,7 @@ namespace FamilyNet.Models
 
         public string Avatar { get; set; }
 
+        [Required(ErrorMessage = "Please enter quantity")]
         public int Quantity { get; set; }
 
         public string Status { get; set; }

@@ -10,8 +10,8 @@ namespace FamilyNetServer.Filters
 {
     public interface IFilterConditionPurchase
     {
-        IEnumerable<Purchase> GetFiltered(IQueryable<Purchase> purchase,
-           FilterParamentrsPurchaseDTO filter,  out int count);
+        IEnumerable<Purchase> GetFiltered(IEnumerable<Purchase> purchase,
+           FilterParamentrsPurchaseDTO filter, string userId, out int count);
        
     }
 }
