@@ -1,0 +1,62 @@
+﻿@model IEnumerable<FamilyNet.Models.ViewModels.FeedbackVIewModel>
+
+@{
+    ViewData["Title"] = "Отзывы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <h1>
+        Список Отзывов
+        <a asp-action="Create" class="btn btn-primary float-right">Написать отзыв</a>
+    </h1>
+<hr />
+
+<div class="box">
+    <div class="container">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+            <div class="col-md-4">
+                <a asp-action="Details" asp-route-id="@item.FeedbackDTO.ID" style="text-decoration:none;">
+                    <div class="card mb-4 box-shadow text-center">
+                        @if (item.FeedbackDTO.ImagePath != null && item.FeedbackDTO.ImagePath != "")
+                        {
+                            <img class="img-responsive" src="@Url.Content(@item.FeedbackDTO.ImagePath)" alt="Card image cap" width="100%" height="300px">
+                        }
+                        else
+                        {
+                            <img class="img-responsive" src="@Url.Content("~/images/anonimusjpg.jpg")" alt="Card image cap" width="100%" height="300px">
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                @Html.DisplayFor(modelItem => item.FeedbackDTO.Message)
+                            </h5>
+                            <p class="card-text">
+                                @Html.DisplayFor(modelItem => item.FeedbackDTO.Time)
+                            </p>
+                            <p class="card-text">
+                                Рейтинг
+                                @Html.DisplayFor(modelItem => item.FeedbackDTO.Rating)
+                            </p>
+                            <p class="card-text">
+                                Получатель
+                                @Html.DisplayFor(modelItem => item.ReceiverFio.Name)
+                                @Html.DisplayFor(modelItem => item.ReceiverFio.Surname)
+                                @Html.DisplayFor(modelItem => item.ReceiverFio.Patronymic)
+                                @Html.DisplayFor(modelItem => item.ReceiverFio.Role)
+                            </p>
+                            <p class="card-text">
+                                Отправитель
+                                @Html.DisplayFor(modelItem => item.SenderFio.Name)
+                                @Html.DisplayFor(modelItem => item.SenderFio.Surname)
+                                @Html.DisplayFor(modelItem => item.SenderFio.Patronymic)
+                                @Html.DisplayFor(modelItem => item.SenderFio.Role)
+                            </p>
+                        </div>
+                    </div>
+                    </a>
+            </div>
+            }
+        </div>
+    </div>
+</div>

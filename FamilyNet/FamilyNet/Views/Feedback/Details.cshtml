@@ -1,0 +1,70 @@
+﻿@model FamilyNet.Models.ViewModels.FeedbackVIewModel
+
+@{
+    ViewData["Title"] = "Детали";
+}
+
+<div class="container">
+    <div class="row my-2">
+        <div class="col-lg-8 order-lg-2">
+            <div class="tab-content py-4">
+                <div class="tab-pane active" id="profile">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>@Html.DisplayNameFor(model => model.FeedbackDTO.Message)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.FeedbackDTO.Message)
+                            </p>
+
+                            <h6>@Html.DisplayNameFor(model => model.FeedbackDTO.Time)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.FeedbackDTO.Time)
+                            </p>
+
+                            <h6>@Html.DisplayNameFor(model => model.FeedbackDTO.Rating)</h6>
+                            <p>
+                                @Html.DisplayFor(model => model.FeedbackDTO.Rating)
+                            </p>
+                            <h6>@Html.DisplayNameFor(model => model.ReceiverFio)</h6>
+                            <p>
+                                Получатель
+                                @Html.DisplayFor(model => model.ReceiverFio.Name)
+                                @Html.DisplayFor(model => model.ReceiverFio.Surname)
+                                @Html.DisplayFor(model => model.ReceiverFio.Patronymic)
+                                @Html.DisplayFor(model => model.ReceiverFio.Role)
+                            </p>
+
+                            <h6>@Html.DisplayNameFor(model => model.SenderFio)</h6>
+                            <p>
+                                Получатель
+                                @Html.DisplayFor(model => model.SenderFio.Name)
+                                @Html.DisplayFor(model => model.SenderFio.Surname)
+                                @Html.DisplayFor(model => model.SenderFio.Patronymic)
+                                @Html.DisplayFor(model => model.SenderFio.Role)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 order-lg-1 text-center">
+            @if (!String.IsNullOrEmpty(Model.FeedbackDTO.ImagePath))
+            {
+                <img class="img-responsive" src="@Url.Content(Model.FeedbackDTO.ImagePath)" alt="Card image cap" style="height: 300px; width: 100%; display: block;">
+            }
+            else
+            {
+                <img class="img-responsive" src="@Url.Content("~/images/anonimusjpg.jpg")" alt="Card image cap" style="height: 300px; width: 100%; display: block;">
+            }
+            <label class="custom-file">
+                <input type="file" id="file" class="custom-file-input">
+            </label>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.FeedbackDTO.ID" type="submit" class="btn btn-primary"> <i class="fas fa-edit"></i>Редактировать</a>
+    <a asp-action="Delete" asp-route-id="@Model.FeedbackDTO.ID" class="btn btn-sm btn-danger">Удалить</a>
+    <a asp-action="FeedbackByDonationId" type="submit" class="btn btn-primary">Вернуться к списку</a>
+</div>
