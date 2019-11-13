@@ -256,7 +256,6 @@ namespace FamilyNetServer.Tests
 
         [Test]
         [TestCase(1)]
-        [TestCase(1)]
         public void FilterConditionsChildren_WithFilterChildrenHouseParameters_ShouldReturnNewCollection(int houseId)
         {
             var parameters = new FilterParemetersChildren()

@@ -133,14 +133,19 @@ namespace FamilyNet.Controllers
 
             if (ModelState.IsValid)
             {
-                var dto = new CredentialsDTO() { Email = model.Email, Password = model.Password };
+                var dto = new CredentialsDTO()
+                {
+                    Email = model.Email,
+                    Password = model.Password
+                };
+
                 var result = await _authorizeCreater.Login(dto);
 
                 if (result.Success)
                 {
                     _identityInformationExtractor.SetUserInformation(HttpContext.Session,
                         result.Token);
-                   
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -149,6 +154,7 @@ namespace FamilyNet.Controllers
                 }
             }
             GetViewData();
+
             return View(model);
         }
 
@@ -198,7 +204,7 @@ namespace FamilyNet.Controllers
             }
             var personId = HttpContext.Session.GetString(nameof(IdentitySessionKyes.personId));
 
-            if (GetPersonType(role) != PersonType.User && 
+            if (GetPersonType(role) != PersonType.User &&
                 GetPersonType(role) != PersonType.Admin &&
                 (personId == String.Empty || personId == null))
             {
