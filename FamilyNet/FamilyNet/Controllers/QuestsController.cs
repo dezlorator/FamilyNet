@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNet.Models;
@@ -11,9 +11,11 @@ using Microsoft.Extensions.Localization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
-using System.IO;
-using FamilyNet.StreamCreater;
 using FamilyNet.IdentityHelpers;
+using FamilyNet.Enums;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace FamilyNet.Controllers
 {
@@ -223,6 +225,88 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
+        public async Task<IActionResult> Take(int id)
+        {
+            var url = _URLBuilder.GetById(_apiPath, id);
+            QuestDTO quest;
+
+            try
+            {
+                quest = await _downloader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            var personId = HttpContext.Session.GetString("personId");
+
+            if (personId == String.Empty || personId == null)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if (!int.TryParse(personId, out var volunteerID))
+            {
+                return Redirect("/Home/Error");
+            }
+
+            quest.VolunteerID = volunteerID;
+
+            var msg = await _downloader.CreatePutAsync(url, quest, HttpContext.Session);
+
+            if (msg.StatusCode != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return Redirect("/Quests/Index");
+        }
+
+        public async Task<IActionResult> MarkAsDone(int id)
+        {
+            var url = _URLBuilder.GetById(_apiPath, id);
+            QuestDTO quest;
+
+            try
+            {
+                quest = await _downloader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            quest.Status = "Done";
+            var msg = await _downloader.CreatePutAsync(url, quest, HttpContext.Session);
+
+            if (msg.StatusCode != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return Redirect("/Quests/Index");
+        }
 
         public async Task<IActionResult> Delete(int? id)
         {

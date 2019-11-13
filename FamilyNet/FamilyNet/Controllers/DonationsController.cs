@@ -163,7 +163,6 @@ namespace FamilyNet.Controllers
             if (msg.StatusCode != HttpStatusCode.Created)
             {
                 return Redirect("/Home/Error");
-                //TODO: log
             }
 
             var itemDTO = msg.Content.ReadAsAsync<DonationItemDTO>().Result;
@@ -320,38 +319,6 @@ namespace FamilyNet.Controllers
             return Redirect("/Donations/Index");
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditStatus(int id, DonationDetailDTO donationDTO) //TODO: completely remake
-        {
-            if (id != donationDTO.ID)
-            {
-                return NotFound();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(donationDTO.Status);
-            }
-
-            var url = _URLDonationsBuilder.GetById(_apiPath, id);
-            var msg = await _downloader.CreatePutAsync(url, donationDTO, HttpContext.Session);
-
-            if (msg.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                return Redirect("/Account/Login");
-            }
-
-            if (msg.StatusCode != HttpStatusCode.NoContent)
-            {
-                return Redirect("/Home/Error");
-            }
-
-            GetViewData();
-
-            return Redirect("/Donations/Index");
-        }
-
         public async Task<IActionResult> Donate(int? id)
         {
             if (id == null)
@@ -377,7 +344,6 @@ namespace FamilyNet.Controllers
                 return NotFound(); 
             }
 
-            var role = HttpContext.Session.GetString("roles");
             var personId = HttpContext.Session.GetString("personId");
 
             if (personId == String.Empty || personId == null)

@@ -10,6 +10,7 @@ using FamilyNetServer.Validators;
 using DataTransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -77,6 +78,7 @@ namespace FamilyNetServer.Controllers.API.V1
                     ID = d.ID,
                     Name = d.Name,
                     Description = d.Description,
+                    Status = d.Status.ToString(),
                     DonationID = d.DonationID,
                     OrphanageID = d.Donation.OrphanageID,
                     OrphanageName = d.Donation.Orphanage.Name,
@@ -135,7 +137,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
         // PUT: api/Quests/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "CharityMaker, Representative, Admin")]
+        [Authorize(Roles = "Volunteer, CharityMaker, Representative, Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromForm]QuestDTO questDTO)
@@ -157,7 +159,14 @@ namespace FamilyNetServer.Controllers.API.V1
             quest.Name = questDTO.Name;
             quest.Description = questDTO.Description;
 
-            if (questDTO.VolunteerID != null)
+            if (!Enum.TryParse(questDTO.Status, out QuestStatus status))
+            {
+                return BadRequest();
+            }
+
+            quest.Status = status;
+
+            if (questDTO.VolunteerID != quest.VolunteerID)
             {
                 _logger.LogInformation("Volunteer is not null.");
                 quest.VolunteerID = questDTO.VolunteerID;
