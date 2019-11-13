@@ -58,6 +58,7 @@
     }
 
     <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
+    <a asp-controller="feedback" asp-for="@Model.ID" asp-action="FeedbackByDonationId" class="btn btn-primary">Комментарии</a>
 
     @if (role == "CharityMaker")
     {
@@ -67,5 +68,5 @@
             <a asp-action="Donate" class="btn btn-primary">Пожертвовать</a>
         </form>
     }
-    <a asp-controller="Feedback" asp-action="FeedbackByDonationId" asp-for="ID" type="submit" class="btn btn-warning"> <i class="fas fa-edit"></i>Комментарии</a>
+
 </div>

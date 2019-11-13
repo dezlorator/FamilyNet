@@ -27,17 +27,20 @@ namespace FamilyNet.Controllers
         private const string _feedbackApiPath = "api/v1/feedback";
         private readonly IURLFioBuilder _urlFioBuilder;
         private readonly IFioDownloader _fioDownloader;
-        private readonly string _fioApiPath = "api/v1/fio";
+        private const string _fioApiPath = "api/v1/fio";
         private readonly IFileStreamCreater _streamCreator;
-        private readonly string _pathToErrorView = "/Home/Error";
+        private const string _pathToErrorView = "/Home/Error";
         private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IURLDonationsBuilder _urlDonationsBuilder;
         private readonly ServerSimpleDataDownloader<DonationDetailDTO> _donationDownloader;
-        private readonly string _donationApiPath = "api/v1/donations";
+        private const string _donationApiPath = "api/v1/donations";
         private readonly ServerDataDownloader<RepresentativeDTO> _representativeDownloader;
         private readonly IURLRepresentativeBuilder _urlRepresentativeBuilder;
-        private readonly string _representativeApiPath = "api/v1/representatives";
+        private const string _representativeApiPath = "api/v1/representatives";
         private readonly IServerRepresenativesDataDownloader _representativeDataDownloader;
+        private readonly IURLQuestsBuilder _urlQuestsBuilder;
+        private readonly ServerSimpleDataDownloader<QuestDTO> _questsDownloader;
+        private const string _questApiPath = "api/v1/quests";
         private static int _donationId;
         #endregion
 
@@ -51,7 +54,8 @@ namespace FamilyNet.Controllers
             ServerSimpleDataDownloader<DonationDetailDTO> donationDownloader,
             ServerDataDownloader<RepresentativeDTO> representativeDownloader,
             IURLRepresentativeBuilder urlRepresentativeBuilder,
-            IServerRepresenativesDataDownloader representativeDataDownloader)
+            IServerRepresenativesDataDownloader representativeDataDownloader,
+            IURLQuestsBuilder urlQuestsBuilder, ServerSimpleDataDownloader<QuestDTO> questsDownloader)
         {
             _urlFeedbackBuilder = urlFeedbackBuilder;
             _feedbackDownloader = feedbackDownloader;
@@ -64,15 +68,16 @@ namespace FamilyNet.Controllers
             _representativeDownloader = representativeDownloader;
             _urlRepresentativeBuilder = urlRepresentativeBuilder;
             _representativeDataDownloader = representativeDataDownloader;
+            _urlQuestsBuilder = urlQuestsBuilder;
+            _questsDownloader = questsDownloader;
         }
         #endregion
 
-        public async Task<IActionResult> FeedbackByDonationId(int donationId)
+        public async Task<IActionResult> FeedbackByDonationId(int id)
         {
             _donationId = 1;
-            donationId = 1;
 
-            var feedbackUrl = _urlFeedbackBuilder.GetByDonationId(_feedbackApiPath, donationId);
+            var feedbackUrl = _urlFeedbackBuilder.GetByDonationId(_feedbackApiPath, _donationId);
 
             IEnumerable<FeedbackDTO> feedbackContainer = null;
 
@@ -318,34 +323,6 @@ namespace FamilyNet.Controllers
             return Redirect("/feedback/FeedbackByDonationId");
         }
 
-        //public async Task<IActionResult> Table()
-        //{
-        //    var url = _urlFeedbackBuilder.GetAll(_feedbackApiPath);
-        //    IEnumerable<FeedbackDTO> feedbackContainer = null;
-
-        //    try
-        //    {
-        //        feedbackContainer = await _feedbackDownloader.GetAllAsync(url, HttpContext.Session);
-        //    }
-        //    catch (ArgumentNullException)
-        //    {
-        //        return Redirect(_pathToErrorView);
-        //    }
-        //    catch (HttpRequestException)
-        //    {
-        //        return Redirect(_pathToErrorView);
-        //    }
-        //    catch (JsonException)
-        //    {
-        //        return Redirect(_pathToErrorView);
-        //    }
-
-        //    _identityInformationExtactor.GetUserInformation(HttpContext.Session,
-        //                                                    ViewData);
-
-        //    return View(charityMakers);
-        //}
-
         private async Task<FioDTO> GetFio(int id, UserRole role)
         {
             var url = _urlFioBuilder.GetById(_fioApiPath, id, role);
@@ -403,7 +380,9 @@ namespace FamilyNet.Controllers
                     break;
                 case "Volunteer":
                     receiverRole = UserRole.Volunteer;
-                    //смерджусь тогда можно будет
+                    var questUrl = _urlQuestsBuilder.GetAllWithFilter(_questApiPath, null, null);
+                    var quest = await _questsDownloader.GetAllAsync(questUrl, HttpContext.Session);
+                    receiverId = quest.Where(p => p.DonationID == donationId).ToList()[0].VolunteerID??0;
                     break;
                 default:
                     return feedback;

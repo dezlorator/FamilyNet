@@ -194,7 +194,8 @@ namespace FamilyNetServer.Controllers.API.V1
                 Description = questDTO.Description,
                 DonationID = questDTO.DonationID,
                 FromDate = questDTO.FromDate,
-                ToDate = questDTO.ToDate
+                ToDate = questDTO.ToDate,
+                VolunteerID = 2
             };
 
             if (questDTO.DonationID != null)
