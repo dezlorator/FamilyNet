@@ -62,6 +62,9 @@ namespace FamilyNetServer
             services.AddTransient<ILogger<AuctionLotController>, Logger<AuctionLotController>>();
             services.AddTransient<ILogger<PurchaseController>, Logger<PurchaseController>>();
             services.AddTransient<ILogger<QuestsController>, Logger<QuestsController>>();
+            services.AddTransient<ILogger<RolesController>, Logger<RolesController>>();
+            services.AddTransient<ILogger<UsersController>, Logger<UsersController>>();
+            services.AddTransient<ILogger<RegistrationController>, Logger<RegistrationController>>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
             services.AddTransient<IVolunteerValidator, VolunteerValidator>();
