@@ -51,8 +51,7 @@ namespace FamilyNetServer.Controllers.API.V2
         public IActionResult GetAll([FromQuery]int rows,
                                     [FromQuery]int page,
                                     [FromQuery]string forSearch,
-                                    [FromQuery]string status = "Needed",
-                                    [FromQuery]bool isRequest = true)
+                                    [FromQuery]string status = "Needed")
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
 
@@ -61,7 +60,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 return BadRequest();
             }
 
-            donations = _donationsFilter.GetDonations(donations, forSearch, donationStatus, isRequest);
+            donations = _donationsFilter.GetDonations(donations, forSearch, donationStatus);
 
             if (rows != 0 && page != 0)
             {
@@ -159,7 +158,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 CharityMakerID = donationDTO.CharityMakerID,
                 OrphanageID = donationDTO.OrphanageID,
                 Orphanage = await _unitOfWork.Orphanages.GetById(donationDTO.OrphanageID.Value),
-                Status = DonationStatus.Sended,
+                Status = DonationStatus.Sent,
                 LastDateWhenStatusChanged = DateTime.Now
             };
 

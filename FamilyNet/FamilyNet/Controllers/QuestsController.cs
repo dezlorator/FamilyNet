@@ -88,7 +88,7 @@ namespace FamilyNet.Controllers
             return View(questsDTO);
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             GetViewData();
             return View();
@@ -116,8 +116,6 @@ namespace FamilyNet.Controllers
 
             return Redirect("/Quests/Index");
         }
-
-
 
         public async Task<IActionResult> Details(int? id)
         {
@@ -155,6 +153,76 @@ namespace FamilyNet.Controllers
 
             return View(questDTO);
         }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var url = _URLBuilder.GetById(_apiPath, id.Value);
+
+            QuestDTO quest;
+
+            try
+            {
+                quest = await _downloader.GetByIdAsync(url, HttpContext.Session);
+            }
+            catch (ArgumentNullException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (HttpRequestException)
+            {
+                return Redirect("/Home/Error");
+            }
+            catch (JsonException)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return View(quest);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, QuestDTO quest)
+        {
+            if (id != quest.ID)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(quest);
+            }
+
+            var url = _URLBuilder.GetById(_apiPath, id);
+            var msg = await _downloader.CreatePutAsync(url, quest, HttpContext.Session);
+
+            if (msg.StatusCode != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            if (msg.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Redirect("/Account/Login");
+            }
+
+            if (msg.StatusCode != HttpStatusCode.NoContent)
+            {
+                return Redirect("/Home/Error");
+            }
+
+            GetViewData();
+
+            return Redirect("/Donations/Index");
+        }
+
 
         public async Task<IActionResult> Delete(int? id)
         {

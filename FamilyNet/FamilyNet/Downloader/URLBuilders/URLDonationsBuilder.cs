@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace FamilyNet.Downloader
 {
-    public class URLDonationsBuilder: IURLDonationsBuilder
+    public class URLDonationsBuilder : IURLDonationsBuilder
     {
         #region private fields
 
@@ -24,8 +24,7 @@ namespace FamilyNet.Downloader
 
         public string GetAllWithFilter(string api,
                                        string forSearch, 
-                                       string status,
-                                       bool isRequest)
+                                       string status)
         {
             var queryParams = new Dictionary<string, string>();
 
@@ -38,8 +37,6 @@ namespace FamilyNet.Downloader
             {
                 queryParams.Add("status", status);
             }
-
-            queryParams.Add("isRequest", isRequest.ToString());
 
             return QueryHelpers.AddQueryString(_options.Value.ServerURL + api +"/",
                                                 queryParams);

@@ -49,8 +49,7 @@ namespace FamilyNetServer.Controllers.API.V1
         public IActionResult GetAll([FromQuery]int rows,
                                     [FromQuery]int page,
                                     [FromQuery]string forSearch,
-                                    [FromQuery]string status = "Needed",
-                                    [FromQuery]bool isRequest = true)
+                                    [FromQuery]string status = "Needed")
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
 
@@ -59,7 +58,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 return BadRequest();
             }
 
-            donations = _donationsFilter.GetDonations(donations, forSearch, donationStatus, isRequest);
+            donations = _donationsFilter.GetDonations(donations, forSearch, donationStatus);
 
             if (rows != 0 && page != 0)
             {
@@ -156,7 +155,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 CharityMakerID = donationDTO.CharityMakerID,
                 OrphanageID = donationDTO.OrphanageID,
                 Orphanage = await _unitOfWork.Orphanages.GetById(donationDTO.OrphanageID.Value),
-                Status = DonationStatus.Sended,
+                Status = DonationStatus.Needed,
                 LastDateWhenStatusChanged = DateTime.Now
             };
 
@@ -187,6 +186,18 @@ namespace FamilyNetServer.Controllers.API.V1
                 return BadRequest();
             }
 
+            if (!Enum.TryParse(donationDTO.Status, out DonationStatus status))
+            {
+                return BadRequest();
+            }
+
+            if(status != donation.Status)
+            {
+                donation.LastDateWhenStatusChanged = DateTime.Now;
+            }
+
+            donation.Status = status;
+
             if (donation.DonationItemID != null)
             {
                 _logger.LogInformation("Donation item is not null.");
@@ -194,16 +205,9 @@ namespace FamilyNetServer.Controllers.API.V1
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
             }
 
-            if(donation.CharityMakerID != donationDTO.CharityMakerID)
+            if (donationDTO.CharityMakerID != donation.CharityMakerID)
             {
-                donation.CharityMakerID = donationDTO.CharityMakerID;
-                donation.Status = DonationStatus.Sended;
-                donation.IsRequest = false;
-            }
-
-            if (donation.CharityMakerID != null)
-            {
-                donation.IsRequest = false;
+                donation.Status = DonationStatus.Sent;
             }
 
             if (donationDTO.OrphanageID != null)

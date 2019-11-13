@@ -26,7 +26,7 @@
         </th>
 
         <th>
-            @Html.DropDownList("status", new SelectList(new List<string>() { "Needed", "Sended", "Taken" }), new { @class = "form-control" })
+            @Html.DropDownList("status", new SelectList(new List<string>() { "Needed", "Sent", "Taken" }), new { @class = "form-control" })
         </th>
 
         <th width="12%">
@@ -109,7 +109,7 @@
                         <a asp-action="Donate" asp-route-id="@item.ID" class=.btn-info><i>Пожертвувати</i></a>
                     }
 
-                    @if (role == "Representative")
+                    @if (role == "Representative" && item.Status == "Sent")
                     {
                         <a asp-action="MarkAsTaken" asp-route-id="@item.ID" class=.btn-info><i>Отримано</i></a>
                     }
