@@ -52,7 +52,7 @@ namespace FamilyNet.Downloader
 
             if (priceEnd > 0.0f)
             {
-                queryParams.Add("priceEnd", priceStart.ToString());
+                queryParams.Add("priceEnd", priceEnd.ToString());
             }
 
             if (!String.IsNullOrEmpty(sort))

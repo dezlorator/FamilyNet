@@ -188,9 +188,9 @@ namespace FamilyNetServer.Controllers.API.V1
                     "Buying crafts",
                     "<div><h2><b>Thank you for the purchase.</b></h2></div>" +
                     "<h3>Craft info:</h3>" +
-                    $"<h4>Craft id:< {purchase.AuctionLotId}</h4>" +
-                    $"<h4>Quantity: {purchase.Quantity}</h4>" +
-                    $"<h4>To pay: {purchase.Paid}</h4>" +
+                    $"<p>Craft id: {purchase.AuctionLotId}</p>" +
+                    $"<p>Quantity: {purchase.Quantity}</p>" +
+                    $"<p>To pay: {purchase.Paid}</p>" +
                     "<h3>Orphanage representatives will contact you♥</h3>");
 
                 await task.ContinueWith(t =>
