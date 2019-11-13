@@ -44,7 +44,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Register([FromForm]RegistrationDTO model)
+        public async Task<IActionResult> Register([FromBody]RegistrationDTO model)
         {
             _logger.LogInformation("{info}",
                 "Endpoint Registration/api/v1 [POST] was called");

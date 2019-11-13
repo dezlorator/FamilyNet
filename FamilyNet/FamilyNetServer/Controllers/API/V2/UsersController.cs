@@ -102,7 +102,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAsync([FromForm]UserDTO userDTO)
+        public async Task<IActionResult> CreateAsync([FromBody]UserDTO userDTO)
         {
             var userId = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
