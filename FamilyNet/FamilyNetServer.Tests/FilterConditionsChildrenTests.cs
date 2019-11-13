@@ -14,18 +14,17 @@ namespace FamilyNetServer.Tests
     class FilterConditionsChildrenTests
     {
         private IFilterConditionsChildren _filter;
-        private Orphan child1;
-        private Orphan child2;
-        private Orphan child3;
-        private Orphan child4;
-        private Orphan child5;
-
-        private IQueryable<Orphan> children;
 
         [SetUp]
         public void Init()
         {
-            child1 = new Orphan()
+            var mockLogger = new Mock<ILogger<FilterConditionsChildren>>();
+            _filter = new FilterConditionsChildren(mockLogger.Object);
+        }
+
+        private static IQueryable<Orphan> ChildrenCollection()
+        {
+            var child1 = new Orphan()
             {
                 FullName = new FullName()
                 {
@@ -38,7 +37,7 @@ namespace FamilyNetServer.Tests
                 OrphanageID = 1
             };
 
-            child2 = new Orphan()
+            var child2 = new Orphan()
             {
                 FullName = new FullName()
                 {
@@ -51,7 +50,7 @@ namespace FamilyNetServer.Tests
                 OrphanageID = 2
             };
 
-            child3 = new Orphan()
+            var child3 = new Orphan()
             {
                 FullName = new FullName()
                 {
@@ -64,7 +63,7 @@ namespace FamilyNetServer.Tests
                 OrphanageID = 1
             };
 
-            child4 = new Orphan()
+            var child4 = new Orphan()
             {
                 FullName = new FullName()
                 {
@@ -77,7 +76,7 @@ namespace FamilyNetServer.Tests
                 OrphanageID = 2
             };
 
-            child5 = new Orphan()
+            var child5 = new Orphan()
             {
                 FullName = new FullName()
                 {
@@ -90,36 +89,34 @@ namespace FamilyNetServer.Tests
                 OrphanageID = 2
             };
 
-            children = new List<Orphan>()
-            {
-                child1, child2, child3, child4, child5
-            }.AsQueryable();
-
-            var mockLogger = new Mock<ILogger<FilterConditionsChildren>>();
-            _filter = new FilterConditionsChildren(mockLogger.Object);
+            return new List<Orphan>() { child1, child2, child3, child4, child5 }.AsQueryable();
         }
 
         [Test]
         public void FilterConditionsChildren_WithNullParameters_ShouldReturnFullCollection()
         {
+            var children = ChildrenCollection();
+
             var newCollection = _filter.GetOrphans(children, null);
 
             Assert.AreEqual(newCollection, children);
         }
 
-
         [Test]
         public void FilterConditionsChildren_WithoutEmptyParameters_ShouldReturnFullCollection()
         {
+            var children = ChildrenCollection();
+
             var newCollection = _filter.GetOrphans(children, new FilterParemetersChildren());
 
             Assert.AreEqual(newCollection, children);
         }
 
-
         [Test]
         public void FilterConditionsChildren_WithFilterAbsentNameParameters_ShouldReturnEmptyCollection()
         {
+            var children = ChildrenCollection();
+
             var parameters = new FilterParemetersChildren()
             {
                 Name = "Мирина"
@@ -135,13 +132,17 @@ namespace FamilyNetServer.Tests
         [Test]
         public void FilterConditionsChildren_WithFilterExistsNameParameters_ShouldReturnNewCollection()
         {
+            var name = "Тимофей";
+            var children = ChildrenCollection();
+
             var parameters = new FilterParemetersChildren()
             {
-                Name = "Тимофей"
+                Name = name
             };
 
             var newCollection = _filter.GetOrphans(children, parameters);
-            var expectedCollection = new List<Orphan>() { child1 }.AsQueryable();
+            var expectedCollection = children.Where(c => c.FullName
+                .ToString().Contains(name));
 
             Assert.AreEqual(expectedCollection, newCollection);
         }
@@ -149,13 +150,17 @@ namespace FamilyNetServer.Tests
         [Test]
         public void FilterConditionsChildren_WithFilterAbsentSurnameParameters_ShouldReturnEmptyCollection()
         {
+            var children = ChildrenCollection();
+            var name = "Ерисов";
+
             var parameters = new FilterParemetersChildren()
             {
-                Name = "Ерисов"
+                Name = name
             };
 
             var newCollection = _filter.GetOrphans(children, parameters);
-            var expectedCollection = new List<Orphan>() { }.AsQueryable();
+            var expectedCollection = children.Where(c => c.FullName.ToString()
+                .Contains(name));
 
             Assert.AreEqual(expectedCollection, newCollection);
         }
@@ -163,13 +168,17 @@ namespace FamilyNetServer.Tests
         [Test]
         public void FilterConditionsChildren_WithFilterExistsSurnameParameters_ShouldReturnNewCollection()
         {
+            var children = ChildrenCollection();
+            var name = "Лепетя";
+
             var parameters = new FilterParemetersChildren()
             {
-                Name = "Лепетя"
+                Name = name
             };
 
             var newCollection = _filter.GetOrphans(children, parameters);
-            var expectedCollection = new List<Orphan>() { child1, child2 }.AsQueryable();
+            var expectedCollection = children.Where(c => c.FullName
+                .ToString().Contains(name));
 
             Assert.AreEqual(expectedCollection, newCollection);
         }
@@ -178,6 +187,8 @@ namespace FamilyNetServer.Tests
         [Test]
         public void FilterConditionsChildren_WithFilterAbsentPatronymicParameters_ShouldReturnEmptyCollection()
         {
+            var children = ChildrenCollection();
+
             var parameters = new FilterParemetersChildren()
             {
                 Name = "Степановна"
@@ -192,13 +203,17 @@ namespace FamilyNetServer.Tests
         [Test]
         public void FilterConditionsChildren_WithFilterExistsPatronymicParameters_ShouldReturnNewCollection()
         {
+            var children = ChildrenCollection();
+            var name = "Михайлович";
+
             var parameters = new FilterParemetersChildren()
             {
-                Name = "Михайлович"
+                Name = name
             };
 
             var newCollection = _filter.GetOrphans(children, parameters);
-            var expectedCollection = new List<Orphan>() { child1, child2 }.AsQueryable();
+            var expectedCollection = children.Where(c => c.FullName.ToString()
+                .Contains(name));
 
             Assert.AreEqual(expectedCollection, newCollection);
         }
@@ -206,13 +221,16 @@ namespace FamilyNetServer.Tests
         [Test]
         public void FilterConditionsChildren_WithFilterRatingParameters_ShouldReturnNewCollection()
         {
+            var children = ChildrenCollection();
+            var rating = 2.6f;
+
             var parameters = new FilterParemetersChildren()
             {
-                Rating = 2.6f
+                Rating = rating
             };
 
             var newCollection = _filter.GetOrphans(children, parameters);
-            var expectedCollection = new List<Orphan>() { child1, child3, child4 }.AsQueryable();
+            var expectedCollection = children.Where(c => c.Rating >= rating);
 
             Assert.AreEqual(expectedCollection, newCollection);
         }
@@ -220,26 +238,10 @@ namespace FamilyNetServer.Tests
         [Test]
         public void FilterConditionsChildren_WithFilterPageRowParameters_ShouldReturnNewCollection()
         {
-            var parameters = new FilterParemetersChildren()
-            {
-                Page = 1,
-                Rows = 3
-            };
+            var children = ChildrenCollection();
+            var page = 1;
+            var rows = 3;
 
-            var newCollection = _filter.GetOrphans(children, parameters);
-            var expectedCollection = new List<Orphan>() { child1, child2, child3 }.AsQueryable();
-
-            Assert.AreEqual(expectedCollection, newCollection);
-        }
-
-        [Test]
-        [TestCase(0, 0)]
-        [TestCase(-2, -1)]
-        [TestCase(-2, 1)]
-        [TestCase(0, -1)]
-        [TestCase(2, 0)]
-        public void FilterConditionsChildren_WithFilterInvalidPageRowParameters_ShouldReturnSameCollection(int page, int rows)
-        {
             var parameters = new FilterParemetersChildren()
             {
                 Page = page,
@@ -247,17 +249,36 @@ namespace FamilyNetServer.Tests
             };
 
             var newCollection = _filter.GetOrphans(children, parameters);
-            var expectedCollection = new List<Orphan>()
-                { child1, child2, child3, child4, child5 }
-            .AsQueryable();
+            var expectedCollection = children.Skip((page - 1) * rows).Take(rows);
 
             Assert.AreEqual(expectedCollection, newCollection);
         }
 
-        [Test]
+        [TestCase(0, 0)]
+        [TestCase(-2, -1)]
+        [TestCase(-2, 1)]
+        [TestCase(0, -1)]
+        [TestCase(2, 0)]
+        public void FilterConditionsChildren_WithFilterInvalidPageRowParameters_ShouldReturnSameCollection(int page, int rows)
+        {
+            var children = ChildrenCollection();
+
+            var parameters = new FilterParemetersChildren()
+            {
+                Page = page,
+                Rows = rows
+            };
+
+            var newCollection = _filter.GetOrphans(children, parameters).ToList();
+
+            Assert.AreEqual(newCollection, children);
+        }
+
         [TestCase(1)]
         public void FilterConditionsChildren_WithFilterChildrenHouseParameters_ShouldReturnNewCollection(int houseId)
         {
+            var children = ChildrenCollection();
+
             var parameters = new FilterParemetersChildren()
             {
                 ChildrenHouseID = houseId
@@ -271,31 +292,14 @@ namespace FamilyNetServer.Tests
             Assert.AreEqual(expectedCollection, newCollection);
         }
 
-        [Test]
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(4)]
-        [TestCase(5)]
-        [TestCase(6)]
-        [TestCase(7)]
-        [TestCase(8)]
-        [TestCase(9)]
-        [TestCase(10)]
-        [TestCase(11)]
-        [TestCase(12)]
-        [TestCase(13)]
-        [TestCase(10)]
-        [TestCase(11)]
-        [TestCase(12)]
-        [TestCase(13)]
-        [TestCase(14)]
-        [TestCase(15)]
-        [TestCase(16)]
-        [TestCase(17)]
-        [TestCase(18)]
+        public static IEnumerable<int> AgeRange = Enumerable.Range(0, 18);
+
+
+        [Test, TestCaseSource("AgeRange")]
         public void FilterConditionsChildren_WithFilterAgeParameters_ShouldReturnNewCollection(int age)
         {
+            var children = ChildrenCollection();
+
             var parameters = new FilterParemetersChildren()
             {
                 Age = age
@@ -311,11 +315,12 @@ namespace FamilyNetServer.Tests
         }
 
 
-        [Test]
         [TestCase(2, "Лепетя")]
         [TestCase(5, "Семенова")]
         public void FilterConditionsChildren_WithFilterAgeNameParameters_ShouldReturnNewCollection(int age, string name)
         {
+            var children = ChildrenCollection();
+
             var parameters = new FilterParemetersChildren()
             {
                 Age = age,
@@ -333,13 +338,14 @@ namespace FamilyNetServer.Tests
         }
 
 
-        [Test]
         [TestCase(2, null, -3.0f)]
         [TestCase(0, null, -3.0f)]
         [TestCase(2, "Лепетя", 3.0f)]
         [TestCase(5, "Семенова", 10.0f)]
         public void FilterConditionsChildren_WithFilterAgeNameRatingParameters_ShouldReturnNewCollection(int age, string name, float rating)
         {
+            var children = ChildrenCollection();
+
             var parameters = new FilterParemetersChildren()
             {
                 Age = age,
@@ -364,7 +370,6 @@ namespace FamilyNetServer.Tests
         }
 
 
-        [Test]
         [TestCase(2, null, -3.0f, -1)]
         [TestCase(2, null, -3.0f, 1)]
         [TestCase(0, null, -3.0f, 1)]
@@ -373,6 +378,8 @@ namespace FamilyNetServer.Tests
         public void FilterConditionsChildren_WithFilterAgeNameRatingChildrenHouseIdParameters_ShouldReturnNewCollection(int age,
             string name, float rating, int childrenHouseId)
         {
+            var children = ChildrenCollection();
+
             var parameters = new FilterParemetersChildren()
             {
                 Age = age,

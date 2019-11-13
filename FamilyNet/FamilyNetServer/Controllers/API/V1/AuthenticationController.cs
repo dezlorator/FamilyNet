@@ -1,5 +1,4 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DataTransferObjects;
 using FamilyNetServer.Factories;
 using FamilyNetServer.Models;
