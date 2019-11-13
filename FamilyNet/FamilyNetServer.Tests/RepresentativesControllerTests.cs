@@ -1,23 +1,27 @@
-﻿using NUnit.Framework;
-using Moq;
-using FamilyNetServer.Controllers.API;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Security.Claims;
+using System.Collections.Generic;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Configuration;
-using Microsoft.Extensions.Options;
 using FamilyNetServer.Models;
-using System.Collections.Generic;
-using System.Linq;
 using FamilyNetServer.Filters.FilterParameters;
-using DataTransferObjects;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 using FamilyNetServer.Controllers.API.V1;
 using FamilyNetServer.HttpHandlers;
-using Microsoft.Extensions.Logging;
+using DataTransferObjects;
+using NUnit.Framework;
+using Moq;
+using FamilyNetServer.Models.Identity;
+using Microsoft.AspNetCore.Identity;
+using System.Threading;
+using System.Security.Principal;
 
 namespace FamilyNetServer.Tests
 {
@@ -33,10 +37,15 @@ namespace FamilyNetServer.Tests
         private RepresentativesController _controller;
         private Mock<IIdentityExtractor> _mockIdentityExtractor;
         private Mock<ILogger<RepresentativesController>> _mockLogger;
+        private Mock<ClaimsPrincipal> _mockClaimsPrincipal;
+        private Mock<UserManager<ApplicationUser>> _mockUserManager;
+        private Mock<IUserStore<ApplicationUser>> _mockUserStore;
+        private ApplicationUser _appUser;
 
         [SetUp]
         public virtual void SetUp()
         {
+            _mockLogger = new Mock<ILogger<RepresentativesController>>();
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockFileUploader = new Mock<IFileUploader>();
             _mockFilterConditions = new Mock<IFilterConditionsRepresentatives>();
@@ -44,6 +53,11 @@ namespace FamilyNetServer.Tests
             _mockRepresentatives = new Mock<IRepository<Representative>>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
             _mockIdentityExtractor = new Mock<IIdentityExtractor>();
+            _mockClaimsPrincipal = new Mock<ClaimsPrincipal>();
+            _mockUserStore = new Mock<IUserStore<ApplicationUser>>();
+            _mockUserManager = new Mock<UserManager<ApplicationUser>>(
+            _mockUserStore.Object, null, null, null, null, null, null, null, null);
+
             _controller = new RepresentativesController(_mockFileUploader.Object,
                                                 _mockUnitOfWork.Object,
                                                 _mockValidator.Object,
@@ -51,13 +65,31 @@ namespace FamilyNetServer.Tests
                                                 _mockSettings.Object,
                                                 _mockIdentityExtractor.Object,
                                                 _mockLogger.Object);
+
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "1"),
+                new Claim(ClaimTypes.Name, "Ivan")
+            }));
+
+            _controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = user }
+            };
+
+            _appUser = new ApplicationUser();
+
             _mockUnitOfWork.Setup(t => t.Representatives).Returns(_mockRepresentatives.Object);
+            _mockUnitOfWork.Setup(t => t.UserManager).Returns(_mockUserManager.Object);
+            _mockUnitOfWork.Setup(t => t.UserManager.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(_appUser);
+            _mockIdentityExtractor.Setup(e => e.GetId(_mockClaimsPrincipal.Object)).Returns("");
+            _mockIdentityExtractor.Setup(e => e.GetSignature(It.IsAny<HttpContext>())).Returns("");
         }
 
         #region GetAll
 
         [Test]
-        public void GetAll_WithFilter_ShouldRequestListOfRepresentativesFromDB()
+        public async void GetAll_WithFilter_ShouldRequestListOfRepresentativesFromDB()
         {
             //Arrange
             var representatives = new List<Representative>()
@@ -74,10 +106,9 @@ namespace FamilyNetServer.Tests
                     IsDeleted = false
                     }
             }.AsQueryable();
-            _mockRepresentatives.Setup(repo => repo.GetAll()).Returns(representatives);
 
             //Act
-            _controller
+            await _controller
                 .GetAllAsync(It.IsAny<FilterParametersRepresentatives>());
 
             //Assert
@@ -91,31 +122,30 @@ namespace FamilyNetServer.Tests
             var representatives = new List<Representative>()
             {
                 new Representative()
-                    {
+                {
                     ID = 1,
                     FullName = new FullName()
-                        {
-                            Name = "Иван",
-                            Surname = "Ивановов",
-                            Patronymic = "Иванович"
-                        },
+                    {
+                        Name = "Иван",
+                        Surname = "Ивановов",
+                        Patronymic = "Иванович"
+                    },
                     IsDeleted = false
-                    }
+                }
             }.AsQueryable();
+
             _mockRepresentatives.Setup(repo => repo.GetAll())
                 .Returns(representatives);
 
             var filter = It.IsAny<FilterParametersRepresentatives>();
 
-            _mockRepresentatives.Setup(repo => repo.GetAll())
-                .Returns(representatives);
             _mockFilterConditions
                 .Setup(f => f.GetRepresentatives(representatives, filter))
                 .Returns(representatives);
 
             //Act
             var result = _controller
-                .GetAllAsync(filter);
+                .GetAllAsync(filter).Result;
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -147,7 +177,7 @@ namespace FamilyNetServer.Tests
             var result = _controller.GetAllAsync(filter);
 
             //Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.IsInstanceOf<BadRequestResult>(result.Result);
         }
 
         #endregion
@@ -439,7 +469,7 @@ namespace FamilyNetServer.Tests
             //Assert
             _mockRepresentatives.Verify(v => v.GetById(It.IsAny<int>()), Times.Once);
         }
-         [Test]
+        [Test]
         public async Task Edit_WithRepresentativeDTO_ShouldNotCallGetById()
         {
             //Arrange
@@ -596,7 +626,7 @@ namespace FamilyNetServer.Tests
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
         }
-        
+
         [Test]
         public async Task Edit_WithRepresentativeDTOWithoutFile_ShouldReturnNoContentResult()
         {
@@ -627,7 +657,7 @@ namespace FamilyNetServer.Tests
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
         }
-        
+
         [Test]
         public async Task Edit_WithRepresentativeDTOWithInvalidID_ShouldReturnBadRequestResult()
         {
@@ -804,7 +834,7 @@ namespace FamilyNetServer.Tests
             _mockRepresentatives.Verify(r => r.Update(It.IsAny<Representative>()),
                                                              Times.Once);
         }
-        
+
 
         [Test]
         [TestCase(1)]

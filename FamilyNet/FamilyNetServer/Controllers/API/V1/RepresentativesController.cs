@@ -68,6 +68,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             var representatives = _unitOfWork.Representatives.GetAll()
                 .Where(r => !r.IsDeleted);
+
             representatives = _filterConditions
                 .GetRepresentatives(representatives, filter);
 
@@ -79,6 +80,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
                 return BadRequest();
             }
+
 
             var representativesDTO = await representatives.Select(r =>
                 new RepresentativeDTO()
@@ -97,8 +99,9 @@ namespace FamilyNetServer.Controllers.API.V1
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(representativesDTO));
 
-            return Ok(representativesDTO);
+            return Ok(representativesDTO.AsQueryable());
         }
+
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

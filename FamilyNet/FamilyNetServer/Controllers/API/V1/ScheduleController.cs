@@ -52,7 +52,7 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetAll(DateTime date)
+        public IActionResult GetAll()
         {
             _logger.LogInformation("{info}",
                "Endpoint Schedule/api/v1 GetAll was called");
@@ -60,10 +60,10 @@ namespace FamilyNetServer.Controllers.API
             var user = identify();
 
             var availabilities = _unitOfWork.Availabilities.GetAll()
-                .Where(a => a.PersonID == user.PersonID && 
-                a.Date > DateTime.Now && a.IsDeleted == false)
+                .Where(a => a.PersonID == user.PersonID
+                    && a.Date > DateTime.Now && !a.IsDeleted)
                 .OrderBy(a => a.Date);
-
+            availabilities = availabilities.ToList();
             if (availabilities == null)
             {
                 _logger.LogInformation("{status}{info}",
@@ -105,12 +105,9 @@ namespace FamilyNetServer.Controllers.API
                $" GetFreePersonIDsList({date}, {duration}, {role}) was called");
 
             var personIdsList = _unitOfWork.Availabilities.Get(a =>
-               date >= a.Date &&
-               date < (a.Date + a.FreeHours) &&
-               duration <= a.FreeHours &&
-               a.Role == role &&
-               a.IsReserved == false &&
-               a.IsDeleted == false)
+                   (date >= a.Date) && (date < (a.Date + a.FreeHours))
+                   && (duration <= a.FreeHours) && (a.Role == role)
+                   && !a.IsReserved && !a.IsDeleted)
                .Select(a => new { personID = a.PersonID, availabilityID = a.ID }).GroupBy(a => a.personID);
 
             if (personIdsList == null)
@@ -186,10 +183,9 @@ namespace FamilyNetServer.Controllers.API
             var user = identify();
 
             var myAvailabilities = _unitOfWork.Availabilities.GetAll()
-                .Where(a => a.PersonID == user.PersonID &&
-                a.Role == user.PersonType &&
-                a.Date > DateTime.Now && 
-                a.IsDeleted == false)
+                .Where(a =>(a.PersonID == user.PersonID)
+                    && (a.Role == user.PersonType) && (a.Date > DateTime.Now)
+                    && !a.IsDeleted)
                 .OrderBy(a => a.Date);
 
             if (myAvailabilities == null)
@@ -206,11 +202,10 @@ namespace FamilyNetServer.Controllers.API
             foreach (var my in myAvailabilities)
             {
                 matchingAvailabilities.Concat(_unitOfWork.Availabilities.Get(
-                    a => a.Date <= my.Date &&
-                    my.Date < (a.Date + a.FreeHours) &&
-                    a.Role == PersonType.Volunteer &&
-                    a.IsReserved == false &&
-                    a.IsDeleted == false));
+                    a => (a.Date <= my.Date)
+                    && my.Date < (a.Date + a.FreeHours)
+                    && (a.Role == PersonType.Volunteer) 
+                    && !a.IsReserved && !a.IsDeleted));
             }
 
             if (matchingAvailabilities.Count() == 0)
