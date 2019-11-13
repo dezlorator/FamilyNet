@@ -24,7 +24,7 @@ namespace FamilyNetServer.Controllers.API.V2
         private readonly IValidator<DonationDTO> _donationValidator;
         private readonly IDonationsFilter _donationsFilter;
         private readonly ILogger<DonationsController> _logger;
-
+        
         #endregion
 
         #region ctor
@@ -45,12 +45,22 @@ namespace FamilyNetServer.Controllers.API.V2
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll([FromQuery]int rows,
                                     [FromQuery]int page,
-                                    [FromQuery]string forSearch)
+                                    [FromQuery]string forSearch,
+                                    [FromQuery]string status = "Needed")
         {
             var donations = _unitOfWork.Donations.GetAll().Where(c => !c.IsDeleted);
-            donations = _donationsFilter.GetDonations(donations, forSearch);
+
+            if (!Enum.TryParse(status, out DonationStatus donationStatus))
+            {
+                return BadRequest();
+            }
+
+            donations = _donationsFilter.GetDonations(donations, forSearch, donationStatus);
 
             if (rows != 0 && page != 0)
             {
@@ -80,12 +90,11 @@ namespace FamilyNetServer.Controllers.API.V2
                     LastDateWhenStatusChanged = d.LastDateWhenStatusChanged,
                     ItemName = d.DonationItem.Name,
                     ItemDescription = d.DonationItem.Description,
-                    Types = d.DonationItem.TypeBaseItem
-                               .Select(t => new CategoryDTO
-                               {
-                                   Name = t.Type.Name,
-                                   ID = t.TypeID
-                               })
+                    Types = d.DonationItem.TypeBaseItem.Select(t => new CategoryDTO
+                    {
+                        Name = t.Type.Name,
+                        ID = t.TypeID
+                    })
                 }).ToList();
 
             _logger.LogInformation("Status: OK. List of donations was sent");
@@ -149,7 +158,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 CharityMakerID = donationDTO.CharityMakerID,
                 OrphanageID = donationDTO.OrphanageID,
                 Orphanage = await _unitOfWork.Orphanages.GetById(donationDTO.OrphanageID.Value),
-                Status = DonationStatus.Sended,
+                Status = DonationStatus.Sent,
                 LastDateWhenStatusChanged = DateTime.Now
             };
 
@@ -196,9 +205,16 @@ namespace FamilyNetServer.Controllers.API.V2
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
             }
 
-            donation.IsRequest = true;
+            if(donation.CharityMakerID != donationDTO.CharityMakerID)
+            {
+                donation.CharityMakerID = donationDTO.CharityMakerID;
 
-            donation.CharityMakerID = donationDTO.CharityMakerID;
+            }
+
+            if(donation.CharityMakerID != null)
+            {
+                donation.IsRequest = false;
+            }
 
             if (donationDTO.OrphanageID != null)
             {

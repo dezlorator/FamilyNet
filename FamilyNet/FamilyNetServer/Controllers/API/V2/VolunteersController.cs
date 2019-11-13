@@ -15,6 +15,9 @@ using FamilyNetServer.Configuration;
 using FamilyNetServer.Filters.FilterParameters;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using FamilyNetServer.HttpHandlers;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FamilyNetServer.Controllers.API.V2
 {
@@ -30,6 +33,7 @@ namespace FamilyNetServer.Controllers.API.V2
         private readonly IFilterConditionsVolunteers _filterConditions;
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
         private readonly ILogger<VolunteersController> _logger;
+        private readonly IIdentityExtractor _identityExtractor;
 
         #endregion
 
@@ -40,7 +44,8 @@ namespace FamilyNetServer.Controllers.API.V2
                                   IVolunteerValidator volunteerValidator,
                                   IFilterConditionsVolunteers filterConditions,
                                   IOptionsSnapshot<ServerURLSettings> setings,
-                                  ILogger<VolunteersController> logger)
+                                  ILogger<VolunteersController> logger,
+                                  IIdentityExtractor identityExtractor)
         {
             _fileUploader = fileUploader;
             _unitOfWork = unitOfWork;
@@ -48,6 +53,7 @@ namespace FamilyNetServer.Controllers.API.V2
             _filterConditions = filterConditions;
             _settings = setings;
             _logger = logger;
+            _identityExtractor = identityExtractor;
         }
 
         #endregion
@@ -55,33 +61,39 @@ namespace FamilyNetServer.Controllers.API.V2
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromQuery]FilterParemetersVolunteers filter)
+        public async Task<IActionResult> GetAll([FromQuery]FilterParemetersVolunteers filter)
         {
+            _logger.LogInformation("{info}",
+                "Endpoint Volunteers/api/v2 GetAll was called");
+
             var volunteers = _unitOfWork.Volunteers.GetAll().Where(c => !c.IsDeleted);
             volunteers = _filterConditions.GetVolunteers(volunteers, filter);
 
             if (volunteers == null)
             {
-                _logger.LogInformation("Bad request[400]. Volunteer wasn't found.");
+                _logger.LogInformation("{status}{info}",
+                    StatusCodes.Status400BadRequest,
+                    "List of Volunteers is empty");
 
                 return BadRequest();
             }
 
-            var volunteersDTO = volunteers.Select(v =>
-            new VolunteerDTO()
-            {
-                ID = v.ID,
-                Name = v.FullName.Name,
-                Surname = v.FullName.Surname,
-                Patronymic = v.FullName.Patronymic,
-                Birthday = v.Birthday,
-                Rating = v.Rating,
-                EmailID = v.EmailID,
-                PhotoPath = _settings.Value.ServerURL + v.Avatar,
-                AddressID = v.AddressID
-            });
+            var volunteersDTO = await volunteers.Select(v =>
+                new VolunteerDTO()
+                {
+                    ID = v.ID,
+                    Name = v.FullName.Name,
+                    Surname = v.FullName.Surname,
+                    Patronymic = v.FullName.Patronymic,
+                    Birthday = v.Birthday,
+                    Rating = v.Rating,
+                    EmailID = v.EmailID,
+                    PhotoPath = _settings.Value.ServerURL + v.Avatar,
+                    AddressID = v.AddressID
+                }).ToListAsync();
 
-            _logger.LogInformation("Return Ok[200]. List of volunteers was sent");
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(volunteersDTO));
 
             return Ok(volunteersDTO);
         }
@@ -91,11 +103,16 @@ namespace FamilyNetServer.Controllers.API.V2
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
         {
+            _logger.LogInformation("{info}",
+                $"Endpoint Volunteers/api/v2 GetById({id}) was called");
+
             var volunteer = await _unitOfWork.Volunteers.GetById(id);
 
             if (volunteer == null)
             {
-                _logger.LogError("Bad request[400]. Volunteer wasn't found");
+                _logger.LogError("{info}{status}",
+                    $"Voluntees wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -113,7 +130,8 @@ namespace FamilyNetServer.Controllers.API.V2
                 AddressID = volunteer.AddressID
             };
 
-            _logger.LogInformation("Return Ok[200]. Volunteer was sent.");
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(volunteerDTO));
 
             return Ok(volunteerDTO);
         }
@@ -124,9 +142,17 @@ namespace FamilyNetServer.Controllers.API.V2
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody]VolunteerDTO volunteerDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info} {userId} {token}",
+                "Endpoint Volunteers/api/v2 [POST] was called", userId, token);
+
             if (!_volunteerValidator.IsValid(volunteerDTO))
             {
-                _logger.LogError("Bad request[400]. VolunteerDTO is not valid");
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "VolunteerDTO is invalid");
 
                 return BadRequest();
             }
@@ -135,11 +161,13 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (volunteerDTO.Avatar != null)
             {
+                _logger.LogInformation("{info}", "VolunteerDTO has file photo.");
+
                 var fileName = volunteerDTO.Name + volunteerDTO.Surname
-                        + volunteerDTO.Patronymic + DateTime.Now.Ticks;
+                    + volunteerDTO.Patronymic + DateTime.Now.Ticks;
 
                 pathPhoto = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
+                    nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
             }
 
             var volunteer = new Volunteer()
@@ -160,9 +188,21 @@ namespace FamilyNetServer.Controllers.API.V2
 
             await _unitOfWork.Volunteers.Create(volunteer);
             _unitOfWork.SaveChanges();
-            _logger.LogInformation("Return Created[201]. New volunteer was added.");
 
-            return Created("api/v2/volunteers/" + volunteer.ID, new VolunteerDTO());
+            volunteerDTO.ID = volunteer.ID;
+            volunteerDTO.PhotoPath = volunteer.Avatar;
+            volunteerDTO.Avatar = null;
+
+            var id = User.Identity.Name;
+            var user = await _unitOfWork.UserManager.FindByIdAsync(id);
+            user.PersonID = volunteer.ID;
+            await _unitOfWork.UserManager.UpdateAsync(user);
+
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                token, userId, StatusCodes.Status201Created,
+                $"Volunteer was saved [id:{volunteer.ID}]");
+
+            return Created("api/v2/volunteers/" + volunteer.ID, volunteerDTO);
         }
 
         [HttpPut("{id}")]
@@ -171,9 +211,17 @@ namespace FamilyNetServer.Controllers.API.V2
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromQuery]int id, [FromBody]VolunteerDTO volunteerDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint Volunteers/api/v2 [PUT] was called", userId, token);
+
             if (!_volunteerValidator.IsValid(volunteerDTO))
             {
-                _logger.LogError("Bad request[400]. VolunteerDTO is not valid");
+                _logger.LogError("{userId} {token} {status} {info}",
+                    userId, token, StatusCodes.Status400BadRequest,
+                    "VolunteerDTO is invalid");
 
                 return BadRequest();
             }
@@ -182,7 +230,9 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (volunteer == null)
             {
-                _logger.LogError("Bad request[400]. Volunteer was not found by id");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Volunteer was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -197,16 +247,21 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (volunteerDTO.Avatar != null)
             {
+                _logger.LogInformation("{info}", "VolunteerDTO has file photo.");
+
                 var fileName = volunteerDTO.Name + volunteerDTO.Surname
-                        + volunteerDTO.Patronymic + DateTime.Now.Ticks;
+                    + volunteerDTO.Patronymic + DateTime.Now.Ticks;
 
                 volunteer.Avatar = _fileUploader.CopyFileToServer(fileName,
-                        nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
+                    nameof(DirectoryUploadName.Volunteer), volunteerDTO.Avatar);
             }
 
             _unitOfWork.Volunteers.Update(volunteer);
             _unitOfWork.SaveChanges();
-            _logger.LogInformation("Return NoContent[204]. Volunteer was updated.");
+
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                 token, userId, StatusCodes.Status204NoContent,
+                 $"Volunteer was updated [id:{volunteer.ID}]");
 
             return NoContent();
         }
@@ -217,9 +272,18 @@ namespace FamilyNetServer.Controllers.API.V2
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint Volunteers/api/v2 [DELETE] was called",
+                userId, token);
+
             if (id <= 0)
             {
-                _logger.LogError("Bad request[400]. Argument id is not valid");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -228,7 +292,9 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (volunteer == null)
             {
-                _logger.LogError("Bad request[400]. Volunteer wasn't found.");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Volunteer was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -237,7 +303,10 @@ namespace FamilyNetServer.Controllers.API.V2
 
             _unitOfWork.Volunteers.Update(volunteer);
             _unitOfWork.SaveChanges();
-            _logger.LogInformation("Return Ok[200]. Volunteer's property IsDelete was updated.");
+
+            _logger.LogInformation("{status} {info} {userId} {token}",
+                StatusCodes.Status200OK,
+                $"Volunteer.IsDelete was updated [id:{id}]", userId, token);
 
             return Ok();
         }

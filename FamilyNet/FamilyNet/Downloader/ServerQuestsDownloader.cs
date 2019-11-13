@@ -69,6 +69,11 @@ namespace FamilyNet.Downloader
                 formDataContent.Add(new StringContent(dto.Description), "Description");
             }
 
+            if(dto.Status != null)
+            {
+                formDataContent.Add(new StringContent(dto.Status), "Status");
+            }
+
             if (dto.FromDate != null)
             {
                 formDataContent.Add(new StringContent(dto.FromDate.ToString()), "FromDate");

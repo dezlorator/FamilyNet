@@ -39,11 +39,11 @@ namespace FamilyNetServer.Models
 
         public void CopyState(Donation sender)
         {            
-            Donation donationSended = sender as Donation;
-            Orphanage = donationSended.Orphanage;
-            Status = donationSended.Status;
-            LastDateWhenStatusChanged = donationSended.LastDateWhenStatusChanged;
-            DonationItem = donationSended.DonationItem;            
+            Donation donationSent = sender as Donation;
+            Orphanage = donationSent.Orphanage;
+            Status = donationSent.Status;
+            LastDateWhenStatusChanged = donationSent.LastDateWhenStatusChanged;
+            DonationItem = donationSent.DonationItem;            
         }
 
         [Display(Name = "Категория")]
