@@ -47,7 +47,7 @@ namespace FamilyNetServer.Controllers.API.V2
         public async Task<IActionResult> Register([FromBody]RegistrationDTO model)
         {
             _logger.LogInformation("{info}",
-                "Endpoint Registration/api/v1 [POST] was called");
+                "Endpoint Registration/api/v2 [POST] was called");
 
             var allRoles = _unitOfWork.RoleManager.Roles.ToList();
 
