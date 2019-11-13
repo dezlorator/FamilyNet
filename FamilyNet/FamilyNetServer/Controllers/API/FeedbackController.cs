@@ -33,6 +33,8 @@ namespace FamilyNetServer.Controllers.API
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
         private readonly IConvertUserRole _userRoleConvertor;
         private readonly IUnitOfWork _unitOfWork;
+        private const int UserIdIndex = 0;
+        private const int UserRoleIndex = 1;
         #endregion
 
         public FeedbackController(EFRepository<Feedback> feedbackRepository,
@@ -57,11 +59,12 @@ namespace FamilyNetServer.Controllers.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll()
         {
-            var feedbackContainer = _feedbackRepository.GetAll().Where(p=>p.IsDeleted == false);
+            var feedbackContainer = _feedbackRepository.GetAll().Where(p=>!p.IsDeleted);
 
             if (feedbackContainer.Count() == 0)
             {
                 _logger.LogError(string.Format("No feedback found"));
+
                 return BadRequest();
             }
 
@@ -81,6 +84,7 @@ namespace FamilyNetServer.Controllers.API
                 });
 
             _logger.LogInformation(string.Format("List of feedback was sent"));
+
             return Ok(feedbackDTO);
         }
 
@@ -91,12 +95,13 @@ namespace FamilyNetServer.Controllers.API
         public IActionResult GetByDonationId([FromQuery]int donationId)
         {
             var feedbackContainer = _feedbackRepository.GetAll().Where(p => p.DonationId == donationId
-            && p.IsDeleted == false);
+            && !p.IsDeleted);
 
             if (feedbackContainer.Count() == 0)
             {
                 _logger.LogError(string.Format("No feedback found with such donation id - {0}",
                     donationId));
+
                 return BadRequest();
             }
 
@@ -121,6 +126,7 @@ namespace FamilyNetServer.Controllers.API
 
             _logger.LogInformation(string.Format("List of feedback with such donation id -{0} was sent",
                 donationId));
+
             return Ok(feedbackDTO);
         }
 
@@ -133,6 +139,7 @@ namespace FamilyNetServer.Controllers.API
             if (id < 0)
             {
                 _logger.LogError("Id should be bigger than -1 id = {0}", id);
+
                 return BadRequest();
             }
 
@@ -142,6 +149,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 _logger.LogError(string.Format("No feedback found with such donation id - {0}",
                 id));
+
                 return BadRequest();
             }
 
@@ -160,6 +168,7 @@ namespace FamilyNetServer.Controllers.API
             };
 
             _logger.LogInformation(string.Format("Feedback with id - {0} was sent", id));
+
             return Ok(feedbackDTO);
         }
 
@@ -177,22 +186,25 @@ namespace FamilyNetServer.Controllers.API
             {
                 _logger.LogError(string.Format("No donation with id - {0} is found",
                     feedbackDTO.DonationId));
+
                 return BadRequest();
             }
 
-            if (!_validator.IsValid(feedbackDTO, ref errorMessage))
+            if (!_validator.ValidateDTO(feedbackDTO, ref errorMessage))
             {
                 _logger.LogError(errorMessage);
+
                 return BadRequest();
             }
 
-            int senderId;
-            var senderRole = GetIdAndRole(HttpContext.User.Claims, out senderId);
+            int senderId = GetUserId(HttpContext.User.Claims);
+            var senderRole = GetUserRole(HttpContext.User.Claims);
 
             if (!_validator.CheckPermission(senderRole, feedbackDTO.ReceiverRole))
             {
                 _logger.LogError(string.Format("Person with role - {0} have no permission to leave" +
                     "feedback about {1}", nameof(senderRole), nameof(feedbackDTO.ReceiverRole)));
+
                 return Forbid();
             }
 
@@ -200,8 +212,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (feedbackDTO.Image != null)
             {
-                var fileName = DateTime.Now.Ticks.ToString();
-
+                var fileName = DateTimeOffset.Now.Ticks.ToString();
                 photoPath = _fileUploader.CopyFileToServer(fileName,
                     nameof(DirectoryUploadName.Feedback), feedbackDTO.Image);
                 _logger.LogInformation(string.Format("{0} - this path to photo was created", photoPath));
@@ -224,6 +235,7 @@ namespace FamilyNetServer.Controllers.API
             await _feedbackRepository.SaveChangesAsync();
 
             _logger.LogInformation(string.Format("Feedback was created, date{0}", feedbackDTO.Time));
+
             return Created("api/v1/charityMakers/" + feedbackDTO.DonationId, feedback);
         }
 
@@ -237,6 +249,7 @@ namespace FamilyNetServer.Controllers.API
             if (id < 0)
             {
                 _logger.LogError("Id should be bigger than -1 id = {0}", id);
+
                 return BadRequest();
             }
 
@@ -245,18 +258,20 @@ namespace FamilyNetServer.Controllers.API
             {
                 _logger.LogError(string.Format("No donation with id - {0} is found",
                     feedbackDTO.DonationId));
+
                 return BadRequest();
             }
 
             var feedback = await _feedbackRepository.GetById(id);
 
-            int editorId;
-            var editorRole = GetIdAndRole(HttpContext.User.Claims, out editorId);
+            int editorId = GetUserId(HttpContext.User.Claims);
+            var editorRole = GetUserRole(HttpContext.User.Claims);
 
             if (!_validator.CheckPermission(editorRole, feedbackDTO.ReceiverRole))
             {
                 _logger.LogError(string.Format("User with role - {0} have no permission to edit" +
                     "feedback about {1}", nameof(editorRole), nameof(feedbackDTO.ReceiverRole)));
+
                 return Forbid();
             }
 
@@ -264,6 +279,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 _logger.LogError(string.Format("User with such id - {0} have no rights to " +
                                  "delete comment with id - {1}", editorId, feedback.ID));
+
                 return Forbid();
             }
 
@@ -271,6 +287,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 _logger.LogError(string.Format("No feedback found with such id - {0}",
                 id));
+
                 return BadRequest();
             }
 
@@ -281,7 +298,7 @@ namespace FamilyNetServer.Controllers.API
 
             if (feedbackDTO.Image != null)
             {
-                var fileName = DateTime.Now.Ticks.ToString();
+                var fileName = DateTimeOffset.Now.Ticks.ToString();
                 feedback.Image = _fileUploader.CopyFileToServer(fileName,
                     nameof(DirectoryUploadName.Feedback), feedbackDTO.Image);
                 _logger.LogInformation(string.Format("{0} - this path to photo was created",
@@ -292,6 +309,7 @@ namespace FamilyNetServer.Controllers.API
             await _feedbackRepository.SaveChangesAsync();
 
             _logger.LogInformation(string.Format("Feedback with id {0} was changed", id));
+
             return NoContent();
         }
 
@@ -305,19 +323,21 @@ namespace FamilyNetServer.Controllers.API
             if (id < 0)
             {
                 _logger.LogError("Id should be bigger than -1 id = {0}", id);
+
                 return BadRequest();
             }
 
             var feedback = await _feedbackRepository.GetById(id);
 
-            int userId;
-            var userRole = GetIdAndRole(HttpContext.User.Claims, out userId);
+            int userId = GetUserId(HttpContext.User.Claims);
+            var userRole = GetUserRole(HttpContext.User.Claims);
 
             if ((userRole != UserRole.Admin) && ((feedback.SenderId != userId)
                 || (feedback.SenderRole != userRole)))
             {
                 _logger.LogError(string.Format("User with such id - {0} have no rights to " +
                     "delete comment with id - {1}", userId, feedback.ID));
+
                 return Forbid();
             }
 
@@ -325,6 +345,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 _logger.LogError(string.Format("No feedback found with such id - {0}",
                  id));
+
                 return BadRequest();
             }
 
@@ -332,16 +353,23 @@ namespace FamilyNetServer.Controllers.API
             await _feedbackRepository.SaveChangesAsync();
 
             _logger.LogInformation(string.Format("Feedback with id - {0} was deleted", id));
+
             return Ok();
         }
 
-        private UserRole GetIdAndRole(IEnumerable<Claim> claims, out int id)
+        private UserRole GetUserRole(IEnumerable<Claim> claims)
         {
             var claim = claims.ToList();
-            var user = _unitOfWork.UserManager.FindByIdAsync(claim[0].Value);
-            id = user.Result.PersonID ?? 0;
-            return _userRoleConvertor.ConvertFromString(claim[1].Value);
 
+            return _userRoleConvertor.ConvertFromString(claim[UserRoleIndex].Value);
+        }
+
+        private int GetUserId(IEnumerable<Claim> claims)
+        {
+            var claim = claims.ToList();
+            var user = _unitOfWork.UserManager.FindByIdAsync(claim[UserIdIndex].Value);
+
+            return user.Result.PersonID ?? 0;
         }
     }
 }

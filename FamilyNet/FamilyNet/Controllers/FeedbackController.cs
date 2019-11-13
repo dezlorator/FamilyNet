@@ -22,25 +22,28 @@ namespace FamilyNet.Controllers
     public class FeedbackController : Controller
     {
         #region private
+
         private readonly IURLFeedbackBuilder _urlFeedbackBuilder;
-        private readonly ServerDataDownloader<FeedbackDTO> _feedbackDownloader;
-        private const string _feedbackApiPath = "api/v1/feedback";
         private readonly IURLFioBuilder _urlFioBuilder;
-        private readonly IFioDownloader _fioDownloader;
-        private const string _fioApiPath = "api/v1/fio";
-        private readonly IFileStreamCreater _streamCreator;
-        private const string _pathToErrorView = "/Home/Error";
-        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private readonly IURLDonationsBuilder _urlDonationsBuilder;
-        private readonly ServerSimpleDataDownloader<DonationDetailDTO> _donationDownloader;
-        private const string _donationApiPath = "api/v1/donations";
-        private readonly ServerDataDownloader<RepresentativeDTO> _representativeDownloader;
         private readonly IURLRepresentativeBuilder _urlRepresentativeBuilder;
-        private const string _representativeApiPath = "api/v1/representatives";
-        private readonly IServerRepresenativesDataDownloader _representativeDataDownloader;
         private readonly IURLQuestsBuilder _urlQuestsBuilder;
+
+        private readonly ServerDataDownloader<FeedbackDTO> _feedbackDownloader;
+        private readonly ServerSimpleDataDownloader<DonationDetailDTO> _donationDownloader;
         private readonly ServerSimpleDataDownloader<QuestDTO> _questsDownloader;
+        private readonly IServerRepresenativesDataDownloader _representativeDataDownloader;
+        private readonly IFioDownloader _fioDownloader;
+
+        private const string _fioApiPath = "api/v1/fio";
+        private const string _feedbackApiPath = "api/v1/feedback";
+        private const string _pathToErrorView = "/Home/Error";
+        private const string _donationApiPath = "api/v1/donations";
+        private const string _representativeApiPath = "api/v1/representatives";
         private const string _questApiPath = "api/v1/quests";
+
+        private readonly IFileStreamCreater _streamCreator;
+        private readonly IIdentityInformationExtractor _identityInformationExtactor;
         private static int _donationId;
         #endregion
 
@@ -52,7 +55,6 @@ namespace FamilyNet.Controllers
             IIdentityInformationExtractor identityInformationExtactor,
             IURLDonationsBuilder urlDonationsBuilder,
             ServerSimpleDataDownloader<DonationDetailDTO> donationDownloader,
-            ServerDataDownloader<RepresentativeDTO> representativeDownloader,
             IURLRepresentativeBuilder urlRepresentativeBuilder,
             IServerRepresenativesDataDownloader representativeDataDownloader,
             IURLQuestsBuilder urlQuestsBuilder, ServerSimpleDataDownloader<QuestDTO> questsDownloader)
@@ -65,7 +67,6 @@ namespace FamilyNet.Controllers
             _identityInformationExtactor = identityInformationExtactor;
             _urlDonationsBuilder = urlDonationsBuilder;
             _donationDownloader = donationDownloader;
-            _representativeDownloader = representativeDownloader;
             _urlRepresentativeBuilder = urlRepresentativeBuilder;
             _representativeDataDownloader = representativeDataDownloader;
             _urlQuestsBuilder = urlQuestsBuilder;
@@ -75,7 +76,10 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> FeedbackByDonationId(int id)
         {
-            _donationId = 1;
+            if(id != 0)
+            {
+                _donationId = id;
+            }
 
             var feedbackUrl = _urlFeedbackBuilder.GetByDonationId(_feedbackApiPath, _donationId);
 
@@ -100,15 +104,18 @@ namespace FamilyNet.Controllers
 
             List<FeedbackVIewModel> feedbackViewModelContainer = new List<FeedbackVIewModel>();
 
-            foreach (var item in feedbackContainer)
+            if (feedbackContainer != null)
             {
-                FeedbackVIewModel feedback = new FeedbackVIewModel()
+                foreach (var item in feedbackContainer)
                 {
-                    FeedbackDTO = item,
-                    SenderFio = GetFio(item.SenderId, item.SenderRole).Result,
-                    ReceiverFio = GetFio(item.ReceiverId ?? 0, item.ReceiverRole).Result
-                };
-                feedbackViewModelContainer.Add(feedback);
+                    FeedbackVIewModel feedback = new FeedbackVIewModel()
+                    {
+                        FeedbackDTO = item,
+                        SenderFio = GetFio(item.SenderId, item.SenderRole).Result,
+                        ReceiverFio = GetFio(item.ReceiverId ?? 0, item.ReceiverRole).Result
+                    };
+                    feedbackViewModelContainer.Add(feedback);
+                }
             }
 
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
@@ -184,8 +191,8 @@ namespace FamilyNet.Controllers
             }
 
             viewModel.feedbackDTO.DonationId = _donationId;
-            viewModel.feedbackDTO = GetReceiverInfoByRole(viewModel.Roles[0], viewModel.feedbackDTO.DonationId,
-                viewModel.feedbackDTO).Result;
+            viewModel.feedbackDTO = await GetReceiverInfoByRole(viewModel.Roles[0], viewModel.feedbackDTO.DonationId,
+                viewModel.feedbackDTO);
             viewModel.feedbackDTO.Time = DateTime.Now;
 
             var feedbackUrl = _urlFeedbackBuilder.CreatePost(_feedbackApiPath);
@@ -250,9 +257,8 @@ namespace FamilyNet.Controllers
             }
 
             viewModel.feedbackDTO.DonationId = _donationId;
-            viewModel.feedbackDTO = GetReceiverInfoByRole(viewModel.Roles[0], viewModel.feedbackDTO.DonationId,
-                viewModel.feedbackDTO).Result;
-            viewModel.feedbackDTO.Time = DateTime.Now;
+            viewModel.feedbackDTO = await GetReceiverInfoByRole(viewModel.Roles[0], viewModel.feedbackDTO.DonationId,
+                viewModel.feedbackDTO);
             var url = _urlFeedbackBuilder.GetById(_feedbackApiPath, id);
             var status = await _feedbackDownloader.CreatePutAsync(url, viewModel.feedbackDTO,
                                                             stream, viewModel.feedbackDTO.Image?.FileName,
@@ -328,6 +334,7 @@ namespace FamilyNet.Controllers
             var url = _urlFioBuilder.GetById(_fioApiPath, id, role);
             var fio = await _fioDownloader.GetByIdAsync(url, HttpContext.Session);
             fio.Role = role.ToString();
+
             return fio;
         }
 
@@ -391,22 +398,9 @@ namespace FamilyNet.Controllers
 
             feedback.ReceiverRole = receiverRole;
             feedback.ReceiverId = receiverId;
+
             return feedback;
 
         }
-        private UserRole GetUserRoleByString(string str)
-        {
-            switch (str)
-            {
-                case "CharityMaker":
-                    return UserRole.CharityMaker;
-                case "Volunteer":
-                    return UserRole.Volunteer;
-                case "Representative":
-                    return UserRole.Representative;
-            }
-            return UserRole.Undefined;
-        }
-
     }
 }
