@@ -4,10 +4,12 @@ using FamilyNetServer.Controllers.API.V1;
 using FamilyNetServer.Filters;
 using FamilyNetServer.HttpHandlers;
 using FamilyNetServer.Models;
+using FamilyNetServer.Models.Identity;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,7 +28,7 @@ namespace FamilyNetServer.Tests
         private Mock<IFileUploader> _mockFileUploader;
         private Mock<IChildValidator> _mockChildValidator;
         private Mock<IFilterConditionsChildren> _mockFilterConditions;
-        private Mock<IIdentityExtractor> _mockTokenSignatureExtractor;
+        private Mock<IIdentityExtractor> _mockIdentityExtractor;
         private Mock<IOptionsSnapshot<ServerURLSettings>> _mockSettings;
         private ChildrenController controller;
 
@@ -42,22 +44,23 @@ namespace FamilyNetServer.Tests
             _mockFilterConditions = new Mock<IFilterConditionsChildren>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
             _mockChildValidator = new Mock<IChildValidator>();
-            _mockTokenSignatureExtractor = new Mock<IIdentityExtractor>();
+            _mockIdentityExtractor = new Mock<IIdentityExtractor>();
 
-            _mockTokenSignatureExtractor.Setup(m => m.GetSignature(It.IsAny<HttpContext>()))
-               .Returns(It.IsAny<string>());
+            _mockIdentityExtractor.Setup(m => m.GetSignature(It.IsAny<HttpContext>()))
+               .Returns(It.IsNotNull<string>());
 
-            _mockTokenSignatureExtractor.Setup(m => m.GetId(It.IsAny<ClaimsPrincipal>()))
-               .Returns(It.IsAny<string>());
+            _mockIdentityExtractor.Setup(m => m.GetId(It.IsAny<ClaimsPrincipal>()))
+               .Returns(It.IsNotNull<string>());
 
             var _mockLogger = new Mock<ILogger<ChildrenController>>();
+
             controller = new ChildrenController(_mockFileUploader.Object,
                                                 _mockUnitOfWork.Object,
                                                 _mockChildValidator.Object,
                                                 _mockFilterConditions.Object,
                                                 _mockSettings.Object,
                                                 _mockLogger.Object,
-                                                _mockTokenSignatureExtractor.Object);
+                                                _mockIdentityExtractor.Object);
         }
 
         #endregion
@@ -104,209 +107,9 @@ namespace FamilyNetServer.Tests
 
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
-
-
-        [Test]
-        public async Task ChildrenController_WithValidChildDTOWithFile_ShouldCallMockFileUploader()
-        {
-            var childDTO = new ChildDTO()
-            {
-                Avatar = new Mock<IFormFile>().Object
-            };
-
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-            _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
-
-            _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChanges());
-            _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()))
-                                        .Returns(It.IsAny<string>());
-
-            await controller.Create(childDTO);
-
-            _mockFileUploader.Verify(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()),
-                                        Times.Once);
-        }
-
-        [Test]
-        public async Task ChildrenController_WithValidChildDTOWithFile_ShouldCallChildValidator()
-        {
-            var childDTO = new ChildDTO()
-            {
-                Avatar = new Mock<IFormFile>().Object
-            };
-
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-            _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
-
-            _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChanges());
-            _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()))
-                                        .Returns(It.IsAny<string>());
-
-            await controller.Create(childDTO);
-
-            _mockChildValidator.Verify(m => m.IsValid(childDTO), Times.Once);
-        }
-
-
-        [Test]
-        public async Task ChildrenController_WithValidChildDTOWithFile_ShouldCallRepositoryCreate()
-        {
-            var childDTO = new ChildDTO()
-            {
-                Avatar = new Mock<IFormFile>().Object
-            };
-
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-            _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
-
-            _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChanges());
-            _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()))
-                                        .Returns(It.IsAny<string>());
-
-            await controller.Create(childDTO);
-
-            _mockOrphanRepository.Verify(m => m.Create(It.IsAny<Orphan>()), Times.Once);
-        }
-
-        [Test]
-        public async Task ChildrenController_WithValidChildDTOWithFile_ShouldCallUnitOfWorkSaveChanges()
-        {
-            var childDTO = new ChildDTO()
-            {
-                Avatar = new Mock<IFormFile>().Object
-            };
-
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-            _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
-
-            _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChanges());
-            _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()))
-                                        .Returns(It.IsAny<string>());
-
-            await controller.Create(childDTO);
-
-            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Once);
-        }
-
-        [Test]
-        public async Task ChildrenController_WithValidChildDTOWithFile_ShouldReturnCreated()
-        {
-            var childDTO = new ChildDTO()
-            {
-                Avatar = new Mock<IFormFile>().Object
-            };
-
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-            _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
-
-            _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChanges());
-            _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()))
-                                        .Returns(It.IsAny<string>());
-
-            var result = await controller.Create(childDTO);
-
-            Assert.IsInstanceOf<CreatedResult>(result);
-        }
-
-        [Test]
-        public async Task ChildrenController_WithValidChildDTOWithoutFile_ShouldCallChildValidator()
-        {
-            var childDTO = new ChildDTO();
-
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-            _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
-
-            _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChanges());
-            _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()))
-                                        .Returns(It.IsAny<string>());
-
-            await controller.Create(childDTO);
-
-            _mockChildValidator.Verify(m => m.IsValid(childDTO), Times.Once);
-        }
-
-        [Test]
-        public async Task ChildrenController_WithValidChildDTOWithoutFile_ShouldNotCallFileUploader()
-        {
-            var childDTO = new ChildDTO();
-
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-            _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
-
-            _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChanges());
-            _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()))
-                                        .Returns(It.IsAny<string>());
-
-            await controller.Create(childDTO);
-
-            _mockFileUploader.Verify(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()),
-                                        Times.Never);
-        }
-
-        [Test]
-        public async Task ChildrenController_WithValidChildDTOWithoutFile_ShouldCallOrphanRepositoryCreate()
-        {
-            var childDTO = new ChildDTO();
-
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-            _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
-
-            _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChanges());
-            _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()))
-                                        .Returns(It.IsAny<string>());
-
-            await controller.Create(childDTO);
-
-            _mockOrphanRepository.Verify(m => m.Create(It.IsAny<Orphan>()), Times.Once);
-        }
-
-
-        [Test]
-        public async Task ChildrenController_WithValidChildDTOWithoutFile_ShouldCallUniofWorkSaveChanges()
-        {
-            var childDTO = new ChildDTO();
-
-            var _mockOrphanRepository = new Mock<IRepository<Orphan>>();
-            _mockOrphanRepository.Setup(r => r.Create(It.IsNotNull<Orphan>()));
-
-            _mockChildValidator.Setup(m => m.IsValid(childDTO)).Returns(true);
-            _mockUnitOfWork.Setup(m => m.Orphans).Returns(_mockOrphanRepository.Object);
-            _mockUnitOfWork.Setup(m => m.SaveChanges());
-            _mockFileUploader.Setup(m => m.CopyFileToServer(It.IsAny<string>(),
-                                        It.IsAny<string>(), It.IsAny<IFormFile>()))
-                                        .Returns(It.IsAny<string>());
-
-            await controller.Create(childDTO);
-
-            _mockUnitOfWork.Verify(m => m.SaveChanges(), Times.Once);
-        }
-
+       
+       
+      
         [Test]
         public async Task ChildrenController_WithInValidChildDTOWithoutFile_ShouldNotCallFileUploader()
         {
