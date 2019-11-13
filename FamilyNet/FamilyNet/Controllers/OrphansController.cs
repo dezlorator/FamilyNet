@@ -209,6 +209,7 @@ namespace FamilyNet.Controllers
             return Redirect("/Orphans/Index");
         }
 
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -259,7 +260,7 @@ namespace FamilyNet.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(childDTO);
+                return Redirect("/Orphans/Edit/" + childDTO.ID);
             }
 
             Stream stream = null;
