@@ -10,11 +10,12 @@ namespace FamilyNetServer.Filters
         {
             donations = donations.Where(d => d.Status == status);
 
-            if(filter == null)
+            if(string.IsNullOrEmpty(filter))  
             {
                 return donations;
             }
 
+            //TODO: hashcode 
             return donations.Where(d => (d.Orphanage.Name.Contains(filter)
                                 || d.Orphanage.Adress.City.Contains(filter)
                                 || d.Orphanage.Adress.Street.Contains(filter)

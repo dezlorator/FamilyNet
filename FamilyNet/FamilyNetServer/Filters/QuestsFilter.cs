@@ -10,7 +10,7 @@ namespace FamilyNetServer.Filters
     {
         public IQueryable<Quest> GetQuests(IQueryable<Quest> quests, string filter, QuestStatus status)
         {
-            if (filter == null)
+            if (string.IsNullOrEmpty(filter))
             {
                 return quests.Where(q => q.Status == status);
             }

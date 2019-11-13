@@ -54,8 +54,6 @@ namespace FamilyNet.Downloader
             formDataContent.Add(new StringContent(dto.Name.ToString()), "Name");
 
             formDataContent.Add(new StringContent(dto.Description), "Description");
-
-            formDataContent.Add(new StringContent(dto.Price.ToString()), "Price");
         }
     }
 }
