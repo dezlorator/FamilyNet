@@ -173,7 +173,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPost]
-        [Authorize(Roles = "CharityMaker, Volunteer, Representative")]
+        [Authorize(Roles = "Admin, CharityMaker, Volunteer, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -240,7 +240,7 @@ namespace FamilyNetServer.Controllers.API
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "CharityMaker, Volunteer, Representative")]
+        [Authorize(Roles = "Admin, CharityMaker, Volunteer, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
