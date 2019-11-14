@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using System.Net;
 using FamilyNet.IdentityHelpers;
 using Microsoft.AspNetCore.Http;
+using DataTransferObjects.Enums;
 
 namespace FamilyNet.Controllers
 {
@@ -75,6 +76,12 @@ namespace FamilyNet.Controllers
 
         public IActionResult Create(int childId)
         {
+            var role = HttpContext.Session.GetString("roles");
+            if (GetUserRoleByString(role) == UserRole.Undefined)
+            {
+                return Redirect("/Home/Error");
+            }
+
             if (childId <= 0)
             {
                 return NotFound();
@@ -90,6 +97,12 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ChildActivityDTO childActivityDTO)
         {
+            var role = HttpContext.Session.GetString("roles");
+            if (GetUserRoleByString(role) == UserRole.Undefined)
+            {
+                return Redirect("/Home/Error");
+            }
+
             var url = _URLChildrenActivitiesBuilder.CreatePost(_apiChildrenActivitiesPath);
             var message = await _childrenActivitiesDownloader.CreatePostAsync(url, childActivityDTO,
                                                                  HttpContext.Session);
@@ -111,6 +124,12 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
+            var role = HttpContext.Session.GetString("roles");
+            if (GetUserRoleByString(role) == UserRole.Undefined)
+            {
+                return Redirect("/Home/Error");
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -146,6 +165,12 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ChildActivityDTO childActivityDTO)
         {
+            var role = HttpContext.Session.GetString("roles");
+            if (GetUserRoleByString(role) == UserRole.Undefined)
+            {
+                return Redirect("/Home/Error");
+            }
+
             if (id != childActivityDTO.ID)
             {
                 return NotFound();
@@ -178,6 +203,12 @@ namespace FamilyNet.Controllers
 
         public IActionResult AddAward(int? childActivityId)
         {
+            var role = HttpContext.Session.GetString("roles");
+            if (GetUserRoleByString(role) == UserRole.Undefined)
+            {
+                return Redirect("/Home/Error");
+            }
+
             if (childActivityId == null)
             {
                 return NotFound();
@@ -192,6 +223,12 @@ namespace FamilyNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddAward(AwardViewModel award)
         {
+            var role = HttpContext.Session.GetString("roles");
+            if (GetUserRoleByString(role) == UserRole.Undefined)
+            {
+                return Redirect("/Home/Error");
+            }
+
             var url = _URLChildrenActivitiesBuilder.GetById(_apiChildrenActivitiesPath, award.ChildActivityID);
             ChildActivityDTO childActivityDTO = null;
 
@@ -244,6 +281,12 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
+            var role = HttpContext.Session.GetString("roles");
+            if (GetUserRoleByString(role) == UserRole.Undefined)
+            {
+                return Redirect("/Home/Error");
+            }
+
             if (id <= 0)
             {
                 return NotFound();
@@ -270,6 +313,12 @@ namespace FamilyNet.Controllers
 
         public async Task<IActionResult> DeleteAward(int activityId, int awardId)
         {
+            var role = HttpContext.Session.GetString("roles");
+            if (GetUserRoleByString(role) == UserRole.Undefined)
+            {
+                return Redirect("/Home/Error");
+            }
+
             if (activityId <= 0 || awardId <= 0)
             {
                 return NotFound();
@@ -327,6 +376,18 @@ namespace FamilyNet.Controllers
 
             _identityInformationExtactor.GetUserInformation(HttpContext.Session,
                                                                  ViewData);
+        }
+
+        private UserRole GetUserRoleByString(string str)
+        {
+            switch (str)
+            {
+                case "Admin":
+                    return UserRole.Admin;
+                case "Representative":
+                    return UserRole.Representative;
+            }
+            return UserRole.Undefined;
         }
     }
 }

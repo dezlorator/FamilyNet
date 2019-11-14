@@ -306,7 +306,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
             _logger.LogInformation("{status} {info} {userId} {token}",
                 StatusCodes.Status200OK,
-                $"Volunteer.IsDelete was updated [id:{id}]", userId, token);
+                $"Volunteer.IsDeleted was updated [id:{id}]", userId, token);
 
             return Ok();
         }

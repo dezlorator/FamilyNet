@@ -5,22 +5,27 @@ namespace FamilyNetServer.Validators
 {
     public class ChildActivityValidator : IValidator<ChildActivityDTO>
     {
-        public bool IsValid(ChildActivityDTO childrenActivityDTO)
+        public bool IsValid(ChildActivityDTO childActivityDTO)
         {
-            if (childrenActivityDTO.ChildID <= 0)
+            if (childActivityDTO == null)
             {
                 return false;
             }
 
-            if (String.IsNullOrEmpty(childrenActivityDTO.Name) ||
-                String.IsNullOrEmpty(childrenActivityDTO.Description))
+            if (childActivityDTO.ChildID <= 0)
             {
                 return false;
             }
 
-            if (childrenActivityDTO.Awards != null)
+            if (String.IsNullOrEmpty(childActivityDTO.Name) ||
+                String.IsNullOrEmpty(childActivityDTO.Description))
             {
-                foreach (var a in childrenActivityDTO.Awards)
+                return false;
+            }
+
+            if (childActivityDTO.Awards != null)
+            {
+                foreach (var a in childActivityDTO.Awards)
                 {
                     if (String.IsNullOrEmpty(a.Name) ||
                         String.IsNullOrEmpty(a.Description))
