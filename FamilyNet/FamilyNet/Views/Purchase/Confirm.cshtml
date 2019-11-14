@@ -6,22 +6,26 @@
 @{
    ViewData["Title"] = "Confirm";
 }
-    <div class="container">
-        <form asp-action="BuyConfirmed" enctype="multipart/form-data">
-            <input type="hidden" asp-for="AuctionLot.ID" />
-            <input type="hidden" asp-for="Purchase.UserId" />
-            <input type="hidden" asp-for="Purchase.Paid" />
-            <input type="hidden" asp-for="Purchase.Quantity" />
-            <input type="hidden" asp-for="Purchase.Date" />
-            <input type="hidden" asp-for="Purchase.AuctionLotId" />
-            <b>@Html.DisplayNameFor(model => model.Purchase.Quantity):</b>
-            <p class="card-text">@Model.Purchase.Quantity</p><br />
-            <b>Total sum:</b>
-            <p class="card-text">@Model.Purchase.Paid</p>
-            <input type="submit" value="Ok" class="btn btn-success" />
-        </form>
+    <div class="align-self-xl-center">
+        <h1 style="color: darkred">Are you sure ?</h1>
+        <div class="container" style="font-size: 30px;">
+            <form asp-action="BuyConfirmed" enctype="multipart/form-data">
+                <input type="hidden" asp-for="AuctionLot.ID" />
+                <input type="hidden" asp-for="Purchase.UserId" />
+                <input type="hidden" asp-for="Purchase.Paid" />
+                <input type="hidden" asp-for="Purchase.Quantity" />
+                <input type="hidden" asp-for="Purchase.Date" />
+                <input type="hidden" asp-for="Purchase.AuctionLotId" />
+                <b>@Html.DisplayNameFor(model => model.Purchase.Quantity):</b>
+                <p class="card-text">@Model.Purchase.Quantity</p><br />
+                <b>Total sum:</b>
+                <p class="card-text">@Model.Purchase.Paid.ToString("c")</p>
+                <input type="submit" value="Ok" class="btn btn-success" />
+            </form>
+        </div>
+        <div>
+           <br />
+            <br />
+            <a asp-action="Details" asp-controller="AuctionLot" asp-route-id="@Model.AuctionLot.ID" class="btn btn-info">Back</a>
+        </div>
     </div>
-<div>
-    <a asp-action="Details" asp-controller="AuctionLot" asp-route-id="@Model.AuctionLot.ID" class="btn btn-info">Back</a>
-</div>
-

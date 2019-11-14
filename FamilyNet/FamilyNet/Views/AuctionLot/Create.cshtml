@@ -7,6 +7,7 @@
     ViewData["Title"] = "Create";
 }
     <form asp-action="Create" enctype="multipart/form-data">
+        <div asp-validation-summary="All" class="text-danger"></div>
         <div class="container">
             <div class="row my-2">
                 <div class="col-lg-8 order-lg-2">
@@ -15,17 +16,23 @@
                             <h5 class="mb-3">@ViewData["Profile"]</h5>
                             <div class="row">
                                 <div class="col-md-6">
+                                    <div asp-validation-summary="All" class="text-danger"></div>
                                     <b>@Html.DisplayNameFor(model => model.Item.Name):</b>
                                     <input asp-for="Item.Name" class="form-control" />
+                                    <span asp-validation-for="Item.Name" class="text-danger"></span>
+
                                     <p>
+                                        <span asp-validation-for="Item.Price" class="text-danger"></span>
                                         <b>@Html.DisplayNameFor(model => model.Item.Price):</b>
                                         <input asp-for="Item.Price" class="form-control" />
-                                    </p>                                   
+                                    </p>
                                     <p>
+                                        <span asp-validation-for="AuctionLot.Quantity" class="text-danger"></span>
                                         <b>@Html.DisplayNameFor(model => model.AuctionLot.Quantity)</b>
                                         <input asp-for="AuctionLot.Quantity" class="form-control" />
                                     </p>
                                     <p>
+                                        <span asp-validation-for="Item.Description" class="text-danger"></span>
                                         <b>@Html.DisplayNameFor(model => model.Item.Description)</b>
                                         <textarea asp-for="Item.Description" class="form-control"></textarea>
                                     </p>

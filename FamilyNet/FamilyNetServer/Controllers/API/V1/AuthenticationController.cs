@@ -84,7 +84,6 @@ namespace FamilyNetServer.Controllers.API.V1
 
             _logger.LogInformation("{info}{status}{token}", "Token was created ",
                 StatusCodes.Status201Created, token.Token);
-
             return Created("", token);
         }
 

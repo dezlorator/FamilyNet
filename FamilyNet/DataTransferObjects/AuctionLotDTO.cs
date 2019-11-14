@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace DataTransferObjects
@@ -19,6 +20,7 @@ namespace DataTransferObjects
 
         public string PhotoParth { get; set; }
 
+        [Required(ErrorMessage = "Please enter quantity")]
         public int Quantity { get; set; }
 
         public string Status { get; set; }

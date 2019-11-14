@@ -1,17 +1,22 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DataTransferObjects;
+using FamilyNet.Downloader.Interfaces;
 using FamilyNet.HttpHandlers;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace FamilyNet.Downloader
 {
-    public class ServerRepresentativesDownloader : ServerDataDownloader<RepresentativeDTO>
+    public class ServerRepresentativesDownloader : ServerDataDownloader<RepresentativeDTO>,
+        IServerRepresenativesDataDownloader
     {
         public ServerRepresentativesDownloader(IHttpAuthorizationHandler authorizationHandler)
-            : base(authorizationHandler){}
+            : base(authorizationHandler) { }
 
 
         public override async Task<HttpStatusCode> CreatePostAsync(string url,
@@ -62,6 +67,39 @@ namespace FamilyNet.Downloader
             }
 
             return statusCode;
+        }
+
+        public async Task<List<RepresentativeDTO>> GetByChildrenHouseIdAsync(string url, ISession session)
+        {
+            List<RepresentativeDTO> obj = null;
+
+            try
+            {
+                HttpResponseMessage response = null;
+
+                using (var httpClient = new HttpClient())
+                {
+                    _authorizationHandler.AddTokenBearer(session, httpClient);
+                    response = await httpClient.GetAsync(url);
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                obj = JsonConvert.DeserializeObject<List<RepresentativeDTO>>(json);
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+            catch (JsonException)
+            {
+                throw;
+            }
+
+            return obj;
         }
 
         private static void BuildMultipartFormData(RepresentativeDTO dto,

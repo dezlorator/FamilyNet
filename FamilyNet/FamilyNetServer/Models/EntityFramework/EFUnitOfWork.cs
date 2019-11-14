@@ -36,6 +36,7 @@ namespace FamilyNetServer.Models.EntityFramework
             DonationItems = new EFRepository<DonationItem>(cont);
             Representatives = new EFRepository<Representative>(cont);
             Volunteers = new EFRepository<Volunteer>(cont);
+            Availabilities = new EFRepository<Availability>(cont);
             PasswordHasher = passwordHash;
             UserValidator = userValid;
             PasswordValidator = passValid;
@@ -70,7 +71,7 @@ namespace FamilyNetServer.Models.EntityFramework
         public DbSet<TypeBaseItem> TypeBaseItems { get; set; } // TODO : rewrite this
 
         public IRepository<Orphan> Orphans { get; set; }
-
+        public IRepository<Availability> Availabilities { get; set; }
         public IRepository<Quest> Quests { get; set; }
 
         public IUserValidator<ApplicationUser> UserValidator { get; set; }
