@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class pplicationDbContextModelSnapshot : ModelSnapshot
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -232,37 +232,6 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("Donations");
                 });
 
-            modelBuilder.Entity("FamilyNetServer.Models.Feedback", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("DonationId");
-
-                    b.Property<string>("Image");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Message");
-
-                    b.Property<double>("Rating");
-
-                    b.Property<int?>("ReceiverId");
-
-                    b.Property<int>("ReceiverRole");
-
-                    b.Property<int?>("SenderId");
-
-                    b.Property<int>("SenderRole");
-
-                    b.Property<DateTime>("Time");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Feedback");
-                });
-
             modelBuilder.Entity("FamilyNetServer.Models.Location", b =>
                 {
                     b.Property<int>("ID")
@@ -376,9 +345,6 @@ namespace FamilyNetServer.Migrations
                     b.Property<int?>("DonationID");
 
                     b.Property<DateTime>("FromDate");
-
-                    b.Property<TimeSpan>("Hours")
-                        .HasColumnType("time");
 
                     b.Property<bool>("IsDeleted");
 

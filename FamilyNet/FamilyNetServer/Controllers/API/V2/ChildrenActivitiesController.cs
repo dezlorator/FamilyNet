@@ -79,19 +79,19 @@ namespace FamilyNetServer.Controllers.API.V2
                 return BadRequest();
             }
 
-            var childrenActivitiesDTO = activities.Select(a =>
+            var childrenActivitiesDTO = activities.Select(activity =>
             new ChildActivityDTO()
             {
-                ID = a.ID,
-                Name = a.Name,
-                Description = a.Description,
-                ChildID = a.Child.ID,
-                Awards = a.Awards.Where(aw => !aw.IsDeleted).Select(aw => new AwardDTO
+                ID = activity.ID,
+                Name = activity.Name,
+                Description = activity.Description,
+                ChildID = activity.Child.ID,
+                Awards = activity.Awards.Where(award => !award.IsDeleted).Select(award => new AwardDTO
                 {
-                    ID = aw.ID,
-                    Name = aw.Name,
-                    Description = aw.Description,
-                    Date = aw.Date
+                    ID = award.ID,
+                    Name = award.Name,
+                    Description = award.Description,
+                    Date = award.Date
                 }).ToList()
             });
 
@@ -126,12 +126,12 @@ namespace FamilyNetServer.Controllers.API.V2
                 Name = activity.Name,
                 Description = activity.Description,
                 ChildID = activity.Child.ID,
-                Awards = activity.Awards.Where(a => !a.IsDeleted).Select(aw => new AwardDTO
+                Awards = activity.Awards.Where(award => !award.IsDeleted).Select(award => new AwardDTO
                 {
-                    ID = aw.ID,
-                    Name = aw.Name,
-                    Description = aw.Description,
-                    Date = aw.Date
+                    ID = award.ID,
+                    Name = award.Name,
+                    Description = award.Description,
+                    Date = award.Date
                 }).ToList()
             };
 
@@ -171,11 +171,11 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (childActivityDTO.Awards != null)
             {
-                childActivity.Awards = childActivityDTO.Awards.Select(aw => new Award
+                childActivity.Awards = childActivityDTO.Awards.Select(award => new Award
                 {
-                    Name = aw.Name,
-                    Description = aw.Description,
-                    Date = aw.Date
+                    Name = award.Name,
+                    Description = award.Description,
+                    Date = award.Date
                 }).ToList();
             }
 
@@ -235,11 +235,11 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (childActivityDTO.Awards != null)
             {
-                foreach (var a in childActivity.Awards)
+                foreach (var award in childActivity.Awards)
                 {
-                    if (childActivityDTO.Awards.FirstOrDefault(i => i.ID == a.ID) == null)
+                    if (childActivityDTO.Awards.FirstOrDefault(i => i.ID == award.ID) == null)
                     {
-                        a.IsDeleted = true;
+                        award.IsDeleted = true;
 
                         _logger.LogInformation("{info}{userId}{token}",
                             "Award.IsDeleted was updated.",
@@ -317,9 +317,9 @@ namespace FamilyNetServer.Controllers.API.V2
 
             childActivity.IsDeleted = true;
 
-            foreach (var a in childActivity.Awards)
+            foreach (var award in childActivity.Awards)
             {
-                a.IsDeleted = true;
+                award.IsDeleted = true;
 
                 _logger.LogInformation("{info}{userId}{token}",
                     "Award.IsDeleted was updated.",

@@ -65,7 +65,7 @@ namespace FamilyNetServer.Controllers.API.V1
         public IActionResult GetAll([FromQuery]FilterParemetersChildrenActivities filter)
         {
             _logger.LogInformation("{info}",
-                "Endpoint ChildrenActivities/api/v2 GetAll was called");
+                "Endpoint ChildrenActivities/api/v1 GetAll was called");
 
             var activities = _activityRepository.GetAll().Where(a => !a.IsDeleted);
             activities = _filterConditions.GetChildrenActivities(activities, filter);
@@ -79,19 +79,19 @@ namespace FamilyNetServer.Controllers.API.V1
                 return BadRequest();
             }
 
-            var childrenActivitiesDTO = activities.Select(a =>
+            var childrenActivitiesDTO = activities.Select(activity =>
             new ChildActivityDTO()
             {
-                ID = a.ID,
-                Name = a.Name,
-                Description = a.Description,
-                ChildID = a.Child.ID,
-                Awards = a.Awards.Where(aw => !aw.IsDeleted).Select(aw => new AwardDTO
+                ID = activity.ID,
+                Name = activity.Name,
+                Description = activity.Description,
+                ChildID = activity.Child.ID,
+                Awards = activity.Awards.Where(award => !award.IsDeleted).Select(award => new AwardDTO
                 {
-                    ID = aw.ID,
-                    Name = aw.Name,
-                    Description = aw.Description,
-                    Date = aw.Date
+                    ID = award.ID,
+                    Name = award.Name,
+                    Description = award.Description,
+                    Date = award.Date
                 }).ToList()
             });
 
@@ -107,7 +107,7 @@ namespace FamilyNetServer.Controllers.API.V1
         public async Task<IActionResult> Get(int id)
         {
             _logger.LogInformation("{info}",
-                $"Endpoint ChildrenActivities/api/v2 GetById({id}) was called");
+                $"Endpoint ChildrenActivities/api/v1 GetById({id}) was called");
 
             var activity = await _activityRepository.GetById(id);
 
@@ -126,12 +126,12 @@ namespace FamilyNetServer.Controllers.API.V1
                 Name = activity.Name,
                 Description = activity.Description,
                 ChildID = activity.Child.ID,
-                Awards = activity.Awards.Where(a => !a.IsDeleted).Select(aw => new AwardDTO
+                Awards = activity.Awards.Where(award => !award.IsDeleted).Select(award => new AwardDTO
                 {
-                    ID = aw.ID,
-                    Name = aw.Name,
-                    Description = aw.Description,
-                    Date = aw.Date
+                    ID = award.ID,
+                    Name = award.Name,
+                    Description = award.Description,
+                    Date = award.Date
                 }).ToList()
             };
 
@@ -151,7 +151,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info} {userId} {token}",
-                "Endpoint ChildrenActivities/api/v2 [POST] was called", userId, token);
+                "Endpoint ChildrenActivities/api/v1 [POST] was called", userId, token);
 
             if (!_childActivityValidator.IsValid(childActivityDTO))
             {
@@ -171,11 +171,11 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (childActivityDTO.Awards != null)
             {
-                childActivity.Awards = childActivityDTO.Awards.Select(aw => new Award
+                childActivity.Awards = childActivityDTO.Awards.Select(award => new Award
                 {
-                    Name = aw.Name,
-                    Description = aw.Description,
-                    Date = aw.Date
+                    Name = award.Name,
+                    Description = award.Description,
+                    Date = award.Date
                 }).ToList();
             }
 
@@ -195,7 +195,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 token, userId, StatusCodes.Status201Created,
                 $"ChildActivity was saved [id:{childActivity.ID}]");
 
-            return Created("api/v2/childrenActivities/" + childActivity.ID, new ChildActivityDTO());
+            return Created("api/v1/childrenActivities/" + childActivity.ID, new ChildActivityDTO());
         }
 
         [HttpPut("{id}")]
@@ -208,7 +208,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint ChildrenActivities/api/v2 [PUT] was called", userId, token);
+                "Endpoint ChildrenActivities/api/v1 [PUT] was called", userId, token);
 
             if (!_childActivityValidator.IsValid(childActivityDTO))
             {
@@ -235,11 +235,11 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (childActivityDTO.Awards != null)
             {
-                foreach (var a in childActivity.Awards)
+                foreach (var award in childActivity.Awards)
                 {
-                    if (childActivityDTO.Awards.FirstOrDefault(i => i.ID == a.ID) == null)
+                    if (childActivityDTO.Awards.FirstOrDefault(i => i.ID == award.ID) == null)
                     {
-                        a.IsDeleted = true;
+                        award.IsDeleted = true;
 
                         _logger.LogInformation("{info}{userId}{token}",
                             "Award.IsDeleted was updated.",
@@ -292,7 +292,7 @@ namespace FamilyNetServer.Controllers.API.V1
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint ChildrenActivities/api/v2 [DELETE] was called",
+                "Endpoint ChildrenActivities/api/v1 [DELETE] was called",
                 userId, token);
 
             if (id <= 0)
@@ -317,9 +317,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             childActivity.IsDeleted = true;
 
-            foreach (var a in childActivity.Awards)
+            foreach (var award in childActivity.Awards)
             {
-                a.IsDeleted = true;
+                award.IsDeleted = true;
 
                 _logger.LogInformation("{info}{userId}{token}",
                     "Award.IsDeleted was updated.",

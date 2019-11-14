@@ -1,4 +1,5 @@
-﻿using FamilyNetServer.Models.Interfaces;
+﻿using FamilyNetServer.Models.EntityFramework;
+using FamilyNetServer.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 
@@ -8,10 +9,12 @@ namespace FamilyNetServer.Models
     public class SeedData
     {
         protected IUnitOfWork _unitOfWork;
+        protected EFRepository<ChildActivity> _childrenActivities;
 
-        public SeedData(IUnitOfWork unitOfWork)
+        public SeedData(IUnitOfWork unitOfWork, EFRepository<ChildActivity> childrenActivities)
         {
             _unitOfWork = unitOfWork;
+            _childrenActivities = childrenActivities;
         }
         public void EnsurePopulated()
         {
@@ -381,17 +384,45 @@ namespace FamilyNetServer.Models
                 _unitOfWork.SaveChanges();
             }
 
-            if (_unitOfWork.Orphans.Get(v => v.ID == v.ID) != null)
+            if (_unitOfWork.Orphans.Get(v => v.ID == v.ID) != null && _childrenActivities.Get(a => a.ID == a.ID) != null)
             {
                 List<Orphan> orphans = new List<Orphan>();
+                List<ChildActivity> activities = new List<ChildActivity>();
 
                 #region child1
+
                 Orphan orphan1 = new Orphan();
                 orphan1.FullName = new FullName() { Name = "Иван", Surname = "Бутенко", Patronymic = "Андреевич" };
                 orphan1.Birthday = new DateTime(2010, 11, 30);
                 orphan1.Rating = 3;
                 orphan1.Avatar = "avatars/seeddata_child1.jpg";
                 orphan1.OrphanageID = 1;
+
+                ChildActivity activity = new ChildActivity();
+                activity.Name = "Каратэ";
+                activity.Description = "Ребенок с четырёхлетненго возраста занимается в секции каратэ.";
+                activity.Child = orphan1;
+                activity.Awards = new List<Award>();
+                activity.Awards.Add(new Award
+                {
+                    Name = "Желтый пояс",
+                    Description = "Желтый пояс – характеризуется как утверждение.",
+                    Date = DateTime.Parse("01.01.2019")
+                });
+                activity.Awards.Add(new Award
+                {
+                    Name = "Золотая медаль",
+                    Description = "Золотая медаль за победу в городских соревнованиях",
+                    Date = DateTime.Parse("02.02.2019")
+                });
+
+                ChildActivity activity2 = new ChildActivity();
+                activity2.Name = "Рисование";
+                activity2.Description = "Ребенок с четырёхлетненго возраста посещает художественный кружок.";
+                activity2.Child = orphan1;
+
+                activities.Add(activity);
+                activities.Add(activity2);
 
                 #endregion
 
@@ -454,6 +485,8 @@ namespace FamilyNetServer.Models
 
                 _unitOfWork.Orphans.AddRange(orphans);
                 _unitOfWork.SaveChanges();
+                _childrenActivities.AddRange(activities);
+                _childrenActivities.SaveChangesAsync();
             }
 
             if (_unitOfWork.CharityMakers.Get(v => v.ID == v.ID) != null)
