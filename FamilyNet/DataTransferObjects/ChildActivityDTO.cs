@@ -10,7 +10,7 @@ namespace DataTransferObjects
         public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public virtual ICollection<AwardDTO> Awards { get; set; }
+        public IList<AwardDTO> Awards { get; set; }
         public int ChildID { get; set; }
     }
 }

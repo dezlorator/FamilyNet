@@ -42,6 +42,7 @@ namespace FamilyNetServer.Tests
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockFileUploader = new Mock<IFileUploader>();
             _mockFilterConditions = new Mock<IFilterConditionsChildren>();
+            _mockFilterConditions = new Mock<IFilterConditionsChildren>();
             _mockSettings = new Mock<IOptionsSnapshot<ServerURLSettings>>();
             _mockChildValidator = new Mock<IChildValidator>();
             _mockIdentityExtractor = new Mock<IIdentityExtractor>();

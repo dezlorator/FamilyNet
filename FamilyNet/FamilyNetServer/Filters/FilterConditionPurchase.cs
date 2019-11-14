@@ -10,33 +10,13 @@ namespace FamilyNetServer.Filters
 {
     public class FilterConditionPurchase : IFilterConditionPurchase
     {
-        public IEnumerable<Purchase> GetFiltered(IQueryable<Purchase> purchase,
-           FilterParamentrsPurchaseDTO filter, out int count)
+        public IEnumerable<Purchase> GetFiltered(IEnumerable<Purchase> purchase,
+           FilterParamentrsPurchaseDTO filter, string userId, out int count)
         {
-
-            if (filter.PaidTo > 0.0)
+            
+            if (!String.IsNullOrEmpty(userId))
             {
-                purchase = purchase.Where(o => o.Paid < filter.PaidTo);
-            }
-
-            if (filter.PaidFrom > 0.0)
-            {
-                purchase = purchase.Where(o => o.Paid > filter.PaidFrom);
-            }
-
-            if (filter.QuantityFrom > 0.0)
-            {
-                purchase = purchase.Where(o => o.Quantity > filter.QuantityFrom);
-            }
-
-            if (filter.QuantityTo > 0.0)
-            {
-                purchase = purchase.Where(o => o.Quantity < filter.QuantityTo);
-            }
-
-            if (!String.IsNullOrEmpty(filter.UserId))
-            {
-                purchase = purchase.Where(o => o.UserId.ToString() == filter.UserId);
+                purchase = purchase.Where(o => o.UserId.ToString() == userId);
             }
 
             if (filter.Date > DateTime.MinValue)
@@ -46,9 +26,9 @@ namespace FamilyNetServer.Filters
                 o.Date.Year == filter.Date.Year);
             }
 
-            if (filter.CraftId > 0)
-            {
-                purchase = purchase.Where(o => o.AuctionLotId == filter.CraftId);
+            if (!String.IsNullOrEmpty(filter.CraftName))
+            {               
+                purchase = purchase.Where(o => o.AuctionLot.AuctionLotItem.Name.Contains(filter.CraftName));
             }
 
 
@@ -86,5 +66,7 @@ namespace FamilyNetServer.Filters
 
             return purchase;
         }
+
+  
     }
 }

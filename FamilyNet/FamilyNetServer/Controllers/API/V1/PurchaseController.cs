@@ -62,8 +62,23 @@ namespace FamilyNetServer.Controllers.API.V1
             _logger.LogInformation("{info}{token}{userId}",
                 "Endpoint Purchase/api/v1 GetAll was called", token, userIdentity);
 
-            var purchase = _filterPurchase.GetFiltered(_repository.Purchases.GetAll().Where(c => !c.IsDeleted),
-                filter, out var count).AsQueryable();
+            ApplicationUser user = null;
+
+            if (!String.IsNullOrEmpty(filter.Email))
+            {
+                user = await _repository.UserManager.FindByNameAsync(filter.Email);
+            }
+
+
+            var buys = _repository.Purchases.GetAll().Where(c => !c.IsDeleted);
+
+            foreach (var buy in buys)
+            {
+                buy.AuctionLot = await GetCraft(buy.AuctionLotId);
+            }
+
+            var purchase = _filterPurchase.GetFiltered(buys,
+                filter,user==null? String.Empty: user.Id, out var count).AsQueryable();
 
             if (purchase == null)
             {
@@ -73,7 +88,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 return BadRequest();
             }
 
-            var purchases = await purchase.Select(item =>
+            var purchases =  purchase.Select(item =>
                new PurchaseDTO()
                {
                    ID = item.ID,
@@ -81,8 +96,10 @@ namespace FamilyNetServer.Controllers.API.V1
                    AuctionLotId = item.AuctionLotId,
                    Paid = item.Paid,
                    Quantity = item.Quantity,
+                   ItemName = GetItem(item.AuctionLotId).Result.Name,
+                   UserEmail = _repository.UserManager.FindByIdAsync(item.UserId.ToString()).Result.Email,
                    UserId = item.UserId.ToString()
-               }).ToListAsync();
+               }).ToList();
 
             var filterModel = new PurchaseFilterDTO
             {
@@ -314,5 +331,32 @@ namespace FamilyNetServer.Controllers.API.V1
 
             return Ok();
         }
+
+        #region Private methods
+
+        private async Task<AuctionLotItem> GetItem(int id)
+        {
+            var item = await _repository.DonationItems.GetById(id);
+
+            return new AuctionLotItem
+            {
+                ID = item.ID,
+                Name = item.Name,
+                Price = item.Price,
+                Description = item.Description
+            };
+        }
+
+        private async Task<AuctionLot> GetCraft(int id)
+        {
+            var lot = await _repository.AuctionLots.GetById(id);
+
+            lot.AuctionLotItem =await GetItem(lot.AuctionLotItemID.Value);
+
+            return lot;
+        }
+
+
+        #endregion
     }
 }

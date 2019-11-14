@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using FamilyNetServer.Controllers.API;
 using FamilyNetServer.EnumConvertor;
 using FamilyNetServer.HttpHandlers;
+using FamilyNetServer.Helpers;
 
 namespace FamilyNetServer
 {
@@ -50,6 +51,8 @@ namespace FamilyNetServer
             services.AddTransient<ILogger<FioController>, Logger<FioController>>();
             services.Configure<ServerURLSettings>(Configuration.GetSection("Server"));
             services.AddTransient<EFRepository<Feedback>, FeedbackRepository>();
+            services.AddTransient<EFRepository<ChildActivity>, ChildActivityRepository>();
+            services.AddTransient<EFRepository<Award>, AwardRepository>();
             services.AddTransient<ILogger<FeedbackController>, Logger<FeedbackController>>();
             services.AddTransient<IFeedbackValidator, FeedbackValidator>();
             services.AddTransient<IUnitOfWork, EFUnitOfWork>();
@@ -62,6 +65,12 @@ namespace FamilyNetServer
             services.AddTransient<ILogger<AuctionLotController>, Logger<AuctionLotController>>();
             services.AddTransient<ILogger<PurchaseController>, Logger<PurchaseController>>();
             services.AddTransient<ILogger<QuestsController>, Logger<QuestsController>>();
+            services.AddTransient<ILogger<ScheduleController>, Logger<ScheduleController>>();
+            services.AddTransient<ILogger<Controllers.API.V2.ChildrenActivitiesController>, 
+                                  Logger<Controllers.API.V2.ChildrenActivitiesController>>();
+            services.AddTransient<ILogger<RolesController>, Logger<RolesController>>();
+            services.AddTransient<ILogger<UsersController>, Logger<UsersController>>();
+            services.AddTransient<ILogger<RegistrationController>, Logger<RegistrationController>>();
             services.AddTransient<IFileUploader, FileUploader>();
             services.AddTransient<IChildValidator, ChildValidator>();
             services.AddTransient<IVolunteerValidator, VolunteerValidator>();
@@ -80,11 +89,15 @@ namespace FamilyNetServer
             services.AddTransient<IValidator<CategoryDTO>, CategoryValidator>();
             services.AddTransient<IValidator<DonationItemDTO>, DonationItemValidator>();
             services.AddTransient<IValidator<DonationDTO>, DonationValidator>();
+            services.AddTransient<IValidator<ChildActivityDTO>, ChildActivityValidator>();
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IValidator<QuestDTO>, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
+            services.AddTransient<IAvailabilityValidator, AvailabilityValidator>();
             services.AddTransient<IIdentityExtractor, IdentityExtractor>();
             services.AddTransient<IFilterConditionPurchase, FilterConditionPurchase>();
+            services.AddTransient<IFilterConditionsChildrenActivities, FilterConditionsChildrenActivities>();
+            services.AddTransient<IScheduleHelper, ScheduleHelper>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>

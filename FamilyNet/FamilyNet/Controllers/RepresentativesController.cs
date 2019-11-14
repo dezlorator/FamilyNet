@@ -6,13 +6,13 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using FamilyNet.Models;
 using FamilyNet.Models.ViewModels;
 using FamilyNet.Downloader;
 using FamilyNet.StreamCreater;
-using DataTransferObjects;
 using FamilyNet.IdentityHelpers;
+using DataTransferObjects;
+using Newtonsoft.Json;
 
 namespace FamilyNet.Controllers
 {
@@ -183,9 +183,6 @@ namespace FamilyNet.Controllers
 
 
 
-        // POST: Representatives/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Surname,Patronymic,Birthday,Rating,Avatar,ChildrenHouseID")]
@@ -224,7 +221,6 @@ namespace FamilyNet.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-       
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -237,10 +233,6 @@ namespace FamilyNet.Controllers
                 .GetAllWithFilter(_apiChildrenHousesPath,
                                   new OrphanageSearchModel(),
                                   SortStateOrphanages.NameAsc);
-
-
-
-
 
             RepresentativeDTO representativeDTO = null;
 
@@ -268,9 +260,6 @@ namespace FamilyNet.Controllers
             return View(representativeDTO);
         }
 
-        // POST: Representatives/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, RepresentativeDTO representativeDTO)
@@ -295,7 +284,6 @@ namespace FamilyNet.Controllers
             if (status != HttpStatusCode.NoContent)
             {
                 return Redirect("/Home/Error");
-                //TODO: log
             }
 
             GetViewData();

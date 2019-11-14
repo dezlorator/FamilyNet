@@ -32,37 +32,34 @@ namespace FamilyNetServer.Controllers.API.V1
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetById(int id, [FromForm]UserRole role)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetById(int id, [FromQuery]UserRole role)
         {
             Person person = null;
+
             switch (role)
             {
                 case UserRole.CharityMaker:
-                    {
-                        person = await _unitOfWork.CharityMakers.GetById(id);
-                        break;
-                    }
+                    person = await _unitOfWork.CharityMakers.GetById(id);
+                    break;
                 case UserRole.Orphan:
-                    {
-                        person = await _unitOfWork.Orphans.GetById(id);
-                        break;
-                    }
+                    person = await _unitOfWork.Orphans.GetById(id);
+                    break;
                 case UserRole.Representative:
-                    {
-                        person = await _unitOfWork.Representatives.GetById(id);
-                        break;
-                    }
+                    person = await _unitOfWork.Representatives.GetById(id);
+                    break;
                 case UserRole.Volunteer:
-                    {
-                        person = await _unitOfWork.Volunteers.GetById(id);
-                        break;
-                    }
+                    person = await _unitOfWork.Volunteers.GetById(id);
+                    break;
                 default:
-                    {
-                        _logger.LogWarning(string.Format("This role has no Fio {0}",
-                            nameof(role)));
-                        break;
-                    }
+                    _logger.LogWarning(string.Format("This role has no Fio {0}",
+                        nameof(role)));
+                    return Forbid();
+            }
+
+            if (person == null)
+            {
+                return BadRequest();
             }
 
             var fioDTO = new FioDTO()
@@ -72,7 +69,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 Patronymic = person.FullName.Patronymic
             };
 
-            _logger.LogInformation(string.Format("{0} fio with id {1} was sent", 
+            _logger.LogInformation(string.Format("{0} fio with id {1} was sent",
                 nameof(role), id));
             return Ok(fioDTO);
         }

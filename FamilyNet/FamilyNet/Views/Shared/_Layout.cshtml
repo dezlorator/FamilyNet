@@ -60,10 +60,8 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphanages" asp-action="Index">@SharedLocalizer["Orphanages"]</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphanages" asp-action="SearchByTypeHelp">@SharedLocalizer["SearchHelp"]</a>
-                        </li>
+                        </li>                       
+
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphans" asp-action="Index">@SharedLocalizer["Orphans"]</a>
 
@@ -103,9 +101,19 @@
                         }
                         @if (role == "CharityMaker" || role == "Volunteer" || role == "Admin")
                         {
-                            <li class="nav-item">
+                            @if (role == "Admin")
+                            {
+                                <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">Purchases</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">My purchases</a>
-                            </li>
+                                </li>
+                            }
+                            
                         }
                         @if (role?.Length > 1)
                         {
@@ -156,7 +164,7 @@
                 </div>
             </div>
         </nav>
-        
+
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     </header>
     <div class="container">
