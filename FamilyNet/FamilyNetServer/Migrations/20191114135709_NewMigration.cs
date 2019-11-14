@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FamilyNetServer.Migrations
 {
-    public partial class AllFixed : Migration
+    public partial class NewMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,6 +27,26 @@ namespace FamilyNetServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Availabilities",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    PersonID = table.Column<int>(nullable: false),
+                    Role = table.Column<int>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false),
+                    FreeHours = table.Column<TimeSpan>(type: "time", nullable: false),
+                    IsReserved = table.Column<bool>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    QuestName = table.Column<string>(nullable: true),
+                    QuestID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Availabilities", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BaseItem",
                 columns: table => new
                 {
@@ -41,6 +61,28 @@ namespace FamilyNetServer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BaseItem", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Feedback",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Message = table.Column<string>(nullable: true),
+                    Time = table.Column<DateTime>(nullable: false),
+                    Image = table.Column<string>(nullable: true),
+                    DonationId = table.Column<int>(nullable: false),
+                    ReceiverRole = table.Column<int>(nullable: false),
+                    ReceiverId = table.Column<int>(nullable: true),
+                    SenderRole = table.Column<int>(nullable: false),
+                    SenderId = table.Column<int>(nullable: true),
+                    Rating = table.Column<double>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Feedback", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -532,7 +574,13 @@ namespace FamilyNetServer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Availabilities");
+
+            migrationBuilder.DropTable(
                 name: "Awards");
+
+            migrationBuilder.DropTable(
+                name: "Feedback");
 
             migrationBuilder.DropTable(
                 name: "Purchases");

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyNetServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191114133337_AllFixed")]
-    partial class AllFixed
+    [Migration("20191114135709_NewMigration")]
+    partial class NewMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -78,6 +78,34 @@ namespace FamilyNetServer.Migrations
                     b.HasIndex("OrphanID");
 
                     b.ToTable("AuctionLot");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.Availability", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<TimeSpan>("FreeHours")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsReserved");
+
+                    b.Property<int>("PersonID");
+
+                    b.Property<int>("QuestID");
+
+                    b.Property<string>("QuestName");
+
+                    b.Property<int>("Role");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Availabilities");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Award", b =>
@@ -232,6 +260,37 @@ namespace FamilyNetServer.Migrations
                     b.HasIndex("OrphanageID");
 
                     b.ToTable("Donations");
+                });
+
+            modelBuilder.Entity("FamilyNetServer.Models.Feedback", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DonationId");
+
+                    b.Property<string>("Image");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Message");
+
+                    b.Property<double>("Rating");
+
+                    b.Property<int?>("ReceiverId");
+
+                    b.Property<int>("ReceiverRole");
+
+                    b.Property<int?>("SenderId");
+
+                    b.Property<int>("SenderRole");
+
+                    b.Property<DateTime>("Time");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Feedback");
                 });
 
             modelBuilder.Entity("FamilyNetServer.Models.Location", b =>
