@@ -257,7 +257,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "Orphan, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]AuctionLotDTO auctionDTO)
+        public async Task<IActionResult> Create([FromBody]AuctionLotDTO auctionDTO)
         {
             var userId = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
@@ -313,7 +313,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "Orphan, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AuctionLotDTO auctionDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]AuctionLotDTO auctionDTO)
         {
             var userId = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);

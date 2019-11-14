@@ -159,7 +159,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]PurchaseDTO purchaseDTO)
+        public async Task<IActionResult> Create([FromBody]PurchaseDTO purchaseDTO)
         {
             var userIdentity = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
@@ -240,7 +240,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]PurchaseDTO purchaseDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]PurchaseDTO purchaseDTO)
         {
             var userIdentity = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
