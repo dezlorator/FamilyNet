@@ -10,7 +10,7 @@ namespace FamilyNet.Models.ViewModels
     public class FeedbackVIewModel
     {
         public FeedbackDTO FeedbackDTO { get; set; }
-        public FioDTO ReceiverFio { get; set; }
-        public FioDTO SenderFio { get; set; }
+        public SNPDTO ReceiverFio { get; set; }
+        public SNPDTO SenderFio { get; set; }
     }
 }

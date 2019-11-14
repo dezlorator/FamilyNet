@@ -35,7 +35,7 @@ namespace FamilyNet.Controllers
         private readonly IServerRepresenativesDataDownloader _representativeDataDownloader;
         private readonly IFioDownloader _fioDownloader;
 
-        private const string _fioApiPath = "api/v1/fio";
+        private const string _snpApiPath = "api/v1/sNP";
         private const string _feedbackApiPath = "api/v1/feedback";
         private const string _pathToErrorView = "/Home/Error";
         private const string _donationApiPath = "api/v1/donations";
@@ -329,9 +329,9 @@ namespace FamilyNet.Controllers
             return Redirect("/feedback/FeedbackByDonationId");
         }
 
-        private async Task<FioDTO> GetFio(int id, UserRole role)
+        private async Task<SNPDTO> GetFio(int id, UserRole role)
         {
-            var url = _urlFioBuilder.GetById(_fioApiPath, id, role);
+            var url = _urlFioBuilder.GetById(_snpApiPath, id, role);
             var fio = await _fioDownloader.GetByIdAsync(url, HttpContext.Session);
             fio.Role = role.ToString();
 
