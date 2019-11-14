@@ -1,4 +1,4 @@
-﻿using FamilyNetLogs.AllicationBuilderExtansion;
+﻿using FamilyNetLogs.ApplicationBuilderExtension;
 using FamilyNetLogs.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

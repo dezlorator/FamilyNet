@@ -1,13 +1,18 @@
 ﻿@model IEnumerable<FamilyNet.Models.CharityMaker>
+@using DataTransferObjects.Enums
 
 @{
     ViewData["Title"] = "Филантропы";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var roles = ViewData["roles"] as String;
 }
 
 <h1>
     Список филантропов
-    <a asp-action="Table" class="btn btn-primary float-right">Таблица</a>
+    @if (roles == nameof(UserRole.Admin))
+    {
+        <a asp-action="Table" class="btn btn-primary float-right">Таблица</a>
+    }
 </h1>
 <hr />
 
