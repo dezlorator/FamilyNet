@@ -82,6 +82,7 @@ namespace FamilyNetServer.Controllers.API.V1
                     OrphanageID = d.Donation.OrphanageID,
                     OrphanageName = d.Donation.Orphanage.Name,
                     CharityMakerID = d.Donation.CharityMakerID,
+                    DonationName = d.Donation.DonationItem.Name,
                     VolunteerID = d.VolunteerID,
                     FromDate = d.FromDate,
                     ToDate = d.ToDate
