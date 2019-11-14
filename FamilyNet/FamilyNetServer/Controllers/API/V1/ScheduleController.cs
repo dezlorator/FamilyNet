@@ -15,6 +15,7 @@ using FamilyNetServer.HttpHandlers;
 using DataTransferObjects;
 using DataTransferObjects.Enums;
 using Newtonsoft.Json;
+using FamilyNetServer.Helpers;
 
 namespace FamilyNetServer.Controllers.API
 {
@@ -29,6 +30,7 @@ namespace FamilyNetServer.Controllers.API
         private readonly IAvailabilityValidator _validator;
         private readonly ILogger<ScheduleController> _logger;
         private readonly IIdentityExtractor _identityExtractor;
+        private readonly IScheduleHelper _helper;
 
         #endregion
 
@@ -37,11 +39,13 @@ namespace FamilyNetServer.Controllers.API
         public ScheduleController(IUnitOfWork unitOfWork,
             IAvailabilityValidator availabilityValidator,
             ILogger<ScheduleController> logger, 
-            IIdentityExtractor identityExtractor)
+            IIdentityExtractor identityExtractor,
+            IScheduleHelper helper)
         {
             _identityExtractor = identityExtractor;
             _validator = availabilityValidator;
             _unitOfWork = unitOfWork;
+            _helper = helper;
             _logger = logger;
         }
 
@@ -64,13 +68,13 @@ namespace FamilyNetServer.Controllers.API
                     && a.Date > DateTime.Now && !a.IsDeleted)
                 .OrderBy(a => a.Date);
 
-            if (availabilities == null)
+            if (availabilities.Count() == 0)
             {
                 _logger.LogInformation("{status}{info}",
                    StatusCodes.Status404NotFound,
                    "List of Availabilities is empty");
 
-                return NotFound();
+                return Ok(new List<AvailabilityDTO>().AsQueryable());
             }
             var availabilitiesDTO = availabilities.Select(a =>
             new AvailabilityDTO()
@@ -103,14 +107,13 @@ namespace FamilyNetServer.Controllers.API
             _logger.LogInformation("{info}",
                "Endpoint Schedule/api/v1/freePersons" +
                $" GetFreePersonIDsList({date}, {duration}, {role}) was called");
-
             var personIdsList = _unitOfWork.Availabilities.Get(a =>
                    (date >= a.Date) && (date < (a.Date + a.FreeHours))
                    && (duration <= a.FreeHours) && (a.Role == role)
                    && !a.IsReserved && !a.IsDeleted)
                .Select(a => new { personID = a.PersonID, availabilityID = a.ID }).GroupBy(a => a.personID);
 
-            if (personIdsList == null)
+            if (personIdsList.Count() == 0)
             {
                 _logger.LogError("{info}{status}",
                     $"Persons wasn't found",
@@ -188,7 +191,7 @@ namespace FamilyNetServer.Controllers.API
                     && !a.IsDeleted)
                 .OrderBy(a => a.Date);
 
-            if (myAvailabilities == null)
+            if (myAvailabilities.Count() == 0)
             {
                 _logger.LogError("{info}{status}",
                     $"Availabilities for {user.PersonType} wasn't found",
@@ -240,7 +243,7 @@ namespace FamilyNetServer.Controllers.API
             {
                 _logger.LogError("{info}{status}",
                     $"Availabilities wasn't found [id:{id}]",
-                    StatusCodes.Status404NotFound);
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -277,7 +280,7 @@ namespace FamilyNetServer.Controllers.API
             _logger.LogInformation("{info} {userId} {token}",
                 "Endpoint Schedule/api/v1 [POST] was called", userId, token);
 
-            var diff = adjustDate(availabilityDTO);
+            var diff = _helper.AdjustDate(availabilityDTO);
 
             availabilityDTO.StartTime = availabilityDTO.StartTime.AddDays(diff);
 
@@ -335,7 +338,7 @@ namespace FamilyNetServer.Controllers.API
             _logger.LogInformation("{info}{userId}{token}",
                 "Endpoint Schedule/api/v1 [PUT] was called", userId, token);
 
-            var diff = adjustDate(availabilityDTO);
+            var diff = _helper.AdjustDate(availabilityDTO);
 
             availabilityDTO.StartTime = availabilityDTO.StartTime.AddDays(diff);
 
@@ -431,24 +434,6 @@ namespace FamilyNetServer.Controllers.API
         }
 
         #region private methods
-
-        private double adjustDate(AvailabilityDTO availabilityDTO)
-        {
-            var diff = (double)availabilityDTO.DayOfWeek - (double)DateTime.Now.DayOfWeek;
-
-            if (diff < 0)
-            {
-                diff += 7;
-            }
-
-            if (diff == 0)
-            {
-                var timeDiff = availabilityDTO.StartTime.TimeOfDay < DateTime.Now.TimeOfDay;
-                diff += (timeDiff) ? 7 : 0;
-            }
-
-            return diff;
-        }
 
         private ApplicationUser identify()
         {

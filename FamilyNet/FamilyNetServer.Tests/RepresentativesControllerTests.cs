@@ -241,11 +241,9 @@ namespace FamilyNetServer.Tests
 
         [Test]
         [TestCase(0)]
-        [TestCase(-1)]
         public async Task GetById_WithInvalidID_ShouldReturnBadRequestResult(int id)
         {
             //Arrange
-
             _mockRepresentatives.Setup(repo => repo.GetById(id)).ReturnsAsync(() => null);
             _mockUnitOfWork.Setup(t => t.Representatives).Returns(_mockRepresentatives.Object);
 

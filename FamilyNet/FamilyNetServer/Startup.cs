@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using FamilyNetServer.Controllers.API;
 using FamilyNetServer.EnumConvertor;
 using FamilyNetServer.HttpHandlers;
+using FamilyNetServer.Helpers;
 
 namespace FamilyNetServer
 {
@@ -93,6 +94,7 @@ namespace FamilyNetServer
             services.AddTransient<IIdentityExtractor, IdentityExtractor>();
             services.AddTransient<IFilterConditionPurchase, FilterConditionPurchase>();
             services.AddTransient<IFilterConditionsChildrenActivities, FilterConditionsChildrenActivities>();
+            services.AddTransient<IScheduleHelper, ScheduleHelper>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>

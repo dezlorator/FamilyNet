@@ -30,19 +30,19 @@ namespace FamilyNetServer.Validators
                 return false;
             }
 
-            if (IsCorrectStartTime(dto) ||
-                IsNotReserved(dto) ||
+            if (IsCorrectStartTime(dto) &&
+                IsNotReserved(dto) &&
                 IsFreeTimeEnough(dto))
             {
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         public bool IsCorrectStartTime(AvailabilityDTO dto)
         {
-            var result = dto.StartTime < DateTime.Now;
+            var result = DateTime.Now < dto.StartTime;
             _logger.LogInformation("return " + result);
 
             return result;
@@ -50,7 +50,7 @@ namespace FamilyNetServer.Validators
 
         public bool IsNotReserved (AvailabilityDTO dto)
         {
-            var result = dto.FreeHours.TotalMinutes < 30.0;
+            var result = !dto.IsReserved;
             _logger.LogInformation("return " + result);
 
             return result;
@@ -58,7 +58,7 @@ namespace FamilyNetServer.Validators
 
         public bool IsFreeTimeEnough (AvailabilityDTO dto)
         {
-            var result = dto.StartTime < DateTime.Now;
+            var result = !(dto.FreeHours.TotalMinutes < 30.0);
             _logger.LogInformation("return " + result);
 
             return result;
