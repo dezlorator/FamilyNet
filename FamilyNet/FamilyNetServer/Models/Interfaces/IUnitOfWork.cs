@@ -15,6 +15,8 @@ namespace FamilyNetServer.Models.Interfaces
         IRepository<BaseItemType> BaseItemTypes { get; }
         IRepository<DonationItem> DonationItems { get; }
         IRepository<Quest> Quests { get; set; }
+        IRepository<Availability> Availabilities { get; }
+
         IRepository<Purchase> Purchases { get; set; }
         IRepository<AuctionLot> AuctionLots { get; set; }
         DbSet<TypeBaseItem> TypeBaseItems { get; set; }

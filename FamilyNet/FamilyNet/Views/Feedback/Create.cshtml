@@ -1,0 +1,56 @@
+﻿@model FamilyNet.Models.ViewModels.CreateFeedbackViewModel
+
+@{
+    ViewData["Title"] = "Создание отзыва";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Создание отзыва</h1>
+
+<h4>Отзыв</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="@Model.feedbackDTO.Message" class="control-label"></label>
+                <input asp-for="@Model.feedbackDTO.Message" class="form-control" />
+                <span asp-validation-for="@Model.feedbackDTO.Message" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.feedbackDTO.Rating" class="control-label"></label>
+                <input asp-for="@Model.feedbackDTO.Rating" class="form-control" />
+                <span asp-validation-for="@Model.feedbackDTO.Rating" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Avatar" class="control-label"></label>
+                <input asp-for="Avatar" type="file" name="Avatar" class="form-control" />
+                <span asp-validation-for="Avatar" class="text-danger"></span>
+            </div>
+            <div>
+                <h6>Пользователи</h6>
+                @foreach (string role in Model.Roles)
+                {
+                    <div class="form-check">
+                        <input name="roles" class="form-check-input" type="checkbox" value="@role" id="defaultCheck">
+                        <label class="form-check-label" for="defaultCheck">
+                            @role
+                        </label>
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <input asp-action="CreateFeedback" type="submit" value="Создать" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="FeedbackByDonationId">Вернуться к списку</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

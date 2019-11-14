@@ -58,4 +58,15 @@
     }
 
     <a asp-action="Index" type="submit" class="btn btn-info">Вернуться к списку</a>
+    <a asp-controller="feedback" asp-action="FeedbackByDonationId" asp-route-id="@Model.ID"  class="btn btn-primary">Комментарии</a>
+
+    @if (role == "CharityMaker")
+    {
+        <form asp-action="Donate">
+            <br /><br />
+            <input type="hidden" asp-for="ID" />
+            <a asp-action="Donate" class="btn btn-primary">Пожертвовать</a>
+        </form>
+    }
+
 </div>

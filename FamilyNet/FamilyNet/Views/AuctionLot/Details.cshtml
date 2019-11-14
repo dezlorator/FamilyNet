@@ -5,7 +5,7 @@
 }
 
 @{
-    var role = ViewData["role"] as String;
+    var role = ViewData["roles"] as String;
 }
 
 <div class="container">
@@ -19,26 +19,28 @@
                             <input type="hidden" asp-for="ID" />
                             <input type="hidden" asp-for="AuctionLotItemID" />
                             <input type="hidden" asp-for="OrphanID" />
-                            <b>@Html.DisplayNameFor(model => model.AuctionLotItem.Name):</b>
+                            <b>Name:</b>
                             @Html.DisplayFor(model => model.AuctionLotItem.Name)
                             <p>
                                 <b>@Html.DisplayNameFor(model => model.AuctionLotItem.Price):</b>
                                 @Html.DisplayFor(model => model.AuctionLotItem.Price)
                             </p>
                             <p>
-                                <b>Added</b>
+                                <b>Added:</b>
                                 @Html.DisplayFor(model => model.DateStart)
                             </p>
                             <p>
-                                <b>@Html.DisplayNameFor(model => model.Quantity)</b>
+                                <b>@Html.DisplayNameFor(model => model.Quantity):</b>
                                 @Html.DisplayFor(model => model.Quantity)
                             </p>
                             <p>
-                                <b>@Html.DisplayNameFor(model => model.Orphan)</b>
-                                @Html.DisplayFor(model => model.OrphanID)
+                                <b>Make by:</b>
+                                <a asp-action="Details" asp-controller="Orphans" asp-route-id="@Model.OrphanID"> @Html.DisplayFor(model => model.Orphan.FullName.Name)
+                                @Html.DisplayFor(model => model.Orphan.FullName.Surname) @Html.DisplayFor(model => model.Orphan.FullName.Patronymic)
+                                </a>
                             </p>
                             <p>
-                                <b>@Html.DisplayNameFor(model => model.AuctionLotItem.Description)</b>
+                                <b>Desciption</b>
                                 @Html.DisplayFor(model => model.AuctionLotItem.Description) <br>
                             </p>
                         </div>

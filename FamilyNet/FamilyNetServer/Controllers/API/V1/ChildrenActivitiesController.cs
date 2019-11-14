@@ -17,6 +17,8 @@ using FamilyNetServer.Filters.FilterParameters;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.Models.EntityFramework;
+using Newtonsoft.Json;
+using FamilyNetServer.HttpHandlers;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -32,6 +34,7 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<ChildActivityDTO> _childActivityValidator;
         private readonly IFilterConditionsChildrenActivities _filterConditions;
+        private readonly IIdentityExtractor _identityExtractor;
 
         #endregion
 
@@ -42,7 +45,8 @@ namespace FamilyNetServer.Controllers.API.V1
                                   IUnitOfWork unitOfWork,
                                   ILogger<ChildrenActivitiesController> logger,
                                   IValidator<ChildActivityDTO> childActivityValidator,
-                                  IFilterConditionsChildrenActivities filterConditions)
+                                  IFilterConditionsChildrenActivities filterConditions,
+                                  IIdentityExtractor identityExtractor)
         {
             _activityRepository = activityRepository;
             _awardRepository = awardRepository;
@@ -50,6 +54,7 @@ namespace FamilyNetServer.Controllers.API.V1
             _logger = logger;
             _childActivityValidator = childActivityValidator;
             _filterConditions = filterConditions;
+            _identityExtractor = identityExtractor;
         }
 
         #endregion
@@ -59,35 +64,41 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll([FromQuery]FilterParemetersChildrenActivities filter)
         {
+            _logger.LogInformation("{info}",
+                "Endpoint ChildrenActivities/api/v1 GetAll was called");
+
             var activities = _activityRepository.GetAll().Where(a => !a.IsDeleted);
             activities = _filterConditions.GetChildrenActivities(activities, filter);
 
             if (activities == null)
             {
-                _logger.LogInformation("Bad request[400]. Child activity wasn't found.");
+                _logger.LogInformation("{status}{info}",
+                    StatusCodes.Status400BadRequest,
+                    "List of ChildrenActivities is empty");
 
                 return BadRequest();
             }
 
-            var childActivityDTO = activities.Select(a =>
+            var childrenActivitiesDTO = activities.Select(activity =>
             new ChildActivityDTO()
             {
-                ID = a.ID,
-                Name = a.Name,
-                Description = a.Description,
-                ChildID = a.Child.ID,
-                Awards = a.Awards.Where(aw => !aw.IsDeleted).Select(aw => new AwardDTO
+                ID = activity.ID,
+                Name = activity.Name,
+                Description = activity.Description,
+                ChildID = activity.Child.ID,
+                Awards = activity.Awards.Where(award => !award.IsDeleted).Select(award => new AwardDTO
                 {
-                    ID = aw.ID,
-                    Name = aw.Name,
-                    Description = aw.Description,
-                    Date = aw.Date
+                    ID = award.ID,
+                    Name = award.Name,
+                    Description = award.Description,
+                    Date = award.Date
                 }).ToList()
             });
 
-            _logger.LogInformation("Return Ok[200]. List of children activities was sent");
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(childrenActivitiesDTO));
 
-            return Ok(childActivityDTO);
+            return Ok(childrenActivitiesDTO);
         }
 
         [HttpGet("{id}")]
@@ -95,11 +106,16 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
         {
+            _logger.LogInformation("{info}",
+                $"Endpoint ChildrenActivities/api/v1 GetById({id}) was called");
+
             var activity = await _activityRepository.GetById(id);
 
             if (activity == null)
             {
-                _logger.LogError("Bad request[400]. Child activity wasn't found");
+                _logger.LogError("{info}{status}",
+                    $"ChildActivity wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
 
                 return BadRequest();
             }
@@ -110,16 +126,17 @@ namespace FamilyNetServer.Controllers.API.V1
                 Name = activity.Name,
                 Description = activity.Description,
                 ChildID = activity.Child.ID,
-                Awards = activity.Awards.Where(a => !a.IsDeleted).Select(aw => new AwardDTO
+                Awards = activity.Awards.Where(award => !award.IsDeleted).Select(award => new AwardDTO
                 {
-                    ID = aw.ID,
-                    Name = aw.Name,
-                    Description = aw.Description,
-                    Date = aw.Date
+                    ID = award.ID,
+                    Name = award.Name,
+                    Description = award.Description,
+                    Date = award.Date
                 }).ToList()
             };
 
-            _logger.LogInformation("Return Ok[200]. Child activity was sent.");
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(childActivityDTO));
 
             return Ok(childActivityDTO);
         }
@@ -130,9 +147,17 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]ChildActivityDTO childActivityDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info} {userId} {token}",
+                "Endpoint ChildrenActivities/api/v1 [POST] was called", userId, token);
+
             if (!_childActivityValidator.IsValid(childActivityDTO))
             {
-                _logger.LogError("Bad request[400]. ChildActivityDTO is not valid");
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "ChildActivityDTO is invalid");
 
                 return BadRequest();
             }
@@ -146,17 +171,19 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (childActivityDTO.Awards != null)
             {
-                childActivity.Awards = childActivityDTO.Awards.Select(aw => new Award
+                childActivity.Awards = childActivityDTO.Awards.Select(award => new Award
                 {
-                    Name = aw.Name,
-                    Description = aw.Description,
-                    Date = aw.Date
+                    Name = award.Name,
+                    Description = award.Description,
+                    Date = award.Date
                 }).ToList();
             }
 
             if (childActivity.Child == null)
             {
-                _logger.LogError("Bad request[400]. Child was not found by id");
+                _logger.LogWarning("{status}{token}{userId}{info}",
+                    StatusCodes.Status400BadRequest, token, userId,
+                    "Child wasn't found by id.");
 
                 return BadRequest();
             }
@@ -164,7 +191,9 @@ namespace FamilyNetServer.Controllers.API.V1
             await _activityRepository.Create(childActivity);
             await _activityRepository.SaveChangesAsync();
 
-            _logger.LogInformation("Return Created[201]. New child activity was added.");
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                token, userId, StatusCodes.Status201Created,
+                $"ChildActivity was saved [id:{childActivity.ID}]");
 
             return Created("api/v1/childrenActivities/" + childActivity.ID, new ChildActivityDTO());
         }
@@ -175,9 +204,17 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit([FromQuery]int id, [FromForm]ChildActivityDTO childActivityDTO)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint ChildrenActivities/api/v1 [PUT] was called", userId, token);
+
             if (!_childActivityValidator.IsValid(childActivityDTO))
             {
-                _logger.LogError("Bad request[400]. ChildActivityDTO is not valid");
+                _logger.LogError("{userId} {token} {status} {info}",
+                    userId, token, StatusCodes.Status400BadRequest,
+                    "ChildActivityDTO is invalid");
 
                 return BadRequest();
             }
@@ -186,7 +223,9 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (childActivity == null)
             {
-                _logger.LogError("Bad request[400]. Child activity was not found by id");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"ChildActivity was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -196,13 +235,15 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (childActivityDTO.Awards != null)
             {
-                foreach (var a in childActivity.Awards)
+                foreach (var award in childActivity.Awards)
                 {
-                    if (childActivityDTO.Awards.FirstOrDefault(i => i.ID == a.ID) == null)
+                    if (childActivityDTO.Awards.FirstOrDefault(i => i.ID == award.ID) == null)
                     {
-                        a.IsDeleted = true;
+                        award.IsDeleted = true;
 
-                        _logger.LogInformation("Award property IsDeleted was updated.");
+                        _logger.LogInformation("{info}{userId}{token}",
+                            "Award.IsDeleted was updated.",
+                            userId, token);
                     }
                 }
 
@@ -234,7 +275,9 @@ namespace FamilyNetServer.Controllers.API.V1
             await _awardRepository.SaveChangesAsync();
             await _activityRepository.SaveChangesAsync();
 
-            _logger.LogInformation("Return NoContent[204]. Child activity was updated.");
+            _logger.LogInformation("{token}{userId}{status}{info}",
+                 token, userId, StatusCodes.Status204NoContent,
+                 $"ChildActivity was updated [id:{childActivity.ID}]");
 
             return NoContent();
         }
@@ -245,9 +288,18 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
+            var userId = _identityExtractor.GetId(User);
+            var token = _identityExtractor.GetSignature(HttpContext);
+
+            _logger.LogInformation("{info}{userId}{token}",
+                "Endpoint ChildrenActivities/api/v1 [DELETE] was called",
+                userId, token);
+
             if (id <= 0)
             {
-                _logger.LogError("Bad request[400]. Argument id is not valid");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"Argument id is not valid [id:{id}]", userId, token);
 
                 return BadRequest();
             }
@@ -256,24 +308,30 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (childActivity == null)
             {
-                _logger.LogError("Bad request[400]. Chidren activity wasn't found.");
+                _logger.LogError("{status} {info} {userId} {token}",
+                    StatusCodes.Status400BadRequest,
+                    $"ChildActivity was not found [id:{id}]", userId, token);
 
                 return BadRequest();
             }
 
             childActivity.IsDeleted = true;
 
-            foreach (var a in childActivity.Awards)
+            foreach (var award in childActivity.Awards)
             {
-                a.IsDeleted = true;
+                award.IsDeleted = true;
 
-                _logger.LogInformation("Award property IsDeleted was updated.");
+                _logger.LogInformation("{info}{userId}{token}",
+                    "Award.IsDeleted was updated.",
+                    userId, token);
             }
 
             _activityRepository.Update(childActivity);
             await _activityRepository.SaveChangesAsync();
 
-            _logger.LogInformation("Return Ok[200]. Child activity property IsDeleted was updated.");
+            _logger.LogInformation("{status} {info} {userId} {token}",
+                StatusCodes.Status200OK,
+                $"ChildActivity.IsDeleted was updated [id:{id}]", userId, token);
 
             return Ok();
         }
