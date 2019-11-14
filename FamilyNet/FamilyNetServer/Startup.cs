@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using FamilyNetServer.Controllers.API;
 using FamilyNetServer.EnumConvertor;
 using FamilyNetServer.HttpHandlers;
+using FamilyNetServer.Helpers;
 
 namespace FamilyNetServer
 {
@@ -64,6 +65,7 @@ namespace FamilyNetServer
             services.AddTransient<ILogger<AuctionLotController>, Logger<AuctionLotController>>();
             services.AddTransient<ILogger<PurchaseController>, Logger<PurchaseController>>();
             services.AddTransient<ILogger<QuestsController>, Logger<QuestsController>>();
+            services.AddTransient<ILogger<ScheduleController>, Logger<ScheduleController>>();
             services.AddTransient<ILogger<Controllers.API.V2.ChildrenActivitiesController>, 
                                   Logger<Controllers.API.V2.ChildrenActivitiesController>>();
             services.AddTransient<ILogger<RolesController>, Logger<RolesController>>();
@@ -91,9 +93,11 @@ namespace FamilyNetServer
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IValidator<QuestDTO>, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
+            services.AddTransient<IAvailabilityValidator, AvailabilityValidator>();
             services.AddTransient<IIdentityExtractor, IdentityExtractor>();
             services.AddTransient<IFilterConditionPurchase, FilterConditionPurchase>();
             services.AddTransient<IFilterConditionsChildrenActivities, FilterConditionsChildrenActivities>();
+            services.AddTransient<IScheduleHelper, ScheduleHelper>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddCors(options =>

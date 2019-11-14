@@ -1,8 +1,12 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using FamilyNetServer.Enums;
 using FamilyNetServer.Filters;
 using FamilyNetServer.Filters.FilterParameters;
@@ -10,14 +14,10 @@ using FamilyNetServer.Models;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Validators;
 using FamilyNetServer.Uploaders;
-using DataTransferObjects;
-using FamilyNetServer.Configuration;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Authorization;
 using FamilyNetServer.HttpHandlers;
-using Microsoft.Extensions.Logging;
+using FamilyNetServer.Configuration;
+using DataTransferObjects;
 using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore;
 
 namespace FamilyNetServer.Controllers.API.V1
 {
@@ -34,14 +34,6 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly IOptionsSnapshot<ServerURLSettings> _settings;
         private readonly ILogger<RepresentativesController> _logger;
         private readonly IIdentityExtractor _identityExtractor;
-
-        private string _url
-        {
-            get
-            {
-                return string.Format($"{Request.Scheme}://{Request.Host.Value}/");
-            }
-        }
 
         #endregion
 
@@ -76,6 +68,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             var representatives = _unitOfWork.Representatives.GetAll()
                 .Where(r => !r.IsDeleted);
+
             representatives = _filterConditions
                 .GetRepresentatives(representatives, filter);
 
@@ -87,6 +80,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
                 return BadRequest();
             }
+
 
             var representativesDTO = await representatives.Select(r =>
                 new RepresentativeDTO()
@@ -105,8 +99,9 @@ namespace FamilyNetServer.Controllers.API.V1
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(representativesDTO));
 
-            return Ok(representativesDTO);
+            return Ok(representativesDTO.AsQueryable());
         }
+
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -151,11 +146,19 @@ namespace FamilyNetServer.Controllers.API.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetByChildrenHouseId(int id)
         {
+            _logger.LogInformation("{info}",
+                "Endpoint Schedule/api/v1/byChildrenHouse" +
+                $" GetByChildrenHouseId({id}) was called");
+
             var childrenHouse =
                 await _unitOfWork.Orphanages.GetById(id);
 
             if (childrenHouse == null)
             {
+                _logger.LogError("{info}{status}",
+                    $"Children house wasn't found [id:{id}]",
+                    StatusCodes.Status400BadRequest);
+
                 return BadRequest();
             }
 
@@ -163,6 +166,10 @@ namespace FamilyNetServer.Controllers.API.V1
 
             if (representatives == null)
             {
+                _logger.LogError("{info}{status}",
+                    $"Representatives wasn't found for children house [id:{id}]",
+                    StatusCodes.Status400BadRequest);
+
                 return BadRequest();
             }
 
@@ -179,6 +186,9 @@ namespace FamilyNetServer.Controllers.API.V1
                  ChildrenHouseID = r.OrphanageID,
                  Rating = r.Rating
              });
+
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(representativesDTO));
 
             return Ok(representativesDTO);
         }
@@ -275,7 +285,7 @@ namespace FamilyNetServer.Controllers.API.V1
             {
                 _logger.LogError("{status} {info} {userId} {token}",
                     StatusCodes.Status400BadRequest,
-                    $"Representative was not found [id:{id}]", userId, token);
+                    $"Representative was not found [id:{representativeDTO.ID}]", userId, token);
 
                 return BadRequest();
             }
