@@ -11,6 +11,5 @@ namespace DataTransferObjects.Enums
         Volunteer,
         Orphan,
         Representative
-
     }
 }

@@ -25,13 +25,13 @@ namespace FamilyNet.Downloader
             var url = _serverURL.ServerURL + "api/v1/authentication";
 
             using (var httpClient = new HttpClient())
-            {
-               
+            {               
                 var content = new StringContent(JsonConvert.SerializeObject(credentials),
                                                 Encoding.UTF8, "application/json");
 
                 var result = await httpClient.PostAsync(url, content);
                 var json = await result.Content.ReadAsStringAsync();
+
                 try
                 {
                     var token = JsonConvert.DeserializeObject<TokenDTO>(json);

@@ -3,55 +3,38 @@
     ViewData["Title"] = "MyPurchases";
 }
 @{
-    var role = ViewData["role"] as String;
-    var userId = Model.FilterViewModel.UserId == null? String.Empty : Model.FilterViewModel.UserId;
-    var sort = Model.Sort == null? String.Empty : Model.Sort;
-    var q1 = Model.FilterViewModel.QuantityFrom == 0? 0 : Model.FilterViewModel.QuantityFrom;
-    var q2 = Model.FilterViewModel.QuantityTo == 0? 0 : Model.FilterViewModel.QuantityTo;
-    var p1 = Model.FilterViewModel.PaidFrom == 0.0? 0.0 : Model.FilterViewModel.PaidFrom;
-    var p2 = Model.FilterViewModel.PaidTo == 0.0? 0.0 : Model.FilterViewModel.PaidTo;
-    var craft = Model.FilterViewModel.CraftId == 0? 0 : Model.FilterViewModel.CraftId;
+    var role = ViewData["roles"] as String;
+    var email = Model.FilterViewModel.Email == null? String.Empty : Model.FilterViewModel.Email;
+    var sort = Model.Sort == null? String.Empty : Model.Sort;  
+    var craft = Model.FilterViewModel.CraftName == null? String.Empty : Model.FilterViewModel.CraftName;
     var date = DateTime.MinValue;
 }
+
 @if (role == "Admin")
 {
     <h1>Purchases</h1>
 }
 else
 {
-    <h1>MyPurchases</h1>
+    <h1>My Purchases</h1>
 }
 <form method="get">
     @if (role == "Admin")
     {
-        <label>Search by user id:</label>
-        <input asp-for="@userId" class="form-control input-lg" />
+        <label>Search by user email:</label>
+        <input asp-for="@email" class="form-control input-lg" />
         <br />
     }
     <table class="table table-bordered" >
-        <tr class="table-info">
-            <th>Craft id</th>
+        <tr class="table" style="background: linear-gradient(0.25turn, #3f87a6, olive, #f69d3c); color: white;">
+            <th>Craft name</th>
             <th>Date</th>
-            <th>Quantity from</th>
-            <th>Quantity to</th>
+            <th>Sort</th>
         </tr>
         <tbody>
             <tr>
                 <td><input asp-for="@craft" /></td>
                 <td><input type="date" asp-for="@date" /></td>
-                <td><input asp-for="@q1" /></td>
-                <td><input asp-for="@q2" /></td>
-            </tr>
-        </tbody>
-        <tr class="table-info">
-            <th>Paid from</th>
-            <th>Paid to</th>
-            <th>Sort</th>
-        </tr>
-        <tbody>
-            <tr>
-                <td><input asp-for="@p1" /></td>
-                <td><input asp-for="@p2" /></td>
                 <td>
                     <select asp-for="@sort">
                         <option></option>
@@ -63,15 +46,12 @@ else
                         <option>PaidDesc</option>
                     </select>
                 </td>
-
             </tr>
         </tbody>
     </table>
     <input type="submit" value="Filter out" class="btn btn-primary"
-           asp-route-userId="@userId" asp-route-sort="@sort"
-           asp-route-craft="@craft" asp-route-q1="@q1"
-           asp-route-q2="@q2" asp-route-p1="@p1"
-           asp-route-date="@date" asp-route-p2="@p2"
+           asp-route-email="@email" asp-route-sort="@sort"
+           asp-route-craft="@craft" asp-route-date="@date" 
            style="float:right; margin-bottom: 2%" />
 </form>
 
@@ -82,9 +62,9 @@ else
         <tr>
             @if (role == "Admin")
             {
-                <th>User id</th>
+                <th>Email</th>
             }
-            <th>Craft id</th>
+            <th>Craft name</th>
             <th>Quantity</th>
             <th>Paid</th>
             <th>Date</th>
@@ -96,10 +76,10 @@ else
             <tr>
                 @if (role == "Admin")
                 {
-                    <th> @Html.DisplayFor(modelItem => buy.UserId)</th>
+                    <td> @Html.DisplayFor(modelItem => buy.UserEmail)</td>
                 }
                 <td>
-                    <a asp-controller="AuctionLot" asp-action="Details" asp-route-id="@buy.AuctionLotId"> @Html.DisplayFor(modelItem => buy.AuctionLotId) </a>
+                    <a asp-controller="AuctionLot" asp-action="Details" asp-route-id="@buy.AuctionLotId"> @Html.DisplayFor(modelItem => buy.ItemName) </a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => buy.Quantity)
@@ -123,10 +103,8 @@ else
         {
             <li class="page-item active">
                 <a asp-action="All"
-                   asp-route-userId="@userId" asp-route-sort="@sort"
-                   asp-route-craft="@craft" asp-route-q1="@q1"
-                   asp-route-q2="@q2" asp-route-p1="@p1"
-                   asp-route-date="@date" asp-route-p2="@p2"
+                   asp-route-email="@email" asp-route-sort="@sort"
+                   asp-route-craft="@craft" asp-route-date="@date" 
                    asp-route-mypage="@mypage"
                    class="page-link">
                     @mypage
@@ -137,10 +115,8 @@ else
         {
             <li class="page-item">
                 <a asp-action="All"
-                   asp-route-userId="@userId" asp-route-sort="@sort"
-                   asp-route-craft="@craft" asp-route-q1="@q1"
-                   asp-route-q2="@q2" asp-route-p1="@p1"
-                   asp-route-date="@date" asp-route-p2="@p2"
+                   asp-route-email="@email" asp-route-sort="@sort"
+                   asp-route-craft="@craft" asp-route-date="@date" 
                    asp-route-mypage="@mypage"
                    class="page-link">
                     @mypage

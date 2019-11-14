@@ -1,6 +1,9 @@
-﻿using FamilyNetServer.Models.Interfaces;
+using FamilyNetServer.Models.EntityFramework;
+using DataTransferObjects.Enums;
+using FamilyNetServer.Models.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 namespace FamilyNetServer.Models
@@ -8,10 +11,12 @@ namespace FamilyNetServer.Models
     public class SeedData
     {
         protected IUnitOfWork _unitOfWork;
+        protected EFRepository<ChildActivity> _childrenActivities;
 
-        public SeedData(IUnitOfWork unitOfWork)
+        public SeedData(IUnitOfWork unitOfWork, EFRepository<ChildActivity> childrenActivities)
         {
             _unitOfWork = unitOfWork;
+            _childrenActivities = childrenActivities;
         }
         public void EnsurePopulated()
         {
@@ -381,17 +386,45 @@ namespace FamilyNetServer.Models
                 _unitOfWork.SaveChanges();
             }
 
-            if (_unitOfWork.Orphans.Get(v => v.ID == v.ID) != null)
+            if (_unitOfWork.Orphans.Get(v => v.ID == v.ID) != null && _childrenActivities.Get(a => a.ID == a.ID) != null)
             {
                 List<Orphan> orphans = new List<Orphan>();
+                List<ChildActivity> activities = new List<ChildActivity>();
 
                 #region child1
+
                 Orphan orphan1 = new Orphan();
                 orphan1.FullName = new FullName() { Name = "Иван", Surname = "Бутенко", Patronymic = "Андреевич" };
                 orphan1.Birthday = new DateTime(2010, 11, 30);
                 orphan1.Rating = 3;
                 orphan1.Avatar = "avatars/seeddata_child1.jpg";
                 orphan1.OrphanageID = 1;
+
+                ChildActivity activity = new ChildActivity();
+                activity.Name = "Каратэ";
+                activity.Description = "Ребенок с четырёхлетненго возраста занимается в секции каратэ.";
+                activity.Child = orphan1;
+                activity.Awards = new List<Award>();
+                activity.Awards.Add(new Award
+                {
+                    Name = "Желтый пояс",
+                    Description = "Желтый пояс – характеризуется как утверждение.",
+                    Date = DateTime.Parse("01.01.2019")
+                });
+                activity.Awards.Add(new Award
+                {
+                    Name = "Золотая медаль",
+                    Description = "Золотая медаль за победу в городских соревнованиях",
+                    Date = DateTime.Parse("02.02.2019")
+                });
+
+                ChildActivity activity2 = new ChildActivity();
+                activity2.Name = "Рисование";
+                activity2.Description = "Ребенок с четырёхлетненго возраста посещает художественный кружок.";
+                activity2.Child = orphan1;
+
+                activities.Add(activity);
+                activities.Add(activity2);
 
                 #endregion
 
@@ -454,6 +487,8 @@ namespace FamilyNetServer.Models
 
                 _unitOfWork.Orphans.AddRange(orphans);
                 _unitOfWork.SaveChanges();
+                _childrenActivities.AddRange(activities);
+                _childrenActivities.SaveChangesAsync();
             }
 
             if (_unitOfWork.CharityMakers.Get(v => v.ID == v.ID) != null)
@@ -607,6 +642,106 @@ namespace FamilyNetServer.Models
                 baseItemTypes.Add(baseItemType);
 
                 _unitOfWork.BaseItemTypes.AddRange(baseItemTypes);
+                _unitOfWork.SaveChanges();
+            }
+
+            if (_unitOfWork.Availabilities.Get(a => a.ID == a.ID) != null)
+            {
+                List<Availability> availabilities = new List<Availability>();
+                var volunteerId = _unitOfWork.Volunteers
+                    .Get(v => v.ID == v.ID).FirstOrDefault().ID;
+
+                #region Availability1
+
+                Availability availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(2).AddHours(-7);
+                availability.FreeHours = new TimeSpan(1, 0, 0);
+                availability.IsReserved = true;
+                availability.QuestID = 1;
+                availability.QuestName = "Delivery";
+                availability.PersonID = volunteerId; 
+                availability.Role = PersonType.Volunteer;
+
+                #endregion
+
+                availabilities.Add(availability);
+                
+                #region Availability2
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(3).AddHours(-5);
+                availability.FreeHours = new TimeSpan(1, 30, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability3
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(4).AddHours(-4);
+                availability.FreeHours = new TimeSpan(2, 30, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability4
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(5).AddHours(-2);
+                availability.FreeHours = new TimeSpan(1, 30, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.IsReserved = true;
+                availability.QuestID = 1;
+                availability.QuestName = "Delivery";
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability5
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(6).AddHours(-1);
+                availability.FreeHours = new TimeSpan(0, 40, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability6
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(7).AddHours(2);
+                availability.FreeHours = new TimeSpan(1, 20, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability7
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(8).AddHours(4);
+                availability.FreeHours = new TimeSpan(2, 0, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+
+                _unitOfWork.Availabilities.AddRange(availabilities);
                 _unitOfWork.SaveChanges();
             }
         }

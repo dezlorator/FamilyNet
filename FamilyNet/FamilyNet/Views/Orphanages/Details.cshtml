@@ -5,11 +5,12 @@
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var role = ViewData["roles"] as String;
 }
 
 <h1>
     @ViewData["Details"]
-    @if (User.IsInRole("CharityMaker") || User.IsInRole("Admin"))
+    @if (role == "Admin" || role =="Representative" || role =="CharityMaker")
     {
         <a asp-controller="Donations" asp-action="CreateDonation" class="btn btn-primary float-right">Создать Потребноть</a>
     }

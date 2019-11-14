@@ -6,16 +6,20 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+     var role = ViewData["roles"] as String;
 }
 
-<h1>
-    @ViewData["ListOrphanages"]
+    <h1>
+        @ViewData["ListOrphanages"]
 
-    @if (User.IsInRole("Admin"))
-    {
-        <a asp-action="Create" class="btn btn-primary float-right"><i class="fas fa-plus"></i></a>
-    }
-</h1>
+        @if (role == "Admin" || role == "Representative")
+        {
+            <a asp-action="Create" class="btn btn-primary float-right"><i class="fas fa-plus"></i></a>
+        }
+        <a asp-action="SearchOrphanageOnMap" class="btn btn-sm btn-primary">
+           Show on map
+        </a>
+    </h1>
 
 <form asp-action="Filter">
     <table class="table">
@@ -117,7 +121,7 @@
                     <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">
                         <i class="fas fa-info-circle"></i>
                     </a>
-                    @if (User.IsInRole("Admin"))
+                    @if (role == "Admin" || role =="Representative")
                     {
                         <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-warning">
                             <i class="fas fa-edit"></i>

@@ -39,7 +39,6 @@ namespace FamilyNetServer.Controllers.API.V1
         }
 
         [HttpGet]
-        [Authorize(Roles = "CharityMaker, Volunteer, Representative, Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult GetAll([FromQuery]int rows,
@@ -94,7 +93,6 @@ namespace FamilyNetServer.Controllers.API.V1
 
         // GET: api/Quests/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "CharityMaker, Volunteer, Representative, Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
@@ -208,7 +206,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 DonationID = questDTO.DonationID,
                 FromDate = questDTO.FromDate,
                 ToDate = questDTO.ToDate,
-                VolunteerID = 2
+                Status = QuestStatus.ToDo
             };
 
             if (questDTO.DonationID != null)

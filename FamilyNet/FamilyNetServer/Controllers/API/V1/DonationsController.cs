@@ -186,6 +186,11 @@ namespace FamilyNetServer.Controllers.API.V1
                 return BadRequest();
             }
 
+            if(donationDTO.Status == null)
+            {
+                donationDTO.Status = "Needed";
+            }
+
             if (!Enum.TryParse(donationDTO.Status, out DonationStatus status))
             {
                 return BadRequest();

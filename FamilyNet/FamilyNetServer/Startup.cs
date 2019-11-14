@@ -4,7 +4,6 @@ using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Models.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
@@ -20,10 +19,10 @@ using FamilyNetServer.Factories;
 using DataTransferObjects;
 using Microsoft.Extensions.Logging;
 using FamilyNetServer.Controllers.API.V1;
-using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using FamilyNetServer.Controllers.API;
 using FamilyNetServer.EnumConvertor;
 using FamilyNetServer.HttpHandlers;
+using FamilyNetServer.Helpers;
 
 namespace FamilyNetServer
 {
@@ -64,7 +63,8 @@ namespace FamilyNetServer
             services.AddTransient<ILogger<AuctionLotController>, Logger<AuctionLotController>>();
             services.AddTransient<ILogger<PurchaseController>, Logger<PurchaseController>>();
             services.AddTransient<ILogger<QuestsController>, Logger<QuestsController>>();
-            services.AddTransient<ILogger<Controllers.API.V2.ChildrenActivitiesController>, 
+            services.AddTransient<ILogger<ScheduleController>, Logger<ScheduleController>>();
+            services.AddTransient<ILogger<Controllers.API.V2.ChildrenActivitiesController>,
                                   Logger<Controllers.API.V2.ChildrenActivitiesController>>();
             services.AddTransient<ILogger<RolesController>, Logger<RolesController>>();
             services.AddTransient<ILogger<UsersController>, Logger<UsersController>>();
@@ -91,34 +91,15 @@ namespace FamilyNetServer
             services.AddTransient<IDonationsFilter, DonationsFilter>();
             services.AddTransient<IValidator<QuestDTO>, QuestValidator>();
             services.AddTransient<IQuestsFilter, QuestsFilter>();
+            services.AddTransient<IAvailabilityValidator, AvailabilityValidator>();
             services.AddTransient<IIdentityExtractor, IdentityExtractor>();
             services.AddTransient<IFilterConditionPurchase, FilterConditionPurchase>();
             services.AddTransient<IFilterConditionsChildrenActivities, FilterConditionsChildrenActivities>();
+            services.AddTransient<IScheduleHelper, ScheduleHelper>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            });
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
-            });
-            services.AddMvc()
-                .AddViewLocalization(
-                Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-            .ConfigureApiBehaviorOptions(options =>
-             {
-                 options.SuppressConsumesConstraintForFormFileParameters = true;
-                 options.SuppressInferBindingSourcesForParameters = true;
-                 options.SuppressModelStateInvalidFilter = true;
-                 options.SuppressMapClientErrors = true;
-                 options.ClientErrorMapping[404].Link =
-                     "https://httpstatuses.com/404";
-             });
-            //services.AddApiVersioning(o => o.ApiVersionReader = new HeaderApiVersionReader("api-version"));
+            services.CORS();
+            services.MVC();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -153,10 +134,6 @@ namespace FamilyNetServer
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc();
-
-            //ApplicationIdentityDbContext.CreateAdminAccount(app.ApplicationServices,
-            //        Configuration).Wait();
-            //ApplicationIdentityDbContext.InitializeRolesAsync(app.ApplicationServices).Wait();
         }
     }
 }

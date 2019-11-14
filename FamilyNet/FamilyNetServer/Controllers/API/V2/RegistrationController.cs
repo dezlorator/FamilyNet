@@ -58,15 +58,6 @@ namespace FamilyNetServer.Controllers.API.V2
             _logger.LogInformation("{json}{info}",
                 JsonConvert.SerializeObject(allRoles), "json contains roles");
 
-            var yourDropdownList = new SelectList(allRoles.Select(role =>
-                new SelectListItem
-                {
-                    Text = role.Name,
-                    Value = role.Name
-                }).ToList(), "Value", "Text");
-
-            model.YourDropdownList = yourDropdownList;
-
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
