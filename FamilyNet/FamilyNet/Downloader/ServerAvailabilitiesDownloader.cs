@@ -1,14 +1,14 @@
-﻿using DataTransferObjects;
-using FamilyNet.HttpHandlers;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using FamilyNet.HttpHandlers;
+using DataTransferObjects;
+using Newtonsoft.Json;
 
 namespace FamilyNet.Downloader
 {
@@ -161,7 +161,6 @@ namespace FamilyNet.Downloader
                 formDataContent.Add(new StringContent(dto.ID.ToString()), "ID");
             }
 
-            //formDataContent.Add(new StringContent(dto.Date.ToString()), "Date");
             formDataContent.Add(new StringContent(dto.DayOfWeek.ToString()), "DayOfWeek");
             formDataContent.Add(new StringContent(dto.StartTime.ToString()), "StartTime");
             formDataContent.Add(new StringContent(dto.FreeHours.ToString()), "FreeHours");

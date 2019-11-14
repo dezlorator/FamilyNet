@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 using FamilyNetServer.Models.Interfaces;
 using FamilyNetServer.Uploaders;
 using FamilyNetServer.Validators;
@@ -15,13 +16,11 @@ using FamilyNetServer.Models;
 using FamilyNetServer.Filters.FilterParameters;
 using FamilyNetServer.Controllers.API.V1;
 using FamilyNetServer.HttpHandlers;
+using FamilyNetServer.Models.Identity;
 using DataTransferObjects;
 using NUnit.Framework;
 using Moq;
-using FamilyNetServer.Models.Identity;
-using Microsoft.AspNetCore.Identity;
-using System.Threading;
-using System.Security.Principal;
+
 
 namespace FamilyNetServer.Tests
 {
