@@ -7,11 +7,9 @@
 
 <h1>
     Список филантропов
-    @if (User.IsInRole("Admin"))
-    {
-        <a asp-action="Table" class="btn btn-primary float-right">Таблица</a>
-    }
-</h1><hr />
+    <a asp-action="Table" class="btn btn-primary float-right">Таблица</a>
+</h1>
+<hr />
 
 <form asp-action="Filter">
     <table class="table">

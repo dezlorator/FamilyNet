@@ -2,6 +2,7 @@
 using DataTransferObjects;
 using FamilyNetServer.Factories;
 using FamilyNetServer.Models;
+using FamilyNetServer.Models.EntityFramework;
 using FamilyNetServer.Models.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,18 +21,21 @@ namespace FamilyNetServer.Controllers.API.V2
         private readonly ITokenFactory _tokenFactory;
         private readonly ILogger<AuthenticationController> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly EFRepository<ChildActivity> _childActivityRepository;
 
         #endregion
 
         #region ctor
 
         public AuthenticationController(IUnitOfWork unitOfWork,
+                                        EFRepository<ChildActivity> childActivityRepository,
                                         ITokenFactory tokenFactory,
                                         ILogger<AuthenticationController> logger)
         {
             _tokenFactory = tokenFactory;
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _childActivityRepository = childActivityRepository;
         }
 
         #endregion
@@ -91,7 +95,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [HttpGet]
         public void SeedData()
         {
-            var seedData = new SeedData(_unitOfWork);
+            var seedData = new SeedData(_unitOfWork, _childActivityRepository);
             seedData.EnsurePopulated();
         }
     }
