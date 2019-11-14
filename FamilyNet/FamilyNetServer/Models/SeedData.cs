@@ -1,6 +1,8 @@
-﻿using FamilyNetServer.Models.Interfaces;
+﻿using DataTransferObjects.Enums;
+using FamilyNetServer.Models.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 namespace FamilyNetServer.Models
@@ -607,6 +609,106 @@ namespace FamilyNetServer.Models
                 baseItemTypes.Add(baseItemType);
 
                 _unitOfWork.BaseItemTypes.AddRange(baseItemTypes);
+                _unitOfWork.SaveChanges();
+            }
+
+            if (_unitOfWork.Availabilities.Get(a => a.ID == a.ID) != null)
+            {
+                List<Availability> availabilities = new List<Availability>();
+                var volunteerId = _unitOfWork.Volunteers
+                    .Get(v => v.ID == v.ID).FirstOrDefault().ID;
+
+                #region Availability1
+
+                Availability availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(2).AddHours(-7);
+                availability.FreeHours = new TimeSpan(1, 0, 0);
+                availability.IsReserved = true;
+                availability.QuestID = 1;
+                availability.QuestName = "Delivery";
+                availability.PersonID = volunteerId; 
+                availability.Role = PersonType.Volunteer;
+
+                #endregion
+
+                availabilities.Add(availability);
+                
+                #region Availability2
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(3).AddHours(-5);
+                availability.FreeHours = new TimeSpan(1, 30, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability3
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(4).AddHours(-4);
+                availability.FreeHours = new TimeSpan(2, 30, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability4
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(5).AddHours(-2);
+                availability.FreeHours = new TimeSpan(1, 30, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.IsReserved = true;
+                availability.QuestID = 1;
+                availability.QuestName = "Delivery";
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability5
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(6).AddHours(-1);
+                availability.FreeHours = new TimeSpan(0, 40, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability6
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(7).AddHours(2);
+                availability.FreeHours = new TimeSpan(1, 20, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+                      
+                #region Availability7
+
+                availability = new Availability();
+                availability.Date = DateTime.Now.AddDays(8).AddHours(4);
+                availability.FreeHours = new TimeSpan(2, 0, 0);
+                availability.Role = PersonType.Volunteer;
+                availability.PersonID = volunteerId;
+
+                #endregion
+
+                availabilities.Add(availability);
+
+                _unitOfWork.Availabilities.AddRange(availabilities);
                 _unitOfWork.SaveChanges();
             }
         }
