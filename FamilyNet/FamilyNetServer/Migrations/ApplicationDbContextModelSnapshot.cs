@@ -260,6 +260,37 @@ namespace FamilyNetServer.Migrations
                     b.ToTable("Donations");
                 });
 
+            modelBuilder.Entity("FamilyNetServer.Models.Feedback", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DonationId");
+
+                    b.Property<string>("Image");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Message");
+
+                    b.Property<double>("Rating");
+
+                    b.Property<int?>("ReceiverId");
+
+                    b.Property<int>("ReceiverRole");
+
+                    b.Property<int?>("SenderId");
+
+                    b.Property<int>("SenderRole");
+
+                    b.Property<DateTime>("Time");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Feedback");
+                });
+
             modelBuilder.Entity("FamilyNetServer.Models.Location", b =>
                 {
                     b.Property<int>("ID")
