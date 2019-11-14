@@ -13,7 +13,9 @@ namespace FamilyNetServer.HttpHandlers
 
         public string GetSignature(HttpContext httpContext)
         {
-            var header = httpContext.Request.Headers["Authorization"];
+            var headerAuthorize = "Authorization";
+            var header = httpContext.Request.Headers[headerAuthorize];
+            var signature = String.Empty;
 
             if (!String.IsNullOrEmpty(header))
             {
@@ -22,11 +24,11 @@ namespace FamilyNetServer.HttpHandlers
 
                 if (parts.Length >= countItemsOfJWT)
                 {
-                    return parts[countItemsOfJWT - 1];
+                    signature = parts[countItemsOfJWT - 1];
                 }
             }
 
-            return null;
+            return signature;
         }
     }
 }

@@ -20,10 +20,9 @@ namespace FamilyNet.Controllers
     {
         #region private fields
 
-        private readonly IIdentityInformationExtractor _identityInformationExtactor;
+        private readonly IIdentityInformationExtractor _identityInformationExtractor;
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IAuthorizeCreater _authorizeCreater;
-        private readonly string _headerToken = "Bearer";
 
         private readonly ServerSimpleDataDownloader<RegistrationDTO> _registrationDownloader;
         private readonly IURLRegistrationBuilder _registrationBuilder;
@@ -40,7 +39,7 @@ namespace FamilyNet.Controllers
         public AccountController(IStringLocalizer<HomeController> localizer,
                                 IStringLocalizer<SharedResource> sharedLocalizer,
                                 IAuthorizeCreater authorizeCreater,
-                                IIdentityInformationExtractor identityInformationExtactor,
+                                IIdentityInformationExtractor identityInformationExtractor,
                                 ServerSimpleDataDownloader<RegistrationDTO> registrationDownloader,
                                 ServerSimpleDataDownloader<RoleDTO> rolesDownloader,
                                 IURLRegistrationBuilder registrationBuilder,
@@ -48,7 +47,7 @@ namespace FamilyNet.Controllers
         {
             _localizer = localizer;
             _authorizeCreater = authorizeCreater;
-            _identityInformationExtactor = identityInformationExtactor;
+            _identityInformationExtractor = identityInformationExtractor;
             _registrationDownloader = registrationDownloader;
             _rolesDownloader = rolesDownloader;
             _rolesBuilder = rolesBuilder;
@@ -134,21 +133,18 @@ namespace FamilyNet.Controllers
 
             if (ModelState.IsValid)
             {
-                var dto = new CredentialsDTO() { Email = model.Email, Password = model.Password };
+                var dto = new CredentialsDTO()
+                {
+                    Email = model.Email,
+                    Password = model.Password
+                };
+
                 var result = await _authorizeCreater.Login(dto);
 
                 if (result.Success)
                 {
-                    HttpContext.Session.SetString("id", result.Token.Id);
-                    HttpContext.Session.SetString("email", result.Token.Email);
-                    HttpContext.Session.SetString("roles", String.Join(",", result.Token.Roles));
-
-                    if (result.Token.PersonId != null)
-                    {
-                        HttpContext.Session.SetString("personId", result.Token.PersonId.ToString());
-                    }
-
-                    HttpContext.Session.SetString(_headerToken, result.Token.Token);
+                    _identityInformationExtractor.SetUserInformation(HttpContext.Session,
+                        result.Token);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -158,6 +154,7 @@ namespace FamilyNet.Controllers
                 }
             }
             GetViewData();
+
             return View(model);
         }
 
@@ -167,6 +164,7 @@ namespace FamilyNet.Controllers
         {
             HttpContext.Session.Clear();
             GetViewData();
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -178,33 +176,37 @@ namespace FamilyNet.Controllers
 
         public IActionResult GetDetails()
         {
-            var id = HttpContext.Session.GetString("id");
-            var role = HttpContext.Session.GetString("roles");
-            var personId = HttpContext.Session.GetString("personId");
+            var id = HttpContext.Session.GetString(nameof(IdentitySessionKyes.id));
+            var role = HttpContext.Session.GetString(nameof(IdentitySessionKyes.roles));
+            var personId = HttpContext.Session.GetString(nameof(IdentitySessionKyes.personId));
             var url = Url.Action("Details", role + "s", new { id = personId });
-
             GetViewData();
+
             return Redirect(url);
         }
 
         public IActionResult AccountEdits()
         {
-            var personId = HttpContext.Session.GetString("personId");
-            var role = HttpContext.Session.GetString("roles");
+            var personId = HttpContext.Session.GetString(nameof(IdentitySessionKyes.personId));
+            var role = HttpContext.Session.GetString(nameof(IdentitySessionKyes.personId));
             var url = Url.Action("Edit", role + "s", new { id = personId });
+
             return Redirect(url);
         }
 
         public IActionResult PersonalRoom()
         {
-            var role = HttpContext.Session.GetString("roles");
+            var role = HttpContext.Session.GetString(nameof(IdentitySessionKyes.roles));
             if (GetPersonType(role) == PersonType.User || GetPersonType(role) == PersonType.Admin)
             {
                 var url = Url.Action("Index", "Home");
                 return Redirect(url);
             }
-            var personId = HttpContext.Session.GetString("personId");
-            if (GetPersonType(role) != PersonType.User && GetPersonType(role) != PersonType.Admin &&(personId == String.Empty || personId == null))
+            var personId = HttpContext.Session.GetString(nameof(IdentitySessionKyes.personId));
+
+            if (GetPersonType(role) != PersonType.User &&
+                GetPersonType(role) != PersonType.Admin &&
+                (personId == String.Empty || personId == null))
             {
                 var url = Url.Action("Create", role + "s");
                 return Redirect(url);
@@ -255,7 +257,7 @@ namespace FamilyNet.Controllers
 
         private void GetViewData()
         {
-            _identityInformationExtactor.GetUserInformation(HttpContext.Session,
+            _identityInformationExtractor.GetUserInformation(HttpContext.Session,
                                                            ViewData);
         }
     }

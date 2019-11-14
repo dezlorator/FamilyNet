@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FamilyNet.Enums;
+using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
@@ -9,10 +10,11 @@ namespace FamilyNet.HttpHandlers
     {
         public void AddTokenBearer(ISession session, HttpClient httpClient)
         {
-            var token = session.GetString("Bearer");
+            var token = session.GetString(nameof(IdentitySessionKyes.Bearer));
 
             httpClient.DefaultRequestHeaders.Authorization =
-                            new AuthenticationHeaderValue("Bearer", token);
+                new AuthenticationHeaderValue(nameof(IdentitySessionKyes.Bearer),
+                token);
         }
     }
 }
