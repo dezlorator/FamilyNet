@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
-    var role = ViewData["role"] as String;
+    var role = ViewData["roles"] as String;
     var name = Model.FilterViewModel.SelectedName;
     var sort = Model.Sort == null? String.Empty : Model.Sort;
     var priceStart = Model.FilterViewModel.StartPrice;

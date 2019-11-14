@@ -3,7 +3,7 @@
     ViewData["Title"] = "MyPurchases";
 }
 @{
-    var role = ViewData["role"] as String;
+    var role = ViewData["roles"] as String;
     var email = Model.FilterViewModel.Email == null? String.Empty : Model.FilterViewModel.Email;
     var sort = Model.Sort == null? String.Empty : Model.Sort;  
     var craft = Model.FilterViewModel.CraftName == null? String.Empty : Model.FilterViewModel.CraftName;
@@ -62,7 +62,7 @@ else
         <tr>
             @if (role == "Admin")
             {
-                <th>User id</th>
+                <th>Email</th>
             }
             <th>Craft name</th>
             <th>Quantity</th>
