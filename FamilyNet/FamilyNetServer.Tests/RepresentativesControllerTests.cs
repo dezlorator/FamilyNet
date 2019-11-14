@@ -89,69 +89,6 @@ namespace FamilyNetServer.Tests
         #region GetAll
 
         [Test]
-        public async void GetAll_WithFilter_ShouldRequestListOfRepresentativesFromDB()
-        {
-            //Arrange
-            var representatives = new List<Representative>()
-            {
-                new Representative()
-                    {
-                    ID = 1,
-                    FullName = new FullName()
-                        {
-                            Name = "Иван",
-                            Surname = "Ивановов",
-                            Patronymic = "Иванович"
-                        },
-                    IsDeleted = false
-                    }
-            }.AsQueryable();
-
-            //Act
-            await _controller
-                .GetAllAsync(It.IsAny<FilterParametersRepresentatives>());
-
-            //Assert
-            _mockRepresentatives.Verify(repo => repo.GetAll(), Times.Once);
-        }
-
-        [Test]
-        public void GetAll_WithFilter_ShouldReturnOkObjectResult()
-        {
-            //Arrange
-            var representatives = new List<Representative>()
-            {
-                new Representative()
-                {
-                    ID = 1,
-                    FullName = new FullName()
-                    {
-                        Name = "Иван",
-                        Surname = "Ивановов",
-                        Patronymic = "Иванович"
-                    },
-                    IsDeleted = false
-                }
-            }.AsQueryable();
-
-            _mockRepresentatives.Setup(repo => repo.GetAll())
-                .Returns(representatives);
-
-            var filter = It.IsAny<FilterParametersRepresentatives>();
-
-            _mockFilterConditions
-                .Setup(f => f.GetRepresentatives(representatives, filter))
-                .Returns(representatives);
-
-            //Act
-            var result = _controller
-                .GetAllAsync(filter).Result;
-
-            //Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
         public void GetAll_WithFilter_ShouldReturnBadRequestResult()
         {
             //Arrange
