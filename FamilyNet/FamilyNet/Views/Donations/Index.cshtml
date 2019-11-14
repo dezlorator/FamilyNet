@@ -2,22 +2,22 @@
 
 @{
     ViewData["Title"] = "Нужды";
-    var role = ViewData["role"] as String;
+    var role = ViewData["roles"] as String;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
     <div class="row">
         <div class="col-md-5">
-            <h1>Список потребностей</h1>
+            <h1>Список потреб</h1>
         </div>
        @if (role == "Representative" || role == "Admin")
         {
             <div class="col-md-3">
-                <a asp-action="Create" class="btn btn-primary float-right">+ Потребность</a>
+                <a asp-action="Create" class="btn btn-primary float-right">+ Потреба</a>
             </div>
             <div class="col-md-3">
-                <a asp-controller="Categories" asp-action="Index" class="btn btn-primary float-right">Категории</a>
+                <a asp-controller="Categories" asp-action="Index" class="btn btn-primary float-right">Категорії</a>
             </div>
         }
     </div>
@@ -45,28 +45,25 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.City)
+                Місто
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OrphanageName)
+                Назва дитячого будинку
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                Статус
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastDateWhenStatusChanged)
+                Дата останньої зміни статуса
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ItemName)
+                Предмет
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ItemDescription)
+                Опис
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Types)
-            </th>
-            <th>
-                Действия
+                Дії
             </th>
         </tr>
     </thead>
@@ -91,16 +88,6 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ItemDescription)
-                </td>
-                <td>
-                    @if (item.DonationItemID != null && item.Types != null)
-                    {
-                        @foreach (var t in item.Types)
-                        {
-                            @t.Name
-                            <br />
-                        }
-                    }
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
