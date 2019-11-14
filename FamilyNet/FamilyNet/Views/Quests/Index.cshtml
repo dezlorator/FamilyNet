@@ -50,38 +50,38 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+        <tr>
 
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.ActionLink(item.OrphanageName, "Details", "Orphanages",
-                                      new { id = item.OrphanageID }, null)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.ActionLink(item.OrphanageName, "Details", "Orphanages",
+                                  new { id = item.OrphanageID }, null)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
 
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
-                    <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
-                    <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID"><i class="far fa-edit fa-fw"></i></a>
+                <a asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-info fa-fw"></i></a>
+                <a asp-action="Delete" asp-route-id="@item.ID"><i class="far fa-trash-alt fa-fw"></i></a>
 
-                    @if (role == "Volunteer" && item.Status == "ToDo")
-                    {
-                        <a asp-action="Take" asp-route-id="@item.ID" class=.btn-info><i>Виконати</i></a>
-                    }
+                @if (role == "Volunteer" && item.Status == "ToDo")
+                {
+                    <a asp-action="Take" asp-route-id="@item.ID" class=.btn-info><i>Виконати</i></a>
+                }
 
-                    @if (role == "Representative" && item.Status == "Doing")
-                    {
-                        <a asp-action="MarkAsDone" asp-route-id="@item.ID" class=.btn-info><i>Виконано</i></a>
-                    }
-                </td>
-            </tr>
+                @if (role == "Representative" && item.Status == "Doing")
+                {
+                    <a asp-action="MarkAsDone" asp-route-id="@item.ID" class=.btn-info><i>Виконано</i></a>
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>
