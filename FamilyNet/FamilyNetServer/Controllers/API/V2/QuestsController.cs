@@ -90,7 +90,6 @@ namespace FamilyNetServer.Controllers.API.V2
 
         // GET: api/Quests/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "CharityMaker, Volunteer, Representative, Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)

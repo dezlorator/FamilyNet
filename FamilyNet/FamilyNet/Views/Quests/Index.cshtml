@@ -34,16 +34,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Назва
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OrphanageName)
+                Назва дитячого будинку
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                Опис
             </th>
             <th>
-                Действия
+                Дії
             </th>
         </tr>
     </thead>
@@ -56,7 +56,11 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.OrphanageName)
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.ActionLink(item.OrphanageName, "Details", "Orphanages",
+                                      new { id = item.OrphanageID }, null)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Description)
