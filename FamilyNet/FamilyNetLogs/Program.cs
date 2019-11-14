@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace FamilyNetLogs
 {
@@ -13,6 +14,7 @@ namespace FamilyNetLogs
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+            .UseContentRoot(Directory.GetCurrentDirectory())
                 .Build();
     }
 }
