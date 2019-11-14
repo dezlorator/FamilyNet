@@ -1,0 +1,67 @@
+﻿@model FamilyNet.Models.ViewModels.ScheduleViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<table class="table table-sm table-striped table-bordered">
+    <tr>
+        <th>&nbsp;</th>
+        @foreach (var day in Model.Days)
+        {
+            <th class="text-center">@day</th>
+        }
+    </tr>
+    @{
+        @foreach (var kv in Model.Sorted)
+        {
+            <tr>
+                <td>@kv.Key</td>
+
+                @foreach (var day in Model.Days)
+                {
+                    var note = kv.Value.FirstOrDefault(a => a.DayOfWeek == day);
+                    @if (note != null)
+                    {
+                        //TODO if isReserved == true
+                        var style = (note.IsReserved == false) ? "table-success" : "table-danger";
+                        <td class="@style">
+                            <div style="width:100%" class="btn-group btn-group" group">
+                                <div style="width:40%">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-outline-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <label>@note.FreeHours.ToString("hh\\:mm")</label>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        <a asp-route-id="@note.ID" asp-action="Edit" class="dropdown-item">Другое время</a>
+                                        <form asp-action="Delete" method="post"
+                                              asp-route-id="@note.ID">
+                                            <input type="hidden" name="ID" value="@note.ID" />
+                                            <button type="submit" class="dropdown-item">
+                                                Отменить
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @if (note.QuestName != null)
+                                {
+                                    <div style="width:100%" class="text-center">
+                                        <a asp-controller="Quests" asp-action="Details" asp-route-id="@note.QuestID" class="justify-content-center fas fa-link">@note.QuestName</a>
+                                    </div>
+                                }
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                }
+            </tr>
+        }
+    }
+
+</table>
+
+<div class="text-center">
+    <a asp-action="Create" class="btn btn-primary">Добавить запись</a>
+</div>

@@ -1,11 +1,10 @@
-﻿using DataTransferObjects;
-using FamilyNetServer.Validators;
+﻿using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using FamilyNetServer.Validators;
+using DataTransferObjects;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FamilyNetServer.Tests
 {
@@ -17,7 +16,8 @@ namespace FamilyNetServer.Tests
         [SetUp]
         public void SetUp()
         {
-            _validator = new RepresentativeValidator();
+            var mockLogger = new Mock<ILogger<RepresentativeValidator>>();
+            _validator = new RepresentativeValidator(mockLogger.Object);
             _representativeDTO = new RepresentativeDTO
             {
                 Avatar = new Mock<IFormFile>().Object,

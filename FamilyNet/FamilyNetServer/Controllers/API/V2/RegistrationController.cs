@@ -1,5 +1,7 @@
+
 ﻿using System;
 using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNetServer.Models.Identity;
@@ -13,6 +15,8 @@ using Microsoft.AspNetCore.Http;
 using FamilyNetServer.HttpHandlers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using DataTransferObjects.Enums;
 
 namespace FamilyNetServer.Controllers.API.V2
 {
@@ -83,6 +87,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
                 if (result.Succeeded)
                 {
+
                     return Ok(model);
                 }
 
@@ -92,7 +97,58 @@ namespace FamilyNetServer.Controllers.API.V2
                     StatusCodes.Status400BadRequest);
                 return BadRequest(msg);
             }
+            _logger.LogInformation("{info}", "User was saved");
             return BadRequest();
+            } 
+         
+        
+
+        [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ConfirmEmailAsync(string userId, string code)
+        {
+            _logger.LogInformation("{info}",
+                "Endpoint Registration/api/v2 ConfirmEmailAsync was called");
+
+            if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(code))
+            {
+                _logger.LogWarning("{info}{status}",
+                    "Arguments are invalid", StatusCodes.Status400BadRequest);
+
+                return BadRequest();
+            }
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                _logger.LogWarning("{info}{status}",
+                    "User was not found", StatusCodes.Status400BadRequest);
+
+                return BadRequest();
+            }
+
+            var result = await _unitOfWork.UserManager
+                .ConfirmEmailAsync(user, code);
+
+            if (result.Succeeded)
+            {
+                await _unitOfWork.SignInManager.SignInAsync(user, false);
+
+                _logger.LogInformation("{info}{status}",
+                    "User's email confirmed", StatusCodes.Status200OK);
+
+                return Ok();
+            }
+            else
+            {
+                _logger.LogError("{info}{status}",
+                    "User's email isn't confirmed!",
+                    StatusCodes.Status400BadRequest);
+
+                return BadRequest();
+            }
         }
 
 

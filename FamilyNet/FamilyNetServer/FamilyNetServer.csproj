@@ -16,13 +16,6 @@
     <None Remove="Resources\OrphanagesController\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Migrations\20191031195314_fair.cs" />
-    <Compile Remove="Migrations\20191031195314_fair.Designer.cs" />
-    <Compile Remove="Migrations\20191109200956_AddDatesToQuests.cs" />
-    <Compile Remove="Migrations\20191109200956_AddDatesToQuests.Designer.cs" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.2.0" />

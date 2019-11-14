@@ -173,16 +173,14 @@ namespace FamilyNet.Controllers
         }
 
         public async Task<IActionResult> All(int mypage = 1,
-            string userId = "", string sort = "",
-            int craft = 0, string date = "",
-            int q1 = 0, int q2 = 0,
-            int p1 = 0, int p2 = 0)
+            string email = "", string sort = "",
+            string craft = "", string date = "")
         {
-            string currentUserId = null;
+            string currentUserMail = null;
 
             if (HttpContext.Session.GetString("roles") != "Admin")
             {
-                currentUserId = HttpContext.Session.GetString("id");
+                currentUserMail = HttpContext.Session.GetString("email");
             }
 
 
@@ -193,15 +191,11 @@ namespace FamilyNet.Controllers
 
             var url = _URLPurchase.GetAllFiltered(_apiPurchasePath, new FilterParamentrsPurchaseDTO
             {
-                CraftId = craft,
+                CraftName = craft,
                 Date = dateTime,
-                Page =mypage,
-                PaidFrom =p1,
-                PaidTo = p2,
-                QuantityFrom =q1,
-                QuantityTo =q2,
+                Page =mypage,                
                 Rows = _pageSize,
-                UserId = currentUserId !=null? currentUserId: userId,
+                Email = currentUserMail !=null? currentUserMail: email,
                 Sort = sort
             });
 
@@ -241,13 +235,9 @@ namespace FamilyNet.Controllers
 
             var filter = new PurchaseFilterViewModel
             {
-                UserId = userId,
-                CraftId = craft,
+                Email = email,
+                CraftName = craft,
                 Date = dateTime,
-                QuantityFrom = q1,
-                QuantityTo = q2,
-                PaidFrom = p1,
-                PaidTo = p2
             };
 
             var viewModel = new PurchaseAllViewModel

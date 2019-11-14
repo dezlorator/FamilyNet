@@ -1,5 +1,4 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DataTransferObjects;
 using FamilyNetServer.Factories;
 using FamilyNetServer.Models;
@@ -89,7 +88,6 @@ namespace FamilyNetServer.Controllers.API.V1
 
             _logger.LogInformation("{info}{status}{token}", "Token was created ",
                 StatusCodes.Status201Created, token.Token);
-
             return Created("", token);
         }
 

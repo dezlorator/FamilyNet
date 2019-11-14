@@ -2,7 +2,7 @@
 @inject IHtmlLocalizer<SharedResource> SharedLocalizer
 
 @{
-    var role = ViewData["role"] as String;
+    var roles = ViewData["roles"] as String;
     var email = ViewData["email"] as String;
 }
 
@@ -60,10 +60,8 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphanages" asp-action="Index">@SharedLocalizer["Orphanages"]</a>
-                        </li>
-                        <!-- <li class="nav-item">
-                            <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphanages" asp-action="SearchByTypeHelp">@SharedLocalizer["SearchHelp"]</a>
-                        </li> -->
+                        </li>                       
+
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Orphans" asp-action="Index">@SharedLocalizer["Orphans"]</a>
 
@@ -83,31 +81,42 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="All">Fair</a>
                         </li>
-                        @if (role == "Orphan")
+                        @if (roles == "Orphan")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="MyCrafts">My crafts</a>
                             </li>
                         }
-                        @if (role == "Representative")
+                        @if (roles == "Representative")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="AuctionLot" asp-action="ConfirmCrafts">Crafts to confirm</a>
                             </li>
                         }
-                        @if (role == "CharityMaker" || role == "Volunteer" || role == "Representative" || role == "Admin")
+                        @if (roles == "CharityMaker" || roles == "Volunteer" || roles == "Representative" || roles == "Admin")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Quests" asp-action="Index">Quests</a>
                             </li>
                         }
-                        @if (role == "CharityMaker" || role == "Volunteer" || role == "Admin")
+
+                        @if (roles == "CharityMaker" || roles == "Volunteer" || roles == "Admin")
                         {
-                            <li class="nav-item">
+                            @if (roles == "Admin")
+                            {
+                                <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">Purchases</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
                                 <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Purchase" asp-action="All">My purchases</a>
-                            </li>
+                                </li>
+                            }
+                            
                         }
-                        @if (role?.Length > 1)
+                        @if (!String.IsNullOrEmpty(roles))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -140,7 +149,7 @@
                             </li>
                         }
 
-                        @if (role == "Admin")
+                        @if (roles == "Admin")
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
