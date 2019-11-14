@@ -188,7 +188,7 @@ namespace FamilyNet.Controllers
         public IActionResult AccountEdits()
         {
             var personId = HttpContext.Session.GetString(nameof(IdentitySessionKyes.personId));
-            var role = HttpContext.Session.GetString(nameof(IdentitySessionKyes.personId));
+            var role = HttpContext.Session.GetString(nameof(IdentitySessionKyes.roles));
             var url = Url.Action("Edit", role + "s", new { id = personId });
 
             return Redirect(url);
