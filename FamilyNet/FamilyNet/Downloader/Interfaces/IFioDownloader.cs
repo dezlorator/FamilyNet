@@ -10,6 +10,6 @@ namespace FamilyNet.Downloader.Interfaces
 {
     public interface IFioDownloader
     {
-        Task<FioDTO> GetByIdAsync(string url, ISession session);
+        Task<SNPDTO> GetByIdAsync(string url, ISession session);
     }
 }

@@ -15,14 +15,14 @@ namespace FamilyNetServer.Controllers.API.V1
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class FioController : ControllerBase
+    public class SNPController : ControllerBase
     {
         #region
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<FioController> _logger;
+        private readonly ILogger<SNPController> _logger;
         #endregion
 
-        public FioController(IUnitOfWork unitOfWork, ILogger<FioController> logger)
+        public SNPController(IUnitOfWork unitOfWork, ILogger<SNPController> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -62,7 +62,7 @@ namespace FamilyNetServer.Controllers.API.V1
                 return BadRequest();
             }
 
-            var fioDTO = new FioDTO()
+            var snpDTO = new SNPDTO()
             {
                 Name = person.FullName.Name,
                 Surname = person.FullName.Surname,
@@ -71,7 +71,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
             _logger.LogInformation(string.Format("{0} fio with id {1} was sent",
                 nameof(role), id));
-            return Ok(fioDTO);
+            return Ok(snpDTO);
         }
     }
 }

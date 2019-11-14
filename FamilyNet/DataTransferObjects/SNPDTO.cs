@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DataTransferObjects
 {
-    public class FioDTO
+    public class SNPDTO
     {
         public string Name { get; set; }
         public string Surname { get; set; }
