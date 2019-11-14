@@ -7,17 +7,20 @@
 }
 
 
-<div class="row">
-    <div class="col-md-5">
-        <h1>Список потребностей</h1>
+    <div class="row">
+        <div class="col-md-5">
+            <h1>Список потребностей</h1>
+        </div>
+       @if (role == "Representative" || role == "Admin")
+        {
+            <div class="col-md-3">
+                <a asp-action="Create" class="btn btn-primary float-right">+ Потребность</a>
+            </div>
+            <div class="col-md-3">
+                <a asp-controller="Categories" asp-action="Index" class="btn btn-primary float-right">Категории</a>
+            </div>
+        }
     </div>
-    <div class="col-md-3">
-        <a asp-action="Create" class="btn btn-primary float-right">+ Потребность</a>
-    </div>
-    <div class="col-md-3">
-        <a asp-controller="Categories" asp-action="Index" class="btn btn-primary float-right">Категории</a>
-    </div>
-</div>
 
 <form asp-action="Index">
     <table class="table">
