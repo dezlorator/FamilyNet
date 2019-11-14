@@ -40,6 +40,9 @@
                 Назва дитячого будинку
             </th>
             <th>
+                Донат
+            </th>
+            <th>
                 Опис
             </th>
             <th>
@@ -60,7 +63,7 @@
                                   new { id = item.OrphanageID }, null)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.DonationName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
