@@ -54,7 +54,6 @@ namespace FamilyNetServer.Controllers.API
         [HttpGet]
         [Authorize(Roles = "Admin, Volunteer, CharityMaker")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll()
         {
             _logger.LogInformation("{info}",
