@@ -18,17 +18,13 @@
                                 <input type="hidden" asp-for="AuctionLot.ID" />
                                 <input type="hidden" asp-for="AuctionLot.OrphanID" />
                                 <input type="hidden" asp-for="AuctionLot.AuctionLotItemID" />
+                                <input type="hidden" asp-for="AuctionLot.DateAdded" />
                                 <input type="hidden" asp-for="Item.ID" />
                                 <b>@Html.DisplayNameFor(model => model.Item.Name):</b>
                                 <input asp-for="Item.Name" class="form-control" value="@Model.Item.Name" />
                                 <p>
                                     <b>@Html.DisplayNameFor(model => model.Item.Price):</b>
                                     <input asp-for="Item.Price" class="form-control" value="@Model.Item.Price" />
-                                </p>
-                                <p>
-                                    <label class="control-label"><b>Start:</b></label>
-                                    <input asp-for="@Model.AuctionLot.DateAdded" class="form-control" />
-                                    <span asp-validation-for="@Model.AuctionLot.DateAdded" class="text-danger"></span>
                                 </p>
                                 <p>
                                     <b>@Html.DisplayNameFor(model => model.AuctionLot.Quantity)</b>

@@ -10,18 +10,14 @@ namespace FamilyNetServer.EnumConvertor
     {
         public UserRole ConvertFromString(string role)
         {
-            if(role == "CharityMaker")
+            UserRole result = UserRole.Undefined;
+
+            if (!Enum.TryParse(role, out result))
             {
-                return UserRole.CharityMaker;
+                result = UserRole.User;
             }
-            else if(role =="Volunteer")
-            {
-                return UserRole.Volunteer;
-            }
-            else
-            {
-                return UserRole.Representative;
-            }
+
+            return result;
         }
     }
 }

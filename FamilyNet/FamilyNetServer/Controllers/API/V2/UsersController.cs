@@ -68,7 +68,7 @@ namespace FamilyNetServer.Controllers.API.V2
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint Users/api/v2 GetAsync was called", userId, token);
+                "Endpoint Users/api/v1 GetAsync was called", userId, token);
 
             var user = await _unitOfWork.UserManager.FindByIdAsync(id);
             var userRoles = await _unitOfWork.UserManager.GetRolesAsync(user);
@@ -88,6 +88,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 Id = user.Id,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
+                PersonId = user.PersonID,
                 Roles = userRoles.ToList()
             };
 
@@ -135,7 +136,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
                 _unitOfWork.SaveChanges();
 
-                return Created("api/v2/users", userDTO);
+                return Created("api/v1/users/", userDTO);
             }
 
             _logger.LogWarning("{status}{token}{userId}{info}",
@@ -155,7 +156,7 @@ namespace FamilyNetServer.Controllers.API.V2
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint Users/api/v2 [DELETE] was called", userId, token);
+                "Endpoint Users/api/v1 [DELETE] was called", userId, token);
 
             var user = await _unitOfWork.UserManager.FindByIdAsync(id);
 
@@ -203,6 +204,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
             user.Email = us.Email;
             user.UserName = us.Email;
+            user.PersonID = us.PersonId;
 
             var validEmail = await _unitOfWork.UserValidator
                 .ValidateAsync(_unitOfWork.UserManager, user);
@@ -274,6 +276,14 @@ namespace FamilyNetServer.Controllers.API.V2
                 $"User was not updated [id:{id}]", userId, token);
 
             return BadRequest();
+        }
+
+        private void AddErrorsFromResult(IdentityResult result)
+        {
+            foreach (IdentityError error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
         }
     }
 }

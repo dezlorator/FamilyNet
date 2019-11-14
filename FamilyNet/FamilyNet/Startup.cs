@@ -14,6 +14,7 @@ using FamilyNet.IdentityHelpers;
 using FamilyNet.Downloader.URLBuilders;
 using System;
 using Microsoft.AspNetCore.Http;
+using FamilyNet.Downloader.Interfaces;
 
 namespace FamilyNet
 {
@@ -64,6 +65,9 @@ namespace FamilyNet
 
             #region ServerDataDownloader
 
+            services.AddTransient<IServerRepresenativesDataDownloader, ServerRepresentativesDownloader>();
+            services.AddTransient<IFioDownloader, ServerFioDownloader>();
+            services.AddTransient<IURLFioBuilder, URLFioBuilder>();
             services.AddTransient<ServerDataDownloader<ChildDTO>, ServerChildrenDownloader>();
             services.AddTransient<ServerDataDownloader<CharityMakerDTO>, ServerCharityMakersDownloader>();
             services.AddTransient<ServerSimpleDataDownloader<DonationDetailDTO>, ServerDonationsDownloader>();

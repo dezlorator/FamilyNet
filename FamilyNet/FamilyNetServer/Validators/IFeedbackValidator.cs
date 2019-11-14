@@ -8,9 +8,8 @@ using DataTransferObjects.Enums;
 
 namespace FamilyNetServer.Validators
 {
-    public interface IFeedbackValidator
+    public interface IFeedbackValidator : IPermissionFeedbackValidator
     {
-        bool CheckPermission(UserRole sender, UserRole receiver);
-        bool IsValid(FeedbackDTO feedback, ref string errorMessage);
+        bool ValidateDTO(FeedbackDTO feedback, ref string errorMessage);
     }
 }
