@@ -1,9 +1,11 @@
 ﻿@model IEnumerable<ChildActivityDTO>
 @using DataTransferObjects
+@using DataTransferObjects.Enums
 
 @{
     ViewData["Title"] = "Занятия ребенка";
- Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var roles = ViewData["roles"] as String;
 }
 
 <h1>Занятия ребенка</h1>
@@ -32,7 +34,10 @@
                                     <h5 class="card-title">@award.Name</h5>
                                     <h6 class="card-subtitle mb-2 text-muted">Выдана: @award.Date.ToShortDateString()</h6>
                                     <p class="card-text">@award.Description</p>
-                                    <a asp-action="DeleteAward" asp-route-activityId="@activity.ID" asp-route-awardId="@award.ID" class="card-link">Удалить</a>
+                                    @if (roles == nameof(UserRole.Admin) || roles == nameof(UserRole.Representative))
+                                    {
+                                        <a asp-action="DeleteAward" asp-route-activityId="@activity.ID" asp-route-awardId="@award.ID" class="card-link">Удалить</a>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -40,10 +45,16 @@
                 </div>
             }
             <br />
-            <a asp-action="Edit" asp-route-id="@activity.ID" class="card-link">Изменить</a>
-            <a asp-action="AddAward" asp-route-childActivityId="@activity.ID" class="card-link">Добавить награду</a>
-            <a asp-action="Delete" asp-route-id="@activity.ID" class="card-link">Удалить</a>
+            @if (roles == nameof(UserRole.Admin) || roles == nameof(UserRole.Representative))
+            {
+                <a asp-action="Edit" asp-route-id="@activity.ID" class="card-link">Изменить</a>
+                <a asp-action="AddAward" asp-route-childActivityId="@activity.ID" class="card-link">Добавить награду</a>
+                <a asp-action="Delete" asp-route-id="@activity.ID" class="card-link">Удалить</a>
+            }
         </div>
     </div>
 }
-<a class="btn btn-primary mt-2" asp-action="Create" asp-route-childId="@ViewBag.ChildID">Добавить занятие</a>
+@if (roles == nameof(UserRole.Admin) || roles == nameof(UserRole.Representative))
+{
+    <a class="btn btn-primary mt-2" asp-action="Create" asp-route-childId="@ViewBag.ChildID">Добавить занятие</a>
+}

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FamilyNetLogs.AllicationBuilderExtansion
+namespace FamilyNetLogs.ApplicationBuilderExtension
 {
     public static class ApplicationBuilderAutoGenerationDataBase
     {
