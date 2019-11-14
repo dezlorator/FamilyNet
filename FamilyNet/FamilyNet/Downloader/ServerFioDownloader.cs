@@ -27,9 +27,9 @@ namespace FamilyNet.Downloader
             _authorizationHandler = authorizationHandler;
         }
         #endregion
-        public async Task<FioDTO> GetByIdAsync(string url, ISession session)
+        public async Task<SNPDTO> GetByIdAsync(string url, ISession session)
         {
-            FioDTO obj = null;
+            SNPDTO obj = null;
 
             try
             {
@@ -43,7 +43,7 @@ namespace FamilyNet.Downloader
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
-                obj = JsonConvert.DeserializeObject<FioDTO>(json);
+                obj = JsonConvert.DeserializeObject<SNPDTO>(json);
             }
             catch (ArgumentNullException)
             {

@@ -1,10 +1,11 @@
 ﻿@model ChildDTO
 @using DataTransferObjects
-
+@using DataTransferObjects.Enums
 
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var roles = ViewData["roles"] as String;
 }
 
 <div class="container">
@@ -26,7 +27,7 @@
 
                             <h6>@Html.DisplayNameFor(model => model.ChildrenHouseName)</h6>
                             <p>
-                                @Html.ActionLink(Model.ChildrenHouseName,"Details", "Orphanages",
+                                @Html.ActionLink(Model.ChildrenHouseName, "Details", "Orphanages",
                                       new { id = Model.ChildrenHouseID }, null)
                             </p>
                         </div>
@@ -51,7 +52,10 @@
 </div>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-primary"> <i class="fas fa-edit"></i>Редактировать</a>
+    @if (roles == nameof(UserRole.Admin))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.ID" type="submit" class="btn btn-primary"> <i class="fas fa-edit"></i>Редактировать</a>
+    }
     <a asp-action="Index" asp-route-childId="@Model.ID" asp-controller="ChildrenActivities" type="submit" class="btn btn-primary">Список занятий</a>
     <a asp-action="Index" type="submit" class="btn btn-primary">Вернуться к списку</a>
 </div>

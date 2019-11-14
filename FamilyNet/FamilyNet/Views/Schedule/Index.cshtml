@@ -9,14 +9,16 @@
         <th>&nbsp;</th>
         @foreach (var day in Model.Days)
         {
-            <th class="text-center">@day</th>
+            <th class="text-center text-secondary">@day</th>
         }
     </tr>
     @{
         @foreach (var kv in Model.Sorted)
         {
             <tr>
-                <td>@kv.Key</td>
+                <td class="text-center text-secondary p-3" style="font-size:18px"><i class="fas fa-clock"></i> 
+                @string.Format("{0:hh\\:mm}", kv.Key)
+                </td>
 
                 @foreach (var day in Model.Days)
                 {
