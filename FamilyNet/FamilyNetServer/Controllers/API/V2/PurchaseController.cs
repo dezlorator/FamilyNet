@@ -100,16 +100,11 @@ namespace FamilyNetServer.Controllers.API.V2
                   UserId = item.UserId.ToString()
               }).ToList();
 
-            var filterModel = new PurchaseFilterDTO
-            {
-                PurchaseDTOs = purchases,
-                TotalCount = count
-            };
 
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(purchases));
 
-            return Ok(filterModel);
+            return Ok(purchases);
         }
 
 
@@ -144,6 +139,8 @@ namespace FamilyNetServer.Controllers.API.V2
                 AuctionLotId = purchase.AuctionLotId,
                 Paid = purchase.Paid,
                 Quantity = purchase.Quantity,
+                ItemName = GetItem(purchase.AuctionLotId).Result.Name,
+                UserEmail = _repository.UserManager.FindByIdAsync(purchase.UserId.ToString()).Result.Email,
                 UserId = purchase.UserId.ToString()
             };
 
@@ -159,7 +156,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "CharityMaker, Volunteer")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]PurchaseDTO purchaseDTO)
+        public async Task<IActionResult> Create([FromBody]PurchaseDTO purchaseDTO)
         {
             var userIdentity = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
@@ -178,7 +175,7 @@ namespace FamilyNetServer.Controllers.API.V2
             Guid.TryParse(purchaseDTO.UserId, out Guid userId);
             var purchase = new Purchase()
             {
-                Date = purchaseDTO.Date,
+                Date = DateTime.Now,
                 AuctionLotId = purchaseDTO.AuctionLotId,
                 Paid = purchaseDTO.Paid,
                 Quantity = purchaseDTO.Quantity,
@@ -240,7 +237,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]PurchaseDTO purchaseDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]PurchaseDTO purchaseDTO)
         {
             var userIdentity = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
