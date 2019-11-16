@@ -64,21 +64,23 @@ namespace FamilyNetServer.Controllers.API.V2
                 PersonID = null
             };
 
-            var result = await _unitOfWork.UserManager
-                .CreateAsync(user, model.Password);
-
-            await _unitOfWork.UserManager.AddToRoleAsync(user,
-                model.YourDropdownSelectedValue);
+            
 
             try
             {
+                await _unitOfWork.UserManager
+                 .CreateAsync(user, model.Password);
+
+                await _unitOfWork.UserManager.AddToRoleAsync(user,
+                    model.YourDropdownSelectedValue);
+
                 _logger.LogInformation("{info}", "User was saved");
                 return Ok(model);
             }
             catch (Exception)
             {
 
-                var msg = "model is not valid";
+                var msg = "user was not saved";
                 _logger.LogError("{info}{status}", msg,
                     StatusCodes.Status400BadRequest);
 
