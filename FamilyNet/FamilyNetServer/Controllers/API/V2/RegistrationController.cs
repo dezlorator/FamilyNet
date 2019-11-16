@@ -54,41 +54,39 @@ namespace FamilyNetServer.Controllers.API.V2
             _logger.LogInformation("{json}{info}",
                 JsonConvert.SerializeObject(allRoles), "json contains roles");
 
-            if (ModelState.IsValid)
+            var user = new ApplicationUser
             {
-                var user = new ApplicationUser
-                {
-                    Email = model.Email,
-                    UserName = model.Email,
-                    PhoneNumber = model.Phone,
-                    PersonType = GetPersonType(model.YourDropdownSelectedValue),
-                    EmailConfirmed = true,
-                    PersonID = null
-                };
+                Email = model.Email,
+                UserName = model.Email,
+                PhoneNumber = model.Phone,
+                PersonType = GetPersonType(model.YourDropdownSelectedValue),
+                EmailConfirmed = true,
+                PersonID = null
+            };
 
-                var result = await _unitOfWork.UserManager
-                    .CreateAsync(user, model.Password);
+            var result = await _unitOfWork.UserManager
+                .CreateAsync(user, model.Password);
 
-                await _unitOfWork.UserManager.AddToRoleAsync(user,
-                    model.YourDropdownSelectedValue);
+            await _unitOfWork.UserManager.AddToRoleAsync(user,
+                model.YourDropdownSelectedValue);
 
-                if (result.Succeeded)
-                {
-
-                    return Ok(model);
-                }
-
+            try
+            {
+                _logger.LogInformation("{info}", "User was saved");
+                return Ok(model);
+            }
+            catch (Exception)
+            {
 
                 var msg = "model is not valid";
                 _logger.LogError("{info}{status}", msg,
                     StatusCodes.Status400BadRequest);
+
                 return BadRequest(msg);
             }
-            _logger.LogInformation("{info}", "User was saved");
-            return BadRequest();
-            } 
-         
-        
+        }
+
+
 
         [HttpGet]
         [AllowAnonymous]
