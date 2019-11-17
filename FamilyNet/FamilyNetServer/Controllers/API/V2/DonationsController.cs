@@ -117,12 +117,11 @@ namespace FamilyNetServer.Controllers.API.V2
             var donationDetailsDTO = new DonationDetailDTO()
             {
                 ID = donation.ID,
-                Types = donation.DonationItem.TypeBaseItem
-                               .Select(t => new CategoryDTO
-                               {
-                                   Name = t.Type.Name,
-                                   ID = t.TypeID
-                               }),
+                Types = donation.DonationItem.TypeBaseItem.Select(t => new CategoryDTO
+                {
+                    Name = t.Type.Name,
+                    ID = t.TypeID
+                }),
                 DonationItemID = donation.DonationItemID,
                 CharityMakerID = donation.CharityMakerID,
                 OrphanageID = donation.OrphanageID,
@@ -132,7 +131,9 @@ namespace FamilyNetServer.Controllers.API.V2
                 City = donation.Orphanage.Adress.City,
                 House = donation.Orphanage.Adress.House,
                 Street = donation.Orphanage.Adress.Street,
-                Rating = donation.Orphanage.Rating
+                Rating = donation.Orphanage.Rating,
+                Status = donation.Status.ToString(),
+                LastDateWhenStatusChanged = donation.LastDateWhenStatusChanged
             };
 
             _logger.LogInformation("Status: OK. Donation was sent");

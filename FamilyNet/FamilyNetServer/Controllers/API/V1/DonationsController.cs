@@ -129,7 +129,9 @@ namespace FamilyNetServer.Controllers.API.V1
                 City = donation.Orphanage.Adress.City,
                 House = donation.Orphanage.Adress.House,
                 Street = donation.Orphanage.Adress.Street,
-                Rating = donation.Orphanage.Rating
+                Rating = donation.Orphanage.Rating,
+                Status = donation.Status.ToString(),
+                LastDateWhenStatusChanged = donation.LastDateWhenStatusChanged
             };
 
             _logger.LogInformation("Status: OK. Donation was sent");
