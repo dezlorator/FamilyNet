@@ -66,7 +66,7 @@ namespace FamilyNetServer.Controllers.API.V2
                                    [FromQuery]int page)
         {
             _logger.LogInformation("{info}",
-                "Endpoint AuctionLot/api/v1 GetAllApproved was called");
+                "Endpoint AuctionLot/api/v2 GetAllApproved was called");
 
             float.TryParse(priceStart, out var start);
             float.TryParse(priceEnd, out var end);
@@ -103,18 +103,10 @@ namespace FamilyNetServer.Controllers.API.V2
                     AuctionLotItemID = lot.AuctionLotItemID,
                 }).ToList();
 
-
-            var filterModel = new AuctionLotFilterDTO
-            {
-                AuctionLotDTOs = auctions,
-                TotalCount = count
-            };
-
-
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                 JsonConvert.SerializeObject(auctions));
 
-            return Ok(filterModel);
+            return Ok(auctions);
         }
 
 
@@ -126,7 +118,7 @@ namespace FamilyNetServer.Controllers.API.V2
                            [FromQuery]int page)
         {
             _logger.LogInformation("{info}",
-                "Endpoint AuctionLot/api/v1 GetAllOrphanCrafts was called");
+                "Endpoint AuctionLot/api/v2 GetAllOrphanCrafts was called");
 
             var auction = _repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
             && c.Status != AuctionLotStatus.Approved && c.OrphanID == orphanId);
@@ -157,73 +149,22 @@ namespace FamilyNetServer.Controllers.API.V2
                    AuctionLotItemID = lot.AuctionLotItemID,
                }).ToList();
 
-            var filterModel = new AuctionLotFilterDTO
-            {
-                AuctionLotDTOs = auctions,
-                TotalCount = auction.Count()
-            };
-
-
+           
             _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
                JsonConvert.SerializeObject(auctions));
 
-            return Ok(filterModel);
-        }
-
-        [HttpGet("confirm")]
-        [Authorize(Roles = "Orphan, Representative")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAllUnApproved([FromQuery]int orphanId)
-        {
-            _logger.LogInformation("{info}",
-                "Endpoint AuctionLot/api/v1 GetAllUnApproved was called");
-
-            var auction = _repository.AuctionLots.GetAll().Where(c => !c.IsDeleted
-             && c.Status == AuctionLotStatus.UnApproved && c.OrphanID == orphanId);
-
-            if (auction == null)
-            {
-                _logger.LogWarning("{status}{info}",
-                   StatusCodes.Status400BadRequest,
-                   "List of Auction Lots is empty");
-
-                return BadRequest();
-            }
-
-            var auctions = auction.Select(lot =>
-               new AuctionLotDTO()
-               {
-                   ID = lot.ID,
-                   DateAdded = lot.DateAdded,
-                   OrphanID = lot.OrphanID,
-                   Quantity = lot.Quantity,
-                   Status = lot.Status.ToString(),
-                   PhotoParth = _settings.Value.ServerURL + lot.Avatar,
-                   AuctionLotItemID = lot.AuctionLotItemID,
-               }).ToList();
-
-            var filterModel = new AuctionLotFilterDTO
-            {
-                AuctionLotDTOs = auctions,
-                TotalCount = auction.Count()
-            };
-
-            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
-               JsonConvert.SerializeObject(auctions));
-
-            return Ok(filterModel);
+            return Ok(auctions);
         }
 
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Orphan, Representative")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(int id)
         {
             _logger.LogInformation("{info}",
-                $"Endpoint AuctionLot/api/v1 GetById({id}) was called");
+                $"Endpoint AuctionLot/api/v2 GetById({id}) was called");
 
             var auction = await _repository.AuctionLots.GetById(id);
 
@@ -257,13 +198,13 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "Orphan, Representative")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm]AuctionLotDTO auctionDTO)
+        public async Task<IActionResult> Create([FromBody]AuctionLotDTO auctionDTO)
         {
             var userId = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info} {userId} {token}",
-                "Endpoint AuctionLot/api/v1 [POST] was called", userId, token);
+                "Endpoint AuctionLot/api/v2 [POST] was called", userId, token);
 
             if (!_auctionValidator.IsValid(auctionDTO))
             {
@@ -278,7 +219,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 DateAdded = DateTime.Now,
                 OrphanID = auctionDTO.OrphanID,
                 Quantity = auctionDTO.Quantity,
-                Status = AuctionLotStatus.UnApproved,
+                Status = AuctionLotStatus.Approved,
                 AuctionLotItemID = auctionDTO.AuctionLotItemID,
                 IsDeleted = false
             };
@@ -313,13 +254,13 @@ namespace FamilyNetServer.Controllers.API.V2
         [Authorize(Roles = "Orphan, Representative")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]AuctionLotDTO auctionDTO)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromBody]AuctionLotDTO auctionDTO)
         {
             var userId = _identityExtractor.GetId(User);
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint AuctionLot/api/v1 [PUT] was called", userId, token);
+                "Endpoint AuctionLot/api/v2 [PUT] was called", userId, token);
 
             if (!_auctionValidator.IsValid(auctionDTO))
             {
@@ -344,7 +285,7 @@ namespace FamilyNetServer.Controllers.API.V2
             auction.AuctionLotItemID = auctionDTO.AuctionLotItemID;
             auction.DateAdded = auctionDTO.DateAdded;
             auction.OrphanID = auctionDTO.OrphanID;
-            var status = AuctionLotStatus.UnApproved;
+            var status = AuctionLotStatus.Approved;
             Enum.TryParse(auctionDTO.Status, out status);
             auction.Status = status;
             auction.Quantity = auctionDTO.Quantity;
@@ -370,7 +311,7 @@ namespace FamilyNetServer.Controllers.API.V2
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Orphan")]
+        [Authorize(Roles = "Orphan, Representative")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute]int id)
@@ -379,7 +320,7 @@ namespace FamilyNetServer.Controllers.API.V2
             var token = _identityExtractor.GetSignature(HttpContext);
 
             _logger.LogInformation("{info}{userId}{token}",
-                "Endpoint AuctionLots/api/v1 [DELETE] was called",
+                "Endpoint AuctionLots/api/v2 [DELETE] was called",
                 userId, token);
 
             if (id <= 0)

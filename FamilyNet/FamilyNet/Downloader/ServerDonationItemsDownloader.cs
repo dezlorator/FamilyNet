@@ -51,9 +51,11 @@ namespace FamilyNet.Downloader
                 formDataContent.Add(new StringContent(dto.ID.ToString()), "ID");
             }
 
-            formDataContent.Add(new StringContent(dto.Name.ToString()), "Name");
+            formDataContent.Add(new StringContent(dto.Name), "Name");
 
             formDataContent.Add(new StringContent(dto.Description), "Description");
+
+            formDataContent.Add(new StringContent(dto.Price.ToString()), "Price");
         }
     }
 }

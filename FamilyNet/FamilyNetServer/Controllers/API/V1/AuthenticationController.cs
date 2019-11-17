@@ -22,6 +22,7 @@ namespace FamilyNetServer.Controllers.API.V1
         private readonly ILogger<AuthenticationController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly EFRepository<ChildActivity> _childActivityRepository;
+        private readonly EFRepository<Feedback> _feedbackRepository;
 
         #endregion
 
@@ -30,12 +31,14 @@ namespace FamilyNetServer.Controllers.API.V1
         public AuthenticationController(IUnitOfWork unitOfWork,
                                         EFRepository<ChildActivity> childActivityRepository,
                                         ITokenFactory tokenFactory,
+                                        EFRepository<Feedback> feedbackRepository,
                                         ILogger<AuthenticationController> logger)
         {
             _tokenFactory = tokenFactory;
             _logger = logger;
             _unitOfWork = unitOfWork;
             _childActivityRepository = childActivityRepository;
+            _feedbackRepository = feedbackRepository;
         }
 
         #endregion
@@ -94,7 +97,7 @@ namespace FamilyNetServer.Controllers.API.V1
         [HttpGet]
         public void SeedData()
         {
-            var seedData = new SeedData(_unitOfWork, _childActivityRepository);
+            var seedData = new SeedData(_unitOfWork, _childActivityRepository, _feedbackRepository);
             seedData.EnsurePopulated();
         }
     }

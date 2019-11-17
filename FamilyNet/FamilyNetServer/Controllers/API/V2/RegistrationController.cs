@@ -1,7 +1,5 @@
-
-﻿using System;
+using System;
 using System.Linq;
-﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FamilyNetServer.Models.Identity;
@@ -15,8 +13,6 @@ using Microsoft.AspNetCore.Http;
 using FamilyNetServer.HttpHandlers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using DataTransferObjects.Enums;
 
 namespace FamilyNetServer.Controllers.API.V2
 {
@@ -58,41 +54,41 @@ namespace FamilyNetServer.Controllers.API.V2
             _logger.LogInformation("{json}{info}",
                 JsonConvert.SerializeObject(allRoles), "json contains roles");
 
-            if (ModelState.IsValid)
+            var user = new ApplicationUser
             {
-                var user = new ApplicationUser
-                {
-                    Email = model.Email,
-                    UserName = model.Email,
-                    PhoneNumber = model.Phone,
-                    PersonType = GetPersonType(model.YourDropdownSelectedValue),
-                    EmailConfirmed = true,
-                    PersonID = null
-                };
+                Email = model.Email,
+                UserName = model.Email,
+                PhoneNumber = model.Phone,
+                PersonType = GetPersonType(model.YourDropdownSelectedValue),
+                EmailConfirmed = true,
+                PersonID = null
+            };
 
-                var result = await _unitOfWork.UserManager
-                    .CreateAsync(user, model.Password);
+            
+
+            try
+            {
+                await _unitOfWork.UserManager
+                 .CreateAsync(user, model.Password);
 
                 await _unitOfWork.UserManager.AddToRoleAsync(user,
                     model.YourDropdownSelectedValue);
 
-                if (result.Succeeded)
-                {
+                _logger.LogInformation("{info}", "User was saved");
+                return Ok(model);
+            }
+            catch (Exception)
+            {
 
-                    return Ok(model);
-                }
-
-
-                var msg = "model is not valid";
+                var msg = "user was not saved";
                 _logger.LogError("{info}{status}", msg,
                     StatusCodes.Status400BadRequest);
+
                 return BadRequest(msg);
             }
-            _logger.LogInformation("{info}", "User was saved");
-            return BadRequest();
-            } 
-         
-        
+        }
+
+
 
         [HttpGet]
         [AllowAnonymous]

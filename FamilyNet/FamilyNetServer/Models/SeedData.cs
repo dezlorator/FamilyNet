@@ -12,14 +12,82 @@ namespace FamilyNetServer.Models
     {
         protected IUnitOfWork _unitOfWork;
         protected EFRepository<ChildActivity> _childrenActivities;
+        protected EFRepository<Feedback> _feedback;
 
-        public SeedData(IUnitOfWork unitOfWork, EFRepository<ChildActivity> childrenActivities)
+        public SeedData(IUnitOfWork unitOfWork, EFRepository<ChildActivity> childrenActivities,
+            EFRepository<Feedback> feedback)
         {
             _unitOfWork = unitOfWork;
             _childrenActivities = childrenActivities;
+            _feedback = feedback;
         }
         public void EnsurePopulated()
         {
+            if (_feedback.Get(a => a.ID == a.ID) != null)
+            {
+                List<Feedback> feedback = new List<Feedback>();
+
+                #region Feedback1
+
+                Feedback feedback1 = new Feedback()
+                {
+                    DonationId = 1,
+                    Time = new DateTime(2018, 10, 25),
+                    Message = "This volunteer has very big and confortable car",
+                    Image = "http://localhost:53605/Feedback/Feedback1_SeedData.jpg",
+                    Rating = 9,
+                    ReceiverId = 2,
+                    ReceiverRole = UserRole.Volunteer,
+                    SenderId = 1,
+                    SenderRole = UserRole.CharityMaker
+                };
+
+                feedback.Add(feedback1);
+
+                #endregion
+
+                #region Feedback2
+
+                Feedback feedback2 = new Feedback()
+                {
+                    DonationId = 2,
+                    Time = new DateTime(2018, 06, 13),
+                    Message = "This person is so punctual and polite",
+                    Image = "http://localhost:53605/Feedback/Feedback2_SeedData.jpg",
+                    Rating = 8,
+                    ReceiverId = 1,
+                    ReceiverRole = UserRole.Representative,
+                    SenderId = 2,
+                    SenderRole = UserRole.Volunteer
+                };
+
+                feedback.Add(feedback2);
+
+                #endregion
+
+                #region Feedback3
+
+                Feedback feedback3 = new Feedback()
+                {
+                    DonationId = 1,
+                    Time = new DateTime(2019, 06, 27),
+                    Message = "Very rude and sleazy men. By the way he was half an hour late",
+                    Image = "http://localhost:53605/Feedback/Feedback3_SeedData.jpg",
+                    Rating = 2,
+                    ReceiverId = 3,
+                    ReceiverRole = UserRole.CharityMaker,
+                    SenderId = 1,
+                    SenderRole = UserRole.Volunteer
+                };
+
+                feedback.Add(feedback3);
+
+                #endregion
+
+                _feedback.AddRange(feedback);
+                _feedback.SaveChangesAsync();
+            }
+
             if (_unitOfWork.Orphanages.Get(v => v.ID == v.ID) != null)
             {
                 List<Orphanage> orphanages = new List<Orphanage>();
