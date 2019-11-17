@@ -189,7 +189,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
         // POST: api/Quests
         [HttpPost]
-        [Authorize(Roles = "CharityMaker, Admin")]
+        [Authorize(Roles = "Volunteer, CharityMaker, Representative, Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm]QuestDTO questDTO)
@@ -231,7 +231,7 @@ namespace FamilyNetServer.Controllers.API.V1
 
         // DELETE: api/Quests/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "CharityMaker, Representative, Admin")]
+        [Authorize(Roles = "Volunteer, CharityMaker, Representative, Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
