@@ -45,9 +45,6 @@ namespace FamilyNetServer.Controllers.API.V2
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetAll([FromQuery]int rows,
                                     [FromQuery]int page,
                                     [FromQuery]string forSearch,
@@ -144,7 +141,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = "Admin, Volunteer, CharityMaker, Representative")]
-        public async Task<IActionResult> Create([FromBody]DonationDTO donationDTO)
+        public async Task<IActionResult> Create([FromForm]DonationDTO donationDTO)
         {
             if (!_donationValidator.IsValid(donationDTO))
             {
@@ -159,7 +156,7 @@ namespace FamilyNetServer.Controllers.API.V2
                 CharityMakerID = donationDTO.CharityMakerID,
                 OrphanageID = donationDTO.OrphanageID,
                 Orphanage = await _unitOfWork.Orphanages.GetById(donationDTO.OrphanageID.Value),
-                Status = DonationStatus.Sent,
+                Status = DonationStatus.Needed,
                 LastDateWhenStatusChanged = DateTime.Now
             };
 
@@ -173,8 +170,8 @@ namespace FamilyNetServer.Controllers.API.V2
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [FromBody]DonationDTO donationDTO)
+        [Authorize(Roles = "Admin, CharityMaker, Representative")]
+        public async Task<IActionResult> Edit(int id, [FromForm]DonationDTO donationDTO)
         {
             if (!_donationValidator.IsValid(donationDTO))
             {
@@ -183,21 +180,29 @@ namespace FamilyNetServer.Controllers.API.V2
             }
 
             var donation = await _unitOfWork.Donations.GetById(id);
-            donation.CharityMakerID = donationDTO.CharityMakerID;
-
-            if (!Enum.TryParse(donationDTO.Status, out DonationStatus donationStatus))
-            {
-                _logger.LogError("Wrong string.");
-                return BadRequest();
-            }
-
-            donation.Status = donationStatus;
 
             if (donation == null)
             {
                 _logger.LogError("Bad request. No donation was found");
                 return BadRequest();
             }
+
+            if (donationDTO.Status == null)
+            {
+                donationDTO.Status = "Needed";
+            }
+
+            if (!Enum.TryParse(donationDTO.Status, out DonationStatus status))
+            {
+                return BadRequest();
+            }
+
+            if (status != donation.Status)
+            {
+                donation.LastDateWhenStatusChanged = DateTime.Now;
+            }
+
+            donation.Status = status;
 
             if (donation.DonationItemID != null)
             {
@@ -206,15 +211,9 @@ namespace FamilyNetServer.Controllers.API.V2
                 donation.DonationItem = await _unitOfWork.DonationItems.GetById(donation.DonationItemID.Value);
             }
 
-            if(donation.CharityMakerID != donationDTO.CharityMakerID)
+            if (donationDTO.CharityMakerID != donation.CharityMakerID)
             {
-                donation.CharityMakerID = donationDTO.CharityMakerID;
-
-            }
-
-            if(donation.CharityMakerID != null)
-            {
-                donation.IsRequest = false;
+                donation.Status = DonationStatus.Sent;
             }
 
             if (donationDTO.OrphanageID != null)
