@@ -167,16 +167,19 @@ namespace FamilyNetServer.Controllers.API.V2
             quest.Name = questDTO.Name;
             quest.Description = questDTO.Description;
 
-            if (!Enum.TryParse(questDTO.Status, out QuestStatus status))
+            if (questDTO.Status != null)
             {
-                _logger.LogError("{status}{info}",
-                   StatusCodes.Status400BadRequest,
-                   "Could not parse status.");
+                if (!Enum.TryParse(questDTO.Status, out QuestStatus status))
+                {
+                    _logger.LogError("{status}{info}",
+                       StatusCodes.Status400BadRequest,
+                       "Could not parse status.");
 
-                return BadRequest();
+                    return BadRequest();
+                }
+
+                quest.Status = status;
             }
-
-            quest.Status = status;
 
             if (questDTO.VolunteerID != quest.VolunteerID)
             {

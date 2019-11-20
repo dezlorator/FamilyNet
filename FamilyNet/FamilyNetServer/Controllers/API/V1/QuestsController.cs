@@ -159,12 +159,15 @@ namespace FamilyNetServer.Controllers.API.V1
             quest.Name = questDTO.Name;
             quest.Description = questDTO.Description;
 
-            if (!Enum.TryParse(questDTO.Status, out QuestStatus status))
+            if (questDTO.Status != null)
             {
-                return BadRequest();
-            }
-
-            quest.Status = status;
+                if (!Enum.TryParse(questDTO.Status, out QuestStatus status))
+                {
+                    return BadRequest();
+                }
+                
+                quest.Status = status;
+            }          
 
             if (questDTO.VolunteerID != quest.VolunteerID)
             {
