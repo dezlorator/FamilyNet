@@ -11,6 +11,7 @@ using DataTransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
+using Newtonsoft.Json;
 
 namespace FamilyNetServer.Controllers.API.V2
 {
@@ -145,7 +146,10 @@ namespace FamilyNetServer.Controllers.API.V2
         {
             if (!_questValidator.IsValid(questDTO))
             {
-                _logger.LogError("Model is not valid.");
+                _logger.LogError("{status}{info}",
+                    StatusCodes.Status400BadRequest,
+                    "Quest is not valid. ");
+
                 return BadRequest();
             }
 
@@ -153,7 +157,10 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (quest == null)
             {
-                _logger.LogError("Bad request. No quest was found");
+                _logger.LogError("{status}{info}",
+                   StatusCodes.Status400BadRequest,
+                   "Quest was not found in db");
+
                 return BadRequest();
             }
 
@@ -162,6 +169,10 @@ namespace FamilyNetServer.Controllers.API.V2
 
             if (!Enum.TryParse(questDTO.Status, out QuestStatus status))
             {
+                _logger.LogError("{status}{info}",
+                   StatusCodes.Status400BadRequest,
+                   "Could not parse status.");
+
                 return BadRequest();
             }
 
@@ -183,7 +194,8 @@ namespace FamilyNetServer.Controllers.API.V2
             _unitOfWork.Quests.Update(quest);
             _unitOfWork.SaveChanges();
 
-            _logger.LogInformation("Status: NoContent. Quest was edited.");
+            _logger.LogInformation("{status} {json}", StatusCodes.Status204NoContent,
+                JsonConvert.SerializeObject(questDTO));
 
             return NoContent();
         }
@@ -197,7 +209,10 @@ namespace FamilyNetServer.Controllers.API.V2
         {
             if (!_questValidator.IsValid(questDTO))
             {
-                _logger.LogError("Model is not valid.");
+                _logger.LogError("{status}{info}",
+                    StatusCodes.Status400BadRequest,
+                    "Quest is not valid. ");
+
                 return BadRequest();
             }
 
@@ -226,7 +241,9 @@ namespace FamilyNetServer.Controllers.API.V2
             await _unitOfWork.Quests.Create(quest);
             _unitOfWork.SaveChanges();
 
-            _logger.LogInformation("Status: Created. Quest was created");
+            _logger.LogInformation("{status} {json}", StatusCodes.Status200OK,
+                JsonConvert.SerializeObject(questDTO)); 
+          
             return Created("api/v1/quests/" + quest.ID, questDTO);
         }
 
