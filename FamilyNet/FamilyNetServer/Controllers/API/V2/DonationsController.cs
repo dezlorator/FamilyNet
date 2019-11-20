@@ -141,7 +141,7 @@ namespace FamilyNetServer.Controllers.API.V2
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = "Admin, Volunteer, CharityMaker, Representative")]
-        public async Task<IActionResult> Create([FromForm]DonationDTO donationDTO)
+        public async Task<IActionResult> Create([FromBody]DonationDTO donationDTO)
         {
             if (!_donationValidator.IsValid(donationDTO))
             {
@@ -170,8 +170,8 @@ namespace FamilyNetServer.Controllers.API.V2
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin, CharityMaker, Representative")]
-        public async Task<IActionResult> Edit(int id, [FromForm]DonationDTO donationDTO)
+        [Authorize(Roles = "Admin, CharityMaker, Representative, Volunteer")]
+        public async Task<IActionResult> Edit(int id, [FromBody]DonationDTO donationDTO)
         {
             if (!_donationValidator.IsValid(donationDTO))
             {

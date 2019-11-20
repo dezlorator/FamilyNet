@@ -114,7 +114,7 @@ namespace FamilyNetServer.Controllers.API.V2
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Volunteer, Orphan")]
+        [Authorize(Roles = "Admin, Volunteer, Orphan, CharityMaker")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody]DonationItemDTO donationItemDTO)
@@ -170,7 +170,7 @@ namespace FamilyNetServer.Controllers.API.V2
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin, Volunteer, Orphan")]
+        [Authorize(Roles = "Admin, Volunteer, Orphan, CharityMaker")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, [FromBody]DonationItemDTO donationItemDTO)
